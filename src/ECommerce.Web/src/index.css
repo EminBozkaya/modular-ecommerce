@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Roboto Slab', Georgia, serif;
+
   --color-background: hsl(0 0% 100%);
   --color-foreground: hsl(222.2 84% 4.9%);
 
@@ -28,6 +31,11 @@
   --color-border: hsl(214.3 31.8% 91.4%);
   --color-input: hsl(214.3 31.8% 91.4%);
   --color-ring: hsl(222.2 84% 4.9%);
+
+  --color-ebrar-green: #1B5E3F;
+  --color-ebrar-green-dark: #164A32;
+  --color-ebrar-gold: #C5A962;
+  --color-ebrar-gold-dark: #B09952;
 
   --radius: 0.5rem;
 }
@@ -102,4 +110,5 @@
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
+  font-family: var(--font-sans);
 }

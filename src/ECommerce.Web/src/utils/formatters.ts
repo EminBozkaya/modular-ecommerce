@@ -1,5 +1,6 @@
 export function formatPrice(amount: number, currency: string): string {
-    return new Intl.NumberFormat('en-US', {
+    const locale = currency === 'TRY' ? 'tr-TR' : 'en-US';
+    return new Intl.NumberFormat(locale, {
         style: 'currency',
         currency: currency,
         minimumFractionDigits: 2,
