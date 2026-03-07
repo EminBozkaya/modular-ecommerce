@@ -15,6 +15,7 @@ const RegisterPage = lazy(() => import('../../features/auth/pages/RegisterPage')
 const AdminDashboardPage = lazy(() => import('../../features/admin/pages/AdminDashboardPage'));
 const AdminProductsPage = lazy(() => import('../../features/admin/products/pages/AdminProductsPage'));
 const AdminOrdersPage = lazy(() => import('../../features/admin/orders/pages/AdminOrdersPage'));
+const AdminCategoriesPage = lazy(() => import('../../features/admin/categories/pages/AdminCategoriesPage'));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
     <Suspense
@@ -103,6 +104,14 @@ export const router = createBrowserRouter([
                         element: (
                             <SuspenseWrapper>
                                 <AdminProductsPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'categories',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminCategoriesPage />
                             </SuspenseWrapper>
                         ),
                     },

@@ -112,3 +112,55 @@ body {
   color: hsl(var(--foreground));
   font-family: var(--font-sans);
 }
+
+/* ── AG Grid Ebrar Green Theme ── */
+.ag-theme-alpine,
+.ag-root-wrapper {
+  --ag-alpine-active-color: #1B5E3F;
+  --ag-selected-row-background-color: #ecfdf5;
+  --ag-row-hover-color: #f0fdf4;
+  --ag-header-background-color: #f8faf9;
+  --ag-header-foreground-color: #1B5E3F;
+  --ag-border-color: #e5e7eb;
+  --ag-font-size: 13px;
+  --ag-font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --ag-range-selection-border-color: #1B5E3F;
+  --ag-checkbox-checked-color: #1B5E3F;
+  --ag-input-focus-border-color: #1B5E3F;
+}
+
+.ag-header-cell-text {
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ag-paging-button {
+  color: #1B5E3F !important;
+}
+
+.ag-paging-button:hover {
+  background-color: #ecfdf5 !important;
+}
+
+/* ── Modal Animations ── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── Admin Focus Ring Color ── */
+input:focus,
+textarea:focus,
+select:focus {
+  --tw-ring-color: #1B5E3F;
+  border-color: #1B5E3F;
+}
+
