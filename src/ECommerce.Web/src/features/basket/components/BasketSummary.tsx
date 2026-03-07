@@ -6,7 +6,7 @@ interface BasketSummaryProps {
 }
 
 export const BasketSummary = ({ basket }: BasketSummaryProps) => {
-    const itemCount = basket.items.reduce((acc, item) => acc + item.quantity, 0);
+    const itemCount = basket?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0;
 
     return (
         <div className="flex flex-col gap-2 p-4 border-t bg-gray-50 dark:bg-zinc-900">

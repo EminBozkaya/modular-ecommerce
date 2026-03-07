@@ -68,7 +68,16 @@ export default function ProductListPage() {
                 </div>
             )}
 
-            {!isLoading && !error && result && result.items.length === 0 && (
+            {!isLoading && !error && result && !Array.isArray(result.items) && (
+                <div className="py-12">
+                    <ErrorMessage
+                        message="Invalid data format received from the server. Please check the API response."
+                        onRetry={() => refetch()}
+                    />
+                </div>
+            )}
+
+            {!isLoading && !error && result && Array.isArray(result.items) && result.items.length === 0 && (
                 <div className="py-12">
                     <EmptyState
                         title="No products found"
@@ -77,7 +86,7 @@ export default function ProductListPage() {
                 </div>
             )}
 
-            {!isLoading && !error && result && result.items.length > 0 && (
+            {!isLoading && !error && result && Array.isArray(result.items) && result.items.length > 0 && (
                 <>
                     <ProductGrid products={result.items} />
 

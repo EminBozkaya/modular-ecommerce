@@ -27,8 +27,15 @@ export async function getProducts(params: ProductListParams): Promise<PaginatedR
         return mockPaginate<Product>(items, params);
     }
 
-    const response = await apiClient.get<PaginatedResult<Product>>('/api/catalog/products', { params });
-    return response.data;
+    const response = await apiClient.get<PaginatedResult<Product> | { value: PaginatedResult<Product> }>('/api/catalog/products', { params });
+
+    // Check if the response is wrapped in an object with a 'value' property
+    if (response.data && 'value' in response.data && response.data.value && 'items' in response.data.value) {
+        return response.data.value;
+    }
+
+    // Otherwise, assume it's directly a PaginatedResult
+    return response.data as PaginatedResult<Product>;
 }
 
 export async function getProductById(id: string): Promise<Product> {
@@ -51,6 +58,13 @@ export async function getCategories(): Promise<Category[]> {
         return mockCategories;
     }
 
-    const response = await apiClient.get<Category[]>('/api/catalog/categories');
-    return response.data;
+    const response = await apiClient.get<Category[] | { value: Category[] }>('/api/catalog/categories');
+
+    // Check if the response is wrapped in an object with a 'value' array
+    if (response.data && 'value' in response.data && Array.isArray(response.data.value)) {
+        return response.data.value;
+    }
+
+    // Otherwise, assume it's directly an array
+    return response.data as Category[];
 }

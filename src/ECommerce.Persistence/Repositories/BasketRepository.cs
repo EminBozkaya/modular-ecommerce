@@ -12,11 +12,11 @@ public class BasketRepository : IBasketRepository
     public BasketRepository(ApplicationDbContext ctx) => _ctx = ctx;
 
     public async Task<Basket?> GetByUserIdAsync(Guid userId, CancellationToken ct = default)
-        => await _ctx.Baskets.Include(b => b.Items)
+        => await _ctx.Baskets.AsNoTracking().Include(b => b.Items)
             .FirstOrDefaultAsync(b => b.UserId == userId, ct);
 
     public async Task<Basket?> GetBySessionIdAsync(string sessionId, CancellationToken ct = default)
-        => await _ctx.Baskets.Include(b => b.Items)
+        => await _ctx.Baskets.AsNoTracking().Include(b => b.Items)
             .FirstOrDefaultAsync(b => b.SessionId == sessionId, ct);
 
     public async Task AddAsync(Basket basket, CancellationToken ct = default)

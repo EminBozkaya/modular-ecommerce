@@ -11,7 +11,7 @@ public static class CacheExtensions
 {
     public static IServiceCollection AddCachingInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        var redisConnectionString = configuration.GetConnectionString("Redis") ?? "localhost:6379";
+        var redisConnectionString = configuration.GetConnectionString("Redis") ?? "localhost:6380";
         
         services.AddSingleton<IConnectionMultiplexer>(sp => 
             ConnectionMultiplexer.Connect(redisConnectionString));

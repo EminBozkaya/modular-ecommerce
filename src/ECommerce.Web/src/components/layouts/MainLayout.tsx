@@ -12,7 +12,7 @@ export function MainLayout() {
     const { data: basket, isLoading: isBasketLoading } = useBasket();
     const { openDrawer } = useBasketUiStore();
 
-    const itemCount = basket?.items.reduce((acc, item) => acc + item.quantity, 0) || 0;
+    const itemCount = basket?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0;
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">

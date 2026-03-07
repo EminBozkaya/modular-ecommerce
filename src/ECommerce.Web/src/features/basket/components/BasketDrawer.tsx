@@ -54,13 +54,13 @@ export const BasketDrawer = () => {
                         <div className="flex justify-center items-center h-full text-red-500">
                             Failed to load basket.
                         </div>
-                    ) : !basket || basket.items.length === 0 ? (
+                    ) : !basket || !basket.items || basket.items.length === 0 ? (
                         <div className="py-12">
                             <EmptyState title="Your basket is empty" description="Looks like you haven't added anything yet." />
                         </div>
                     ) : (
                         <div className="flex flex-col">
-                            {basket.items.map(item => (
+                            {(basket?.items || []).map(item => (
                                 <BasketItemRow key={item.productId} item={item} />
                             ))}
                         </div>
@@ -68,7 +68,7 @@ export const BasketDrawer = () => {
                 </div>
 
                 {/* Footer */}
-                {basket && basket.items.length > 0 && (
+                {basket && basket.items && basket.items.length > 0 && (
                     <div className="border-t">
                         <BasketSummary basket={basket} />
                         <div className="p-4 pt-0 bg-gray-50 dark:bg-zinc-900">
