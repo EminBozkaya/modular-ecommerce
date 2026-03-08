@@ -13,6 +13,7 @@ import {
     ColumnAutoSizeModule,
     RowApiModule,
     CellStyleModule,
+    RowSelectionModule,
 } from 'ag-grid-community';
 import { Plus, Download, FileDown, Package } from 'lucide-react';
 import { getProducts, getCategories } from '../../../catalog/api/catalogApi';
@@ -34,6 +35,7 @@ ModuleRegistry.registerModules([
     ColumnAutoSizeModule,
     RowApiModule,
     CellStyleModule,
+    RowSelectionModule,
 ]);
 
 export default function AdminProductsPage() {
@@ -71,7 +73,6 @@ export default function AdminProductsPage() {
         params.api.sizeColumnsToFit();
     };
 
-    // ── Column Definitions ──
     const columnDefs: ColDef<Product>[] = [
         {
             headerName: 'Ürün Adı',
@@ -123,9 +124,11 @@ export default function AdminProductsPage() {
             sortable: true,
             width: 100,
             cellRenderer: (params: { value: boolean }) => {
-                return params.value
-                    ? '<span style="color:#16a34a;font-weight:600">Aktif</span>'
-                    : '<span style="color:#dc2626;font-weight:600">Pasif</span>';
+                return params.value ? (
+                    <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span>
+                ) : (
+                    <span style={{ color: '#dc2626', fontWeight: '600' }}>Pasif</span>
+                );
             },
         },
         {
@@ -135,45 +138,40 @@ export default function AdminProductsPage() {
             filter: false,
             width: 120,
             cellRenderer: (params: { data: Product }) => {
-                const container = document.createElement('div');
-                container.style.display = 'flex';
-                container.style.gap = '6px';
-                container.style.alignItems = 'center';
-                container.style.height = '100%';
-
-                const editBtn = document.createElement('button');
-                editBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B5E3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>`;
-                editBtn.title = 'Düzenle';
-                editBtn.style.cursor = 'pointer';
-                editBtn.style.padding = '4px';
-                editBtn.style.borderRadius = '6px';
-                editBtn.style.border = 'none';
-                editBtn.style.background = 'transparent';
-                editBtn.addEventListener('mouseenter', () => (editBtn.style.background = '#f0fdf4'));
-                editBtn.addEventListener('mouseleave', () => (editBtn.style.background = 'transparent'));
-                editBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    handleEdit(params.data);
-                });
-
-                const deleteBtn = document.createElement('button');
-                deleteBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>`;
-                deleteBtn.title = 'Sil';
-                deleteBtn.style.cursor = 'pointer';
-                deleteBtn.style.padding = '4px';
-                deleteBtn.style.borderRadius = '6px';
-                deleteBtn.style.border = 'none';
-                deleteBtn.style.background = 'transparent';
-                deleteBtn.addEventListener('mouseenter', () => (deleteBtn.style.background = '#fef2f2'));
-                deleteBtn.addEventListener('mouseleave', () => (deleteBtn.style.background = 'transparent'));
-                deleteBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    handleDelete(params.data.id);
-                });
-
-                container.appendChild(editBtn);
-                container.appendChild(deleteBtn);
-                return container;
+                if (!params.data) return null;
+                return (
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center', height: '100%' }}>
+                        <button
+                            title="Düzenle"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(params.data);
+                            }}
+                            className="p-1 rounded-md transition-colors hover:bg-green-50"
+                            style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B5E3F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                                <path d="m15 5 4 4" />
+                            </svg>
+                        </button>
+                        <button
+                            title="Sil"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(params.data.id);
+                            }}
+                            className="p-1 rounded-md transition-colors hover:bg-red-50"
+                            style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 6h18" />
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                            </svg>
+                        </button>
+                    </div>
+                );
             },
         },
     ];
@@ -339,7 +337,7 @@ export default function AdminProductsPage() {
                         paginationPageSizeSelector={[10, 20, 50, 100]}
                         loading={loading}
                         animateRows={true}
-                        rowSelection="single"
+                        rowSelection={{ mode: 'singleRow' }}
                         defaultColDef={{
                             resizable: true,
                             floatingFilter: true,
