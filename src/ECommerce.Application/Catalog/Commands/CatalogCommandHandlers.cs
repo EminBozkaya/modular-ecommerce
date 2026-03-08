@@ -99,7 +99,7 @@ public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, Guid
 
     public async Task<Guid> Handle(CreateCategoryCommand cmd, CancellationToken ct)
     {
-        var category = Category.Create(cmd.Name, cmd.Description, cmd.ImageUrl, cmd.IsActive);
+        var category = Category.Create(cmd.Name, cmd.Description, cmd.ImageUrl, cmd.IsActive, cmd.ParentCategoryId);
         await _categories.AddAsync(category, ct);
         await _categories.SaveChangesAsync(ct);
         return category.Id;
@@ -124,7 +124,7 @@ public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand>
             
         _logger.LogInformation("Updating category {Id}: Name={Name}, IsActive={IsActive}", cmd.Id, cmd.Name, cmd.IsActive);
         
-        category.Update(cmd.Name, cmd.Description, cmd.ImageUrl, cmd.IsActive);
+        category.Update(cmd.Name, cmd.Description, cmd.ImageUrl, cmd.IsActive, cmd.ParentCategoryId);
         _categories.Update(category);
         await _categories.SaveChangesAsync(ct);
     }

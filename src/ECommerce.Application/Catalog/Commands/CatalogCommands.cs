@@ -35,7 +35,8 @@ public record CreateCategoryCommand(
     string Name,
     string? Description,
     string? ImageUrl,
-    bool IsActive = true) : IRequest<Guid>;
+    bool IsActive = true,
+    Guid? ParentCategoryId = null) : IRequest<Guid>;
 
 // --- UpdateCategory ---
 public record UpdateCategoryCommand(
@@ -43,7 +44,8 @@ public record UpdateCategoryCommand(
     string Name,
     string? Description,
     string? ImageUrl,
-    bool IsActive) : IRequest;
+    bool IsActive,
+    Guid? ParentCategoryId) : IRequest;
 
 // --- DeleteCategory ---
 public record DeleteCategoryCommand(Guid Id) : IRequest;

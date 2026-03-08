@@ -64,6 +64,14 @@ export default function ProductFormModal({
 
     const isEdit = !!product;
 
+    // Helper to format and sort category paths
+    const getCategoryPath = (cat: Category) =>
+        cat.parentCategoryName ? `${cat.parentCategoryName} > ${cat.name}` : cat.name;
+
+    const sortedCategories = [...categories].sort((a, b) =>
+        getCategoryPath(a).localeCompare(getCategoryPath(b))
+    );
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         const finalValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
@@ -187,7 +195,7 @@ export default function ProductFormModal({
                             style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
                         >
                             <option value="">Kategori seçin</option>
-                            {categories
+                            {sortedCategories
                                 .filter(cat =>
                                     // Eğer yeni ürün ekleniyorsa sadece aktifleri göster
                                     // Eğer düzenleniyorsa, ürünün kendi kategorisiyse (pasif de olsa) göster, diğerleri aktif olmalı
@@ -195,7 +203,7 @@ export default function ProductFormModal({
                                 )
                                 .map((cat) => (
                                     <option key={cat.id} value={cat.id}>
-                                        {cat.name}
+                                        {cat.parentCategoryName ? `${cat.parentCategoryName} > ${cat.name}` : cat.name}
                                     </option>
                                 ))}
                         </select>

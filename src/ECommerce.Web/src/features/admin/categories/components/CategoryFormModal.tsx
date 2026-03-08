@@ -7,6 +7,7 @@ interface CategoryFormModalProps {
     onClose: () => void;
     onSubmit: (data: CategoryFormData) => void;
     category?: Category | null;
+    categories: Category[];
     loading?: boolean;
 }
 
@@ -15,6 +16,7 @@ export interface CategoryFormData {
     description: string;
     imageUrl: string;
     isActive: boolean;
+    parentCategoryId: string;
 }
 
 const initialFormData: CategoryFormData = {
@@ -22,6 +24,7 @@ const initialFormData: CategoryFormData = {
     description: '',
     imageUrl: '',
     isActive: true,
+    parentCategoryId: '',
 };
 
 export default function CategoryFormModal({
@@ -29,6 +32,7 @@ export default function CategoryFormModal({
     onClose,
     onSubmit,
     category,
+    categories,
     loading,
 }: CategoryFormModalProps) {
     const [form, setForm] = useState<CategoryFormData>(initialFormData);
@@ -41,6 +45,7 @@ export default function CategoryFormModal({
                     description: (category as any).description || '',
                     imageUrl: (category as any).imageUrl || '',
                     isActive: category.isActive !== undefined ? category.isActive : true,
+                    parentCategoryId: category.parentCategoryId || '',
                 });
             } else {
                 setForm(initialFormData);
@@ -50,7 +55,15 @@ export default function CategoryFormModal({
 
     if (!open) return null;
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    // Helper to format and sort category paths
+    const getCategoryPath = (cat: Category) =>
+        cat.parentCategoryName ? `${cat.parentCategoryName} > ${cat.name}` : cat.name;
+
+    const sortedCategories = [...categories].sort((a, b) =>
+        getCategoryPath(a).localeCompare(getCategoryPath(b))
+    );
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
     };
@@ -123,6 +136,32 @@ export default function CategoryFormModal({
                             style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
                             placeholder="https://..."
                         />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Üst Kategori (Opsiyonel)</label>
+                        <select
+                            name="parentCategoryId"
+                            value={form.parentCategoryId}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
+                            style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                        >
+                            <option value="">Ana Kategori (Yok)</option>
+                            {sortedCategories
+                                .filter(cat => {
+                                    // Kategori düzenlenirken, kendisini (veya kendi altını - şimdilik sadece kendisini tutuyoruz) üst kategori olarak seçmemelidir.
+                                    if (category && cat.id === category.id) return false;
+                                    // Sadece aktif olanları göster, fakat mevcut üst kategorisiyse (pasif olsa bile) seçili kalması için göster
+                                    return cat.isActive !== false || cat.id === form.parentCategoryId;
+                                })
+                                .map(cat => (
+                                    <option key={cat.id} value={cat.id}>
+                                        {cat.parentCategoryName ? `${cat.parentCategoryName} > ${cat.name}` : cat.name}
+                                    </option>
+                                ))
+                            }
+                        </select>
                     </div>
 
                     <div>

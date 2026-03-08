@@ -22,5 +22,10 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .HasMaxLength(500);
 
         builder.HasIndex(c => c.Name).IsUnique();
+
+        builder.HasOne(c => c.ParentCategory)
+            .WithMany(c => c.SubCategories)
+            .HasForeignKey(c => c.ParentCategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -82,7 +82,22 @@ export default function AdminCategoriesPage() {
             filter: 'agTextColumnFilter',
             sortable: true,
             flex: 2,
-            minWidth: 200,
+            minWidth: 150,
+        },
+        {
+            headerName: 'Üst Kategori',
+            field: 'parentCategoryName',
+            filter: 'agTextColumnFilter',
+            sortable: true,
+            flex: 2,
+            minWidth: 150,
+            cellRenderer: (params: { value?: string | null }) => {
+                return params.value ? (
+                    <span className="text-gray-600">{params.value}</span>
+                ) : (
+                    <span className="text-gray-400 italic">Ana Kategori</span>
+                );
+            }
         },
         {
             headerName: 'Durum',
@@ -201,6 +216,7 @@ export default function AdminCategoriesPage() {
                     description: data.description || undefined,
                     imageUrl: data.imageUrl || undefined,
                     isActive: data.isActive,
+                    parentCategoryId: data.parentCategoryId || undefined,
                 });
             } else {
                 await createCategory({
@@ -208,6 +224,7 @@ export default function AdminCategoriesPage() {
                     description: data.description || undefined,
                     imageUrl: data.imageUrl || undefined,
                     isActive: data.isActive,
+                    parentCategoryId: data.parentCategoryId || undefined,
                 });
             }
             setModalOpen(false);
@@ -398,6 +415,7 @@ export default function AdminCategoriesPage() {
                 }}
                 onSubmit={handleFormSubmit}
                 category={editingCategory}
+                categories={categories}
                 loading={saving}
             />
 

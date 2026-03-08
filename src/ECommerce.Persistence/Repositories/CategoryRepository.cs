@@ -15,7 +15,7 @@ public class CategoryRepository : ICategoryRepository
         => await _ctx.Categories.FirstOrDefaultAsync(c => c.Id == id, ct);
 
     public async Task<IReadOnlyList<Category>> GetAllAsync(CancellationToken ct = default)
-        => await _ctx.Categories.Where(c => !c.IsDeleted).AsNoTracking().ToListAsync(ct);
+        => await _ctx.Categories.Include(c => c.ParentCategory).Where(c => !c.IsDeleted).AsNoTracking().ToListAsync(ct);
 
     public async Task AddAsync(Category category, CancellationToken ct = default)
         => await _ctx.Categories.AddAsync(category, ct);

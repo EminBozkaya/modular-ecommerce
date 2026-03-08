@@ -3,6 +3,8 @@ export interface Category {
     name: string;
     slug: string;
     isActive: boolean;
+    parentCategoryId?: string | null;
+    parentCategoryName?: string | null;
 }
 
 export interface Product {

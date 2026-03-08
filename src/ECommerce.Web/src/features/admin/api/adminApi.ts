@@ -53,6 +53,7 @@ export interface CreateCategoryData {
     description?: string;
     imageUrl?: string;
     isActive: boolean;
+    parentCategoryId?: string | null;
 }
 
 export interface UpdateCategoryData {
@@ -61,6 +62,7 @@ export interface UpdateCategoryData {
     description?: string;
     imageUrl?: string;
     isActive: boolean;
+    parentCategoryId?: string | null;
 }
 
 export async function createCategory(data: CreateCategoryData): Promise<string> {
