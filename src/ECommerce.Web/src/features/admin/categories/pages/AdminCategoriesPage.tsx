@@ -123,25 +123,6 @@ const localeTextTr = {
     clear: 'Temizle',
 };
 
-const dateComparator = (filterLocalDate: Date, cellValue: string) => {
-    if (cellValue == null) return -1;
-    const cellDate = new Date(cellValue);
-
-    // Remove seconds and milliseconds for comparison if we want to match by minute
-    const filterTime = new Date(filterLocalDate).setSeconds(0, 0);
-    const cellTime = new Date(cellDate).setSeconds(0, 0);
-
-    const result = (filterTime === cellTime) ? 0 : (cellTime < filterTime ? -1 : 1);
-
-    // Debugging logs for browser test
-    console.log('DATE FILTER COMP:', {
-        filter: new Date(filterTime).toLocaleString(),
-        cell: new Date(cellTime).toLocaleString(),
-        result
-    });
-
-    return result;
-};
 
 export default function AdminCategoriesPage() {
     const gridRef = useRef<AgGridReact>(null);
@@ -297,22 +278,6 @@ export default function AdminCategoriesPage() {
         }
     }, [categories, products]);
 
-    const handleDeactivate = useCallback((id: string) => {
-        console.log('Categories handleDeactivate called for ID:', id);
-        const category = categories.find(c => c.id === id);
-        if (!category) return;
-
-        setModalSettings({
-            open: true,
-            title: "Kategori Deaktif Etme",
-            message: `"${category.name}" kategorisini deaktif etmek istediğinize emin misiniz? Bu işlem bağlı alt kategorileri ve ürünleri de etkileyebilir.`,
-            confirmText: "Kategoriyi Deaktif Et",
-            variant: 'warning',
-            showConfirm: true,
-            categoryId: id,
-            actionType: 'deactivate'
-        });
-    }, [categories]);
 
     // ── Column Definitions ──
     const columnDefs = useMemo<ColDef<Category>[]>(() => [
@@ -435,20 +400,6 @@ export default function AdminCategoriesPage() {
                             </svg>
                         </button>
                         <button
-                            title="Deaktif Et"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeactivate(params.data.id);
-                            }}
-                            className="p-1 rounded-md transition-colors hover:bg-yellow-50"
-                            style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
-                                <line x1="12" y1="2" x2="12" y2="12" />
-                            </svg>
-                        </button>
-                        <button
                             title="Sil"
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -469,7 +420,7 @@ export default function AdminCategoriesPage() {
                 );
             },
         },
-    ], [categories, products, handleEdit, handleDeactivate, handleDelete]);
+    ], [categories, products, handleEdit, handleDelete]);
 
     // ── CRUD Handlers ──
 

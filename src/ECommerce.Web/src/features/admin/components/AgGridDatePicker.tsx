@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { forwardRef, useImperativeHandle, useState } from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import { tr } from 'date-fns/locale';
