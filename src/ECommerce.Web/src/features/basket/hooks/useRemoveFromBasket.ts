@@ -30,7 +30,7 @@ export const useRemoveFromBasket = () => {
             return { previousBasket };
         },
         // If the mutation fails, use the context returned from onMutate to roll back
-        onError: (_err, _newTodo, context) => {
+        onError: (_err, _newTodo, context: any) => {
             if (context?.previousBasket) {
                 queryClient.setQueryData<Basket>(queryKeys.basket.current, context.previousBasket);
             }

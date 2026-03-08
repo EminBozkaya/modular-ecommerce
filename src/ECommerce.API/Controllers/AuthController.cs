@@ -101,8 +101,8 @@ public class AuthController : ControllerBase
         Response.Cookies.Append("access_token", result.AccessToken, new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
+            Secure = true, // Requires HTTPS (which the backend uses)
+            SameSite = SameSiteMode.None, // Allow cross-origin cookie sending for local dev (5173 -> 7136)
             MaxAge = TimeSpan.FromMinutes(15)
         });
 
@@ -110,7 +110,7 @@ public class AuthController : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Strict,
+            SameSite = SameSiteMode.None,
             Path = "/api/auth/refresh",
             MaxAge = TimeSpan.FromDays(7)
         });

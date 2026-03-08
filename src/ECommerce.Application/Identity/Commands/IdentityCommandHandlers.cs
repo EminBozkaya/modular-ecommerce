@@ -15,8 +15,16 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, Guid>
     {
         var exists = await _users.ExistsByEmailAsync(cmd.Email, ct);
         if (exists) throw new InvalidOperationException("Email already registered.");
+        
         var hash = HashPassword(cmd.Password);
         var user = AppUser.Create(cmd.FirstName, cmd.LastName, cmd.Email, hash);
+
+        var hasAdmin = await _users.HasAnyAdminAsync(ct);
+        if (!hasAdmin)
+        {
+            user.PromoteToAdmin();
+        }
+
         await _users.AddAsync(user, ct);
         await _users.SaveChangesAsync(ct);
         return user.Id;

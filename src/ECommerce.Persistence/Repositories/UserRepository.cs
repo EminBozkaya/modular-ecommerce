@@ -31,4 +31,7 @@ public class UserRepository : IUserRepository
 
     public async Task SaveChangesAsync(CancellationToken ct = default)
         => await _ctx.SaveChangesAsync(ct);
+
+    public async Task<bool> HasAnyAdminAsync(CancellationToken ct = default)
+        => await _ctx.Users.AnyAsync(u => u.Role == ECommerce.Domain.Identity.Enums.UserRole.Admin, ct);
 }

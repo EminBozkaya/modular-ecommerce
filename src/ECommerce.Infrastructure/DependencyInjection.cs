@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 namespace ECommerce.Infrastructure;
@@ -30,7 +31,9 @@ public static class DependencyInjection
                     ValidAudience = jwtSection["Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(jwtSection["Secret"]!)),
-                    ClockSkew = TimeSpan.Zero  // Short-lived tokens: no clock skew tolerance
+                    ClockSkew = TimeSpan.Zero,  // Short-lived tokens: no clock skew tolerance
+                    RoleClaimType = ClaimTypes.Role,
+                    NameClaimType = ClaimTypes.NameIdentifier
                 };
 
                 // Read JWT from httpOnly cookie — security-rules: no localStorage

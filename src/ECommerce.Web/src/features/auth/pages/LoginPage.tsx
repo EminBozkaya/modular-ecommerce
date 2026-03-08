@@ -29,9 +29,9 @@ export default function LoginPage() {
                 </div>
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    {error?.response?.data?.detail && (
+                    {error?.message && (
                         <div className="rounded-md bg-red-50 p-4">
-                            <div className="text-sm text-red-700">{error.response.data.detail}</div>
+                            <div className="text-sm text-red-700">{error.message}</div>
                         </div>
                     )}
 
@@ -51,8 +51,8 @@ export default function LoginPage() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3"
                                 />
-                                {error?.response?.data?.errors?.Email && (
-                                    <p className="mt-2 text-sm text-red-600">{error.response.data.errors.Email[0]}</p>
+                                {error?.errors?.Email?.[0] && (
+                                    <p className="mt-2 text-sm text-red-600">{error.errors.Email[0]}</p>
                                 )}
                             </div>
                         </div>
@@ -72,8 +72,8 @@ export default function LoginPage() {
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3"
                                 />
-                                {error?.response?.data?.errors?.Password && (
-                                    <p className="mt-2 text-sm text-red-600">{error.response.data.errors.Password[0]}</p>
+                                {error?.errors?.Password?.[0] && (
+                                    <p className="mt-2 text-sm text-red-600">{error.errors.Password[0]}</p>
                                 )}
                             </div>
                         </div>

@@ -14,4 +14,5 @@ public interface IUserRepository
     Task<IReadOnlyList<AppUser>> GetAllAsync(CancellationToken ct = default);
     Task AddAsync(AppUser user, CancellationToken ct = default);
     Task SaveChangesAsync(CancellationToken ct = default);
+    Task<bool> HasAnyAdminAsync(CancellationToken ct = default);
 }

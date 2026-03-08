@@ -10,6 +10,9 @@ import {
     NumberFilterModule,
     PaginationModule,
     ValidationModule,
+    ColumnAutoSizeModule,
+    RowApiModule,
+    CellStyleModule,
 } from 'ag-grid-community';
 import { Plus, Download, FileDown, Package } from 'lucide-react';
 import { getProducts, getCategories } from '../../../catalog/api/catalogApi';
@@ -28,6 +31,9 @@ ModuleRegistry.registerModules([
     NumberFilterModule,
     PaginationModule,
     ValidationModule,
+    ColumnAutoSizeModule,
+    RowApiModule,
+    CellStyleModule,
 ]);
 
 export default function AdminProductsPage() {
