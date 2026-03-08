@@ -14,14 +14,15 @@ import {
     CellStyleModule,
 } from 'ag-grid-community';
 import { Plus, Download, FileDown, FolderTree } from 'lucide-react';
-import { getCategories } from '../../../catalog/api/catalogApi';
-import { createCategory } from '../../api/adminApi';
-import type { Category } from '../../../catalog/types/product';
+import { getCategories, getProducts } from '../../../catalog/api/catalogApi';
+import { createCategory, updateCategory, deleteCategory } from '../../api/adminApi';
+import type { Category, Product } from '../../../catalog/types/product';
 import type { CategoryFormData } from '../components/CategoryFormModal';
 import CategoryFormModal from '../components/CategoryFormModal';
+import ConfirmModal from '../../components/ConfirmModal';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([
@@ -37,16 +38,26 @@ ModuleRegistry.registerModules([
 export default function AdminCategoriesPage() {
     const gridRef = useRef<AgGridReact>(null);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
+    const [editingCategory, setEditingCategory] = useState<Category | null>(null);
     const [saving, setSaving] = useState(false);
     const [gridApi, setGridApi] = useState<GridApi | null>(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
+    const [deleting, setDeleting] = useState(false);
+    const [showDeactivatePrompt, setShowDeactivatePrompt] = useState(false);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const cats = await getCategories();
+            const [cats, prods] = await Promise.all([
+                getCategories(),
+                getProducts({ page: 1, pageSize: 1000, includeInactive: true })
+            ]);
             setCategories(cats);
+            setProducts(prods.items);
         } catch (err) {
             console.error('Kategoriler yüklenirken hata:', err);
         } finally {
@@ -74,35 +85,133 @@ export default function AdminCategoriesPage() {
             minWidth: 200,
         },
         {
-            headerName: 'Bağlantı Adresi',
-            field: 'slug',
-            filter: 'agTextColumnFilter',
+            headerName: 'Durum',
+            field: 'isActive',
             sortable: true,
-            flex: 2,
-            minWidth: 200,
-            cellStyle: { color: '#6b7280', fontFamily: 'monospace' },
+            width: 150,
+            cellRenderer: (params: { value: boolean }) => {
+                if (params.value === undefined) return null; // handle undefined for old mock data
+                return params.value ? (
+                    <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span>
+                ) : (
+                    <span style={{ color: '#dc2626', fontWeight: '600' }}>Pasif</span>
+                );
+            },
         },
         {
-            headerName: 'Kimlik (ID)',
+            headerName: 'İşlemler',
             field: 'id',
-            filter: 'agTextColumnFilter',
-            sortable: true,
-            flex: 2,
-            minWidth: 250,
-            cellStyle: { color: '#9ca3af', fontFamily: 'monospace', fontSize: '12px' },
+            sortable: false,
+            filter: false,
+            width: 120,
+            cellRenderer: (params: { data: Category }) => {
+                if (!params.data) return null;
+                return (
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center', height: '100%' }}>
+                        <button
+                            title="Düzenle"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(params.data);
+                            }}
+                            className="p-1 rounded-md transition-colors hover:bg-green-50"
+                            style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B5E3F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                                <path d="m15 5 4 4" />
+                            </svg>
+                        </button>
+                        <button
+                            title="Sil"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                const categoryId = params.data.id || (params.data as any).Id;
+                                if (categoryId) {
+                                    handleDelete(categoryId);
+                                }
+                            }}
+                            className="p-1 rounded-md transition-colors hover:bg-red-50"
+                            style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 6h18" />
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                            </svg>
+                        </button>
+                    </div>
+                );
+            },
         },
     ];
 
     // ── CRUD Handlers ──
+    const handleEdit = useCallback((category: Category) => {
+        setEditingCategory(category);
+        setModalOpen(true);
+    }, []);
+
+    const handleDelete = useCallback((id: string) => {
+        const isUsed = products.some(p => p.categoryId === id);
+        setCategoryToDelete(id);
+        setShowDeactivatePrompt(isUsed);
+        setDeleteModalOpen(true);
+    }, [products]);
+
+    const handleConfirmDelete = async () => {
+        if (!categoryToDelete) return;
+
+        setDeleting(true);
+        try {
+            if (showDeactivatePrompt) {
+                const cat = categories.find(c => c.id === categoryToDelete);
+                if (cat) {
+                    await updateCategory({
+                        id: cat.id,
+                        name: cat.name,
+                        description: (cat as any).description,
+                        imageUrl: (cat as any).imageUrl,
+                        isActive: false
+                    });
+                }
+            } else {
+                await deleteCategory(categoryToDelete);
+            }
+
+            setDeleteModalOpen(false);
+            setCategoryToDelete(null);
+            setShowDeactivatePrompt(false);
+            await fetchData();
+        } catch (err) {
+            console.error('İşlem sırasında hata:', err);
+            alert('İşlem sırasında bir hata oluştu.');
+        } finally {
+            setDeleting(false);
+        }
+    };
+
     const handleFormSubmit = async (data: CategoryFormData) => {
         setSaving(true);
         try {
-            await createCategory({
-                name: data.name,
-                description: data.description || undefined,
-                imageUrl: data.imageUrl || undefined,
-            });
+            if (editingCategory) {
+                await updateCategory({
+                    id: editingCategory.id,
+                    name: data.name,
+                    description: data.description || undefined,
+                    imageUrl: data.imageUrl || undefined,
+                    isActive: data.isActive,
+                });
+            } else {
+                await createCategory({
+                    name: data.name,
+                    description: data.description || undefined,
+                    imageUrl: data.imageUrl || undefined,
+                    isActive: data.isActive,
+                });
+            }
             setModalOpen(false);
+            setEditingCategory(null);
             await fetchData();
         } catch (err) {
             console.error('Kategori kaydedilirken hata:', err);
@@ -114,37 +223,87 @@ export default function AdminCategoriesPage() {
 
     // ── Export Handlers ──
     const exportToExcel = () => {
-        const data = categories.map((c) => ({
-            'Kategori Adı': c.name,
-            'Bağlantı Adresi': c.slug,
-            'ID': c.id,
-        }));
-        const ws = XLSX.utils.json_to_sheet(data);
+        const activeCount = categories.filter(c => c.isActive !== false).length;
+        const totalCount = categories.length;
+
+        const wsData: any[][] = [
+            ['Yönetim Paneli - Kategori Listesi'],
+            [`Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')} ${new Date().toLocaleTimeString('tr-TR')}`],
+            [`Toplam Kategori Sayısı: ${totalCount}`],
+            [`Aktif Kategori Sayısı: ${activeCount}`],
+            [],
+            ['Kategori Adı', 'Durum']
+        ];
+
+        categories.forEach((c) => {
+            wsData.push([
+                c.name,
+                c.isActive !== false ? 'Aktif' : 'Pasif',
+            ]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        ws['!cols'] = [{ width: 40 }, { width: 15 }];
+
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Kategoriler');
         XLSX.writeFile(wb, 'kategoriler.xlsx');
     };
 
-    const exportToPDF = () => {
-        const doc = new jsPDF();
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(16);
-        doc.text('Kategori Listesi', 14, 20);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Tarih: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
+    const exportToPDF = async () => {
+        try {
+            const activeCount = categories.filter(c => c.isActive !== false).length;
+            const totalCount = categories.length;
 
-        const tableData = categories.map((c) => [c.name, c.slug]);
+            const doc = new jsPDF('p', 'mm', 'a4');
 
-        (doc as jsPDF & { autoTable: (options: Record<string, unknown>) => void }).autoTable({
-            startY: 35,
-            head: [['Kategori Adı', 'Bağlantı Adresi']],
-            body: tableData,
-            styles: { fontSize: 10 },
-            headStyles: { fillColor: [27, 94, 63] },
-        });
+            // Load Turkish font (Roboto)
+            const fontUrl = '/fonts/Roboto-Regular.ttf';
+            const fontResponse = await fetch(fontUrl);
+            const fontBuffer = await fontResponse.arrayBuffer();
 
-        doc.save('kategoriler.pdf');
+            // Convert ArrayBuffer to Base64 in browser
+            const bufferToBase64 = (buffer: ArrayBuffer) => {
+                let binary = '';
+                const bytes = new Uint8Array(buffer);
+                const len = bytes.byteLength;
+                for (let i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary);
+            };
+
+            const fontBase64 = bufferToBase64(fontBuffer);
+            doc.addFileToVFS('Roboto-Regular.ttf', fontBase64);
+            doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+            doc.setFont('Roboto');
+
+            doc.setFontSize(16);
+            doc.text('Kategori Listesi Özeti', 14, 20);
+
+            doc.setFontSize(10);
+            doc.text(`Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')} ${new Date().toLocaleTimeString('tr-TR')}`, 14, 28);
+            doc.text(`Toplam Kategori Sayısı: ${totalCount}`, 14, 34);
+            doc.text(`Aktif Kategori Sayısı: ${activeCount}`, 14, 40);
+
+            const tableData = categories.map((c) => [
+                c.name,
+                c.isActive !== false ? 'Aktif' : 'Pasif',
+            ]);
+
+            autoTable(doc, {
+                startY: 46,
+                head: [['Kategori Adı', 'Durum']],
+                body: tableData,
+                styles: { font: 'Roboto', fontSize: 10 },
+                headStyles: { font: 'Roboto', fontStyle: 'normal', fillColor: [27, 94, 63] },
+            });
+
+            doc.save('kategoriler.pdf');
+        } catch (error) {
+            console.error('PDF oluşturulurken hata:', error);
+            alert('PDF oluşturulurken bir hata oluştu. Font dosyası yüklenememiş olabilir.');
+        }
     };
 
     return (
@@ -181,7 +340,10 @@ export default function AdminCategoriesPage() {
                         PDF
                     </button>
                     <button
-                        onClick={() => setModalOpen(true)}
+                        onClick={() => {
+                            setEditingCategory(null);
+                            setModalOpen(true);
+                        }}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors"
                         style={{ background: '#1B5E3F' }}
                         onMouseEnter={(e) => (e.currentTarget.style.background = '#164A32')}
@@ -230,9 +392,31 @@ export default function AdminCategoriesPage() {
             {/* Category Form Modal */}
             <CategoryFormModal
                 open={modalOpen}
-                onClose={() => setModalOpen(false)}
+                onClose={() => {
+                    setModalOpen(false);
+                    setEditingCategory(null);
+                }}
                 onSubmit={handleFormSubmit}
+                category={editingCategory}
                 loading={saving}
+            />
+
+            {/* Confirm Delete / Deactivate Modal */}
+            <ConfirmModal
+                open={deleteModalOpen}
+                title={showDeactivatePrompt ? "Kategori Kullanımda" : "Kategoriyi Sil"}
+                message={showDeactivatePrompt
+                    ? "Silmek istediğiniz kategori, veri tabanındaki bir ürün tarafından kullanılmaktadır. Dilerseniz bu kategoriyi pasife çekebiliriz. Onaylıyor musunuz?"
+                    : "Bu kategoriyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."}
+                variant={showDeactivatePrompt ? "warning" : "danger"}
+                confirmText={showDeactivatePrompt ? "Evet, Pasife Çek" : "Sil"}
+                onConfirm={handleConfirmDelete}
+                onClose={() => {
+                    setDeleteModalOpen(false);
+                    setCategoryToDelete(null);
+                    setShowDeactivatePrompt(false);
+                }}
+                loading={deleting}
             />
         </div>
     );

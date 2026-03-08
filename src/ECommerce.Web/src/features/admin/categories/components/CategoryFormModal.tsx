@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import type { Category } from '../../../catalog/types/product';
 
 interface CategoryFormModalProps {
     open: boolean;
     onClose: () => void;
     onSubmit: (data: CategoryFormData) => void;
+    category?: Category | null;
     loading?: boolean;
 }
 
@@ -12,27 +14,39 @@ export interface CategoryFormData {
     name: string;
     description: string;
     imageUrl: string;
+    isActive: boolean;
 }
 
 const initialFormData: CategoryFormData = {
     name: '',
     description: '',
     imageUrl: '',
+    isActive: true,
 };
 
 export default function CategoryFormModal({
     open,
     onClose,
     onSubmit,
+    category,
     loading,
 }: CategoryFormModalProps) {
     const [form, setForm] = useState<CategoryFormData>(initialFormData);
 
     useEffect(() => {
         if (open) {
-            setForm(initialFormData);
+            if (category) {
+                setForm({
+                    name: category.name,
+                    description: (category as any).description || '',
+                    imageUrl: (category as any).imageUrl || '',
+                    isActive: category.isActive !== undefined ? category.isActive : true,
+                });
+            } else {
+                setForm(initialFormData);
+            }
         }
-    }, [open]);
+    }, [open, category]);
 
     if (!open) return null;
 
@@ -62,7 +76,7 @@ export default function CategoryFormModal({
                     className="flex items-center justify-between px-6 py-4"
                     style={{ background: '#1B5E3F', color: 'white' }}
                 >
-                    <h2 className="text-lg font-semibold">Yeni Kategori Ekle</h2>
+                    <h2 className="text-lg font-semibold">{category ? 'Kategori Düzenle' : 'Yeni Kategori Ekle'}</h2>
                     <button
                         onClick={onClose}
                         className="p-1 rounded-full hover:bg-white/20 transition-colors"
@@ -111,6 +125,19 @@ export default function CategoryFormModal({
                         />
                     </div>
 
+                    <div>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                name="isActive"
+                                checked={form.isActive}
+                                onChange={(e) => setForm(prev => ({ ...prev, isActive: e.target.checked }))}
+                                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                            />
+                            <span className="text-sm font-medium text-gray-700">Kategori Aktif (Sitede Gösterilsin mi?)</span>
+                        </label>
+                    </div>
+
                     {/* Actions */}
                     <div className="flex items-center justify-end gap-3 pt-3">
                         <button
@@ -128,7 +155,7 @@ export default function CategoryFormModal({
                             onMouseEnter={(e) => (e.currentTarget.style.background = '#164A32')}
                             onMouseLeave={(e) => (e.currentTarget.style.background = '#1B5E3F')}
                         >
-                            {loading ? 'Kaydediliyor...' : 'Ekle'}
+                            {loading ? 'Kaydediliyor...' : (category ? 'Güncelle' : 'Ekle')}
                         </button>
                     </div>
                 </form>

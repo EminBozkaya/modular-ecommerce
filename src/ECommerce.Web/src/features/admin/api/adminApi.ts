@@ -52,9 +52,26 @@ export interface CreateCategoryData {
     name: string;
     description?: string;
     imageUrl?: string;
+    isActive: boolean;
+}
+
+export interface UpdateCategoryData {
+    id: string;
+    name: string;
+    description?: string;
+    imageUrl?: string;
+    isActive: boolean;
 }
 
 export async function createCategory(data: CreateCategoryData): Promise<string> {
     const response = await apiClient.post<{ id: string }>('/api/admin/categories', data);
     return response.data.id;
+}
+
+export async function updateCategory(data: UpdateCategoryData): Promise<void> {
+    await apiClient.put('/api/admin/categories', data);
+}
+
+export async function deleteCategory(id: string): Promise<void> {
+    await apiClient.delete(`/api/admin/categories/${id}`);
 }
