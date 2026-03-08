@@ -14,7 +14,10 @@ public class ProductRepository : IProductRepository
     public ProductRepository(ApplicationDbContext ctx) => _ctx = ctx;
 
     public async Task<Product?> GetByIdAsync(Guid id, CancellationToken ct = default)
-        => await _ctx.Products.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.Id == id, ct);
+        => await _ctx.Products.IgnoreQueryFilters()
+            .Include(p => p.Category)
+            .Include(p => p.Unit)
+            .FirstOrDefaultAsync(p => p.Id == id, ct);
 
     public async Task<IReadOnlyList<Product>> GetAllActiveAsync(CancellationToken ct = default)
         => await _ctx.Products.AsNoTracking()

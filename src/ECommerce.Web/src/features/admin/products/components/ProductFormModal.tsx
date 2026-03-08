@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Product, Category } from '../../../catalog/types/product';
+import type { Product, Category, Unit } from '../../../catalog/types/product';
 import { X } from 'lucide-react';
 
 interface ProductFormModalProps {
@@ -8,6 +8,7 @@ interface ProductFormModalProps {
     onSubmit: (data: ProductFormData) => void;
     product?: Product | null;
     categories: Category[];
+    units: Unit[];
     loading?: boolean;
 }
 
@@ -19,6 +20,7 @@ export interface ProductFormData {
     currency: string;
     stockQuantity: number;
     categoryId: string;
+    unitId: string;
     isActive: boolean;
 }
 
@@ -30,6 +32,7 @@ const initialFormData: ProductFormData = {
     currency: 'TRY',
     stockQuantity: 0,
     categoryId: '',
+    unitId: '',
     isActive: true,
 };
 
@@ -39,6 +42,7 @@ export default function ProductFormModal({
     onSubmit,
     product,
     categories,
+    units,
     loading,
 }: ProductFormModalProps) {
     const [form, setForm] = useState<ProductFormData>(initialFormData);
@@ -53,6 +57,7 @@ export default function ProductFormModal({
                 currency: product.priceCurrency || product.currency || 'TRY',
                 stockQuantity: product.stockQuantity ?? 0,
                 categoryId: product.categoryId || '',
+                unitId: product.unitId || '',
                 isActive: product.isActive ?? true,
             });
         } else {
@@ -201,33 +206,55 @@ export default function ProductFormModal({
                         </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Kategori *</label>
-                        <select
-                            name="categoryId"
-                            value={form.categoryId}
-                            onChange={(e) => {
-                                handleChange(e);
-                                e.target.setCustomValidity('');
-                            }}
-                            onInvalid={(e) => (e.target as HTMLSelectElement).setCustomValidity('Lütfen listeden bir öğe seçin.')}
-                            required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-                            style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
-                        >
-                            <option value="">Kategori seçin</option>
-                            {sortedCategories
-                                .filter(cat =>
-                                    // Eğer yeni ürün ekleniyorsa sadece aktifleri göster
-                                    // Eğer düzenleniyorsa, ürünün kendi kategorisiyse (pasif de olsa) göster, diğerleri aktif olmalı
-                                    isEdit ? (cat.id === form.categoryId || cat.isActive !== false) : cat.isActive !== false
-                                )
-                                .map((cat) => (
-                                    <option key={cat.id} value={cat.id}>
-                                        {cat.parentCategoryName ? `${cat.parentCategoryName} > ${cat.name}` : cat.name}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Kategori *</label>
+                            <select
+                                name="categoryId"
+                                value={form.categoryId}
+                                onChange={(e) => {
+                                    handleChange(e);
+                                    e.target.setCustomValidity('');
+                                }}
+                                onInvalid={(e) => (e.target as HTMLSelectElement).setCustomValidity('Lütfen listeden bir öğe seçin.')}
+                                required
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
+                                style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                            >
+                                <option value="">Kategori seçin</option>
+                                {sortedCategories
+                                    .filter(cat =>
+                                        isEdit ? (cat.id === form.categoryId || cat.isActive !== false) : cat.isActive !== false
+                                    )
+                                    .map((cat) => (
+                                        <option key={cat.id} value={cat.id}>
+                                            {cat.parentCategoryName ? `${cat.parentCategoryName} > ${cat.name}` : cat.name}
+                                        </option>
+                                    ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Birim *</label>
+                            <select
+                                name="unitId"
+                                value={form.unitId}
+                                onChange={(e) => {
+                                    handleChange(e);
+                                    e.target.setCustomValidity('');
+                                }}
+                                onInvalid={(e) => (e.target as HTMLSelectElement).setCustomValidity('Lütfen bir birim seçin.')}
+                                required
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
+                                style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                            >
+                                <option value="">Birim seçin</option>
+                                {units.map((unit) => (
+                                    <option key={unit.id} value={unit.id}>
+                                        {unit.name}
                                     </option>
                                 ))}
-                        </select>
+                            </select>
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">

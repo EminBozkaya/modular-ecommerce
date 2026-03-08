@@ -35,6 +35,7 @@ public class GetProductsHandler : IRequestHandler<GetProductsQuery, PagedResult<
             p.Id, p.Name, p.Description, p.ImageUrl,
             p.Price.Amount, p.Price.Currency, p.Stock.Value, p.IsActive,
             p.CategoryId, p.Category?.Name,
+            p.UnitId, p.Unit?.Name,
             p.CreatedAt, p.CreatedBy != null && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
             p.UpdatedAt, p.UpdatedBy != null && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
             p.DeletedAt, p.IsDeleted)).ToList();
@@ -64,6 +65,7 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, Produc
         return new ProductDto(p.Id, p.Name, p.Description, p.ImageUrl,
             p.Price.Amount, p.Price.Currency, p.Stock.Value, p.IsActive,
             p.CategoryId, p.Category?.Name,
+            p.UnitId, p.Unit?.Name,
             p.CreatedAt, p.CreatedBy != null && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
             p.UpdatedAt, p.UpdatedBy != null && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
             p.DeletedAt, p.IsDeleted);
@@ -91,5 +93,21 @@ public class GetCategoriesHandler : IRequestHandler<GetCategoriesQuery, IReadOnl
             c.CreatedAt, c.CreatedBy != null && userMap.TryGetValue(c.CreatedBy, out var cb) ? cb : c.CreatedBy,
             c.UpdatedAt, c.UpdatedBy != null && userMap.TryGetValue(c.UpdatedBy, out var ub) ? ub : c.UpdatedBy,
             c.DeletedAt, c.IsDeleted)).ToList();
+    }
+}
+
+public class GetUnitsHandler : IRequestHandler<GetUnitsQuery, IReadOnlyList<UnitDto>>
+{
+    private readonly IUnitRepository _units;
+
+    public GetUnitsHandler(IUnitRepository units)
+    {
+        _units = units;
+    }
+
+    public async Task<IReadOnlyList<UnitDto>> Handle(GetUnitsQuery q, CancellationToken ct)
+    {
+        var units = await _units.GetAllAsync(ct);
+        return units.Select(u => new UnitDto(u.Id, u.Name, u.Code)).ToList();
     }
 }

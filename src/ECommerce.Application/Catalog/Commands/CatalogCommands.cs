@@ -11,6 +11,7 @@ public record CreateProductCommand(
     string Currency,
     int StockQuantity,
     Guid CategoryId,
+    Guid UnitId,
     bool IsActive = true) : IRequest<Guid>;
 
 // --- UpdateProduct ---
@@ -22,6 +23,7 @@ public record UpdateProductCommand(
     decimal Price,
     string Currency,
     Guid CategoryId,
+    Guid UnitId,
     bool IsActive) : IRequest;
 
 // --- DeleteProduct ---

@@ -20,9 +20,9 @@ import {
     type ValueFormatterParams,
 } from 'ag-grid-community';
 import { Plus, Download, FileDown, Package, Edit2, Trash2, RotateCcw } from 'lucide-react';
-import { getProducts, getCategories } from '../../../catalog/api/catalogApi';
+import { getProducts, getCategories, getUnits } from '../../../catalog/api/catalogApi';
 import { createProduct, updateProduct, deleteProduct, restoreProduct } from '../../api/adminApi';
-import type { Product, Category } from '../../../catalog/types/product';
+import type { Product, Category, Unit } from '../../../catalog/types/product';
 import type { ProductFormData } from '../components/ProductFormModal';
 import ProductFormModal from '../components/ProductFormModal';
 import ConfirmModal from '../../components/ConfirmModal';
@@ -152,6 +152,7 @@ export default function AdminProductsPage() {
     const gridRef = useRef<AgGridReact>(null);
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [units, setUnits] = useState<Unit[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -194,8 +195,12 @@ export default function AdminProductsPage() {
                 includeDeleted: showDeleted
             });
             setProducts(data.items);
-            const cats = await getCategories({ includeDeleted: showDeleted });
+            const [cats, unitData] = await Promise.all([
+                getCategories({ includeDeleted: showDeleted }),
+                getUnits()
+            ]);
             setCategories(cats);
+            setUnits(unitData);
         } catch (err) {
             console.error('Veri yüklenirken hata:', err);
         } finally {
@@ -315,6 +320,13 @@ export default function AdminProductsPage() {
             filter: 'agTextColumnFilter',
             sortable: true,
             width: 150,
+        },
+        {
+            headerName: 'Birim',
+            field: 'unitName',
+            filter: 'agTextColumnFilter',
+            sortable: true,
+            width: 100,
         },
         {
             headerName: 'Durum',
@@ -471,6 +483,7 @@ export default function AdminProductsPage() {
                     price: data.price,
                     currency: data.currency,
                     categoryId: data.categoryId,
+                    unitId: data.unitId,
                     isActive: data.isActive,
                 });
             } else {
@@ -482,6 +495,7 @@ export default function AdminProductsPage() {
                     currency: data.currency,
                     stockQuantity: data.stockQuantity,
                     categoryId: data.categoryId,
+                    unitId: data.unitId,
                     isActive: data.isActive,
                 });
             }
@@ -527,7 +541,7 @@ export default function AdminProductsPage() {
             [`Pasif Ürün Sayısı: ${passiveCount}`],
             [`Silinmiş Ürün Sayısı: ${deletedCount}`],
             [],
-            ['Ürün Adı', 'Açıklama', 'Fiyat (₺)', 'Stok', 'Kategori', 'Durum', 'Oluşturulma Tarihi', 'Oluşturan', 'Güncellenme Tarihi', 'Güncelleyen']
+            ['Ürün Adı', 'Açıklama', 'Fiyat (₺)', 'Stok', 'Birim', 'Kategori', 'Durum', 'Oluşturulma Tarihi', 'Oluşturan', 'Güncellenme Tarihi', 'Güncelleyen']
         ];
 
         const formatDate = (dateStr?: string) => {
@@ -541,6 +555,7 @@ export default function AdminProductsPage() {
                 p.description || '',
                 p.priceAmount ?? p.price,
                 p.stockQuantity,
+                p.unitName,
                 p.categoryName,
                 p.isDeleted ? 'Silinmiş' : (p.isActive ? 'Aktif' : 'Pasif'),
                 formatDate(p.createdAt || undefined),
@@ -624,6 +639,7 @@ export default function AdminProductsPage() {
                 p.name,
                 `${(p.priceAmount ?? p.price).toFixed(2)} TL`,
                 String(p.stockQuantity),
+                p.unitName,
                 p.categoryName,
                 p.isDeleted ? 'Silinmiş' : (p.isActive ? 'Aktif' : 'Pasif'),
                 formatDate(p.createdAt || undefined),
@@ -634,7 +650,7 @@ export default function AdminProductsPage() {
 
             autoTable(doc, {
                 startY: 46,
-                head: [['Ürün Adı', 'Fiyat', 'Stok', 'Kategori', 'Durum', 'Oluşturulma', 'Oluşturan', 'Güncellenme', 'Güncelleyen']],
+                head: [['Ürün Adı', 'Fiyat', 'Stok', 'Birim', 'Kategori', 'Durum', 'Oluşturulma', 'Oluşturan', 'Güncellenme', 'Güncelleyen']],
                 body: tableData,
                 styles: { font: 'Roboto', fontSize: 7 }, // Tiny font for many columns
                 headStyles: { font: 'Roboto', fontStyle: 'normal', fillColor: [27, 94, 63] },
@@ -642,12 +658,13 @@ export default function AdminProductsPage() {
                     0: { cellWidth: 35 }, // Ürün Adı
                     1: { cellWidth: 20 }, // Fiyat
                     2: { cellWidth: 15 }, // Stok
-                    3: { cellWidth: 35 }, // Kategori
-                    4: { cellWidth: 20 }, // Durum
-                    5: { cellWidth: 35 }, // Oluşturulma
-                    6: { cellWidth: 25 }, // Oluşturan
-                    7: { cellWidth: 35 }, // Güncellenme
-                    8: { cellWidth: 25 }, // Güncelleyen
+                    3: { cellWidth: 20 }, // Birim
+                    4: { cellWidth: 35 }, // Kategori
+                    5: { cellWidth: 20 }, // Durum
+                    6: { cellWidth: 30 }, // Oluşturulma
+                    7: { cellWidth: 25 }, // Oluşturan
+                    8: { cellWidth: 30 }, // Güncellenme
+                    9: { cellWidth: 25 }, // Güncelleyen
                 },
                 margin: { left: 10, right: 10 }
             });
@@ -766,6 +783,7 @@ export default function AdminProductsPage() {
                 onSubmit={handleFormSubmit}
                 product={editingProduct}
                 categories={categories}
+                units={units}
                 loading={saving}
             />
 

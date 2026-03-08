@@ -49,7 +49,7 @@ public class CreateOrderHandlerTests
         var productId = Guid.NewGuid();
         basket.AddItem(productId, "Product A", new Money(100, "USD"), 1); // Snapshot at 100
 
-        var product = Product.Create("P1", null, null, new Money(150, "USD"), new StockQuantity(10), Guid.NewGuid()); // Current price is 150
+        var product = Product.Create("P1", null, null, new Money(150, "USD"), new StockQuantity(10), Guid.NewGuid(), Guid.NewGuid()); // Current price is 150
 
         _basketRepo.GetBySessionIdAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(basket);
@@ -74,7 +74,7 @@ public class CreateOrderHandlerTests
         var productId = Guid.NewGuid();
         basket.AddItem(productId, "Product A", new Money(100, "USD"), 2);
 
-        var product = Product.Create("P1", null, null, new Money(100, "USD"), new StockQuantity(10), Guid.NewGuid());
+        var product = Product.Create("P1", null, null, new Money(100, "USD"), new StockQuantity(10), Guid.NewGuid(), Guid.NewGuid());
         var categoryProp = typeof(Product).GetProperty(nameof(Product.Id));
         if (categoryProp != null && categoryProp.CanWrite)
             categoryProp.SetValue(product, productId); // Hack for test since Id is base entity protected set, but Mock normally handles it. We can just use reflection or assume NSubstitute returns it.

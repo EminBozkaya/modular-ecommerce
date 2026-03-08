@@ -14,6 +14,7 @@ public class ApplicationDbContext : DbContext
     // Catalog
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Unit> Units => Set<Unit>();
 
     // Basket
     public DbSet<Basket> Baskets => Set<Basket>();
@@ -39,6 +40,7 @@ public class ApplicationDbContext : DbContext
         // Global soft-delete query filters — backend-rules §3
         modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
         modelBuilder.Entity<Category>().HasQueryFilter(c => !c.IsDeleted);
+        modelBuilder.Entity<Unit>().HasQueryFilter(u => !u.IsDeleted);
         modelBuilder.Entity<Order>().HasQueryFilter(o => !o.IsDeleted);
         modelBuilder.Entity<AppUser>().HasQueryFilter(u => !u.IsDeleted);
     }

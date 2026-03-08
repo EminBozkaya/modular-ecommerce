@@ -13,6 +13,12 @@ export interface Category {
     deletedAt?: string | null;
 }
 
+export interface Unit {
+    id: string;
+    name: string;
+    code?: string | null;
+}
+
 export interface Product {
     id: string;
     name: string;
@@ -24,6 +30,8 @@ export interface Product {
     stockQuantity: number;
     categoryId: string;
     categoryName: string;
+    unitId: string;
+    unitName: string;
     imageUrl: string | null;
     isActive: boolean;
     isDeleted?: boolean;

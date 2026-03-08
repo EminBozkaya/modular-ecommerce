@@ -15,9 +15,12 @@ public class Product : BaseAuditableEntity
     public Guid CategoryId { get; private set; }
     public Category? Category { get; private set; }
 
+    public Guid UnitId { get; private set; }
+    public Unit? Unit { get; private set; }
+
     private Product() { }
 
-    public static Product Create(string name, string? description, string? imageUrl, Money price, StockQuantity stock, Guid categoryId, bool isActive = true)
+    public static Product Create(string name, string? description, string? imageUrl, Money price, StockQuantity stock, Guid categoryId, Guid unitId, bool isActive = true)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         return new Product
@@ -28,12 +31,13 @@ public class Product : BaseAuditableEntity
             Price = price,
             Stock = stock,
             CategoryId = categoryId,
+            UnitId = unitId,
             IsActive = isActive,
             CreatedAt = DateTime.UtcNow
         };
     }
 
-    public void UpdateDetails(string name, string? description, string? imageUrl, Money price, Guid categoryId, bool isActive)
+    public void UpdateDetails(string name, string? description, string? imageUrl, Money price, Guid categoryId, Guid unitId, bool isActive)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         Name = name;
@@ -41,6 +45,7 @@ public class Product : BaseAuditableEntity
         ImageUrl = imageUrl;
         Price = price;
         CategoryId = categoryId;
+        UnitId = unitId;
         IsActive = isActive;
         UpdatedAt = DateTime.UtcNow;
     }

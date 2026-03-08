@@ -53,6 +53,7 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ECommerce.Persistence.Context.ApplicationDbContext>();
     await context.Database.MigrateAsync();
+    await DbInitializer.SeedAsync(context);
 }
 
 // ── Middleware pipeline ──

@@ -16,6 +16,7 @@ public class ProductsWithFiltersSpecification : BaseSpecification<Product>
     {
         if (includeDeleted) ApplyIgnoreQueryFilters();
         AddInclude(x => x.Category!);
+        AddInclude(x => x.Unit!);
 
         if (!string.IsNullOrEmpty(sortBy))
         {

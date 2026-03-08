@@ -49,7 +49,13 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasForeignKey(p => p.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(p => p.Unit)
+            .WithMany()
+            .HasForeignKey(p => p.UnitId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(p => p.CategoryId);
+        builder.HasIndex(p => p.UnitId);
         builder.HasIndex(p => p.Name)
             .IsUnique()
             .HasFilter("\"IsDeleted\" = false");

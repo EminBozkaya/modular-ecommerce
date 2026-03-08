@@ -10,6 +10,7 @@ public record ProductDto(
     decimal PriceAmount, string PriceCurrency,
     int StockQuantity, bool IsActive,
     Guid CategoryId, string? CategoryName,
+    Guid UnitId, string? UnitName,
     DateTime CreatedAt, string? CreatedBy,
     DateTime? UpdatedAt, string? UpdatedBy,
     DateTime? DeletedAt, bool IsDeleted);
@@ -20,6 +21,8 @@ public record CategoryDto(
     DateTime? CreatedAt = null, string? CreatedBy = null,
     DateTime? UpdatedAt = null, string? UpdatedBy = null,
     DateTime? DeletedAt = null, bool IsDeleted = false);
+
+public record UnitDto(Guid Id, string Name, string? Code);
 
 // --- Queries ---
 public record GetProductsQuery(
@@ -39,3 +42,8 @@ public record GetProductsQuery(
 }
 public record GetProductByIdQuery(Guid Id) : IRequest<ProductDto?>;
 public record GetCategoriesQuery(bool IncludeDeleted = false) : IRequest<IReadOnlyList<CategoryDto>>;
+public record GetUnitsQuery() : IRequest<IReadOnlyList<UnitDto>>, ICacheableQuery
+{
+    public string CacheKey => "catalog:units";
+    public TimeSpan? Expiration => TimeSpan.FromHours(24);
+}

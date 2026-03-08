@@ -7,6 +7,7 @@ namespace ECommerce.UnitTests.Domain.Catalog;
 public class ProductTests
 {
     private readonly Guid _categoryId = Guid.NewGuid();
+    private readonly Guid _unitId = Guid.NewGuid();
     private readonly Money _price = new(100, "USD");
     private readonly StockQuantity _stock = new(50);
 
@@ -14,7 +15,7 @@ public class ProductTests
     public void Create_WithValidData_ReturnsActiveProduct()
     {
         // Act
-        var product = Product.Create("Test Product", "Description", "url", _price, _stock, _categoryId);
+        var product = Product.Create("Test Product", "Description", "url", _price, _stock, _categoryId, _unitId);
 
         // Assert
         product.Name.Should().Be("Test Product");
@@ -28,7 +29,7 @@ public class ProductTests
     public void Create_WithEmptyName_ThrowsArgumentException()
     {
         // Act
-        Action act = () => Product.Create("", "Desc", null, _price, _stock, _categoryId);
+        Action act = () => Product.Create("", "Desc", null, _price, _stock, _categoryId, _unitId);
 
         // Assert
         act.Should().Throw<ArgumentException>();
@@ -38,7 +39,7 @@ public class ProductTests
     public void DecreaseStock_DecreasesStockAmount()
     {
         // Arrange
-        var product = Product.Create("P1", null, null, _price, new StockQuantity(10), _categoryId);
+        var product = Product.Create("P1", null, null, _price, new StockQuantity(10), _categoryId, _unitId);
 
         // Act
         product.DecreaseStock(3);
@@ -51,7 +52,7 @@ public class ProductTests
     public void Deactivate_SetsIsActiveToFalse()
     {
         // Arrange
-        var product = Product.Create("P1", null, null, _price, _stock, _categoryId);
+        var product = Product.Create("P1", null, null, _price, _stock, _categoryId, _unitId);
 
         // Act
         product.Deactivate();

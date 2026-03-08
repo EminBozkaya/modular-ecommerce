@@ -36,6 +36,7 @@ public static class DependencyInjection
         // Aggregate repositories
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IUnitRepository, UnitRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IBasketRepository, BasketRepository>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();

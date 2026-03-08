@@ -1,5 +1,5 @@
 import { apiClient } from '../../../api/client';
-import type { Category, Product, ProductListParams } from '../types/product';
+import type { Category, Product, ProductListParams, Unit } from '../types/product';
 import type { PaginatedResult } from '../../../types/api';
 import { mockCategories, mockProducts, mockPaginate } from './mock';
 
@@ -71,4 +71,23 @@ export async function getCategories(params?: { includeDeleted?: boolean }): Prom
 
     // Otherwise, assume it's directly an array
     return response.data as Category[];
+}
+
+export async function getUnits(): Promise<Unit[]> {
+    if (isMock) {
+        await delay(400);
+        return [
+            { id: '1', name: 'Kilogram', code: 'kg' },
+            { id: '2', name: 'Gram', code: 'g' },
+            { id: '3', name: 'Adet', code: 'adet' },
+        ];
+    }
+
+    const response = await apiClient.get<Unit[] | { value: Unit[] }>('/api/catalog/units');
+
+    if (response.data && 'value' in response.data && Array.isArray(response.data.value)) {
+        return response.data.value;
+    }
+
+    return response.data as Unit[];
 }

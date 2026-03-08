@@ -42,7 +42,7 @@ public class AddToBasketHandlerTests
     {
         // Arrange
         var productId = Guid.NewGuid();
-        var product = Product.Create("Test Product", null, null, new Money(100, "USD"), new StockQuantity(10), Guid.NewGuid());
+        var product = Product.Create("Test Product", null, null, new Money(100, "USD"), new StockQuantity(10), Guid.NewGuid(), Guid.NewGuid());
         var idProp = typeof(ECommerce.Domain.Common.BaseEntity).GetProperty("Id");
         if (idProp != null) idProp.SetValue(product, productId);
 
@@ -70,7 +70,7 @@ public class AddToBasketHandlerTests
         var productId = Guid.NewGuid();
         var basket = ECommerce.Domain.Basket.Entities.Basket.CreateForUser(userId);
         
-        var product = Product.Create("Test Product", null, null, new Money(100, "USD"), new StockQuantity(10), Guid.NewGuid());
+        var product = Product.Create("Test Product", null, null, new Money(100, "USD"), new StockQuantity(10), Guid.NewGuid(), Guid.NewGuid());
         var idProp = typeof(ECommerce.Domain.Common.BaseEntity).GetProperty("Id");
         if (idProp != null) idProp.SetValue(product, productId);
 

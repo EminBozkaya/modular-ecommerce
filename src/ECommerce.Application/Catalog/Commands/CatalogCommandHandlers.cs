@@ -37,7 +37,7 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Guid>
         }
 
         var product = Product.Create(cmd.Name, cmd.Description, cmd.ImageUrl,
-            new Money(cmd.Price, cmd.Currency), new StockQuantity(cmd.StockQuantity), cmd.CategoryId, cmd.IsActive);
+            new Money(cmd.Price, cmd.Currency), new StockQuantity(cmd.StockQuantity), cmd.CategoryId, cmd.UnitId, cmd.IsActive);
         await _products.AddAsync(product, ct);
         await _products.SaveChangesAsync(ct);
         await _cacheService.RemoveByPrefixAsync("catalog", ct);
@@ -87,7 +87,7 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand>
         _logger.LogInformation("Updating product {Id}: Name={Name}, IsActive={IsActive}", cmd.Id, cmd.Name, cmd.IsActive);
         
         product.UpdateDetails(cmd.Name, cmd.Description, cmd.ImageUrl,
-            new Money(cmd.Price, cmd.Currency), cmd.CategoryId, cmd.IsActive);
+            new Money(cmd.Price, cmd.Currency), cmd.CategoryId, cmd.UnitId, cmd.IsActive);
         
         await _products.SaveChangesAsync(ct);
         await _cacheService.RemoveByPrefixAsync("catalog", ct);
