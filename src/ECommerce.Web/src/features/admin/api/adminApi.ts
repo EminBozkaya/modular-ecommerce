@@ -10,6 +10,7 @@ export interface CreateProductData {
     currency: string;
     stockQuantity: number;
     categoryId: string;
+    isActive: boolean;
 }
 
 export interface UpdateProductData {
@@ -20,6 +21,7 @@ export interface UpdateProductData {
     price: number;
     currency: string;
     categoryId: string;
+    isActive: boolean;
 }
 
 export interface UpdateStockData {

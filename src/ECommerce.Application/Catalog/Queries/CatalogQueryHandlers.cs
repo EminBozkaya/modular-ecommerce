@@ -14,7 +14,7 @@ public class GetProductsHandler : IRequestHandler<GetProductsQuery, PagedResult<
     public async Task<PagedResult<ProductDto>> Handle(GetProductsQuery q, CancellationToken ct)
     {
         var spec = new ProductsWithFiltersSpecification(
-            q.SearchTerm, q.MinPrice, q.MaxPrice, q.CategoryId, q.SortBy, q.Descending, q.PageNumber, q.PageSize);
+            q.SearchTerm, q.MinPrice, q.MaxPrice, q.CategoryId, q.SortBy, q.Descending, q.PageNumber, q.PageSize, q.IncludeInactive);
             
         var count = await _products.CountAsync(spec, ct);
         var products = await _products.ListAsync(spec, ct);

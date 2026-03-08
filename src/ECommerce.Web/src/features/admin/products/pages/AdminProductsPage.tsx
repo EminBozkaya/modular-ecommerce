@@ -21,9 +21,11 @@ import { createProduct, updateProduct, deleteProduct } from '../../api/adminApi'
 import type { Product, Category } from '../../../catalog/types/product';
 import type { ProductFormData } from '../components/ProductFormModal';
 import ProductFormModal from '../components/ProductFormModal';
+import ConfirmModal from '../../components/ConfirmModal';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import type { UserOptions } from 'jspdf-autotable';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([
@@ -47,15 +49,16 @@ export default function AdminProductsPage() {
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [saving, setSaving] = useState(false);
     const [gridApi, setGridApi] = useState<GridApi | null>(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [productToDelete, setProductToDelete] = useState<string | null>(null);
+    const [deleting, setDeleting] = useState(false);
 
     const fetchData = useCallback(async () => {
-        setLoading(true);
         try {
-            const [prodResult, cats] = await Promise.all([
-                getProducts({ page: 1, pageSize: 1000 }),
-                getCategories(),
-            ]);
-            setProducts(prodResult.items);
+            setLoading(true);
+            const data = await getProducts({ page: 1, pageSize: 1000, includeInactive: true });
+            setProducts(data.items);
+            const cats = await getCategories();
             setCategories(cats);
         } catch (err) {
             console.error('Veri yüklenirken hata:', err);
@@ -71,6 +74,36 @@ export default function AdminProductsPage() {
     const onGridReady = (params: GridReadyEvent) => {
         setGridApi(params.api);
         params.api.sizeColumnsToFit();
+    };
+
+    // ── CRUD Handlers ──
+    const handleEdit = useCallback((product: Product) => {
+        console.log('Editing product:', product);
+        setEditingProduct(product);
+        setModalOpen(true);
+    }, []);
+
+    const handleDelete = useCallback((id: string) => {
+        setProductToDelete(id);
+        setDeleteModalOpen(true);
+    }, []);
+
+    const handleConfirmDelete = async () => {
+        if (!productToDelete) return;
+
+        setDeleting(true);
+        try {
+            console.log('Deleting product ID:', productToDelete);
+            await deleteProduct(productToDelete);
+            setDeleteModalOpen(false);
+            setProductToDelete(null);
+            await fetchData();
+        } catch (err) {
+            console.error('Ürün silinirken hata:', err);
+            alert('Ürün silinirken bir hata oluştu.');
+        } finally {
+            setDeleting(false);
+        }
     };
 
     const columnDefs: ColDef<Product>[] = [
@@ -92,7 +125,7 @@ export default function AdminProductsPage() {
         },
         {
             headerName: 'Fiyat (₺)',
-            field: 'price',
+            field: 'priceAmount',
             filter: 'agNumberColumnFilter',
             sortable: true,
             width: 120,
@@ -159,7 +192,13 @@ export default function AdminProductsPage() {
                             title="Sil"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                handleDelete(params.data.id);
+                                const productId = params.data.id || (params.data as any).Id;
+                                console.log('Delete button clicked for ID:', productId);
+                                if (productId) {
+                                    handleDelete(productId);
+                                } else {
+                                    console.error('Product ID not found in data:', params.data);
+                                }
                             }}
                             className="p-1 rounded-md transition-colors hover:bg-red-50"
                             style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
@@ -176,23 +215,6 @@ export default function AdminProductsPage() {
         },
     ];
 
-    // ── CRUD Handlers ──
-    const handleEdit = (product: Product) => {
-        setEditingProduct(product);
-        setModalOpen(true);
-    };
-
-    const handleDelete = async (id: string) => {
-        if (!confirm('Bu ürünü silmek istediğinizden emin misiniz?')) return;
-        try {
-            await deleteProduct(id);
-            await fetchData();
-        } catch (err) {
-            console.error('Ürün silinirken hata:', err);
-            alert('Ürün silinirken bir hata oluştu.');
-        }
-    };
-
     const handleFormSubmit = async (data: ProductFormData) => {
         setSaving(true);
         try {
@@ -205,6 +227,7 @@ export default function AdminProductsPage() {
                     price: data.price,
                     currency: data.currency,
                     categoryId: data.categoryId,
+                    isActive: data.isActive,
                 });
             } else {
                 await createProduct({
@@ -215,6 +238,7 @@ export default function AdminProductsPage() {
                     currency: data.currency,
                     stockQuantity: data.stockQuantity,
                     categoryId: data.categoryId,
+                    isActive: data.isActive,
                 });
             }
             setModalOpen(false);
@@ -233,7 +257,7 @@ export default function AdminProductsPage() {
         const data = products.map((p) => ({
             'Ürün Adı': p.name,
             'Açıklama': p.description,
-            'Fiyat (₺)': p.price,
+            'Fiyat (₺)': p.priceAmount ?? p.price,
             'Stok': p.stockQuantity,
             'Kategori': p.categoryName,
             'Durum': p.isActive ? 'Aktif' : 'Pasif',
@@ -245,7 +269,7 @@ export default function AdminProductsPage() {
     };
 
     const exportToPDF = () => {
-        const doc = new jsPDF();
+        const doc = new jsPDF('p', 'mm', 'a4');
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(16);
         doc.text('Ürün Listesi', 14, 20);
@@ -255,13 +279,13 @@ export default function AdminProductsPage() {
 
         const tableData = products.map((p) => [
             p.name,
-            `${p.price.toFixed(2)} TL`,
+            `${(p.priceAmount ?? p.price).toFixed(2)} TL`,
             String(p.stockQuantity),
             p.categoryName,
             p.isActive ? 'Aktif' : 'Pasif',
         ]);
 
-        (doc as jsPDF & { autoTable: (options: Record<string, unknown>) => void }).autoTable({
+        (doc as jsPDF & { autoTable: (options: UserOptions) => void }).autoTable({
             startY: 35,
             head: [['Ürün Adı', 'Fiyat', 'Stok', 'Kategori', 'Durum']],
             body: tableData,
@@ -367,6 +391,20 @@ export default function AdminProductsPage() {
                 product={editingProduct}
                 categories={categories}
                 loading={saving}
+            />
+
+            {/* Confirm Delete Modal */}
+            <ConfirmModal
+                open={deleteModalOpen}
+                title="Ürünü Sil"
+                message="Bu ürünü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+                onConfirm={handleConfirmDelete}
+                onClose={() => {
+                    setDeleteModalOpen(false);
+                    setProductToDelete(null);
+                }}
+                loading={deleting}
+                confirmText="Sil"
             />
         </div>
     );

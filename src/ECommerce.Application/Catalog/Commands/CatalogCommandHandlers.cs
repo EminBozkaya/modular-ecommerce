@@ -3,6 +3,7 @@ using ECommerce.Domain.Catalog;
 using ECommerce.Domain.Catalog.Entities;
 using ECommerce.Domain.Catalog.ValueObjects;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace ECommerce.Application.Catalog.Commands;
 
@@ -20,7 +21,7 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Guid>
     public async Task<Guid> Handle(CreateProductCommand cmd, CancellationToken ct)
     {
         var product = Product.Create(cmd.Name, cmd.Description, cmd.ImageUrl,
-            new Money(cmd.Price, cmd.Currency), new StockQuantity(cmd.StockQuantity), cmd.CategoryId);
+            new Money(cmd.Price, cmd.Currency), new StockQuantity(cmd.StockQuantity), cmd.CategoryId, cmd.IsActive);
         await _products.AddAsync(product, ct);
         await _products.SaveChangesAsync(ct);
         await _cacheService.RemoveByPrefixAsync("catalog", ct);
@@ -32,19 +33,25 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand>
 {
     private readonly IProductRepository _products;
     private readonly ICacheService _cacheService;
+    private readonly ILogger<UpdateProductHandler> _logger;
 
-    public UpdateProductHandler(IProductRepository products, ICacheService cacheService)
+    public UpdateProductHandler(IProductRepository products, ICacheService cacheService, ILogger<UpdateProductHandler> logger)
     {
         _products = products;
         _cacheService = cacheService;
+        _logger = logger;
     }
 
     public async Task Handle(UpdateProductCommand cmd, CancellationToken ct)
     {
         var product = await _products.GetByIdAsync(cmd.Id, ct)
             ?? throw new KeyNotFoundException($"Product {cmd.Id} not found.");
+        
+        _logger.LogInformation("Updating product {Id}: Name={Name}, IsActive={IsActive}", cmd.Id, cmd.Name, cmd.IsActive);
+        
         product.UpdateDetails(cmd.Name, cmd.Description, cmd.ImageUrl,
-            new Money(cmd.Price, cmd.Currency), cmd.CategoryId);
+            new Money(cmd.Price, cmd.Currency), cmd.CategoryId, cmd.IsActive);
+        
         await _products.SaveChangesAsync(ct);
         await _cacheService.RemoveByPrefixAsync("catalog", ct);
     }
@@ -65,7 +72,7 @@ public class DeleteProductHandler : IRequestHandler<DeleteProductCommand>
     {
         var product = await _products.GetByIdAsync(cmd.Id, ct)
             ?? throw new KeyNotFoundException($"Product {cmd.Id} not found.");
-        product.Deactivate();
+        product.SoftDelete();
         await _products.SaveChangesAsync(ct);
         await _cacheService.RemoveByPrefixAsync("catalog", ct);
     }

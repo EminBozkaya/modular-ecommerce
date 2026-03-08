@@ -9,7 +9,9 @@ export interface Product {
     name: string;
     description: string;
     price: number;
+    priceAmount: number;
     currency: string;
+    priceCurrency: string;
     stockQuantity: number;
     categoryId: string;
     categoryName: string;
@@ -22,4 +24,5 @@ export interface ProductListParams {
     pageSize?: number;
     categoryId?: string;
     search?: string;
+    includeInactive?: boolean;
 }

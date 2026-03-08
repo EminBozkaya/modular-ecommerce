@@ -5,13 +5,13 @@ namespace ECommerce.Application.Catalog.Specifications;
 
 public class ProductsWithFiltersSpecification : BaseSpecification<Product>
 {
-    public ProductsWithFiltersSpecification(string? searchTerm, decimal? minPrice, decimal? maxPrice, Guid? categoryId, string? sortBy, bool descending, int pageNumber, int pageSize)
+    public ProductsWithFiltersSpecification(string? searchTerm, decimal? minPrice, decimal? maxPrice, Guid? categoryId, string? sortBy, bool descending, int pageNumber, int pageSize, bool includeInactive = false)
         : base(x =>
             (string.IsNullOrEmpty(searchTerm) || x.Name.Contains(searchTerm) || (x.Description != null && x.Description.Contains(searchTerm))) &&
             (!minPrice.HasValue || x.Price.Amount >= minPrice.Value) &&
             (!maxPrice.HasValue || x.Price.Amount <= maxPrice.Value) &&
             (!categoryId.HasValue || x.CategoryId == categoryId.Value) &&
-            x.IsActive
+            (includeInactive || x.IsActive)
         )
     {
         AddInclude(x => x.Category!);

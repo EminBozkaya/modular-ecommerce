@@ -22,9 +22,10 @@ public record GetProductsQuery(
     int PageNumber = 1,
     int PageSize = 10,
     string? SortBy = null,
-    bool Descending = false) : IRequest<PagedResult<ProductDto>>, ICacheableQuery
+    bool Descending = false,
+    bool IncludeInactive = false) : IRequest<PagedResult<ProductDto>>, ICacheableQuery
 {
-    public string CacheKey => $"catalog:products:page:{PageNumber}";
+    public string CacheKey => $"catalog:products:page:{PageNumber}:size:{PageSize}:cat:{CategoryId}:search:{SearchTerm}:active:{!IncludeInactive}";
     public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
 }
 public record GetProductByIdQuery(Guid Id) : IRequest<ProductDto?>;

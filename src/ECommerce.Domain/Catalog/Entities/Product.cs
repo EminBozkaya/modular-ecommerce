@@ -17,7 +17,7 @@ public class Product : BaseAuditableEntity
 
     private Product() { }
 
-    public static Product Create(string name, string? description, string? imageUrl, Money price, StockQuantity stock, Guid categoryId)
+    public static Product Create(string name, string? description, string? imageUrl, Money price, StockQuantity stock, Guid categoryId, bool isActive = true)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         return new Product
@@ -28,12 +28,12 @@ public class Product : BaseAuditableEntity
             Price = price,
             Stock = stock,
             CategoryId = categoryId,
-            IsActive = true,
+            IsActive = isActive,
             CreatedAt = DateTime.UtcNow
         };
     }
 
-    public void UpdateDetails(string name, string? description, string? imageUrl, Money price, Guid categoryId)
+    public void UpdateDetails(string name, string? description, string? imageUrl, Money price, Guid categoryId, bool isActive)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         Name = name;
@@ -41,6 +41,7 @@ public class Product : BaseAuditableEntity
         ImageUrl = imageUrl;
         Price = price;
         CategoryId = categoryId;
+        IsActive = isActive;
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -58,4 +59,11 @@ public class Product : BaseAuditableEntity
 
     public void Deactivate() { IsActive = false; UpdatedAt = DateTime.UtcNow; }
     public void Activate() { IsActive = true; UpdatedAt = DateTime.UtcNow; }
+
+    public void SoftDelete()
+    {
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        IsActive = false;
+    }
 }

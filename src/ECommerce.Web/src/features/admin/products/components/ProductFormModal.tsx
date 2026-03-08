@@ -19,6 +19,7 @@ export interface ProductFormData {
     currency: string;
     stockQuantity: number;
     categoryId: string;
+    isActive: boolean;
 }
 
 const initialFormData: ProductFormData = {
@@ -29,6 +30,7 @@ const initialFormData: ProductFormData = {
     currency: 'TRY',
     stockQuantity: 0,
     categoryId: '',
+    isActive: true,
 };
 
 export default function ProductFormModal({
@@ -47,10 +49,11 @@ export default function ProductFormModal({
                 name: product.name,
                 description: product.description || '',
                 imageUrl: product.imageUrl || '',
-                price: product.price,
-                currency: product.currency || 'TRY',
-                stockQuantity: product.stockQuantity,
-                categoryId: product.categoryId,
+                price: product.priceAmount ?? product.price ?? 0,
+                currency: product.priceCurrency || product.currency || 'TRY',
+                stockQuantity: product.stockQuantity ?? 0,
+                categoryId: product.categoryId || '',
+                isActive: product.isActive ?? true,
             });
         } else {
             setForm(initialFormData);
@@ -62,10 +65,12 @@ export default function ProductFormModal({
     const isEdit = !!product;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target;
+        const finalValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+
         setForm((prev) => ({
             ...prev,
-            [name]: name === 'price' || name === 'stockQuantity' ? Number(value) : value,
+            [name]: name === 'price' || name === 'stockQuantity' ? Number(finalValue) : finalValue,
         }));
     };
 
@@ -190,6 +195,23 @@ export default function ProductFormModal({
                         </select>
                     </div>
 
+                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                name="isActive"
+                                checked={form.isActive}
+                                onChange={handleChange}
+                                className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B5E3F]"></div>
+                        </label>
+                        <div>
+                            <span className="block text-sm font-semibold text-gray-900">Ürün Aktif</span>
+                            <span className="block text-xs text-gray-500">Bu ürün mağazada listelenecek mi?</span>
+                        </div>
+                    </div>
+
                     {/* Actions */}
                     <div className="flex items-center justify-end gap-3 pt-3">
                         <button
@@ -211,7 +233,7 @@ export default function ProductFormModal({
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
