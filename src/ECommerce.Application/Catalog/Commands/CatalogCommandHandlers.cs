@@ -99,9 +99,53 @@ public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, Guid
 
     public async Task<Guid> Handle(CreateCategoryCommand cmd, CancellationToken ct)
     {
-        var category = Category.Create(cmd.Name, cmd.Description, cmd.ImageUrl);
+        var category = Category.Create(cmd.Name, cmd.Description, cmd.ImageUrl, cmd.IsActive);
         await _categories.AddAsync(category, ct);
         await _categories.SaveChangesAsync(ct);
         return category.Id;
+    }
+}
+
+public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand>
+{
+    private readonly ICategoryRepository _categories;
+    private readonly ILogger<UpdateCategoryHandler> _logger;
+
+    public UpdateCategoryHandler(ICategoryRepository categories, ILogger<UpdateCategoryHandler> logger)
+    {
+        _categories = categories;
+        _logger = logger;
+    }
+
+    public async Task Handle(UpdateCategoryCommand cmd, CancellationToken ct)
+    {
+        var category = await _categories.GetByIdAsync(cmd.Id, ct)
+            ?? throw new KeyNotFoundException($"Category {cmd.Id} not found.");
+            
+        _logger.LogInformation("Updating category {Id}: Name={Name}, IsActive={IsActive}", cmd.Id, cmd.Name, cmd.IsActive);
+        
+        category.Update(cmd.Name, cmd.Description, cmd.ImageUrl, cmd.IsActive);
+        _categories.Update(category);
+        await _categories.SaveChangesAsync(ct);
+    }
+}
+
+public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand>
+{
+    private readonly ICategoryRepository _categories;
+
+    public DeleteCategoryHandler(ICategoryRepository categories)
+    {
+        _categories = categories;
+    }
+
+    public async Task Handle(DeleteCategoryCommand cmd, CancellationToken ct)
+    {
+        var category = await _categories.GetByIdAsync(cmd.Id, ct)
+            ?? throw new KeyNotFoundException($"Category {cmd.Id} not found.");
+            
+        category.SoftDelete();
+        _categories.Update(category);
+        await _categories.SaveChangesAsync(ct);
     }
 }

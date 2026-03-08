@@ -11,7 +11,7 @@ public record ProductDto(
     int StockQuantity, bool IsActive,
     Guid CategoryId, string? CategoryName);
 
-public record CategoryDto(Guid Id, string Name, string? Description, string? ImageUrl);
+public record CategoryDto(Guid Id, string Name, string? Description, string? ImageUrl, bool IsActive);
 
 // --- Queries ---
 public record GetProductsQuery(

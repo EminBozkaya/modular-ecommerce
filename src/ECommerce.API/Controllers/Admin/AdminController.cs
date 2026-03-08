@@ -51,6 +51,20 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryCommand cmd, CancellationToken ct)
         => Ok(new { id = await _mediator.Send(cmd, ct) });
 
+    [HttpPut("categories")]
+    public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryCommand cmd, CancellationToken ct)
+    {
+        await _mediator.Send(cmd, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("categories/{id:guid}")]
+    public async Task<IActionResult> DeleteCategory(Guid id, CancellationToken ct)
+    {
+        await _mediator.Send(new DeleteCategoryCommand(id), ct);
+        return NoContent();
+    }
+
     // ── Customer Management ──
 
     [HttpGet("users")]

@@ -187,11 +187,17 @@ export default function ProductFormModal({
                             style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
                         >
                             <option value="">Kategori seçin</option>
-                            {categories.map((cat) => (
-                                <option key={cat.id} value={cat.id}>
-                                    {cat.name}
-                                </option>
-                            ))}
+                            {categories
+                                .filter(cat =>
+                                    // Eğer yeni ürün ekleniyorsa sadece aktifleri göster
+                                    // Eğer düzenleniyorsa, ürünün kendi kategorisiyse (pasif de olsa) göster, diğerleri aktif olmalı
+                                    isEdit ? (cat.id === form.categoryId || cat.isActive !== false) : cat.isActive !== false
+                                )
+                                .map((cat) => (
+                                    <option key={cat.id} value={cat.id}>
+                                        {cat.name}
+                                    </option>
+                                ))}
                         </select>
                     </div>
 

@@ -34,4 +34,16 @@ public record UpdateStockCommand(Guid ProductId, int NewQuantity) : IRequest;
 public record CreateCategoryCommand(
     string Name,
     string? Description,
-    string? ImageUrl) : IRequest<Guid>;
+    string? ImageUrl,
+    bool IsActive = true) : IRequest<Guid>;
+
+// --- UpdateCategory ---
+public record UpdateCategoryCommand(
+    Guid Id,
+    string Name,
+    string? Description,
+    string? ImageUrl,
+    bool IsActive) : IRequest;
+
+// --- DeleteCategory ---
+public record DeleteCategoryCommand(Guid Id) : IRequest;

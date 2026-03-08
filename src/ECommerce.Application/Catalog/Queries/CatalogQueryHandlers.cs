@@ -52,6 +52,6 @@ public class GetCategoriesHandler : IRequestHandler<GetCategoriesQuery, IReadOnl
     public async Task<IReadOnlyList<CategoryDto>> Handle(GetCategoriesQuery q, CancellationToken ct)
     {
         var categories = await _categories.GetAllAsync(ct);
-        return categories.Select(c => new CategoryDto(c.Id, c.Name, c.Description, c.ImageUrl)).ToList();
+        return categories.Select(c => new CategoryDto(c.Id, c.Name, c.Description, c.ImageUrl, c.IsActive)).ToList();
     }
 }
