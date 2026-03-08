@@ -24,8 +24,7 @@ import ProductFormModal from '../components/ProductFormModal';
 import ConfirmModal from '../../components/ConfirmModal';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
-import type { UserOptions } from 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([
@@ -254,46 +253,95 @@ export default function AdminProductsPage() {
 
     // ── Export Handlers ──
     const exportToExcel = () => {
-        const data = products.map((p) => ({
-            'Ürün Adı': p.name,
-            'Açıklama': p.description,
-            'Fiyat (₺)': p.priceAmount ?? p.price,
-            'Stok': p.stockQuantity,
-            'Kategori': p.categoryName,
-            'Durum': p.isActive ? 'Aktif' : 'Pasif',
-        }));
-        const ws = XLSX.utils.json_to_sheet(data);
+        const activeCount = products.filter(p => p.isActive).length;
+        const totalCount = products.length;
+
+        const wsData: any[][] = [
+            ['Yönetim Paneli - Ürün Listesi'],
+            [`Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')} ${new Date().toLocaleTimeString('tr-TR')}`],
+            [`Toplam Ürün Sayısı: ${totalCount}`],
+            [`Aktif Ürün Sayısı: ${activeCount}`],
+            [],
+            ['Ürün Adı', 'Açıklama', 'Fiyat (₺)', 'Stok', 'Kategori', 'Durum']
+        ];
+
+        products.forEach((p) => {
+            wsData.push([
+                p.name,
+                p.description || '',
+                p.priceAmount ?? p.price,
+                p.stockQuantity,
+                p.categoryName,
+                p.isActive ? 'Aktif' : 'Pasif',
+            ]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        // Column widths
+        ws['!cols'] = [{ width: 30 }, { width: 40 }, { width: 15 }, { width: 10 }, { width: 20 }, { width: 10 }];
+
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Ürünler');
         XLSX.writeFile(wb, 'urunler.xlsx');
     };
 
-    const exportToPDF = () => {
-        const doc = new jsPDF('p', 'mm', 'a4');
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(16);
-        doc.text('Ürün Listesi', 14, 20);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Tarih: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
+    const exportToPDF = async () => {
+        try {
+            const activeCount = products.filter(p => p.isActive).length;
+            const totalCount = products.length;
 
-        const tableData = products.map((p) => [
-            p.name,
-            `${(p.priceAmount ?? p.price).toFixed(2)} TL`,
-            String(p.stockQuantity),
-            p.categoryName,
-            p.isActive ? 'Aktif' : 'Pasif',
-        ]);
+            const doc = new jsPDF('p', 'mm', 'a4');
 
-        (doc as jsPDF & { autoTable: (options: UserOptions) => void }).autoTable({
-            startY: 35,
-            head: [['Ürün Adı', 'Fiyat', 'Stok', 'Kategori', 'Durum']],
-            body: tableData,
-            styles: { fontSize: 9 },
-            headStyles: { fillColor: [27, 94, 63] },
-        });
+            // Load Turkish font (Roboto)
+            const fontUrl = '/fonts/Roboto-Regular.ttf';
+            const fontResponse = await fetch(fontUrl);
+            const fontBuffer = await fontResponse.arrayBuffer();
 
-        doc.save('urunler.pdf');
+            // Convert ArrayBuffer to Base64 in browser
+            const bufferToBase64 = (buffer: ArrayBuffer) => {
+                let binary = '';
+                const bytes = new Uint8Array(buffer);
+                const len = bytes.byteLength;
+                for (let i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary);
+            };
+
+            const fontBase64 = bufferToBase64(fontBuffer);
+            doc.addFileToVFS('Roboto-Regular.ttf', fontBase64);
+            doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+            doc.setFont('Roboto');
+
+            doc.setFontSize(16);
+            doc.text('Ürün Listesi Özeti', 14, 20);
+
+            doc.setFontSize(10);
+            doc.text(`Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')} ${new Date().toLocaleTimeString('tr-TR')}`, 14, 28);
+            doc.text(`Toplam Ürün Sayısı: ${totalCount}`, 14, 34);
+            doc.text(`Aktif Ürün Sayısı: ${activeCount}`, 14, 40);
+
+            const tableData = products.map((p) => [
+                p.name,
+                `${(p.priceAmount ?? p.price).toFixed(2)} TL`,
+                String(p.stockQuantity),
+                p.categoryName,
+                p.isActive ? 'Aktif' : 'Pasif',
+            ]);
+
+            autoTable(doc, {
+                startY: 46,
+                head: [['Ürün Adı', 'Fiyat', 'Stok', 'Kategori', 'Durum']],
+                body: tableData,
+                styles: { font: 'Roboto', fontSize: 9 },
+                headStyles: { font: 'Roboto', fontStyle: 'normal', fillColor: [27, 94, 63] },
+            });
+
+            doc.save('urunler.pdf');
+        } catch (error) {
+            console.error('PDF oluşturulurken hata:', error);
+            alert('PDF oluşturulurken bir hata oluştu. Font dosyası yüklenememiş olabilir.');
+        }
     };
 
     return (
