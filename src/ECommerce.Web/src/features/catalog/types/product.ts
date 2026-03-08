@@ -5,6 +5,7 @@ export interface Category {
     isActive: boolean;
     parentCategoryId?: string | null;
     parentCategoryName?: string | null;
+    isDeleted?: boolean;
 }
 
 export interface Product {

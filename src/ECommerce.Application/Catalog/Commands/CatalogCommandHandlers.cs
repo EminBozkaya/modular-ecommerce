@@ -4,6 +4,7 @@ using ECommerce.Domain.Catalog.Entities;
 using ECommerce.Domain.Catalog.ValueObjects;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using ECommerce.Domain.Catalog;
 
 namespace ECommerce.Application.Catalog.Commands;
 
@@ -109,11 +110,13 @@ public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, Guid
 public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand>
 {
     private readonly ICategoryRepository _categories;
+    private readonly IProductRepository _products;
     private readonly ILogger<UpdateCategoryHandler> _logger;
 
-    public UpdateCategoryHandler(ICategoryRepository categories, ILogger<UpdateCategoryHandler> logger)
+    public UpdateCategoryHandler(ICategoryRepository categories, IProductRepository products, ILogger<UpdateCategoryHandler> logger)
     {
         _categories = categories;
+        _products = products;
         _logger = logger;
     }
 
@@ -133,19 +136,79 @@ public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand>
 public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand>
 {
     private readonly ICategoryRepository _categories;
+    private readonly IProductRepository _products;
 
-    public DeleteCategoryHandler(ICategoryRepository categories)
+    public DeleteCategoryHandler(ICategoryRepository categories, IProductRepository products)
     {
         _categories = categories;
+        _products = products;
     }
 
     public async Task Handle(DeleteCategoryCommand cmd, CancellationToken ct)
     {
         var category = await _categories.GetByIdAsync(cmd.Id, ct)
             ?? throw new KeyNotFoundException($"Category {cmd.Id} not found.");
-            
-        category.SoftDelete();
-        _categories.Update(category);
+
+        if (category.ParentCategoryId == null) 
+        {
+            // --- ROOT CATEGORY DELETION SCENARIOS ---
+            var allSubCategories = category.SubCategories.Where(c => !c.IsDeleted).ToList();
+            var allCategoryIdsToCheck = new List<Guid> { category.Id };
+            allCategoryIdsToCheck.AddRange(allSubCategories.Select(c => c.Id));
+
+            var spec = new ProductsByCategoriesSpec(allCategoryIdsToCheck);
+            var productsInTree = await _products.ListAsync(spec, ct);
+
+            if (productsInTree.Any())
+            {
+                // Scenario 3: Only 1 SubCategory, and it has products. Root has no products.
+                bool rootHasProducts = productsInTree.Any(p => p.CategoryId == category.Id);
+                var subCategoriesWithProducts = allSubCategories.Where(subCat => 
+                    productsInTree.Any(p => p.CategoryId == subCat.Id)
+                ).ToList();
+
+                if (!rootHasProducts && allSubCategories.Count == 1 && subCategoriesWithProducts.Count == 1)
+                {
+                    // Promote the single subcategory to Root
+                    var subCatToPromote = subCategoriesWithProducts.First();
+                    subCatToPromote.Update(subCatToPromote.Name, subCatToPromote.Description, subCatToPromote.ImageUrl, subCatToPromote.IsActive, null); // ParentId = null
+                    _categories.Update(subCatToPromote);
+
+                    // Then delete the empty root
+                    category.SoftDelete();
+                    _categories.Update(category);
+                }
+                else
+                {
+                    // Scenario 1 & 4: Products exist, either in root or in multiple subcategories. Block deletion.
+                    throw new InvalidOperationException($"Cannot delete Root Category '{category.Name}' because it or its subcategories contain active products.");
+                }
+            }
+            else
+            {
+                // Scenario 2: Empty tree (no products in root or any subcategories)
+                foreach(var subCat in allSubCategories)
+                {
+                    subCat.SoftDelete();
+                    _categories.Update(subCat);
+                }
+                category.SoftDelete();
+                _categories.Update(category);
+            }
+        }
+        else
+        {
+            // Subcategory deletion fallback logic
+            var spec = new ProductsByCategoriesSpec(new List<Guid> { category.Id });
+            var productCount = await _products.CountAsync(spec, ct);
+
+            if (productCount > 0)
+                throw new InvalidOperationException($"Cannot delete category '{category.Name}' because it has {productCount} active products.");
+
+            category.SoftDelete();
+            _categories.Update(category);
+        }
+
         await _categories.SaveChangesAsync(ct);
     }
 }

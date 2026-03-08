@@ -44,10 +44,26 @@ export default function AdminCategoriesPage() {
     const [editingCategory, setEditingCategory] = useState<Category | null>(null);
     const [saving, setSaving] = useState(false);
     const [gridApi, setGridApi] = useState<GridApi | null>(null);
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
-    const [showDeactivatePrompt, setShowDeactivatePrompt] = useState(false);
+    const [modalSettings, setModalSettings] = useState<{
+        open: boolean;
+        title: string;
+        message: string;
+        confirmText: string;
+        variant: 'danger' | 'warning' | 'info';
+        showConfirm: boolean;
+        categoryId: string | null;
+        actionType: 'delete' | 'deactivate';
+    }>({
+        open: false,
+        title: '',
+        message: '',
+        confirmText: '',
+        variant: 'danger',
+        showConfirm: true,
+        categoryId: null,
+        actionType: 'delete'
+    });
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -167,46 +183,155 @@ export default function AdminCategoriesPage() {
         setModalOpen(true);
     }, []);
 
-    const handleDelete = useCallback((id: string) => {
-        const isUsed = products.some(p => p.categoryId === id);
-        setCategoryToDelete(id);
-        setShowDeactivatePrompt(isUsed);
-        setDeleteModalOpen(true);
-    }, [products]);
-
     const handleConfirmDelete = async () => {
-        if (!categoryToDelete) return;
+        const { categoryId, actionType } = modalSettings;
+        if (!categoryId) return;
 
         setDeleting(true);
         try {
-            if (showDeactivatePrompt) {
-                const cat = categories.find(c => c.id === categoryToDelete);
+            if (actionType === 'deactivate') {
+                const cat = categories.find(c => c.id === categoryId);
                 if (cat) {
                     await updateCategory({
                         id: cat.id,
                         name: cat.name,
                         description: (cat as any).description,
                         imageUrl: (cat as any).imageUrl,
-                        isActive: false
+                        isActive: false,
+                        parentCategoryId: cat.parentCategoryId
                     });
                 }
             } else {
-                await deleteCategory(categoryToDelete);
+                await deleteCategory(categoryId);
             }
 
-            setDeleteModalOpen(false);
-            setCategoryToDelete(null);
-            setShowDeactivatePrompt(false);
+            setModalSettings(prev => ({ ...prev, open: false, categoryId: null }));
             await fetchData();
-        } catch (err) {
+        } catch (err: any) {
             console.error('İşlem sırasında hata:', err);
-            alert('İşlem sırasında bir hata oluştu.');
+            const errorMessage = err.response?.data?.message || err.message || 'İşlem sırasında bir hata oluştu.';
+            alert(errorMessage);
         } finally {
             setDeleting(false);
         }
     };
 
+    const handleDelete = useCallback((id: string) => {
+        const category = categories.find(c => c.id === id);
+        if (!category) return;
+
+        const isRoot = !category.parentCategoryId;
+        const subCats = categories.filter(c => c.parentCategoryId === id && !c.isDeleted);
+        const hasProducts = products.some(p => p.categoryId === id);
+
+        const subCatsWithProductsCount = subCats.filter(sc =>
+            products.some(p => p.categoryId === sc.id)
+        ).length;
+
+        if (isRoot) {
+            // --- ROOT CATEGORY SCENARIOS ---
+
+            // Scenario 1 & 4 blocked check
+            if (hasProducts || (subCats.length > 1 && subCatsWithProductsCount > 0) || subCatsWithProductsCount > 1) {
+                setModalSettings({
+                    open: true,
+                    title: "İşlem Engellendi",
+                    message: hasProducts
+                        ? "Bu kategori içerisinde aktif ürünler bulunduğu için silinemez. Lütfen önce ürünleri başka bir kategoriye taşıyın."
+                        : "Bu kategoriye bağlı alt kategorilerden en az birinde aktif ürün bulunmaktadır. Veri bütünlüğünü korumak adına bu kategori silinemez.",
+                    confirmText: "",
+                    variant: "warning",
+                    showConfirm: false,
+                    categoryId: id,
+                    actionType: 'delete'
+                });
+                return;
+            }
+
+            // Scenario 3: Node Promotion
+            if (!hasProducts && subCats.length === 1 && subCatsWithProductsCount === 1) {
+                setModalSettings({
+                    open: true,
+                    title: "Kategori Terfisi",
+                    message: `"${category.name}" ana kategorisi silinecektir. İçinde ürün bulunan tek alt kategorisi olan "${subCats[0].name}" artık yeni bir ana kategori olarak atanacaktır. Onaylıyor musunuz?`,
+                    confirmText: "Onayla ve Terfi Ettir",
+                    variant: "info",
+                    showConfirm: true,
+                    categoryId: id,
+                    actionType: 'delete'
+                });
+                return;
+            }
+
+            // Scenario 2: Empty Tree
+            if (!hasProducts && subCatsWithProductsCount === 0) {
+                setModalSettings({
+                    open: true,
+                    title: "Kategori Ağacını Sil",
+                    message: subCats.length > 0
+                        ? `"${category.name}" ana kategorisi ve ona bağlı olan ${subCats.length} adet boş alt kategori kalıcı olarak silinecektir. Onaylıyor musunuz?`
+                        : `"${category.name}" kategorisini silmek istediğinizden emin misiniz?`,
+                    confirmText: "Sil",
+                    variant: "danger",
+                    showConfirm: true,
+                    categoryId: id,
+                    actionType: 'delete'
+                });
+                return;
+            }
+        } else {
+            // --- SUB-CATEGORY SCENARIOS ---
+            if (hasProducts) {
+                setModalSettings({
+                    open: true,
+                    title: "İşlem Engellendi",
+                    message: `Bu kategori içerisinde aktif ürünler bulunduğu için silinemez. Lütfen önce ürünleri başka bir kategoriye taşıyın.`,
+                    confirmText: "",
+                    variant: "warning",
+                    showConfirm: false,
+                    categoryId: id,
+                    actionType: 'delete'
+                });
+            } else {
+                setModalSettings({
+                    open: true,
+                    title: "Kategoriyi Sil",
+                    message: `"${category.name}" alt kategorisini silmek istediğinizden emin misiniz?`,
+                    confirmText: "Sil",
+                    variant: "danger",
+                    showConfirm: true,
+                    categoryId: id,
+                    actionType: 'delete'
+                });
+            }
+        }
+    }, [categories, products]);
+
     const handleFormSubmit = async (data: CategoryFormData) => {
+        if (editingCategory) {
+            const willDeactivate = editingCategory.isActive && !data.isActive;
+            if (willDeactivate) {
+                const id = editingCategory.id;
+                const hasProducts = products.some(p => p.categoryId === id);
+                const subCats = categories.filter(c => c.parentCategoryId === id && !c.isDeleted);
+
+                if (hasProducts || subCats.length > 0) {
+                    setModalOpen(false);
+                    setModalSettings({
+                        open: true,
+                        title: "Kategoriyi Pasife Al",
+                        message: "Bu kategoriyi pasife alırsanız, satış ekranında bu kategoriniz ve altındaki bağlı tüm kategoriler ve ürünler satış için görünmeyecektir. Yine de pasife almak istediğinizden emin misiniz?",
+                        confirmText: "Evet, Pasife Çek",
+                        variant: "warning",
+                        showConfirm: true,
+                        categoryId: id,
+                        actionType: 'deactivate'
+                    });
+                    return;
+                }
+            }
+        }
+
         setSaving(true);
         try {
             if (editingCategory) {
@@ -421,18 +546,15 @@ export default function AdminCategoriesPage() {
 
             {/* Confirm Delete / Deactivate Modal */}
             <ConfirmModal
-                open={deleteModalOpen}
-                title={showDeactivatePrompt ? "Kategori Kullanımda" : "Kategoriyi Sil"}
-                message={showDeactivatePrompt
-                    ? "Silmek istediğiniz kategori, veri tabanındaki bir ürün tarafından kullanılmaktadır. Dilerseniz bu kategoriyi pasife çekebiliriz. Onaylıyor musunuz?"
-                    : "Bu kategoriyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."}
-                variant={showDeactivatePrompt ? "warning" : "danger"}
-                confirmText={showDeactivatePrompt ? "Evet, Pasife Çek" : "Sil"}
+                open={modalSettings.open}
+                title={modalSettings.title}
+                message={modalSettings.message}
+                variant={modalSettings.variant}
+                confirmText={modalSettings.confirmText}
+                showConfirm={modalSettings.showConfirm}
                 onConfirm={handleConfirmDelete}
                 onClose={() => {
-                    setDeleteModalOpen(false);
-                    setCategoryToDelete(null);
-                    setShowDeactivatePrompt(false);
+                    setModalSettings(prev => ({ ...prev, open: false }));
                 }}
                 loading={deleting}
             />

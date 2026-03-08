@@ -10,6 +10,7 @@ interface ConfirmModalProps {
     onClose: () => void;
     loading?: boolean;
     variant?: 'danger' | 'warning' | 'info';
+    showConfirm?: boolean;
 }
 
 export default function ConfirmModal({
@@ -21,7 +22,8 @@ export default function ConfirmModal({
     onConfirm,
     onClose,
     loading = false,
-    variant = 'danger'
+    variant = 'danger',
+    showConfirm = true
 }: ConfirmModalProps) {
     if (!open) return null;
 
@@ -67,19 +69,21 @@ export default function ConfirmModal({
                 </div>
 
                 <div className="bg-gray-50 px-6 py-4 flex flex-col sm:flex-row-reverse gap-3">
-                    <button
-                        disabled={loading}
-                        onClick={onConfirm}
-                        className={`px-4 py-2 text-sm font-semibold text-white rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none ${variantStyles.buttonBg} ${variantStyles.buttonHover}`}
-                    >
-                        {loading ? 'İşleniyor...' : confirmText}
-                    </button>
+                    {showConfirm && (
+                        <button
+                            disabled={loading}
+                            onClick={onConfirm}
+                            className={`px-4 py-2 text-sm font-semibold text-white rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none ${variantStyles.buttonBg} ${variantStyles.buttonHover}`}
+                        >
+                            {loading ? 'İşleniyor...' : confirmText}
+                        </button>
+                    )}
                     <button
                         disabled={loading}
                         onClick={onClose}
                         className="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all active:scale-95"
                     >
-                        {cancelText}
+                        {showConfirm ? cancelText : 'Tamam'}
                     </button>
                 </div>
             </div>

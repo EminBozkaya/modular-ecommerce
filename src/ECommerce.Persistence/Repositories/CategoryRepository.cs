@@ -12,7 +12,9 @@ public class CategoryRepository : ICategoryRepository
     public CategoryRepository(ApplicationDbContext ctx) => _ctx = ctx;
 
     public async Task<Category?> GetByIdAsync(Guid id, CancellationToken ct = default)
-        => await _ctx.Categories.FirstOrDefaultAsync(c => c.Id == id, ct);
+        => await _ctx.Categories
+            .Include(c => c.SubCategories)
+            .FirstOrDefaultAsync(c => c.Id == id, ct);
 
     public async Task<IReadOnlyList<Category>> GetAllAsync(CancellationToken ct = default)
         => await _ctx.Categories.Include(c => c.ParentCategory).Where(c => !c.IsDeleted).AsNoTracking().ToListAsync(ct);
