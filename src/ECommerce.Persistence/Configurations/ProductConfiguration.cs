@@ -50,6 +50,8 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(p => p.CategoryId);
-        builder.HasIndex(p => p.Name);
+        builder.HasIndex(p => p.Name)
+            .IsUnique()
+            .HasFilter("\"IsDeleted\" = false");
     }
 }

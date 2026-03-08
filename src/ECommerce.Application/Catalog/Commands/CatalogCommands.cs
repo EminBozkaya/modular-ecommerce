@@ -27,6 +27,9 @@ public record UpdateProductCommand(
 // --- DeleteProduct ---
 public record DeleteProductCommand(Guid Id) : IRequest;
 
+// --- RestoreProduct ---
+public record RestoreProductCommand(Guid Id) : IRequest;
+
 // --- UpdateStock ---
 public record UpdateStockCommand(Guid ProductId, int NewQuantity) : IRequest;
 
@@ -49,3 +52,6 @@ public record UpdateCategoryCommand(
 
 // --- DeleteCategory ---
 public record DeleteCategoryCommand(Guid Id) : IRequest;
+
+// --- RestoreCategory ---
+public record RestoreCategoryCommand(Guid Id) : IRequest;

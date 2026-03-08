@@ -22,7 +22,7 @@ public class GetProductsHandler : IRequestHandler<GetProductsQuery, PagedResult<
     public async Task<PagedResult<ProductDto>> Handle(GetProductsQuery q, CancellationToken ct)
     {
         var spec = new ProductsWithFiltersSpecification(
-            q.SearchTerm, q.MinPrice, q.MaxPrice, q.CategoryId, q.SortBy, q.Descending, q.PageNumber, q.PageSize, q.IncludeInactive);
+            q.Search, q.MinPrice, q.MaxPrice, q.CategoryId, q.SortBy, q.Descending, q.Page, q.PageSize, q.IncludeInactive, q.IncludeDeleted);
             
         var count = await _products.CountAsync(spec, ct);
         var products = await _products.ListAsync(spec, ct);
@@ -34,12 +34,12 @@ public class GetProductsHandler : IRequestHandler<GetProductsQuery, PagedResult<
         var items = products.Select(p => new ProductDto(
             p.Id, p.Name, p.Description, p.ImageUrl,
             p.Price.Amount, p.Price.Currency, p.Stock.Value, p.IsActive,
-            p.CategoryId, p.Category!.Name,
+            p.CategoryId, p.Category?.Name,
             p.CreatedAt, p.CreatedBy != null && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
             p.UpdatedAt, p.UpdatedBy != null && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
-            p.DeletedAt)).ToList();
+            p.DeletedAt, p.IsDeleted)).ToList();
             
-        return new PagedResult<ProductDto>(items, count, q.PageNumber, q.PageSize);
+        return new PagedResult<ProductDto>(items, count, q.Page, q.PageSize);
     }
 }
 
@@ -56,18 +56,17 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, Produc
 
     public async Task<ProductDto?> Handle(GetProductByIdQuery q, CancellationToken ct)
     {
-        var products = await _products.GetAllActiveAsync(ct);
-        var p = products.FirstOrDefault(x => x.Id == q.Id);
+        var p = await _products.GetByIdAsync(q.Id, ct);
         if (p is null) return null;
 
         var userMap = (await _users.GetAllAsync(ct)).ToDictionary(u => u.Id.ToString(), u => u.FullName);
 
         return new ProductDto(p.Id, p.Name, p.Description, p.ImageUrl,
             p.Price.Amount, p.Price.Currency, p.Stock.Value, p.IsActive,
-            p.CategoryId, p.Category!.Name,
+            p.CategoryId, p.Category?.Name,
             p.CreatedAt, p.CreatedBy != null && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
             p.UpdatedAt, p.UpdatedBy != null && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
-            p.DeletedAt);
+            p.DeletedAt, p.IsDeleted);
     }
 }
 
@@ -84,13 +83,13 @@ public class GetCategoriesHandler : IRequestHandler<GetCategoriesQuery, IReadOnl
 
     public async Task<IReadOnlyList<CategoryDto>> Handle(GetCategoriesQuery q, CancellationToken ct)
     {
-        var categories = await _categories.GetAllAsync(ct);
+        var categories = await _categories.GetAllAsync(q.IncludeDeleted, ct);
         var userMap = (await _users.GetAllAsync(ct)).ToDictionary(u => u.Id.ToString(), u => u.FullName);
 
         return categories.Select(c => new CategoryDto(
             c.Id, c.Name, c.Description, c.ImageUrl, c.IsActive, c.ParentCategoryId, c.ParentCategory?.Name,
             c.CreatedAt, c.CreatedBy != null && userMap.TryGetValue(c.CreatedBy, out var cb) ? cb : c.CreatedBy,
             c.UpdatedAt, c.UpdatedBy != null && userMap.TryGetValue(c.UpdatedBy, out var ub) ? ub : c.UpdatedBy,
-            c.DeletedAt)).ToList();
+            c.DeletedAt, c.IsDeleted)).ToList();
     }
 }

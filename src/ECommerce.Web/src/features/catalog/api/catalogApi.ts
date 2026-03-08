@@ -52,13 +52,17 @@ export async function getProductById(id: string): Promise<Product> {
     return response.data;
 }
 
-export async function getCategories(): Promise<Category[]> {
+export async function getCategories(params?: { includeDeleted?: boolean }): Promise<Category[]> {
     if (isMock) {
         await delay(400);
-        return mockCategories;
+        let items = [...mockCategories];
+        if (params?.includeDeleted === false || params?.includeDeleted === undefined) {
+            items = items.filter(c => !c.isDeleted); // Assuming a property 'isDeleted' for mock categories
+        }
+        return items;
     }
 
-    const response = await apiClient.get<Category[] | { value: Category[] }>('/api/catalog/categories');
+    const response = await apiClient.get<Category[] | { value: Category[] }>('/api/catalog/categories', { params });
 
     // Check if the response is wrapped in an object with a 'value' array
     if (response.data && 'value' in response.data && Array.isArray(response.data.value)) {

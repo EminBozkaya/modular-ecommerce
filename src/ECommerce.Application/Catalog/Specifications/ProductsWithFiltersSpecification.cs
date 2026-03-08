@@ -5,7 +5,7 @@ namespace ECommerce.Application.Catalog.Specifications;
 
 public class ProductsWithFiltersSpecification : BaseSpecification<Product>
 {
-    public ProductsWithFiltersSpecification(string? searchTerm, decimal? minPrice, decimal? maxPrice, Guid? categoryId, string? sortBy, bool descending, int pageNumber, int pageSize, bool includeInactive = false)
+    public ProductsWithFiltersSpecification(string? searchTerm, decimal? minPrice, decimal? maxPrice, Guid? categoryId, string? sortBy, bool descending, int pageNumber, int pageSize, bool includeInactive = false, bool includeDeleted = false)
         : base(x =>
             (string.IsNullOrEmpty(searchTerm) || x.Name.Contains(searchTerm) || (x.Description != null && x.Description.Contains(searchTerm))) &&
             (!minPrice.HasValue || x.Price.Amount >= minPrice.Value) &&
@@ -14,6 +14,7 @@ public class ProductsWithFiltersSpecification : BaseSpecification<Product>
             (includeInactive || x.IsActive)
         )
     {
+        if (includeDeleted) ApplyIgnoreQueryFilters();
         AddInclude(x => x.Category!);
 
         if (!string.IsNullOrEmpty(sortBy))

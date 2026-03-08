@@ -54,4 +54,12 @@ public class Category : BaseAuditableEntity
         DeletedAt = DateTime.UtcNow;
         IsActive = false;
     }
+
+    public void Restore()
+    {
+        IsDeleted = false;
+        DeletedAt = null;
+        IsActive = true;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

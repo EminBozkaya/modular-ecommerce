@@ -40,4 +40,5 @@ export interface ProductListParams {
     categoryId?: string;
     search?: string;
     includeInactive?: boolean;
+    includeDeleted?: boolean;
 }

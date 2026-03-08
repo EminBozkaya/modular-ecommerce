@@ -13,11 +13,16 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<Category?> GetByIdAsync(Guid id, CancellationToken ct = default)
         => await _ctx.Categories
+            .IgnoreQueryFilters()
             .Include(c => c.SubCategories)
             .FirstOrDefaultAsync(c => c.Id == id, ct);
 
-    public async Task<IReadOnlyList<Category>> GetAllAsync(CancellationToken ct = default)
-        => await _ctx.Categories.Include(c => c.ParentCategory).Where(c => !c.IsDeleted).AsNoTracking().ToListAsync(ct);
+    public async Task<IReadOnlyList<Category>> GetAllAsync(bool includeDeleted = false, CancellationToken ct = default)
+    {
+        var query = _ctx.Categories.Include(c => c.ParentCategory).AsNoTracking();
+        if (includeDeleted) query = query.IgnoreQueryFilters();
+        return await query.ToListAsync(ct);
+    }
 
     public async Task AddAsync(Category category, CancellationToken ct = default)
         => await _ctx.Categories.AddAsync(category, ct);

@@ -40,6 +40,13 @@ public class AdminController : ControllerBase
         return NoContent();
     }
 
+    [HttpPost("products/restore/{id:guid}")]
+    public async Task<IActionResult> RestoreProduct(Guid id, CancellationToken ct)
+    {
+        await _mediator.Send(new RestoreProductCommand(id), ct);
+        return NoContent();
+    }
+
     [HttpPut("products/stock")]
     public async Task<IActionResult> UpdateStock([FromBody] UpdateStockCommand cmd, CancellationToken ct)
     {
@@ -62,6 +69,13 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> DeleteCategory(Guid id, CancellationToken ct)
     {
         await _mediator.Send(new DeleteCategoryCommand(id), ct);
+        return NoContent();
+    }
+
+    [HttpPost("categories/restore/{id:guid}")]
+    public async Task<IActionResult> RestoreCategory(Guid id, CancellationToken ct)
+    {
+        await _mediator.Send(new RestoreCategoryCommand(id), ct);
         return NoContent();
     }
 

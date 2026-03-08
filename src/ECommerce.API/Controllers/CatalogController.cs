@@ -13,8 +13,19 @@ public class CatalogController : ControllerBase
     public CatalogController(IMediator mediator) => _mediator = mediator;
 
     [HttpGet("products")]
-    public async Task<IActionResult> GetProducts([FromQuery] GetProductsQuery query, CancellationToken ct)
-        => Ok(await _mediator.Send(query, ct));
+    public async Task<IActionResult> GetProducts(
+        [FromQuery] string? search,
+        [FromQuery] decimal? minPrice,
+        [FromQuery] decimal? maxPrice,
+        [FromQuery] Guid? categoryId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? sortBy = null,
+        [FromQuery] bool descending = false,
+        [FromQuery] bool includeInactive = false,
+        [FromQuery] bool includeDeleted = false,
+        CancellationToken ct = default)
+        => Ok(await _mediator.Send(new GetProductsQuery(search, minPrice, maxPrice, categoryId, page, pageSize, sortBy, descending, includeInactive, includeDeleted), ct));
 
     [HttpGet("products/{id:guid}")]
     public async Task<IActionResult> GetProduct(Guid id, CancellationToken ct)
@@ -24,6 +35,6 @@ public class CatalogController : ControllerBase
     }
 
     [HttpGet("categories")]
-    public async Task<IActionResult> GetCategories(CancellationToken ct)
-        => Ok(await _mediator.Send(new GetCategoriesQuery(), ct));
+    public async Task<IActionResult> GetCategories([FromQuery] bool includeDeleted, CancellationToken ct)
+        => Ok(await _mediator.Send(new GetCategoriesQuery(includeDeleted), ct));
 }

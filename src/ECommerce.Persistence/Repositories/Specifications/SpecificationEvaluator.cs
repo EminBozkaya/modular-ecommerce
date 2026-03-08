@@ -9,6 +9,11 @@ public class SpecificationEvaluator<T> where T : class
     {
         var query = inputQuery;
 
+        if (specification.IgnoreQueryFilters)
+        {
+            query = query.IgnoreQueryFilters();
+        }
+
         if (specification.Criteria != null)
         {
             query = query.Where(specification.Criteria);

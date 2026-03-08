@@ -14,7 +14,7 @@ public class ProductRepository : IProductRepository
     public ProductRepository(ApplicationDbContext ctx) => _ctx = ctx;
 
     public async Task<Product?> GetByIdAsync(Guid id, CancellationToken ct = default)
-        => await _ctx.Products.FirstOrDefaultAsync(p => p.Id == id, ct);
+        => await _ctx.Products.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.Id == id, ct);
 
     public async Task<IReadOnlyList<Product>> GetAllActiveAsync(CancellationToken ct = default)
         => await _ctx.Products.AsNoTracking()
@@ -30,12 +30,14 @@ public class ProductRepository : IProductRepository
 
     public async Task<IReadOnlyList<Product>> ListAsync(ISpecification<Product> spec, CancellationToken ct = default)
     {
-        return await SpecificationEvaluator<Product>.GetQuery(_ctx.Products.AsNoTracking(), spec).ToListAsync(ct);
+        var query = _ctx.Products.AsNoTracking();
+        return await SpecificationEvaluator<Product>.GetQuery(query, spec).ToListAsync(ct);
     }
 
     public async Task<int> CountAsync(ISpecification<Product> spec, CancellationToken ct = default)
     {
-        return await SpecificationEvaluator<Product>.GetQuery(_ctx.Products.AsNoTracking(), spec).CountAsync(ct);
+        var query = _ctx.Products.AsNoTracking();
+        return await SpecificationEvaluator<Product>.GetQuery(query, spec).CountAsync(ct);
     }
 
     public async Task AddAsync(Product product, CancellationToken ct = default)

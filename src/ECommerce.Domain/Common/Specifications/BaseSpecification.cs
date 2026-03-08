@@ -12,6 +12,7 @@ public abstract class BaseSpecification<T> : ISpecification<T>
     public int? Skip { get; private set; }
     public int? Take { get; private set; }
     public bool IsPagingEnabled { get; private set; }
+    public bool IgnoreQueryFilters { get; private set; }
 
     protected BaseSpecification()
     {
@@ -42,5 +43,10 @@ public abstract class BaseSpecification<T> : ISpecification<T>
     protected void ApplyOrderByDescending(Expression<Func<T, object>> orderByDescendingExpression)
     {
         OrderByDescending = orderByDescendingExpression;
+    }
+
+    protected void ApplyIgnoreQueryFilters()
+    {
+        IgnoreQueryFilters = true;
     }
 }

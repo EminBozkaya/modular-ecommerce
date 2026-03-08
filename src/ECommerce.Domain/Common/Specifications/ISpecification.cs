@@ -12,4 +12,5 @@ public interface ISpecification<T>
     int? Skip { get; }
     int? Take { get; }
     bool IsPagingEnabled { get; }
+    bool IgnoreQueryFilters { get; }
 }

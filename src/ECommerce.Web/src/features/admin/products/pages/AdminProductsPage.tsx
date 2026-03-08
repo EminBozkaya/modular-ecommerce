@@ -16,10 +16,12 @@ import {
     RowSelectionModule,
     DateFilterModule,
     LocaleModule,
+    type ICellRendererParams,
+    type ValueFormatterParams,
 } from 'ag-grid-community';
-import { Plus, Download, FileDown, Package } from 'lucide-react';
+import { Plus, Download, FileDown, Package, Edit2, Trash2, RotateCcw } from 'lucide-react';
 import { getProducts, getCategories } from '../../../catalog/api/catalogApi';
-import { createProduct, updateProduct, deleteProduct } from '../../api/adminApi';
+import { createProduct, updateProduct, deleteProduct, restoreProduct } from '../../api/adminApi';
 import type { Product, Category } from '../../../catalog/types/product';
 import type { ProductFormData } from '../components/ProductFormModal';
 import ProductFormModal from '../components/ProductFormModal';
@@ -155,9 +157,28 @@ export default function AdminProductsPage() {
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [saving, setSaving] = useState(false);
     const [gridApi, setGridApi] = useState<GridApi | null>(null);
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [productToDelete, setProductToDelete] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
+    const [showDeleted, setShowDeleted] = useState(false);
+
+    const [modalSettings, setModalSettings] = useState<{
+        open: boolean;
+        title: string;
+        message: string;
+        confirmText: string;
+        variant: 'danger' | 'warning' | 'info';
+        showConfirm: boolean;
+        productId: string | null;
+        actionType: 'delete' | 'restore' | 'duplicate_archived';
+    }>({
+        open: false,
+        title: '',
+        message: '',
+        confirmText: '',
+        variant: 'danger',
+        showConfirm: true,
+        productId: null,
+        actionType: 'delete'
+    });
 
     const gridComponents = useMemo(() => ({
         agDateInput: AgGridDatePicker,
@@ -166,16 +187,21 @@ export default function AdminProductsPage() {
     const fetchData = useCallback(async () => {
         try {
             setLoading(true);
-            const data = await getProducts({ page: 1, pageSize: 1000, includeInactive: true });
+            const data = await getProducts({
+                page: 1,
+                pageSize: 1000,
+                includeInactive: true,
+                includeDeleted: showDeleted
+            });
             setProducts(data.items);
-            const cats = await getCategories();
+            const cats = await getCategories({ includeDeleted: showDeleted });
             setCategories(cats);
         } catch (err) {
             console.error('Veri yüklenirken hata:', err);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [showDeleted]);
 
     useEffect(() => {
         fetchData();
@@ -192,28 +218,57 @@ export default function AdminProductsPage() {
         setModalOpen(true);
     }, []);
 
-    const handleDelete = useCallback((id: string) => {
-        console.log('Products handleDelete called for ID:', id);
-        setProductToDelete(id);
-        setDeleteModalOpen(true);
-    }, []);
-
     const handleConfirmDelete = async () => {
-        if (!productToDelete) return;
+        const { productId, actionType } = modalSettings;
+        if (!productId) return;
 
         setDeleting(true);
         try {
-            await deleteProduct(productToDelete);
-            setDeleteModalOpen(false);
-            setProductToDelete(null);
+            if (actionType === 'restore' || actionType === 'duplicate_archived') {
+                await restoreProduct(productId);
+            } else {
+                await deleteProduct(productId);
+            }
+            setModalSettings(prev => ({ ...prev, open: false, productId: null }));
             await fetchData();
         } catch (err) {
-            console.error('Ürün silinirken hata:', err);
-            alert('Ürün silinirken bir hata oluştu.');
+            console.error('İşlem sırasında hata:', err);
+            alert('İşlem sırasında bir hata oluştu.');
         } finally {
             setDeleting(false);
         }
     };
+
+    const handleRestore = useCallback((id: string) => {
+        const product = products.find(p => p.id === id);
+        if (!product) return;
+
+        // Find the category of the product
+        const category = categories.find(c => c.id === product.categoryId);
+        const isCategoryDeleted = category?.isDeleted;
+
+        if (isCategoryDeleted) {
+            // Force category selection via Edit Modal
+            setEditingProduct({
+                ...product,
+                categoryId: '', // Clear deleted category to force selection
+                isActive: true // Default to active for restoration
+            });
+            setModalOpen(true);
+        } else {
+            // Normal restoration with confirmation
+            setModalSettings({
+                open: true,
+                title: "Ürünü Geri Yükle",
+                message: `"${product.name}" ürününü ve ilgili verilerini geri yüklemek istediğinizden emin misiniz?`,
+                confirmText: "Geri Yükle",
+                variant: "info",
+                showConfirm: true,
+                productId: id,
+                actionType: 'restore'
+            });
+        }
+    }, [products, categories]);
 
     // ── Column Definitions ──
     const columnDefs = useMemo<ColDef<Product>[]>(() => [
@@ -266,7 +321,10 @@ export default function AdminProductsPage() {
             field: 'isActive',
             sortable: true,
             width: 100,
-            cellRenderer: (params: { value: boolean }) => {
+            cellRenderer: (params: ICellRendererParams<Product, boolean>) => {
+                if (params.data?.isDeleted) {
+                    return <span style={{ color: '#94a3b8', fontWeight: '600' }}>Silinmiş</span>;
+                }
                 return params.value ? (
                     <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span>
                 ) : (
@@ -280,7 +338,7 @@ export default function AdminProductsPage() {
             sortable: true,
             filter: false,
             width: 180,
-            valueFormatter: (params) => {
+            valueFormatter: (params: ValueFormatterParams<Product, string>) => {
                 if (!params.value) return '';
                 return new Intl.DateTimeFormat('tr-TR', {
                     year: 'numeric', month: '2-digit', day: '2-digit',
@@ -301,7 +359,7 @@ export default function AdminProductsPage() {
             sortable: true,
             filter: false,
             width: 180,
-            valueFormatter: (params) => {
+            valueFormatter: (params: ValueFormatterParams<Product, string>) => {
                 if (!params.value) return '';
                 return new Intl.DateTimeFormat('tr-TR', {
                     year: 'numeric', month: '2-digit', day: '2-digit',
@@ -323,7 +381,7 @@ export default function AdminProductsPage() {
             filter: false,
             width: 180,
             hide: true,
-            valueFormatter: (params) => {
+            valueFormatter: (params: ValueFormatterParams<Product, string>) => {
                 if (!params.value) return '';
                 return new Intl.DateTimeFormat('tr-TR', {
                     year: 'numeric', month: '2-digit', day: '2-digit',
@@ -337,52 +395,74 @@ export default function AdminProductsPage() {
             sortable: false,
             filter: false,
             width: 120,
-            cellRenderer: (params: { data: Product }) => {
+            cellRenderer: (params: ICellRendererParams<Product, string>) => {
                 if (!params.data) return null;
+                const isDeleted = params.data.isDeleted;
                 return (
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center', height: '100%' }}>
-                        <button
-                            title="Düzenle"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleEdit(params.data);
-                            }}
-                            className="p-1 rounded-md transition-colors hover:bg-green-50"
-                            style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B5E3F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                                <path d="m15 5 4 4" />
-                            </svg>
-                        </button>
-                        <button
-                            title="Sil"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                const productId = params.data.id || (params.data as any).Id;
-                                if (productId) {
-                                    handleDelete(productId);
-                                }
-                            }}
-                            className="p-1 rounded-md transition-colors hover:bg-red-50"
-                            style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M3 6h18" />
-                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                            </svg>
-                        </button>
+                        {!isDeleted ? (
+                            <>
+                                <button
+                                    title="Düzenle"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEdit(params.data!);
+                                    }}
+                                    className="p-1 rounded-md transition-colors hover:bg-green-50"
+                                    style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
+                                >
+                                    <Edit2 size={16} color="#1B5E3F" />
+                                </button>
+                                <button
+                                    title="Sil"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const productId = params.data!.id;
+                                        setModalSettings({
+                                            open: true,
+                                            title: "Ürünü Sil",
+                                            message: "Bu ürünü silmek istediğinizden emin misiniz? Bu işlem geri alınabilir.",
+                                            confirmText: "Sil",
+                                            variant: "danger",
+                                            showConfirm: true,
+                                            productId,
+                                            actionType: 'delete'
+                                        });
+                                    }}
+                                    className="p-1 rounded-md transition-colors hover:bg-red-50"
+                                    style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
+                                >
+                                    <Trash2 size={16} color="#dc2626" />
+                                </button>
+                            </>
+                        ) : (
+                            <button
+                                title="Geri Yükle"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRestore(params.data!.id);
+                                }}
+                                className="p-1 rounded-md transition-colors hover:bg-blue-50"
+                                style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
+                            >
+                                <RotateCcw size={16} color="#2563eb" />
+                            </button>
+                        )}
                     </div>
                 );
             },
         },
-    ], [categories, handleEdit, handleDelete]);
+    ], [categories, handleEdit, handleRestore]);
 
     const handleFormSubmit = async (data: ProductFormData) => {
         setSaving(true);
         try {
             if (editingProduct) {
+                // If the product was deleted, restore it first
+                if (editingProduct.isDeleted) {
+                    await restoreProduct(editingProduct.id);
+                }
+
                 await updateProduct({
                     id: editingProduct.id,
                     name: data.name,
@@ -408,9 +488,25 @@ export default function AdminProductsPage() {
             setModalOpen(false);
             setEditingProduct(null);
             await fetchData();
-        } catch (err) {
-            console.error('Ürün kaydedilirken hata:', err);
-            alert('Ürün kaydedilirken bir hata oluştu.');
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.message || err.message || "";
+            if (errorMsg.includes("ARCHIVED_DUPLICATE")) {
+                const [_, id, name] = errorMsg.split("|");
+                setModalOpen(false);
+                setModalSettings({
+                    open: true,
+                    title: "Arşivde Bulundu",
+                    message: `"${name}" isminde bir ürün daha önce silinmiş. Bu ürünü arşivdeki verileriyle beraber geri getirmek mi istersiniz, yoksa bu isimle tamamen yeni bir ürün mü oluşturmak istersiniz?`,
+                    confirmText: "Arşivdekini Geri Getir",
+                    variant: "info",
+                    showConfirm: true,
+                    productId: id,
+                    actionType: 'duplicate_archived'
+                });
+            } else {
+                console.error('Ürün kaydedilirken hata:', err);
+                alert('Ürün kaydedilirken bir hata oluştu: ' + errorMsg);
+            }
         } finally {
             setSaving(false);
         }
@@ -527,34 +623,45 @@ export default function AdminProductsPage() {
                         </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={exportToExcel}
-                        className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                        <Download className="h-4 w-4" />
-                        Excel
-                    </button>
-                    <button
-                        onClick={exportToPDF}
-                        className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                        <FileDown className="h-4 w-4" />
-                        PDF
-                    </button>
-                    <button
-                        onClick={() => {
-                            setEditingProduct(null);
-                            setModalOpen(true);
-                        }}
-                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors"
-                        style={{ background: '#1B5E3F' }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = '#164A32')}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = '#1B5E3F')}
-                    >
-                        <Plus className="h-4 w-4" />
-                        Yeni Ürün Ekle
-                    </button>
+                <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                        <input
+                            type="checkbox"
+                            checked={showDeleted}
+                            onChange={(e) => setShowDeleted(e.target.checked)}
+                            className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                        />
+                        <span className="text-sm font-medium text-gray-700">Silinmişleri Göster</span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={exportToExcel}
+                            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                            <Download className="h-4 w-4" />
+                            Excel
+                        </button>
+                        <button
+                            onClick={exportToPDF}
+                            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                            <FileDown className="h-4 w-4" />
+                            PDF
+                        </button>
+                        <button
+                            onClick={() => {
+                                setEditingProduct(null);
+                                setModalOpen(true);
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors"
+                            style={{ background: '#1B5E3F' }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = '#164A32')}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = '#1B5E3F')}
+                        >
+                            <Plus className="h-4 w-4" />
+                            Yeni Ürün Ekle
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -608,18 +715,19 @@ export default function AdminProductsPage() {
                 loading={saving}
             />
 
-            {/* Confirm Delete Modal */}
+            {/* Confirm Modal (Multi-purpose) */}
             <ConfirmModal
-                open={deleteModalOpen}
-                title="Ürünü Sil"
-                message="Bu ürünü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+                open={modalSettings.open}
+                title={modalSettings.title}
+                message={modalSettings.message}
+                variant={modalSettings.variant}
+                confirmText={modalSettings.confirmText}
+                showConfirm={modalSettings.showConfirm}
                 onConfirm={handleConfirmDelete}
                 onClose={() => {
-                    setDeleteModalOpen(false);
-                    setProductToDelete(null);
+                    setModalSettings(prev => ({ ...prev, open: false }));
                 }}
                 loading={deleting}
-                confirmText="Sil"
             />
         </div>
     );

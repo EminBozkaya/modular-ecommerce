@@ -8,7 +8,7 @@ namespace ECommerce.Domain.Catalog;
 public interface ICategoryRepository
 {
     Task<Category?> GetByIdAsync(Guid id, CancellationToken ct = default);
-    Task<IReadOnlyList<Category>> GetAllAsync(CancellationToken ct = default);
+    Task<IReadOnlyList<Category>> GetAllAsync(bool includeDeleted = false, CancellationToken ct = default);
     Task AddAsync(Category category, CancellationToken ct = default);
     void Update(Category category);
     Task SaveChangesAsync(CancellationToken ct = default);

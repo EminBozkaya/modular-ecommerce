@@ -42,6 +42,10 @@ export async function deleteProduct(id: string): Promise<void> {
     await apiClient.delete(`/api/admin/products/${id}`);
 }
 
+export async function restoreProduct(id: string): Promise<void> {
+    await apiClient.post(`/api/admin/products/restore/${id}`);
+}
+
 export async function updateStock(data: UpdateStockData): Promise<void> {
     await apiClient.put('/api/admin/products/stock', data);
 }
@@ -76,4 +80,8 @@ export async function updateCategory(data: UpdateCategoryData): Promise<void> {
 
 export async function deleteCategory(id: string): Promise<void> {
     await apiClient.delete(`/api/admin/categories/${id}`);
+}
+
+export async function restoreCategory(id: string): Promise<void> {
+    await apiClient.post(`/api/admin/categories/restore/${id}`);
 }

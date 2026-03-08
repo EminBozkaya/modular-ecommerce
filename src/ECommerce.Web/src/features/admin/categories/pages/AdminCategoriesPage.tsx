@@ -14,10 +14,13 @@ import {
     CellStyleModule,
     DateFilterModule,
     LocaleModule,
+    type ICellRendererParams,
+    type ValueFormatterParams,
 } from 'ag-grid-community';
 import { Plus, Download, FileDown, FolderTree } from 'lucide-react';
 import { getCategories, getProducts } from '../../../catalog/api/catalogApi';
-import { createCategory, updateCategory, deleteCategory } from '../../api/adminApi';
+import { createCategory, updateCategory, deleteCategory, restoreCategory } from '../../api/adminApi';
+import { Trash2, Edit2, RotateCcw } from 'lucide-react';
 import type { Category, Product } from '../../../catalog/types/product';
 import type { CategoryFormData } from '../components/CategoryFormModal';
 import CategoryFormModal from '../components/CategoryFormModal';
@@ -134,6 +137,7 @@ export default function AdminCategoriesPage() {
     const [saving, setSaving] = useState(false);
     const [gridApi, setGridApi] = useState<GridApi | null>(null);
     const [deleting, setDeleting] = useState(false);
+    const [showDeleted, setShowDeleted] = useState(false);
 
     const gridComponents = useMemo(() => ({
         agDateInput: AgGridDatePicker,
@@ -147,7 +151,7 @@ export default function AdminCategoriesPage() {
         variant: 'danger' | 'warning' | 'info';
         showConfirm: boolean;
         categoryId: string | null;
-        actionType: 'delete' | 'deactivate';
+        actionType: 'delete' | 'deactivate' | 'restore' | 'duplicate_archived';
     }>({
         open: false,
         title: '',
@@ -163,8 +167,8 @@ export default function AdminCategoriesPage() {
         setLoading(true);
         try {
             const [cats, prods] = await Promise.all([
-                getCategories(),
-                getProducts({ page: 1, pageSize: 1000, includeInactive: true })
+                getCategories({ includeDeleted: showDeleted }),
+                getProducts({ page: 1, pageSize: 1000, includeInactive: true, includeDeleted: showDeleted })
             ]);
             setCategories(cats);
             setProducts(prods.items);
@@ -173,7 +177,7 @@ export default function AdminCategoriesPage() {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [showDeleted]);
 
     useEffect(() => {
         fetchData();
@@ -278,6 +282,22 @@ export default function AdminCategoriesPage() {
         }
     }, [categories, products]);
 
+    const handleRestore = useCallback((id: string) => {
+        const category = categories.find(c => c.id === id);
+        if (!category) return;
+
+        setModalSettings({
+            open: true,
+            title: "Kategoriyi Geri Yükle",
+            message: `"${category.name}" kategorisini ve arşivdeki verilerini geri yüklemek istediğinizden emin misiniz?`,
+            confirmText: "Geri Yükle",
+            variant: "info",
+            showConfirm: true,
+            categoryId: id,
+            actionType: 'restore'
+        });
+    }, [categories]);
+
 
     // ── Column Definitions ──
     const columnDefs = useMemo<ColDef<Category>[]>(() => [
@@ -309,8 +329,10 @@ export default function AdminCategoriesPage() {
             field: 'isActive',
             sortable: true,
             width: 100,
-            cellRenderer: (params: { value: boolean }) => {
-                if (params.value === undefined) return null;
+            cellRenderer: (params: ICellRendererParams<Category>) => {
+                if (params.data?.isDeleted) {
+                    return <span style={{ color: '#94a3b8', fontWeight: '600' }}>Silinmiş</span>;
+                }
                 return params.value ? (
                     <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span>
                 ) : (
@@ -324,7 +346,7 @@ export default function AdminCategoriesPage() {
             sortable: true,
             filter: false,
             width: 180,
-            valueFormatter: (params) => {
+            valueFormatter: (params: ValueFormatterParams<Category, string>) => {
                 if (!params.value) return '';
                 return new Intl.DateTimeFormat('tr-TR', {
                     year: 'numeric', month: '2-digit', day: '2-digit',
@@ -345,7 +367,7 @@ export default function AdminCategoriesPage() {
             sortable: true,
             filter: false,
             width: 180,
-            valueFormatter: (params) => {
+            valueFormatter: (params: ValueFormatterParams<Category, string>) => {
                 if (!params.value) return '';
                 return new Intl.DateTimeFormat('tr-TR', {
                     year: 'numeric', month: '2-digit', day: '2-digit',
@@ -367,7 +389,7 @@ export default function AdminCategoriesPage() {
             filter: false,
             width: 180,
             hide: true,
-            valueFormatter: (params) => {
+            valueFormatter: (params: ValueFormatterParams<Category, string>) => {
                 if (!params.value) return '';
                 return new Intl.DateTimeFormat('tr-TR', {
                     year: 'numeric', month: '2-digit', day: '2-digit',
@@ -381,41 +403,49 @@ export default function AdminCategoriesPage() {
             sortable: false,
             filter: false,
             width: 120,
-            cellRenderer: (params: { data: Category }) => {
+            cellRenderer: (params: ICellRendererParams<Category>) => {
                 if (!params.data) return null;
+                const isDeleted = params.data.isDeleted;
                 return (
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center', height: '100%' }}>
-                        <button
-                            title="Düzenle"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleEdit(params.data);
-                            }}
-                            className="p-1 rounded-md transition-colors hover:bg-green-50"
-                            style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B5E3F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                                <path d="m15 5 4 4" />
-                            </svg>
-                        </button>
-                        <button
-                            title="Sil"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(params.data.id);
-                            }}
-                            className="p-1 rounded-md transition-colors hover:bg-red-50"
-                            style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M3 6h18" />
-                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                <line x1="10" y1="11" x2="10" y2="17" />
-                                <line x1="14" y1="11" x2="14" y2="17" />
-                            </svg>
-                        </button>
+                        {!isDeleted ? (
+                            <>
+                                <button
+                                    title="Düzenle"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (params.data) handleEdit(params.data);
+                                    }}
+                                    className="p-1 rounded-md transition-colors hover:bg-green-50"
+                                    style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
+                                >
+                                    <Edit2 size={16} color="#1B5E3F" />
+                                </button>
+                                <button
+                                    title="Sil"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (params.data) handleDelete(params.data.id);
+                                    }}
+                                    className="p-1 rounded-md transition-colors hover:bg-red-50"
+                                    style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
+                                >
+                                    <Trash2 size={16} color="#dc2626" />
+                                </button>
+                            </>
+                        ) : (
+                            <button
+                                title="Geri Yükle"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (params.data) handleRestore(params.data.id);
+                                }}
+                                className="p-1 rounded-md transition-colors hover:bg-blue-50"
+                                style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
+                            >
+                                <RotateCcw size={16} color="#2563eb" />
+                            </button>
+                        )}
                     </div>
                 );
             },
@@ -442,6 +472,8 @@ export default function AdminCategoriesPage() {
                         parentCategoryId: cat.parentCategoryId
                     });
                 }
+            } else if (actionType === 'restore' || actionType === 'duplicate_archived') {
+                await restoreCategory(categoryId);
             } else {
                 await deleteCategory(categoryId);
             }
@@ -506,9 +538,25 @@ export default function AdminCategoriesPage() {
             setModalOpen(false);
             setEditingCategory(null);
             await fetchData();
-        } catch (err) {
-            console.error('Kategori kaydedilirken hata:', err);
-            alert('Kategori kaydedilirken bir hata oluştu.');
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.message || err.message || "";
+            if (errorMsg.includes("ARCHIVED_DUPLICATE")) {
+                const [_, id, name] = errorMsg.split("|");
+                setModalOpen(false);
+                setModalSettings({
+                    open: true,
+                    title: "Arşivde Bulundu",
+                    message: `"${name}" isminde bir kategori daha önce silinmiş. Bu kategoriyi arşivdeki verileriyle beraber geri getirmek ister misiniz?`,
+                    confirmText: "Geri Getir",
+                    variant: "info",
+                    showConfirm: true,
+                    categoryId: id,
+                    actionType: 'duplicate_archived'
+                });
+            } else {
+                console.error('Kategori kaydedilirken hata:', err);
+                alert('Kategori kaydedilirken bir hata oluştu: ' + errorMsg);
+            }
         } finally {
             setSaving(false);
         }
@@ -617,34 +665,45 @@ export default function AdminCategoriesPage() {
                         </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={exportToExcel}
-                        className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                        <Download className="h-4 w-4" />
-                        Excel
-                    </button>
-                    <button
-                        onClick={exportToPDF}
-                        className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                        <FileDown className="h-4 w-4" />
-                        PDF
-                    </button>
-                    <button
-                        onClick={() => {
-                            setEditingCategory(null);
-                            setModalOpen(true);
-                        }}
-                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors"
-                        style={{ background: '#1B5E3F' }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = '#164A32')}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = '#1B5E3F')}
-                    >
-                        <Plus className="h-4 w-4" />
-                        Yeni Kategori Ekle
-                    </button>
+                <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                        <input
+                            type="checkbox"
+                            checked={showDeleted}
+                            onChange={(e) => setShowDeleted(e.target.checked)}
+                            className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                        />
+                        <span className="text-sm font-medium text-gray-700">Silinmişleri Göster</span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={exportToExcel}
+                            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                            <Download className="h-4 w-4" />
+                            Excel
+                        </button>
+                        <button
+                            onClick={exportToPDF}
+                            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                            <FileDown className="h-4 w-4" />
+                            PDF
+                        </button>
+                        <button
+                            onClick={() => {
+                                setEditingCategory(null);
+                                setModalOpen(true);
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors"
+                            style={{ background: '#1B5E3F' }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = '#164A32')}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = '#1B5E3F')}
+                        >
+                            <Plus className="h-4 w-4" />
+                            Yeni Kategori Ekle
+                        </button>
+                    </div>
                 </div>
             </div>
 
