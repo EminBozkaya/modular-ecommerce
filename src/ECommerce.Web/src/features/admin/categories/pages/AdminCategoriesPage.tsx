@@ -564,27 +564,49 @@ export default function AdminCategoriesPage() {
 
     // ── Export Handlers ──
     const exportToExcel = () => {
-        const activeCount = categories.filter(c => c.isActive !== false).length;
         const totalCount = categories.length;
+        const activeCount = categories.filter(c => c.isActive !== false && !c.isDeleted).length;
+        const passiveCount = categories.filter(c => c.isActive === false && !c.isDeleted).length;
+        const deletedCount = categories.filter(c => c.isDeleted).length;
 
         const wsData: any[][] = [
             ['Yönetim Paneli - Kategori Listesi'],
             [`Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')} ${new Date().toLocaleTimeString('tr-TR')}`],
             [`Toplam Kategori Sayısı: ${totalCount}`],
             [`Aktif Kategori Sayısı: ${activeCount}`],
+            [`Pasif Kategori Sayısı: ${passiveCount}`],
+            [`Silinmiş Kategori Sayısı: ${deletedCount}`],
             [],
-            ['Kategori Adı', 'Durum']
+            ['Kategori Adı', 'Üst Kategori', 'Durum', 'Oluşturulma Tarihi', 'Oluşturan', 'Güncellenme Tarihi', 'Güncelleyen']
         ];
+
+        const formatDate = (dateStr?: string) => {
+            if (!dateStr) return '';
+            return new Date(dateStr).toLocaleString('tr-TR');
+        };
 
         categories.forEach((c) => {
             wsData.push([
                 c.name,
-                c.isActive !== false ? 'Aktif' : 'Pasif',
+                c.parentCategoryName || (c.parentCategoryId ? 'Yükleniyor...' : 'Ana Kategori'),
+                c.isDeleted ? 'Silinmiş' : (c.isActive !== false ? 'Aktif' : 'Pasif'),
+                formatDate(c.createdAt || undefined),
+                c.createdBy || '',
+                formatDate(c.updatedAt || undefined),
+                c.updatedBy || ''
             ]);
         });
 
         const ws = XLSX.utils.aoa_to_sheet(wsData);
-        ws['!cols'] = [{ width: 40 }, { width: 15 }];
+        ws['!cols'] = [
+            { width: 30 }, // Kategori Adı
+            { width: 25 }, // Üst Kategori
+            { width: 12 }, // Durum
+            { width: 20 }, // Oluşturulma Tarihi
+            { width: 15 }, // Oluşturan
+            { width: 20 }, // Güncellenme Tarihi
+            { width: 15 }  // Güncelleyen
+        ];
 
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Kategoriler');
@@ -593,10 +615,13 @@ export default function AdminCategoriesPage() {
 
     const exportToPDF = async () => {
         try {
-            const activeCount = categories.filter(c => c.isActive !== false).length;
             const totalCount = categories.length;
+            const activeCount = categories.filter(c => c.isActive !== false && !c.isDeleted).length;
+            const passiveCount = categories.filter(c => c.isActive === false && !c.isDeleted).length;
+            const deletedCount = categories.filter(c => c.isDeleted).length;
 
-            const doc = new jsPDF('p', 'mm', 'a4');
+            // Change to landscape for more columns
+            const doc = new jsPDF('l', 'mm', 'a4');
 
             // Load Turkish font (Roboto)
             const fontUrl = '/fonts/Roboto-Regular.ttf';
@@ -626,18 +651,44 @@ export default function AdminCategoriesPage() {
             doc.text(`Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')} ${new Date().toLocaleTimeString('tr-TR')}`, 14, 28);
             doc.text(`Toplam Kategori Sayısı: ${totalCount}`, 14, 34);
             doc.text(`Aktif Kategori Sayısı: ${activeCount}`, 14, 40);
+            doc.text(`Pasif Kategori Sayısı: ${passiveCount}`, 70, 34);
+            doc.text(`Silinmiş Kategori Sayısı: ${deletedCount}`, 70, 40);
+
+            const formatDate = (dateStr?: string) => {
+                if (!dateStr) return '';
+                const date = new Date(dateStr);
+                return new Intl.DateTimeFormat('tr-TR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit'
+                }).format(date);
+            };
 
             const tableData = categories.map((c) => [
                 c.name,
-                c.isActive !== false ? 'Aktif' : 'Pasif',
+                c.parentCategoryName || (c.parentCategoryId ? '...' : 'Ana'),
+                c.isDeleted ? 'Silinmiş' : (c.isActive !== false ? 'Aktif' : 'Pasif'),
+                formatDate(c.createdAt || undefined),
+                c.createdBy || '',
+                formatDate(c.updatedAt || undefined),
+                c.updatedBy || ''
             ]);
 
             autoTable(doc, {
                 startY: 46,
-                head: [['Kategori Adı', 'Durum']],
+                head: [['Kategori Adı', 'Üst Kategori', 'Durum', 'Oluşturulma', 'Oluşturan', 'Güncellenme', 'Güncelleyen']],
                 body: tableData,
-                styles: { font: 'Roboto', fontSize: 10 },
+                styles: { font: 'Roboto', fontSize: 8 }, // Smaller font to fit everything
                 headStyles: { font: 'Roboto', fontStyle: 'normal', fillColor: [27, 94, 63] },
+                columnStyles: {
+                    0: { cellWidth: 45 }, // Kategori Adı
+                    1: { cellWidth: 40 }, // Üst Kategori
+                    2: { cellWidth: 20 }, // Durum
+                    3: { cellWidth: 35 }, // Oluşturulma
+                    4: { cellWidth: 25 }, // Oluşturan
+                    5: { cellWidth: 35 }, // Güncellenme
+                    6: { cellWidth: 25 }, // Güncelleyen
+                },
+                margin: { left: 14, right: 14 }
             });
 
             doc.save('kategoriler.pdf');

@@ -514,17 +514,26 @@ export default function AdminProductsPage() {
 
     // ── Export Handlers ──
     const exportToExcel = () => {
-        const activeCount = products.filter(p => p.isActive).length;
         const totalCount = products.length;
+        const activeCount = products.filter(p => p.isActive && !p.isDeleted).length;
+        const passiveCount = products.filter(p => !p.isActive && !p.isDeleted).length;
+        const deletedCount = products.filter(p => p.isDeleted).length;
 
         const wsData: any[][] = [
             ['Yönetim Paneli - Ürün Listesi'],
             [`Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')} ${new Date().toLocaleTimeString('tr-TR')}`],
             [`Toplam Ürün Sayısı: ${totalCount}`],
             [`Aktif Ürün Sayısı: ${activeCount}`],
+            [`Pasif Ürün Sayısı: ${passiveCount}`],
+            [`Silinmiş Ürün Sayısı: ${deletedCount}`],
             [],
-            ['Ürün Adı', 'Açıklama', 'Fiyat (₺)', 'Stok', 'Kategori', 'Durum']
+            ['Ürün Adı', 'Açıklama', 'Fiyat (₺)', 'Stok', 'Kategori', 'Durum', 'Oluşturulma Tarihi', 'Oluşturan', 'Güncellenme Tarihi', 'Güncelleyen']
         ];
+
+        const formatDate = (dateStr?: string) => {
+            if (!dateStr) return '';
+            return new Date(dateStr).toLocaleString('tr-TR');
+        };
 
         products.forEach((p) => {
             wsData.push([
@@ -533,13 +542,28 @@ export default function AdminProductsPage() {
                 p.priceAmount ?? p.price,
                 p.stockQuantity,
                 p.categoryName,
-                p.isActive ? 'Aktif' : 'Pasif',
+                p.isDeleted ? 'Silinmiş' : (p.isActive ? 'Aktif' : 'Pasif'),
+                formatDate(p.createdAt || undefined),
+                p.createdBy || '',
+                formatDate(p.updatedAt || undefined),
+                p.updatedBy || ''
             ]);
         });
 
         const ws = XLSX.utils.aoa_to_sheet(wsData);
         // Column widths
-        ws['!cols'] = [{ width: 30 }, { width: 40 }, { width: 15 }, { width: 10 }, { width: 20 }, { width: 10 }];
+        ws['!cols'] = [
+            { width: 30 }, // Ürün Adı
+            { width: 40 }, // Açıklama
+            { width: 12 }, // Fiyat
+            { width: 10 }, // Stok
+            { width: 25 }, // Kategori
+            { width: 10 }, // Durum
+            { width: 20 }, // Oluşturulma
+            { width: 15 }, // Oluşturan
+            { width: 20 }, // Güncellenme
+            { width: 15 }  // Güncelleyen
+        ];
 
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Ürünler');
@@ -548,10 +572,13 @@ export default function AdminProductsPage() {
 
     const exportToPDF = async () => {
         try {
-            const activeCount = products.filter(p => p.isActive).length;
             const totalCount = products.length;
+            const activeCount = products.filter(p => p.isActive && !p.isDeleted).length;
+            const passiveCount = products.filter(p => !p.isActive && !p.isDeleted).length;
+            const deletedCount = products.filter(p => p.isDeleted).length;
 
-            const doc = new jsPDF('p', 'mm', 'a4');
+            // Change to landscape for all columns
+            const doc = new jsPDF('l', 'mm', 'a4');
 
             // Load Turkish font (Roboto)
             const fontUrl = '/fonts/Roboto-Regular.ttf';
@@ -581,21 +608,48 @@ export default function AdminProductsPage() {
             doc.text(`Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')} ${new Date().toLocaleTimeString('tr-TR')}`, 14, 28);
             doc.text(`Toplam Ürün Sayısı: ${totalCount}`, 14, 34);
             doc.text(`Aktif Ürün Sayısı: ${activeCount}`, 14, 40);
+            doc.text(`Pasif Ürün Sayısı: ${passiveCount}`, 70, 34);
+            doc.text(`Silinmiş Ürün Sayısı: ${deletedCount}`, 70, 40);
+
+            const formatDate = (dateStr?: string) => {
+                if (!dateStr) return '';
+                const date = new Date(dateStr);
+                return new Intl.DateTimeFormat('tr-TR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit'
+                }).format(date);
+            };
 
             const tableData = products.map((p) => [
                 p.name,
                 `${(p.priceAmount ?? p.price).toFixed(2)} TL`,
                 String(p.stockQuantity),
                 p.categoryName,
-                p.isActive ? 'Aktif' : 'Pasif',
+                p.isDeleted ? 'Silinmiş' : (p.isActive ? 'Aktif' : 'Pasif'),
+                formatDate(p.createdAt || undefined),
+                p.createdBy || '',
+                formatDate(p.updatedAt || undefined),
+                p.updatedBy || ''
             ]);
 
             autoTable(doc, {
                 startY: 46,
-                head: [['Ürün Adı', 'Fiyat', 'Stok', 'Kategori', 'Durum']],
+                head: [['Ürün Adı', 'Fiyat', 'Stok', 'Kategori', 'Durum', 'Oluşturulma', 'Oluşturan', 'Güncellenme', 'Güncelleyen']],
                 body: tableData,
-                styles: { font: 'Roboto', fontSize: 9 },
+                styles: { font: 'Roboto', fontSize: 7 }, // Tiny font for many columns
                 headStyles: { font: 'Roboto', fontStyle: 'normal', fillColor: [27, 94, 63] },
+                columnStyles: {
+                    0: { cellWidth: 35 }, // Ürün Adı
+                    1: { cellWidth: 20 }, // Fiyat
+                    2: { cellWidth: 15 }, // Stok
+                    3: { cellWidth: 35 }, // Kategori
+                    4: { cellWidth: 20 }, // Durum
+                    5: { cellWidth: 35 }, // Oluşturulma
+                    6: { cellWidth: 25 }, // Oluşturan
+                    7: { cellWidth: 35 }, // Güncellenme
+                    8: { cellWidth: 25 }, // Güncelleyen
+                },
+                margin: { left: 10, right: 10 }
             });
 
             doc.save('urunler.pdf');
