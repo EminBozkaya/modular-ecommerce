@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import {
     type ColDef,
@@ -14,6 +14,8 @@ import {
     RowApiModule,
     CellStyleModule,
     RowSelectionModule,
+    DateFilterModule,
+    LocaleModule,
 } from 'ag-grid-community';
 import { Plus, Download, FileDown, Package } from 'lucide-react';
 import { getProducts, getCategories } from '../../../catalog/api/catalogApi';
@@ -25,6 +27,7 @@ import ConfirmModal from '../../components/ConfirmModal';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import AgGridDatePicker from '../../components/AgGridDatePicker';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([
@@ -37,7 +40,111 @@ ModuleRegistry.registerModules([
     RowApiModule,
     CellStyleModule,
     RowSelectionModule,
+    DateFilterModule,
+    LocaleModule,
 ]);
+
+const localeTextTr = {
+    // Fill
+    filterOoo: 'Filtrele...',
+    applyFilter: 'Uygula',
+    resetFilter: 'Sıfırla',
+    clearFilter: 'Temizle',
+    // Date Filter
+    dateFormatOoo: 'dd.mm.yyyy',
+    dateFilterPlaceholder: 'gg.aa.yyyy',
+    before: 'Önce',
+    after: 'Sonra',
+    equals: 'Eşittir',
+    notEqual: 'Eşit Değil',
+    blank: 'Boş',
+    notBlank: 'Dolu',
+    // Number Filter & Text Filter
+    contains: 'İçerir',
+    notContains: 'İçermez',
+    startsWith: 'İle Başlar',
+    endsWith: 'İle Biter',
+    // Header
+    sortAscending: 'Artan Sıralama',
+    sortDescending: 'Azalan Sıralama',
+    columnAutoSize: 'Otomatik Genişlik',
+    // Pagination
+    page: 'Sayfa',
+    more: 'Daha Fazla',
+    to: '-',
+    of: '/',
+    next: 'Sonraki',
+    last: 'Son',
+    first: 'İlk',
+    previous: 'Önceki',
+    pageSizeSelectorLabel: 'Sayfa Boyutu:',
+    loadingOoo: 'Yükleniyor...',
+    noRowsToShow: 'Henüz kayıt bulunamadı.',
+    // Months
+    january: 'Ocak',
+    february: 'Şubat',
+    march: 'Mart',
+    april: 'Nisan',
+    may: 'Mayıs',
+    june: 'Haziran',
+    july: 'Temmuz',
+    august: 'Ağustos',
+    september: 'Eylül',
+    october: 'Ekim',
+    november: 'Kasım',
+    december: 'Aralık',
+    // Months Short
+    jan: 'Oca',
+    feb: 'Şub',
+    mar: 'Mar',
+    apr: 'Nis',
+    mayShort: 'May',
+    jun: 'Haz',
+    jul: 'Tem',
+    aug: 'Ağu',
+    sep: 'Eyl',
+    oct: 'Eki',
+    nov: 'Kas',
+    dec: 'Ara',
+    // Days
+    sunday: 'Pazar',
+    monday: 'Pazartesi',
+    tuesday: 'Salı',
+    wednesday: 'Çarşamba',
+    thursday: 'Perşembe',
+    friday: 'Cuma',
+    saturday: 'Cumartesi',
+    // Days Short
+    sun: 'Paz',
+    mon: 'Pzt',
+    tue: 'Sal',
+    wed: 'Çar',
+    thu: 'Per',
+    fri: 'Cum',
+    sat: 'Cmt',
+    // Misc
+    today: 'Bugün',
+    clear: 'Temizle',
+};
+
+const dateComparator = (filterLocalDate: Date, cellValue: string) => {
+    if (cellValue == null) return -1;
+    const cellDate = new Date(cellValue);
+
+    // Remove seconds and milliseconds for comparison if we want to match by minute
+    const filterTime = new Date(filterLocalDate).setSeconds(0, 0);
+    const cellTime = new Date(cellDate).setSeconds(0, 0);
+
+    const result = (filterTime === cellTime) ? 0 : (cellTime < filterTime ? -1 : 1);
+
+    console.log('DATE FILTER COMP (Products):', {
+        filter: new Date(filterTime).toLocaleString(),
+        cell: new Date(cellTime).toLocaleString(),
+        result
+    });
+
+    return result;
+};
 
 export default function AdminProductsPage() {
     const gridRef = useRef<AgGridReact>(null);
@@ -51,6 +158,10 @@ export default function AdminProductsPage() {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [productToDelete, setProductToDelete] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
+
+    const gridComponents = useMemo(() => ({
+        agDateInput: AgGridDatePicker,
+    }), []);
 
     const fetchData = useCallback(async () => {
         try {
@@ -77,12 +188,12 @@ export default function AdminProductsPage() {
 
     // ── CRUD Handlers ──
     const handleEdit = useCallback((product: Product) => {
-        console.log('Editing product:', product);
         setEditingProduct(product);
         setModalOpen(true);
     }, []);
 
     const handleDelete = useCallback((id: string) => {
+        console.log('Products handleDelete called for ID:', id);
         setProductToDelete(id);
         setDeleteModalOpen(true);
     }, []);
@@ -92,7 +203,6 @@ export default function AdminProductsPage() {
 
         setDeleting(true);
         try {
-            console.log('Deleting product ID:', productToDelete);
             await deleteProduct(productToDelete);
             setDeleteModalOpen(false);
             setProductToDelete(null);
@@ -105,7 +215,8 @@ export default function AdminProductsPage() {
         }
     };
 
-    const columnDefs: ColDef<Product>[] = [
+    // ── Column Definitions ──
+    const columnDefs = useMemo<ColDef<Product>[]>(() => [
         {
             headerName: 'Ürün Adı',
             field: 'name',
@@ -164,6 +275,63 @@ export default function AdminProductsPage() {
             },
         },
         {
+            headerName: 'Oluşturulma Tarihi',
+            field: 'createdAt',
+            sortable: true,
+            filter: false,
+            width: 180,
+            valueFormatter: (params) => {
+                if (!params.value) return '';
+                return new Intl.DateTimeFormat('tr-TR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit'
+                }).format(new Date(params.value));
+            }
+        },
+        {
+            headerName: 'Oluşturan',
+            field: 'createdBy',
+            sortable: true,
+            filter: 'agTextColumnFilter',
+            width: 150,
+        },
+        {
+            headerName: 'Güncellenme Tarihi',
+            field: 'updatedAt',
+            sortable: true,
+            filter: false,
+            width: 180,
+            valueFormatter: (params) => {
+                if (!params.value) return '';
+                return new Intl.DateTimeFormat('tr-TR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit'
+                }).format(new Date(params.value));
+            }
+        },
+        {
+            headerName: 'Güncelleyen',
+            field: 'updatedBy',
+            sortable: true,
+            filter: 'agTextColumnFilter',
+            width: 150,
+        },
+        {
+            headerName: 'Silinme Tarihi',
+            field: 'deletedAt',
+            sortable: true,
+            filter: false,
+            width: 180,
+            hide: true,
+            valueFormatter: (params) => {
+                if (!params.value) return '';
+                return new Intl.DateTimeFormat('tr-TR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit'
+                }).format(new Date(params.value));
+            }
+        },
+        {
             headerName: 'İşlemler',
             field: 'id',
             sortable: false,
@@ -192,11 +360,8 @@ export default function AdminProductsPage() {
                             onClick={(e) => {
                                 e.stopPropagation();
                                 const productId = params.data.id || (params.data as any).Id;
-                                console.log('Delete button clicked for ID:', productId);
                                 if (productId) {
                                     handleDelete(productId);
-                                } else {
-                                    console.error('Product ID not found in data:', params.data);
                                 }
                             }}
                             className="p-1 rounded-md transition-colors hover:bg-red-50"
@@ -212,7 +377,7 @@ export default function AdminProductsPage() {
                 );
             },
         },
-    ];
+    ], [categories, handleEdit, handleDelete]);
 
     const handleFormSubmit = async (data: ProductFormData) => {
         setSaving(true);
@@ -401,6 +566,7 @@ export default function AdminProductsPage() {
                 <div style={{ height: 'calc(100vh - 260px)', width: '100%' }}>
                     <AgGridReact<Product>
                         ref={gridRef}
+                        components={gridComponents}
                         rowData={products}
                         columnDefs={columnDefs}
                         onGridReady={onGridReady}
@@ -410,6 +576,7 @@ export default function AdminProductsPage() {
                         loading={loading}
                         animateRows={true}
                         rowSelection={{ mode: 'singleRow' }}
+                        localeText={localeTextTr}
                         defaultColDef={{
                             resizable: true,
                             floatingFilter: true,

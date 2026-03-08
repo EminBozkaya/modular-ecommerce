@@ -9,9 +9,17 @@ public record ProductDto(
     Guid Id, string Name, string? Description, string? ImageUrl,
     decimal PriceAmount, string PriceCurrency,
     int StockQuantity, bool IsActive,
-    Guid CategoryId, string? CategoryName);
+    Guid CategoryId, string? CategoryName,
+    DateTime CreatedAt, string? CreatedBy,
+    DateTime? UpdatedAt, string? UpdatedBy,
+    DateTime? DeletedAt);
 
-public record CategoryDto(Guid Id, string Name, string? Description, string? ImageUrl, bool IsActive, Guid? ParentCategoryId = null, string? ParentCategoryName = null);
+public record CategoryDto(
+    Guid Id, string Name, string? Description, string? ImageUrl,
+    bool IsActive, Guid? ParentCategoryId = null, string? ParentCategoryName = null,
+    DateTime? CreatedAt = null, string? CreatedBy = null,
+    DateTime? UpdatedAt = null, string? UpdatedBy = null,
+    DateTime? DeletedAt = null);
 
 // --- Queries ---
 public record GetProductsQuery(

@@ -1,4 +1,5 @@
 using ECommerce.Application.Common.Interfaces;
+using ECommerce.Domain.Common.Interfaces;
 using ECommerce.Infrastructure.Identity;
 using ECommerce.Infrastructure.Payment;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -50,6 +51,8 @@ public static class DependencyInjection
         services.AddAuthorization();
 
         // Services
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IPaymentService, StubPaymentService>();
 

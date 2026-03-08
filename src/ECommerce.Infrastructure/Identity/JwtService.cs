@@ -31,7 +31,9 @@ public class JwtService : IJwtService
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(ClaimTypes.Role, user.Role.ToString()),
-            new("firstName", user.FirstName)
+            new("firstName", user.FirstName),
+            new("lastName", user.LastName),
+            new(ClaimTypes.Name, user.FullName)
         };
 
         var token = new JwtSecurityToken(

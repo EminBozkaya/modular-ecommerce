@@ -150,13 +150,13 @@ body {
     opacity: 0;
     transform: translateY(16px) scale(0.97);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
 
-/* ── Admin Focus Ring Color ── */
 input:focus,
 textarea:focus,
 select:focus {
@@ -164,3 +164,123 @@ select:focus {
   border-color: #1B5E3F;
 }
 
+/* ── Premium DatePicker Overrides ── */
+.premium-calendar {
+  font-family: var(--font-sans) !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 0.75rem !important;
+  padding: 8px !important;
+}
+
+.react-datepicker__header {
+  background-color: white !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+  border-top-left-radius: 0.75rem !important;
+  border-top-right-radius: 0.75rem !important;
+  padding-top: 10px !important;
+}
+
+.react-datepicker__current-month {
+  color: #1B5E3F !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  margin-bottom: 8px !important;
+}
+
+.react-datepicker__day-name {
+  color: #6b7280 !important;
+  font-weight: 600 !important;
+  width: 2.2rem !important;
+  margin: 0.2rem !important;
+}
+
+.react-datepicker__day {
+  width: 2.2rem !important;
+  line-height: 2.2rem !important;
+  margin: 0.2rem !important;
+  border-radius: 0.5rem !important;
+  color: #374151 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.react-datepicker__day--selected {
+  background-color: #1B5E3F !important;
+  color: white !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 6px -1px rgba(27, 94, 63, 0.2) !important;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: #ecfdf5 !important;
+  color: #1B5E3F !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: #f0fdf4 !important;
+  color: #1B5E3F !important;
+  transform: scale(1.05) !important;
+}
+
+.react-datepicker__navigation {
+  top: 15px !important;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: #1B5E3F !important;
+  border-width: 2px 2px 0 0 !important;
+}
+
+.react-datepicker__month-container {
+  float: none !important;
+}
+
+/* ── Time Selection Styling ── */
+.react-datepicker__time-container {
+  border-left: 1px solid #f3f4f6 !important;
+  width: 85px !important;
+}
+
+.react-datepicker__time-box {
+  width: 85px !important;
+  border-bottom-right-radius: 0.75rem !important;
+}
+
+.react-datepicker__time-list-item {
+  height: 30px !important;
+  padding: 5px 10px !important;
+  font-size: 13px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s !important;
+}
+
+.react-datepicker__time-list-item:hover {
+  background-color: #f0fdf4 !important;
+  color: #1B5E3F !important;
+}
+
+.react-datepicker__time-list-item--selected {
+  background-color: #1B5E3F !important;
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.react-datepicker-time__header {
+  color: #1B5E3F !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+  padding: 10px 0 !important;
+}
+
+/* Fix AG Grid component height in floating filter */
+.ag-floating-filter-input {
+  height: 100% !important;
+}
+
+.ag-custom-component-wrapper {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import {
     type ColDef,
@@ -12,6 +12,8 @@ import {
     ColumnAutoSizeModule,
     RowApiModule,
     CellStyleModule,
+    DateFilterModule,
+    LocaleModule,
 } from 'ag-grid-community';
 import { Plus, Download, FileDown, FolderTree } from 'lucide-react';
 import { getCategories, getProducts } from '../../../catalog/api/catalogApi';
@@ -23,6 +25,7 @@ import ConfirmModal from '../../components/ConfirmModal';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import AgGridDatePicker from '../../components/AgGridDatePicker';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([
@@ -33,7 +36,112 @@ ModuleRegistry.registerModules([
     ColumnAutoSizeModule,
     RowApiModule,
     CellStyleModule,
+    DateFilterModule,
+    LocaleModule,
 ]);
+
+const localeTextTr = {
+    // Fill
+    filterOoo: 'Filtrele...',
+    applyFilter: 'Uygula',
+    resetFilter: 'Sıfırla',
+    clearFilter: 'Temizle',
+    // Date Filter
+    dateFormatOoo: 'dd.mm.yyyy',
+    dateFilterPlaceholder: 'gg.aa.yyyy',
+    before: 'Önce',
+    after: 'Sonra',
+    equals: 'Eşittir',
+    notEqual: 'Eşit Değil',
+    blank: 'Boş',
+    notBlank: 'Dolu',
+    // Number Filter & Text Filter
+    contains: 'İçerir',
+    notContains: 'İçermez',
+    startsWith: 'İle Başlar',
+    endsWith: 'İle Biter',
+    // Header
+    sortAscending: 'Artan Sıralama',
+    sortDescending: 'Azalan Sıralama',
+    columnAutoSize: 'Otomatik Genişlik',
+    // Pagination
+    page: 'Sayfa',
+    more: 'Daha Fazla',
+    to: '-',
+    of: '/',
+    next: 'Sonraki',
+    last: 'Son',
+    first: 'İlk',
+    previous: 'Önceki',
+    pageSizeSelectorLabel: 'Sayfa Boyutu:',
+    loadingOoo: 'Yükleniyor...',
+    noRowsToShow: 'Henüz kayıt bulunamadı.',
+    // Months
+    january: 'Ocak',
+    february: 'Şubat',
+    march: 'Mart',
+    april: 'Nisan',
+    may: 'Mayıs',
+    june: 'Haziran',
+    july: 'Temmuz',
+    august: 'Ağustos',
+    september: 'Eylül',
+    october: 'Ekim',
+    november: 'Kasım',
+    december: 'Aralık',
+    // Months Short
+    jan: 'Oca',
+    feb: 'Şub',
+    mar: 'Mar',
+    apr: 'Nis',
+    mayShort: 'May',
+    jun: 'Haz',
+    jul: 'Tem',
+    aug: 'Ağu',
+    sep: 'Eyl',
+    oct: 'Eki',
+    nov: 'Kas',
+    dec: 'Ara',
+    // Days
+    sunday: 'Pazar',
+    monday: 'Pazartesi',
+    tuesday: 'Salı',
+    wednesday: 'Çarşamba',
+    thursday: 'Perşembe',
+    friday: 'Cuma',
+    saturday: 'Cumartesi',
+    // Days Short
+    sun: 'Paz',
+    mon: 'Pzt',
+    tue: 'Sal',
+    wed: 'Çar',
+    thu: 'Per',
+    fri: 'Cum',
+    sat: 'Cmt',
+    // Misc
+    today: 'Bugün',
+    clear: 'Temizle',
+};
+
+const dateComparator = (filterLocalDate: Date, cellValue: string) => {
+    if (cellValue == null) return -1;
+    const cellDate = new Date(cellValue);
+
+    // Remove seconds and milliseconds for comparison if we want to match by minute
+    const filterTime = new Date(filterLocalDate).setSeconds(0, 0);
+    const cellTime = new Date(cellDate).setSeconds(0, 0);
+
+    const result = (filterTime === cellTime) ? 0 : (cellTime < filterTime ? -1 : 1);
+
+    // Debugging logs for browser test
+    console.log('DATE FILTER COMP:', {
+        filter: new Date(filterTime).toLocaleString(),
+        cell: new Date(cellTime).toLocaleString(),
+        result
+    });
+
+    return result;
+};
 
 export default function AdminCategoriesPage() {
     const gridRef = useRef<AgGridReact>(null);
@@ -45,6 +153,11 @@ export default function AdminCategoriesPage() {
     const [saving, setSaving] = useState(false);
     const [gridApi, setGridApi] = useState<GridApi | null>(null);
     const [deleting, setDeleting] = useState(false);
+
+    const gridComponents = useMemo(() => ({
+        agDateInput: AgGridDatePicker,
+    }), []);
+
     const [modalSettings, setModalSettings] = useState<{
         open: boolean;
         title: string;
@@ -90,8 +203,119 @@ export default function AdminCategoriesPage() {
         params.api.sizeColumnsToFit();
     };
 
+    const handleEdit = useCallback((category: Category) => {
+        setEditingCategory(category);
+        setModalOpen(true);
+    }, []);
+
+    const handleDelete = useCallback((id: string) => {
+        console.log('Categories handleDelete called for ID:', id);
+        const category = categories.find(c => c.id === id);
+        if (!category) {
+            console.warn('Category not found for deletion:', id);
+            return;
+        }
+
+        const isRoot = !category.parentCategoryId;
+        const subCats = categories.filter(c => c.parentCategoryId === id && !c.isDeleted);
+        const hasProducts = products.some(p => p.categoryId === id);
+
+        const subCatsWithProductsCount = subCats.filter(sc =>
+            products.some(p => p.categoryId === sc.id)
+        ).length;
+
+        if (isRoot) {
+            if (hasProducts || (subCats.length > 1 && subCatsWithProductsCount > 0) || subCatsWithProductsCount > 1) {
+                setModalSettings({
+                    open: true,
+                    title: "İşlem Engellendi",
+                    message: hasProducts
+                        ? "Bu kategori içerisinde aktif ürünler bulunduğu için silinemez. Lütfen önce ürünleri başka bir kategoriye taşıyın."
+                        : "Bu kategoriye bağlı alt kategorilerden en az birinde aktif ürün bulunmaktadır. Veri bütünlüğünü korumak adına bu kategori silinemez.",
+                    confirmText: "",
+                    variant: "warning",
+                    showConfirm: false,
+                    categoryId: id,
+                    actionType: 'delete'
+                });
+                return;
+            }
+
+            if (!hasProducts && subCats.length === 1 && subCatsWithProductsCount === 1) {
+                setModalSettings({
+                    open: true,
+                    title: "Kategori Terfisi",
+                    message: `"${category.name}" ana kategorisi silinecektir. İçinde ürün bulunan tek alt kategorisi olan "${subCats[0].name}" artık yeni bir ana kategori olarak atanacaktır. Onaylıyor musunuz?`,
+                    confirmText: "Onayla ve Terfi Ettir",
+                    variant: "info",
+                    showConfirm: true,
+                    categoryId: id,
+                    actionType: 'delete'
+                });
+                return;
+            }
+
+            if (!hasProducts && subCatsWithProductsCount === 0) {
+                setModalSettings({
+                    open: true,
+                    title: "Kategori Ağacını Sil",
+                    message: subCats.length > 0
+                        ? `"${category.name}" ana kategorisi ve ona bağlı olan ${subCats.length} adet boş alt kategori kalıcı olarak silinecektir. Onaylıyor musunuz?`
+                        : `"${category.name}" kategorisini silmek istediğinizden emin misiniz?`,
+                    confirmText: "Sil",
+                    variant: "danger",
+                    showConfirm: true,
+                    categoryId: id,
+                    actionType: 'delete'
+                });
+                return;
+            }
+        } else {
+            if (hasProducts) {
+                setModalSettings({
+                    open: true,
+                    title: "İşlem Engellendi",
+                    message: `Bu kategori içerisinde aktif ürünler bulunduğu için silinemez. Lütfen önce ürünleri başka bir kategoriye taşıyın.`,
+                    confirmText: "",
+                    variant: "warning",
+                    showConfirm: false,
+                    categoryId: id,
+                    actionType: 'delete'
+                });
+            } else {
+                setModalSettings({
+                    open: true,
+                    title: "Kategoriyi Sil",
+                    message: `"${category.name}" alt kategorisini silmek istediğinizden emin misiniz?`,
+                    confirmText: "Sil",
+                    variant: "danger",
+                    showConfirm: true,
+                    categoryId: id,
+                    actionType: 'delete'
+                });
+            }
+        }
+    }, [categories, products]);
+
+    const handleDeactivate = useCallback((id: string) => {
+        console.log('Categories handleDeactivate called for ID:', id);
+        const category = categories.find(c => c.id === id);
+        if (!category) return;
+
+        setModalSettings({
+            open: true,
+            title: "Kategori Deaktif Etme",
+            message: `"${category.name}" kategorisini deaktif etmek istediğinize emin misiniz? Bu işlem bağlı alt kategorileri ve ürünleri de etkileyebilir.`,
+            confirmText: "Kategoriyi Deaktif Et",
+            variant: 'warning',
+            showConfirm: true,
+            categoryId: id,
+            actionType: 'deactivate'
+        });
+    }, [categories]);
+
     // ── Column Definitions ──
-    const columnDefs: ColDef<Category>[] = [
+    const columnDefs = useMemo<ColDef<Category>[]>(() => [
         {
             headerName: 'Kategori Adı',
             field: 'name',
@@ -119,15 +343,72 @@ export default function AdminCategoriesPage() {
             headerName: 'Durum',
             field: 'isActive',
             sortable: true,
-            width: 150,
+            width: 100,
             cellRenderer: (params: { value: boolean }) => {
-                if (params.value === undefined) return null; // handle undefined for old mock data
+                if (params.value === undefined) return null;
                 return params.value ? (
                     <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span>
                 ) : (
                     <span style={{ color: '#dc2626', fontWeight: '600' }}>Pasif</span>
                 );
             },
+        },
+        {
+            headerName: 'Oluşturulma Tarihi',
+            field: 'createdAt',
+            sortable: true,
+            filter: false,
+            width: 180,
+            valueFormatter: (params) => {
+                if (!params.value) return '';
+                return new Intl.DateTimeFormat('tr-TR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit'
+                }).format(new Date(params.value));
+            }
+        },
+        {
+            headerName: 'Oluşturan',
+            field: 'createdBy',
+            sortable: true,
+            filter: 'agTextColumnFilter',
+            width: 150,
+        },
+        {
+            headerName: 'Güncellenme Tarihi',
+            field: 'updatedAt',
+            sortable: true,
+            filter: false,
+            width: 180,
+            valueFormatter: (params) => {
+                if (!params.value) return '';
+                return new Intl.DateTimeFormat('tr-TR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit'
+                }).format(new Date(params.value));
+            }
+        },
+        {
+            headerName: 'Güncelleyen',
+            field: 'updatedBy',
+            sortable: true,
+            filter: 'agTextColumnFilter',
+            width: 150,
+        },
+        {
+            headerName: 'Silinme Tarihi',
+            field: 'deletedAt',
+            sortable: true,
+            filter: false,
+            width: 180,
+            hide: true,
+            valueFormatter: (params) => {
+                if (!params.value) return '';
+                return new Intl.DateTimeFormat('tr-TR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit'
+                }).format(new Date(params.value));
+            }
         },
         {
             headerName: 'İşlemler',
@@ -154,13 +435,24 @@ export default function AdminCategoriesPage() {
                             </svg>
                         </button>
                         <button
+                            title="Deaktif Et"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeactivate(params.data.id);
+                            }}
+                            className="p-1 rounded-md transition-colors hover:bg-yellow-50"
+                            style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+                                <line x1="12" y1="2" x2="12" y2="12" />
+                            </svg>
+                        </button>
+                        <button
                             title="Sil"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                const categoryId = params.data.id || (params.data as any).Id;
-                                if (categoryId) {
-                                    handleDelete(categoryId);
-                                }
+                                handleDelete(params.data.id);
                             }}
                             className="p-1 rounded-md transition-colors hover:bg-red-50"
                             style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
@@ -169,19 +461,17 @@ export default function AdminCategoriesPage() {
                                 <path d="M3 6h18" />
                                 <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
                                 <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                <line x1="10" y1="11" x2="10" y2="17" />
+                                <line x1="14" y1="11" x2="14" y2="17" />
                             </svg>
                         </button>
                     </div>
                 );
             },
         },
-    ];
+    ], [categories, products, handleEdit, handleDeactivate, handleDelete]);
 
     // ── CRUD Handlers ──
-    const handleEdit = useCallback((category: Category) => {
-        setEditingCategory(category);
-        setModalOpen(true);
-    }, []);
 
     const handleConfirmDelete = async () => {
         const { categoryId, actionType } = modalSettings;
@@ -216,96 +506,6 @@ export default function AdminCategoriesPage() {
         }
     };
 
-    const handleDelete = useCallback((id: string) => {
-        const category = categories.find(c => c.id === id);
-        if (!category) return;
-
-        const isRoot = !category.parentCategoryId;
-        const subCats = categories.filter(c => c.parentCategoryId === id && !c.isDeleted);
-        const hasProducts = products.some(p => p.categoryId === id);
-
-        const subCatsWithProductsCount = subCats.filter(sc =>
-            products.some(p => p.categoryId === sc.id)
-        ).length;
-
-        if (isRoot) {
-            // --- ROOT CATEGORY SCENARIOS ---
-
-            // Scenario 1 & 4 blocked check
-            if (hasProducts || (subCats.length > 1 && subCatsWithProductsCount > 0) || subCatsWithProductsCount > 1) {
-                setModalSettings({
-                    open: true,
-                    title: "İşlem Engellendi",
-                    message: hasProducts
-                        ? "Bu kategori içerisinde aktif ürünler bulunduğu için silinemez. Lütfen önce ürünleri başka bir kategoriye taşıyın."
-                        : "Bu kategoriye bağlı alt kategorilerden en az birinde aktif ürün bulunmaktadır. Veri bütünlüğünü korumak adına bu kategori silinemez.",
-                    confirmText: "",
-                    variant: "warning",
-                    showConfirm: false,
-                    categoryId: id,
-                    actionType: 'delete'
-                });
-                return;
-            }
-
-            // Scenario 3: Node Promotion
-            if (!hasProducts && subCats.length === 1 && subCatsWithProductsCount === 1) {
-                setModalSettings({
-                    open: true,
-                    title: "Kategori Terfisi",
-                    message: `"${category.name}" ana kategorisi silinecektir. İçinde ürün bulunan tek alt kategorisi olan "${subCats[0].name}" artık yeni bir ana kategori olarak atanacaktır. Onaylıyor musunuz?`,
-                    confirmText: "Onayla ve Terfi Ettir",
-                    variant: "info",
-                    showConfirm: true,
-                    categoryId: id,
-                    actionType: 'delete'
-                });
-                return;
-            }
-
-            // Scenario 2: Empty Tree
-            if (!hasProducts && subCatsWithProductsCount === 0) {
-                setModalSettings({
-                    open: true,
-                    title: "Kategori Ağacını Sil",
-                    message: subCats.length > 0
-                        ? `"${category.name}" ana kategorisi ve ona bağlı olan ${subCats.length} adet boş alt kategori kalıcı olarak silinecektir. Onaylıyor musunuz?`
-                        : `"${category.name}" kategorisini silmek istediğinizden emin misiniz?`,
-                    confirmText: "Sil",
-                    variant: "danger",
-                    showConfirm: true,
-                    categoryId: id,
-                    actionType: 'delete'
-                });
-                return;
-            }
-        } else {
-            // --- SUB-CATEGORY SCENARIOS ---
-            if (hasProducts) {
-                setModalSettings({
-                    open: true,
-                    title: "İşlem Engellendi",
-                    message: `Bu kategori içerisinde aktif ürünler bulunduğu için silinemez. Lütfen önce ürünleri başka bir kategoriye taşıyın.`,
-                    confirmText: "",
-                    variant: "warning",
-                    showConfirm: false,
-                    categoryId: id,
-                    actionType: 'delete'
-                });
-            } else {
-                setModalSettings({
-                    open: true,
-                    title: "Kategoriyi Sil",
-                    message: `"${category.name}" alt kategorisini silmek istediğinizden emin misiniz?`,
-                    confirmText: "Sil",
-                    variant: "danger",
-                    showConfirm: true,
-                    categoryId: id,
-                    actionType: 'delete'
-                });
-            }
-        }
-    }, [categories, products]);
 
     const handleFormSubmit = async (data: CategoryFormData) => {
         if (editingCategory) {
@@ -504,6 +704,7 @@ export default function AdminCategoriesPage() {
             >
                 <div style={{ height: 'calc(100vh - 260px)', width: '100%' }}>
                     <AgGridReact<Category>
+                        components={gridComponents}
                         ref={gridRef}
                         rowData={categories}
                         columnDefs={columnDefs}
@@ -517,6 +718,7 @@ export default function AdminCategoriesPage() {
                             resizable: true,
                             floatingFilter: true,
                         }}
+                        localeText={localeTextTr}
                         overlayNoRowsTemplate="<span style='padding:10px;color:#6b7280'>Henüz kategori bulunamadı.</span>"
                         overlayLoadingTemplate="<span style='padding:10px;color:#1B5E3F'>Kategoriler yükleniyor...</span>"
                     />

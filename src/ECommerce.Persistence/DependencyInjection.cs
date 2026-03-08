@@ -18,12 +18,10 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddSingleton<AuditAndSoftDeleteInterceptor>();
+        services.AddScoped<AuditAndSoftDeleteInterceptor>();
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
-            var interceptor = sp.GetRequiredService<AuditAndSoftDeleteInterceptor>();
-
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection"),
                 npgsql => npgsql
@@ -32,7 +30,7 @@ public static class DependencyInjection
                         maxRetryCount: 5,
                         maxRetryDelay: TimeSpan.FromSeconds(30),
                         errorCodesToAdd: null))
-            .AddInterceptors(interceptor);
+            .AddInterceptors(sp.GetRequiredService<AuditAndSoftDeleteInterceptor>());
         });
 
         // Aggregate repositories

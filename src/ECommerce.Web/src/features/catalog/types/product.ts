@@ -6,6 +6,11 @@ export interface Category {
     parentCategoryId?: string | null;
     parentCategoryName?: string | null;
     isDeleted?: boolean;
+    createdAt: string;
+    createdBy?: string | null;
+    updatedAt?: string | null;
+    updatedBy?: string | null;
+    deletedAt?: string | null;
 }
 
 export interface Product {
@@ -21,6 +26,12 @@ export interface Product {
     categoryName: string;
     imageUrl: string | null;
     isActive: boolean;
+    isDeleted?: boolean;
+    createdAt: string;
+    createdBy?: string | null;
+    updatedAt?: string | null;
+    updatedBy?: string | null;
+    deletedAt?: string | null;
 }
 
 export interface ProductListParams {
