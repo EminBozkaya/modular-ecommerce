@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npx tsc --noEmit)",
-      "Bash(xargs grep -l \"AddPersistence\\\\|AddApplication\\\\|AddInfrastructure\")"
+      "Bash(xargs grep -l \"AddPersistence\\\\|AddApplication\\\\|AddInfrastructure\")",
+      "Bash(npm run build)"
     ]
   }
 }

@@ -17,6 +17,7 @@ import {
     RowStyleModule,
     DateFilterModule,
     LocaleModule,
+    CustomFilterModule,
     type ICellRendererParams,
     type ValueFormatterParams,
 } from 'ag-grid-community';
@@ -31,6 +32,7 @@ import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import AgGridDatePicker from '../../components/AgGridDatePicker';
+import StatusToggleFilter from '../../components/StatusToggleFilter';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([
@@ -46,6 +48,7 @@ ModuleRegistry.registerModules([
     RowStyleModule,
     DateFilterModule,
     LocaleModule,
+    CustomFilterModule,
 ]);
 
 const localeTextTr = {
@@ -184,7 +187,6 @@ export default function AdminProductsPage() {
     const [saving, setSaving] = useState(false);
     const [gridApi, setGridApi] = useState<GridApi | null>(null);
     const [deleting, setDeleting] = useState(false);
-    const [showDeleted, setShowDeleted] = useState(true);
 
     const [modalSettings, setModalSettings] = useState<{
         open: boolean;
@@ -208,6 +210,8 @@ export default function AdminProductsPage() {
 
     const gridComponents = useMemo(() => ({
         agDateInput: AgGridDatePicker,
+        statusFilter: StatusToggleFilter,
+        statusFilterSummary: StatusToggleFilter,
     }), []);
 
     const fetchData = useCallback(async () => {
@@ -217,11 +221,11 @@ export default function AdminProductsPage() {
                 page: 1,
                 pageSize: 1000,
                 includeInactive: true,
-                includeDeleted: showDeleted
+                includeDeleted: true
             });
             setProducts(data.items);
             const [cats, unitData] = await Promise.all([
-                getCategories({ includeDeleted: showDeleted }),
+                getCategories({ includeDeleted: true }),
                 getUnits()
             ]);
             setCategories(cats);
@@ -231,7 +235,7 @@ export default function AdminProductsPage() {
         } finally {
             setLoading(false);
         }
-    }, [showDeleted]);
+    }, []);
 
     useEffect(() => {
         fetchData();
@@ -303,6 +307,30 @@ export default function AdminProductsPage() {
     // ── Column Definitions ──
     const columnDefs = useMemo<ColDef<Product>[]>(() => [
         {
+            headerName: 'Durum',
+            field: 'isActive',
+            filter: 'statusFilter',
+            floatingFilter: true,
+            floatingFilterComponent: 'statusFilterSummary',
+            suppressHeaderMenuButton: true,
+            suppressFloatingFilterButton: true,
+            suppressMenu: true,
+            menuTabs: [],
+            sortable: true,
+            width: 155,
+            minWidth: 155,
+            cellRenderer: (params: ICellRendererParams<Product, boolean>) => {
+                if (params.data?.isDeleted) {
+                    return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmiş</span>;
+                }
+                return params.value ? (
+                    <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span>
+                ) : (
+                    <span style={{ color: '#ca8a04', fontWeight: '600' }}>Pasif</span>
+                );
+            },
+        },
+        {
             headerName: 'Ürün Adı',
             field: 'name',
             filter: 'agTextColumnFilter',
@@ -311,12 +339,11 @@ export default function AdminProductsPage() {
             minWidth: 180,
         },
         {
-            headerName: 'Açıklama',
-            field: 'description',
+            headerName: 'Birim',
+            field: 'unitName',
             filter: 'agTextColumnFilter',
             sortable: true,
-            flex: 2,
-            minWidth: 200,
+            width: 100,
         },
         {
             headerName: 'Fiyat (₺)',
@@ -347,27 +374,12 @@ export default function AdminProductsPage() {
             width: 150,
         },
         {
-            headerName: 'Birim',
-            field: 'unitName',
+            headerName: 'Açıklama',
+            field: 'description',
             filter: 'agTextColumnFilter',
             sortable: true,
-            width: 100,
-        },
-        {
-            headerName: 'Durum',
-            field: 'isActive',
-            sortable: true,
-            width: 100,
-            cellRenderer: (params: ICellRendererParams<Product, boolean>) => {
-                if (params.data?.isDeleted) {
-                    return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmiş</span>;
-                }
-                return params.value ? (
-                    <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span>
-                ) : (
-                    <span style={{ color: '#ca8a04', fontWeight: '600' }}>Pasif</span>
-                );
-            },
+            flex: 2,
+            minWidth: 200,
         },
         {
             headerName: 'Oluşturulma Tarihi',
@@ -572,7 +584,7 @@ export default function AdminProductsPage() {
             [`Pasif Ürün Sayısı: ${passiveCount}`],
             [`Silinmiş Ürün Sayısı: ${deletedCount}`],
             [],
-            ['Ürün Adı', 'Açıklama', 'Fiyat (₺)', 'Stok', 'Birim', 'Kategori', 'Durum', 'Oluşturulma Tarihi', 'Oluşturan', 'Güncellenme Tarihi', 'Güncelleyen']
+            ['Durum', 'Ürün Adı', 'Birim', 'Fiyat (₺)', 'Stok', 'Kategori', 'Açıklama', 'Oluşturulma Tarihi', 'Oluşturan', 'Güncellenme Tarihi', 'Güncelleyen']
         ];
 
         const formatDate = (dateStr?: string) => {
@@ -582,13 +594,13 @@ export default function AdminProductsPage() {
 
         products.forEach((p) => {
             wsData.push([
+                p.isDeleted ? 'Silinmiş' : (p.isActive ? 'Aktif' : 'Pasif'),
                 p.name,
-                p.description || '',
+                p.unitName,
                 p.priceAmount ?? p.price,
                 p.stockQuantity,
-                p.unitName,
                 p.categoryName,
-                p.isDeleted ? 'Silinmiş' : (p.isActive ? 'Aktif' : 'Pasif'),
+                p.description || '',
                 formatDate(p.createdAt || undefined),
                 p.createdBy || '',
                 formatDate(p.updatedAt || undefined),
@@ -599,12 +611,13 @@ export default function AdminProductsPage() {
         const ws = XLSX.utils.aoa_to_sheet(wsData);
         // Column widths
         ws['!cols'] = [
+            { width: 10 }, // Durum
             { width: 30 }, // Ürün Adı
-            { width: 40 }, // Açıklama
+            { width: 12 }, // Birim
             { width: 12 }, // Fiyat
             { width: 10 }, // Stok
             { width: 25 }, // Kategori
-            { width: 10 }, // Durum
+            { width: 40 }, // Açıklama
             { width: 20 }, // Oluşturulma
             { width: 15 }, // Oluşturan
             { width: 20 }, // Güncellenme
@@ -667,12 +680,12 @@ export default function AdminProductsPage() {
             };
 
             const tableData = products.map((p) => [
+                p.isDeleted ? 'Silinmiş' : (p.isActive ? 'Aktif' : 'Pasif'),
                 p.name,
+                p.unitName,
                 `${(p.priceAmount ?? p.price).toFixed(2)} TL`,
                 String(p.stockQuantity),
-                p.unitName,
                 p.categoryName,
-                p.isDeleted ? 'Silinmiş' : (p.isActive ? 'Aktif' : 'Pasif'),
                 formatDate(p.createdAt || undefined),
                 p.createdBy || '',
                 formatDate(p.updatedAt || undefined),
@@ -681,17 +694,17 @@ export default function AdminProductsPage() {
 
             autoTable(doc, {
                 startY: 46,
-                head: [['Ürün Adı', 'Fiyat', 'Stok', 'Birim', 'Kategori', 'Durum', 'Oluşturulma', 'Oluşturan', 'Güncellenme', 'Güncelleyen']],
+                head: [['Durum', 'Ürün Adı', 'Birim', 'Fiyat', 'Stok', 'Kategori', 'Oluşturulma', 'Oluşturan', 'Güncellenme', 'Güncelleyen']],
                 body: tableData,
                 styles: { font: 'Roboto', fontSize: 7 }, // Tiny font for many columns
                 headStyles: { font: 'Roboto', fontStyle: 'normal', fillColor: [27, 94, 63] },
                 columnStyles: {
-                    0: { cellWidth: 35 }, // Ürün Adı
-                    1: { cellWidth: 20 }, // Fiyat
-                    2: { cellWidth: 15 }, // Stok
-                    3: { cellWidth: 20 }, // Birim
-                    4: { cellWidth: 35 }, // Kategori
-                    5: { cellWidth: 20 }, // Durum
+                    0: { cellWidth: 15 }, // Durum
+                    1: { cellWidth: 35 }, // Ürün Adı
+                    2: { cellWidth: 20 }, // Birim
+                    3: { cellWidth: 15 }, // Fiyat
+                    4: { cellWidth: 15 }, // Stok
+                    5: { cellWidth: 35 }, // Kategori
                     6: { cellWidth: 30 }, // Oluşturulma
                     7: { cellWidth: 25 }, // Oluşturan
                     8: { cellWidth: 30 }, // Güncellenme
@@ -726,15 +739,6 @@ export default function AdminProductsPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                        <input
-                            type="checkbox"
-                            checked={showDeleted}
-                            onChange={(e) => setShowDeleted(e.target.checked)}
-                            className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                        />
-                        <span className="text-sm font-medium text-gray-700">Silinmişleri Göster</span>
-                    </label>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={exportToExcel}
@@ -784,7 +788,6 @@ export default function AdminProductsPage() {
                         paginationPageSizeSelector={[10, 20, 50, 100]}
                         loading={loading}
                         animateRows={true}
-                        rowSelection={{ mode: 'singleRow' }}
                         localeText={localeTextTr}
                         getRowStyle={(params) => {
                             if (params.data?.isDeleted) {
@@ -801,6 +804,8 @@ export default function AdminProductsPage() {
                         defaultColDef={{
                             resizable: true,
                             floatingFilter: true,
+                            suppressHeaderMenuButton: true,
+                            menuTabs: [],
                         }}
                         overlayNoRowsTemplate="<span style='padding:10px;color:#6b7280'>Henüz ürün bulunamadı.</span>"
                         overlayLoadingTemplate="<span style='padding:10px;color:#1B5E3F'>Ürünler yükleniyor...</span>"

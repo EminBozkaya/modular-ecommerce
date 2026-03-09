@@ -33,6 +33,7 @@ export interface Order {
     currency: string;
     createdAt: string;
     shippingAddress: ShippingAddress;
+    isDeleted?: boolean;
 }
 
 export interface CreateOrderRequest {

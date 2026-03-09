@@ -12,8 +12,15 @@ import {
     mockGetLowStockProducts,
     mockGetAllOrders,
     mockUpdateOrderStatus,
+    mockDeleteOrder,
+    mockRestoreOrder,
     mockGetUsers,
+    mockCreateUser,
+    mockUpdateUser,
+    mockDeleteUser,
+    mockRestoreUser,
 } from './mock';
+import type { CreateUserData, UpdateUserData } from './mock';
 
 // ── Product CRUD ──
 
@@ -145,10 +152,41 @@ export async function updateOrderStatus(req: UpdateOrderStatusRequest): Promise<
     return response.data;
 }
 
+export async function deleteOrder(id: string): Promise<void> {
+    if (isMock) return mockDeleteOrder(id);
+    await apiClient.delete(`/api/admin/orders/${id}`);
+}
+
+export async function restoreOrder(id: string): Promise<void> {
+    if (isMock) return mockRestoreOrder(id);
+    await apiClient.post(`/api/admin/orders/restore/${id}`);
+}
+
 // ── Admin Users ──
 
 export async function getUsers(): Promise<AdminUser[]> {
     if (isMock) return mockGetUsers();
     const response = await apiClient.get<AdminUser[]>('/api/admin/users');
     return response.data;
+}
+
+export async function createUser(data: CreateUserData): Promise<string> {
+    if (isMock) return mockCreateUser(data);
+    const response = await apiClient.post<{ id: string }>('/api/admin/users', data);
+    return response.data.id;
+}
+
+export async function updateUser(data: UpdateUserData): Promise<void> {
+    if (isMock) return mockUpdateUser(data);
+    await apiClient.put('/api/admin/users', data);
+}
+
+export async function deleteUser(id: string): Promise<void> {
+    if (isMock) return mockDeleteUser(id);
+    await apiClient.delete(`/api/admin/users/${id}`);
+}
+
+export async function restoreUser(id: string): Promise<void> {
+    if (isMock) return mockRestoreUser(id);
+    await apiClient.post(`/api/admin/users/restore/${id}`);
 }

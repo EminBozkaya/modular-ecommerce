@@ -16,6 +16,7 @@ import {
     RowStyleModule,
     DateFilterModule,
     LocaleModule,
+    CustomFilterModule,
     type ICellRendererParams,
     type ValueFormatterParams,
 } from 'ag-grid-community';
@@ -31,6 +32,7 @@ import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import AgGridDatePicker from '../../components/AgGridDatePicker';
+import StatusToggleFilter from '../../components/StatusToggleFilter';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([
@@ -45,6 +47,7 @@ ModuleRegistry.registerModules([
     RowStyleModule,
     DateFilterModule,
     LocaleModule,
+    CustomFilterModule,
 ]);
 
 const localeTextTr = {
@@ -183,10 +186,11 @@ export default function AdminCategoriesPage() {
     const [saving, setSaving] = useState(false);
     const [gridApi, setGridApi] = useState<GridApi | null>(null);
     const [deleting, setDeleting] = useState(false);
-    const [showDeleted, setShowDeleted] = useState(true);
 
     const gridComponents = useMemo(() => ({
         agDateInput: AgGridDatePicker,
+        statusFilter: StatusToggleFilter,
+        statusFilterSummary: StatusToggleFilter,
     }), []);
 
     const [modalSettings, setModalSettings] = useState<{
@@ -213,8 +217,8 @@ export default function AdminCategoriesPage() {
         setLoading(true);
         try {
             const [cats, prods] = await Promise.all([
-                getCategories({ includeDeleted: showDeleted }),
-                getProducts({ page: 1, pageSize: 1000, includeInactive: true, includeDeleted: showDeleted })
+                getCategories({ includeDeleted: true }),
+                getProducts({ page: 1, pageSize: 1000, includeInactive: true, includeDeleted: true })
             ]);
             setCategories(cats);
             setProducts(prods.items);
@@ -223,7 +227,7 @@ export default function AdminCategoriesPage() {
         } finally {
             setLoading(false);
         }
-    }, [showDeleted]);
+    }, []);
 
     useEffect(() => {
         fetchData();
@@ -348,6 +352,30 @@ export default function AdminCategoriesPage() {
     // ── Column Definitions ──
     const columnDefs = useMemo<ColDef<Category>[]>(() => [
         {
+            headerName: 'Durum',
+            field: 'isActive',
+            filter: 'statusFilter',
+            floatingFilter: true,
+            floatingFilterComponent: 'statusFilterSummary',
+            suppressHeaderMenuButton: true,
+            suppressFloatingFilterButton: true,
+            suppressMenu: true,
+            menuTabs: [],
+            sortable: true,
+            width: 155,
+            minWidth: 155,
+            cellRenderer: (params: ICellRendererParams<Category>) => {
+                if (params.data?.isDeleted) {
+                    return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmiş</span>;
+                }
+                return params.value ? (
+                    <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span>
+                ) : (
+                    <span style={{ color: '#ca8a04', fontWeight: '600' }}>Pasif</span>
+                );
+            },
+        },
+        {
             headerName: 'Kategori Adı',
             field: 'name',
             filter: 'agTextColumnFilter',
@@ -369,22 +397,6 @@ export default function AdminCategoriesPage() {
                     <span className="text-gray-400 italic">Ana Kategori</span>
                 );
             }
-        },
-        {
-            headerName: 'Durum',
-            field: 'isActive',
-            sortable: true,
-            width: 100,
-            cellRenderer: (params: ICellRendererParams<Category>) => {
-                if (params.data?.isDeleted) {
-                    return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmiş</span>;
-                }
-                return params.value ? (
-                    <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span>
-                ) : (
-                    <span style={{ color: '#ca8a04', fontWeight: '600' }}>Pasif</span>
-                );
-            },
         },
         {
             headerName: 'Oluşturulma Tarihi',
@@ -769,15 +781,6 @@ export default function AdminCategoriesPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                        <input
-                            type="checkbox"
-                            checked={showDeleted}
-                            onChange={(e) => setShowDeleted(e.target.checked)}
-                            className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                        />
-                        <span className="text-sm font-medium text-gray-700">Silinmişleri Göster</span>
-                    </label>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={exportToExcel}
@@ -827,7 +830,6 @@ export default function AdminCategoriesPage() {
                         paginationPageSizeSelector={[10, 20, 50, 100]}
                         loading={loading}
                         animateRows={true}
-                        rowSelection={{ mode: 'singleRow' }}
                         getRowStyle={(params) => {
                             if (params.data?.isDeleted) {
                                 return { backgroundColor: '#fef2f2' }; // Light Red/Pink
@@ -843,6 +845,8 @@ export default function AdminCategoriesPage() {
                         defaultColDef={{
                             resizable: true,
                             floatingFilter: true,
+                            suppressHeaderMenuButton: true,
+                            menuTabs: [],
                         }}
                         localeText={localeTextTr}
                         overlayNoRowsTemplate="<span style='padding:10px;color:#6b7280'>Henüz kategori bulunamadı.</span>"

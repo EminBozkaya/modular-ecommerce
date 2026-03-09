@@ -24,10 +24,10 @@ export function AdminLayout() {
         exact ? location.pathname === to : location.pathname.startsWith(to);
 
     return (
-        <div className="min-h-screen flex" style={{ background: '#f4f6f8' }}>
+        <div className="h-screen flex overflow-hidden" style={{ background: '#f4f6f8' }}>
             {/* ── Sidebar ── */}
             <aside
-                className="w-64 flex flex-col shadow-xl"
+                className="w-64 flex-shrink-0 flex flex-col shadow-xl"
                 style={{ background: 'linear-gradient(180deg, #1B5E3F 0%, #164A32 100%)' }}
             >
                 {/* Brand */}
@@ -48,7 +48,7 @@ export function AdminLayout() {
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex-1 px-3 py-4 flex flex-col gap-1">
+                <nav className="flex-1 px-3 py-4 flex flex-col gap-1 overflow-y-auto custom-scrollbar">
                     {navLinks.map((link) => {
                         const active = isActive(link.to, link.exact);
                         const Icon = link.icon;

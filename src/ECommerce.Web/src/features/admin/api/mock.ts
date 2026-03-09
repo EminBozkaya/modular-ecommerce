@@ -80,6 +80,7 @@ const mockAdminOrders: Order[] = [
         currency: 'TRY',
         createdAt: '2026-03-09T09:15:00Z',
         shippingAddress: { fullName: 'Mehmet Demir', addressLine1: 'Bağdat Cad. No:88', city: 'İstanbul', postalCode: '34744', country: 'Türkiye' },
+        isDeleted: false,
     },
     {
         id: 'ord-a02',
@@ -91,6 +92,7 @@ const mockAdminOrders: Order[] = [
         currency: 'TRY',
         createdAt: '2026-03-08T14:30:00Z',
         shippingAddress: { fullName: 'Ayşe Kaya', addressLine1: 'Atatürk Bulvarı No:12', city: 'Ankara', postalCode: '06100', country: 'Türkiye' },
+        isDeleted: false,
     },
     {
         id: 'ord-a03',
@@ -103,6 +105,7 @@ const mockAdminOrders: Order[] = [
         currency: 'TRY',
         createdAt: '2026-03-07T11:00:00Z',
         shippingAddress: { fullName: 'Fatma Yıldız', addressLine1: 'Kültür Mah. 45. Sk. No:7', city: 'İzmir', postalCode: '35220', country: 'Türkiye' },
+        isDeleted: false,
     },
     {
         id: 'ord-a04',
@@ -114,6 +117,7 @@ const mockAdminOrders: Order[] = [
         currency: 'TRY',
         createdAt: '2026-03-05T16:20:00Z',
         shippingAddress: { fullName: 'Ali Yılmaz', addressLine1: 'İstiklal Cad. No:100', city: 'İstanbul', postalCode: '34433', country: 'Türkiye' },
+        isDeleted: false,
     },
     {
         id: 'ord-a05',
@@ -125,6 +129,7 @@ const mockAdminOrders: Order[] = [
         currency: 'TRY',
         createdAt: '2026-03-04T08:45:00Z',
         shippingAddress: { fullName: 'Hasan Çelik', addressLine1: 'Cumhuriyet Mah. 10. Sk. No:3', city: 'Bursa', postalCode: '16010', country: 'Türkiye' },
+        isDeleted: false,
     },
     {
         id: 'ord-a06',
@@ -137,6 +142,7 @@ const mockAdminOrders: Order[] = [
         currency: 'TRY',
         createdAt: '2026-03-03T13:10:00Z',
         shippingAddress: { fullName: 'Zeynep Arslan', addressLine1: 'Güneş Sk. No:22', city: 'Antalya', postalCode: '07100', country: 'Türkiye' },
+        isDeleted: false,
     },
     {
         id: 'ord-a07',
@@ -148,6 +154,7 @@ const mockAdminOrders: Order[] = [
         currency: 'TRY',
         createdAt: '2026-03-02T10:30:00Z',
         shippingAddress: { fullName: 'Emre Şahin', addressLine1: 'Vatan Cad. No:55', city: 'Konya', postalCode: '42040', country: 'Türkiye' },
+        isDeleted: false,
     },
     {
         id: 'ord-a08',
@@ -159,6 +166,7 @@ const mockAdminOrders: Order[] = [
         currency: 'TRY',
         createdAt: '2026-03-01T15:00:00Z',
         shippingAddress: { fullName: 'Selin Öztürk', addressLine1: 'Çiçek Sk. No:8', city: 'Eskişehir', postalCode: '26010', country: 'Türkiye' },
+        isDeleted: false,
     },
     {
         id: 'ord-a09',
@@ -170,6 +178,7 @@ const mockAdminOrders: Order[] = [
         currency: 'TRY',
         createdAt: '2026-02-28T09:00:00Z',
         shippingAddress: { fullName: 'Burak Kılıç', addressLine1: 'Mevlana Cad. No:30', city: 'Gaziantep', postalCode: '27010', country: 'Türkiye' },
+        isDeleted: false,
     },
     {
         id: 'ord-a10',
@@ -182,6 +191,7 @@ const mockAdminOrders: Order[] = [
         currency: 'TRY',
         createdAt: '2026-02-25T12:45:00Z',
         shippingAddress: { fullName: 'Derya Aydın', addressLine1: 'Sahil Yolu No:15', city: 'Trabzon', postalCode: '61030', country: 'Türkiye' },
+        isDeleted: false,
     },
     {
         id: 'ord-a11',
@@ -193,6 +203,7 @@ const mockAdminOrders: Order[] = [
         currency: 'TRY',
         createdAt: '2026-02-22T17:20:00Z',
         shippingAddress: { fullName: 'Gizem Polat', addressLine1: 'Yıldız Mah. 3. Sk. No:11', city: 'Kayseri', postalCode: '38010', country: 'Türkiye' },
+        isDeleted: false,
     },
     {
         id: 'ord-a12',
@@ -204,6 +215,7 @@ const mockAdminOrders: Order[] = [
         currency: 'TRY',
         createdAt: '2026-02-20T08:00:00Z',
         shippingAddress: { fullName: 'Can Aksoy', addressLine1: 'Demokrasi Blv. No:72', city: 'Mersin', postalCode: '33010', country: 'Türkiye' },
+        isDeleted: false,
     },
 ];
 
@@ -249,22 +261,95 @@ export async function mockUpdateOrderStatus(req: UpdateOrderStatusRequest): Prom
     return { ...order };
 }
 
+export async function mockDeleteOrder(id: string): Promise<void> {
+    await delay(400);
+    const order = mockAdminOrders.find(o => o.id === id);
+    if (!order) throw { response: { status: 404, data: { message: 'Sipariş bulunamadı' } } };
+    order.isDeleted = true;
+}
+
+export async function mockRestoreOrder(id: string): Promise<void> {
+    await delay(400);
+    const order = mockAdminOrders.find(o => o.id === id);
+    if (!order) throw { response: { status: 404, data: { message: 'Sipariş bulunamadı' } } };
+    order.isDeleted = false;
+}
+
 // ── Users Mock Data ──
 
 const mockUsers: AdminUser[] = [
-    { id: 'u1', fullName: 'Mehmet Demir', email: 'mehmet.demir@email.com', role: 'Customer', isEmailConfirmed: true, createdAt: '2025-10-15T08:30:00Z' },
-    { id: 'u2', fullName: 'Ayşe Kaya', email: 'ayse.kaya@email.com', role: 'Customer', isEmailConfirmed: true, createdAt: '2025-11-02T14:00:00Z' },
-    { id: 'u3', fullName: 'Fatma Yıldız', email: 'fatma.yildiz@email.com', role: 'Customer', isEmailConfirmed: true, createdAt: '2025-11-20T10:15:00Z' },
-    { id: 'u4', fullName: 'Ali Yılmaz', email: 'ali.yilmaz@email.com', role: 'Customer', isEmailConfirmed: true, createdAt: '2025-12-01T09:00:00Z' },
-    { id: 'u5', fullName: 'Hasan Çelik', email: 'hasan.celik@email.com', role: 'Customer', isEmailConfirmed: false, createdAt: '2025-12-10T16:45:00Z' },
-    { id: 'u6', fullName: 'Zeynep Arslan', email: 'zeynep.arslan@email.com', role: 'Customer', isEmailConfirmed: true, createdAt: '2026-01-05T11:30:00Z' },
-    { id: 'u7', fullName: 'Emre Şahin', email: 'emre.sahin@email.com', role: 'Customer', isEmailConfirmed: true, createdAt: '2026-01-20T13:00:00Z' },
-    { id: 'u8', fullName: 'Selin Öztürk', email: 'selin.ozturk@email.com', role: 'Customer', isEmailConfirmed: false, createdAt: '2026-02-08T07:45:00Z' },
-    { id: 'u9', fullName: 'Burak Kılıç', email: 'burak.kilic@email.com', role: 'Customer', isEmailConfirmed: true, createdAt: '2026-02-15T10:00:00Z' },
-    { id: 'u10', fullName: 'Derya Aydın', email: 'derya.aydin@email.com', role: 'Customer', isEmailConfirmed: true, createdAt: '2026-03-01T15:30:00Z' },
+    { id: 'u1', fullName: 'Mehmet Demir', email: 'mehmet.demir@email.com', role: 'Customer', isEmailConfirmed: true, isDeleted: false, isActive: true, createdAt: '2025-10-15T08:30:00Z' },
+    { id: 'u2', fullName: 'Ayşe Kaya', email: 'ayse.kaya@email.com', role: 'Customer', isEmailConfirmed: true, isDeleted: false, isActive: true, createdAt: '2025-11-02T14:00:00Z' },
+    { id: 'u3', fullName: 'Fatma Yıldız', email: 'fatma.yildiz@email.com', role: 'Customer', isEmailConfirmed: true, isDeleted: false, isActive: true, createdAt: '2025-11-20T10:15:00Z' },
+    { id: 'u4', fullName: 'Ali Yılmaz', email: 'ali.yilmaz@email.com', role: 'Customer', isEmailConfirmed: true, isDeleted: false, isActive: true, createdAt: '2025-12-01T09:00:00Z' },
+    { id: 'u5', fullName: 'Hasan Çelik', email: 'hasan.celik@email.com', role: 'Customer', isEmailConfirmed: false, isDeleted: false, isActive: true, createdAt: '2025-12-10T16:45:00Z' },
+    { id: 'u6', fullName: 'Zeynep Arslan', email: 'zeynep.arslan@email.com', role: 'Customer', isEmailConfirmed: true, isDeleted: false, isActive: true, createdAt: '2026-01-05T11:30:00Z' },
+    { id: 'u7', fullName: 'Emre Şahin', email: 'emre.sahin@email.com', role: 'Customer', isEmailConfirmed: true, isDeleted: false, isActive: true, createdAt: '2026-01-20T13:00:00Z' },
+    { id: 'u8', fullName: 'Selin Öztürk', email: 'selin.ozturk@email.com', role: 'Customer', isEmailConfirmed: false, isDeleted: false, isActive: true, createdAt: '2026-02-08T07:45:00Z' },
+    { id: 'u9', fullName: 'Burak Kılıç', email: 'burak.kilic@email.com', role: 'Customer', isEmailConfirmed: true, isDeleted: false, isActive: true, createdAt: '2026-02-15T10:00:00Z' },
+    { id: 'u10', fullName: 'Derya Aydın', email: 'derya.aydin@email.com', role: 'Customer', isEmailConfirmed: true, isDeleted: false, isActive: true, createdAt: '2026-03-01T15:30:00Z' },
 ];
 
 export async function mockGetUsers(): Promise<AdminUser[]> {
     await delay(400);
     return mockUsers.map(u => ({ ...u }));
+}
+
+export interface CreateUserData {
+    fullName: string;
+    email: string;
+    role: 'Customer' | 'Admin';
+    isActive: boolean;
+}
+
+export interface UpdateUserData {
+    id: string;
+    fullName: string;
+    email: string;
+    role: 'Customer' | 'Admin';
+    isActive: boolean;
+}
+
+let userIdCounter = 11;
+
+export async function mockCreateUser(data: CreateUserData): Promise<string> {
+    await delay(400);
+    const existing = mockUsers.find(u => u.email === data.email && !u.isDeleted);
+    if (existing) throw { response: { status: 400, data: { message: 'Bu e-posta adresi zaten kayıtlı.' } } };
+    const id = `u${userIdCounter++}`;
+    mockUsers.push({
+        id,
+        fullName: data.fullName,
+        email: data.email,
+        role: data.role,
+        isEmailConfirmed: false,
+        isDeleted: false,
+        isActive: data.isActive,
+        createdAt: new Date().toISOString(),
+    });
+    return id;
+}
+
+export async function mockUpdateUser(data: UpdateUserData): Promise<void> {
+    await delay(400);
+    const user = mockUsers.find(u => u.id === data.id);
+    if (!user) throw { response: { status: 404, data: { message: 'Kullanıcı bulunamadı' } } };
+    user.fullName = data.fullName;
+    user.email = data.email;
+    user.role = data.role;
+    user.isActive = data.isActive;
+}
+
+export async function mockDeleteUser(id: string): Promise<void> {
+    await delay(400);
+    const user = mockUsers.find(u => u.id === id);
+    if (!user) throw { response: { status: 404, data: { message: 'Kullanıcı bulunamadı' } } };
+    user.isDeleted = true;
+}
+
+export async function mockRestoreUser(id: string): Promise<void> {
+    await delay(400);
+    const user = mockUsers.find(u => u.id === id);
+    if (!user) throw { response: { status: 404, data: { message: 'Kullanıcı bulunamadı' } } };
+    user.isDeleted = false;
 }

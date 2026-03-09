@@ -4,5 +4,7 @@ export interface AdminUser {
     email: string;
     role: 'Customer' | 'Admin';
     isEmailConfirmed: boolean;
+    isDeleted: boolean;
+    isActive: boolean;
     createdAt: string;
 }
