@@ -3,7 +3,11 @@
     "allow": [
       "Bash(npx tsc --noEmit)",
       "Bash(xargs grep -l \"AddPersistence\\\\|AddApplication\\\\|AddInfrastructure\")",
-      "Bash(npm run build)"
+      "Bash(npm run build)",
+      "Bash(dotnet build --no-restore)",
+      "Bash(dotnet build src/ECommerce.Domain/ECommerce.Domain.csproj --no-restore)",
+      "Bash(dotnet build src/ECommerce.Application/ECommerce.Application.csproj --no-restore)",
+      "Bash(dotnet build src/ECommerce.Persistence/ECommerce.Persistence.csproj --no-restore)"
     ]
   }
 }

@@ -3,6 +3,7 @@ using ECommerce.Domain.Catalog.Entities;
 using ECommerce.Domain.Identity.Entities;
 using ECommerce.Domain.Ordering.Entities;
 using ECommerce.Domain.Payment.Entities;
+using ECommerce.Domain.Wishlist.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Persistence.Context;
@@ -30,6 +31,9 @@ public class ApplicationDbContext : DbContext
     // Identity
     public DbSet<AppUser> Users => Set<AppUser>();
 
+    // Wishlist
+    public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -43,5 +47,6 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Unit>().HasQueryFilter(u => !u.IsDeleted);
         modelBuilder.Entity<Order>().HasQueryFilter(o => !o.IsDeleted);
         modelBuilder.Entity<AppUser>().HasQueryFilter(u => !u.IsDeleted);
+        modelBuilder.Entity<WishlistItem>().HasQueryFilter(w => !w.IsDeleted);
     }
 }

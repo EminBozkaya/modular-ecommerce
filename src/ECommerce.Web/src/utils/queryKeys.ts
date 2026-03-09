@@ -19,6 +19,10 @@ export const queryKeys = {
     auth: {
         me: ['auth', 'me'] as const,
     },
+    wishlist: {
+        items: ['wishlist', 'items'] as const,
+        productIds: ['wishlist', 'productIds'] as const,
+    },
     admin: {
         dashboard: {
             summary: (period: string) => ['admin', 'dashboard', 'summary', period] as const,

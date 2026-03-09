@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
 import { ProductSearchBar } from '../components/ProductSearchBar';
 import { CategoryFilter } from '../components/CategoryFilter';
@@ -8,10 +9,33 @@ import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import { EmptyState } from '../../../components/shared/EmptyState';
 
 export default function ProductListPage() {
-    const [search, setSearch] = useState('');
-    const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // Initialize state from URL params
+    const initialSearch = searchParams.get('search') || '';
+    const initialCategoryId = searchParams.get('categoryId') || undefined;
+
+    const [search, setSearch] = useState(initialSearch);
+    const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(initialCategoryId);
     const [page, setPage] = useState(1);
     const pageSize = 8;
+
+    // Keep local state in sync if URL parameters change externally
+    // (e.g. user uses the header search bar while already on the products page)
+    useEffect(() => {
+        const urlSearch = searchParams.get('search') || '';
+        const urlCategoryId = searchParams.get('categoryId') || undefined;
+
+        if (urlSearch !== search) {
+            setSearch(urlSearch);
+            setPage(1);
+        }
+        if (urlCategoryId !== selectedCategoryId) {
+            setSelectedCategoryId(urlCategoryId);
+            setPage(1);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
 
     const { data: result, isLoading, error, refetch } = useProducts({
         page,
@@ -23,11 +47,27 @@ export default function ProductListPage() {
     const handleSearchChange = (newSearch: string) => {
         setSearch(newSearch);
         setPage(1); // Reset to first page on new search
+        setSearchParams(prev => {
+            if (newSearch) {
+                prev.set('search', newSearch);
+            } else {
+                prev.delete('search');
+            }
+            return prev;
+        });
     };
 
     const handleCategorySelect = (categoryId: string | undefined) => {
         setSelectedCategoryId(categoryId);
         setPage(1); // Reset to first page on category change
+        setSearchParams(prev => {
+            if (categoryId) {
+                prev.set('categoryId', categoryId);
+            } else {
+                prev.delete('categoryId');
+            }
+            return prev;
+        });
     };
 
     const handlePrevPage = () => {

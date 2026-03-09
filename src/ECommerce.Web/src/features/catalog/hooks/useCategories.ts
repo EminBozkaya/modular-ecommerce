@@ -5,7 +5,7 @@ import { queryKeys } from '../../../utils/queryKeys';
 export function useCategories() {
     return useQuery({
         queryKey: queryKeys.catalog.categories.all,
-        queryFn: getCategories,
+        queryFn: () => getCategories(),
         staleTime: Infinity,
     });
 }

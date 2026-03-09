@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
+import { Heart } from 'lucide-react';
 import type { Product } from '../types/product';
 import { formatPrice } from '../../../utils/formatters';
 import { AddToBasketButton } from '../../basket/components/AddToBasketButton';
+import { useWishlistProductIds, useToggleFavorite } from '../../favorites/hooks/useFavorites';
+import { useAuthStore } from '../../../store/authStore';
 
 interface ProductCardProps {
     product: Product;
@@ -9,6 +12,17 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
     const inStock = product.stockQuantity > 0;
+    const { isAuthenticated } = useAuthStore();
+    const { data: wishlistIds } = useWishlistProductIds();
+    const { toggle, isLoading: isToggling } = useToggleFavorite();
+    const isFavorited = wishlistIds?.includes(product.id) ?? false;
+
+    const handleToggleFavorite = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!isAuthenticated || isToggling) return;
+        toggle(product.id, isFavorited);
+    };
 
     return (
         <div className="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-300">
@@ -27,7 +41,27 @@ export function ProductCard({ product }: ProductCardProps) {
                         <span className="text-sm">No image available</span>
                     </div>
                 )}
-                <div className="absolute top-2 right-2">
+                <div className="absolute top-2 right-2 flex items-center gap-2">
+                    {isAuthenticated && (
+                        <button
+                            onClick={handleToggleFavorite}
+                            disabled={isToggling}
+                            className={`p-1.5 rounded-full shadow-md transition-all duration-200 ${
+                                isFavorited
+                                    ? 'bg-red-50 hover:bg-red-100'
+                                    : 'bg-white/90 hover:bg-white'
+                            }`}
+                            title={isFavorited ? 'Favorilerden Kaldır' : 'Favorilere Ekle'}
+                        >
+                            <Heart
+                                className={`h-4 w-4 transition-colors ${
+                                    isFavorited
+                                        ? 'text-red-500 fill-red-500'
+                                        : 'text-gray-400 hover:text-red-400'
+                                }`}
+                            />
+                        </button>
+                    )}
                     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                         {inStock ? 'In Stock' : 'Out of Stock'}
                     </span>

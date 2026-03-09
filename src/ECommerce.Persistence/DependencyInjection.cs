@@ -3,6 +3,7 @@ using ECommerce.Domain.Catalog;
 using ECommerce.Domain.Identity;
 using ECommerce.Domain.Ordering;
 using ECommerce.Domain.Payment;
+using ECommerce.Domain.Wishlist;
 using ECommerce.Persistence.Context;
 using ECommerce.Persistence.Interceptors;
 using ECommerce.Persistence.Repositories;
@@ -41,6 +42,7 @@ public static class DependencyInjection
         services.AddScoped<IBasketRepository, BasketRepository>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IWishlistRepository, WishlistRepository>();
 
         return services;
     }

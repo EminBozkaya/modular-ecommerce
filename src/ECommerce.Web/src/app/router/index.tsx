@@ -22,6 +22,7 @@ const AdminOrdersPage = lazy(() => import('../../features/admin/orders/pages/Adm
 const AdminCategoriesPage = lazy(() => import('../../features/admin/categories/pages/AdminCategoriesPage'));
 const AdminOrderDetailPage = lazy(() => import('../../features/admin/orders/pages/AdminOrderDetailPage'));
 const AdminUsersPage = lazy(() => import('../../features/admin/pages/AdminUsersPage'));
+const FavoritesPage = lazy(() => import('../../features/favorites/pages/FavoritesPage'));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
     <Suspense
@@ -69,6 +70,14 @@ export const router = createBrowserRouter([
                 element: (
                     <SuspenseWrapper>
                         <BasketPage />
+                    </SuspenseWrapper>
+                ),
+            },
+            {
+                path: 'favoriler',
+                element: (
+                    <SuspenseWrapper>
+                        <FavoritesPage />
                     </SuspenseWrapper>
                 ),
             },

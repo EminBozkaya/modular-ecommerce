@@ -1,0 +1,19 @@
+using MediatR;
+
+namespace ECommerce.Application.Wishlist.Queries;
+
+public record WishlistItemDto(
+    Guid Id,
+    Guid ProductId,
+    string ProductName,
+    decimal Price,
+    string Currency,
+    string? ImageUrl,
+    string CategoryName,
+    int StockQuantity,
+    bool IsActive,
+    DateTime AddedAt);
+
+public record GetWishlistQuery(Guid UserId) : IRequest<IReadOnlyList<WishlistItemDto>>;
+
+public record GetWishlistProductIdsQuery(Guid UserId) : IRequest<IReadOnlyList<Guid>>;

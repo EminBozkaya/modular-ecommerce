@@ -39,8 +39,8 @@ export function RevenueChart({ data }: RevenueChartProps) {
                             tickLine={false}
                         />
                         <Tooltip
-                            formatter={(value: number) => [formatPrice(value, 'TRY'), 'Gelir']}
-                            labelFormatter={formatDateLabel}
+                            formatter={((value: any) => [formatPrice(value, 'TRY'), 'Gelir']) as any}
+                            labelFormatter={formatDateLabel as any}
                             contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13 }}
                         />
                         <Area
