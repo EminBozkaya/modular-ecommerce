@@ -12,6 +12,10 @@ const ProductDetailPage = lazy(() => import('../../features/catalog/pages/Produc
 const BasketPage = lazy(() => import('../../features/basket/pages/BasketPage'));
 const LoginPage = lazy(() => import('../../features/auth/pages/LoginPage'));
 const RegisterPage = lazy(() => import('../../features/auth/pages/RegisterPage'));
+const CheckoutPage = lazy(() => import('../../features/ordering/pages/CheckoutPage'));
+const OrderHistoryPage = lazy(() => import('../../features/ordering/pages/OrderHistoryPage'));
+const OrderDetailPage = lazy(() => import('../../features/ordering/pages/OrderDetailPage'));
+const OrderConfirmationPage = lazy(() => import('../../features/ordering/pages/OrderConfirmationPage'));
 const AdminDashboardPage = lazy(() => import('../../features/admin/pages/AdminDashboardPage'));
 const AdminProductsPage = lazy(() => import('../../features/admin/products/pages/AdminProductsPage'));
 const AdminOrdersPage = lazy(() => import('../../features/admin/orders/pages/AdminOrdersPage'));
@@ -84,6 +88,50 @@ export const router = createBrowserRouter([
             },
         ],
     },
+    // Protected ordering routes
+    {
+        path: '/',
+        element: <ProtectedRoute />,
+        children: [
+            {
+                element: <MainLayout />,
+                children: [
+                    {
+                        path: 'checkout',
+                        element: (
+                            <SuspenseWrapper>
+                                <CheckoutPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'orders',
+                        element: (
+                            <SuspenseWrapper>
+                                <OrderHistoryPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'orders/:id',
+                        element: (
+                            <SuspenseWrapper>
+                                <OrderDetailPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'orders/:id/confirmation',
+                        element: (
+                            <SuspenseWrapper>
+                                <OrderConfirmationPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                ],
+            },
+        ],
+    },
     {
         path: '/admin',
         element: <ProtectedRoute allowedRoles={['Admin']} />,
@@ -128,4 +176,3 @@ export const router = createBrowserRouter([
         ],
     },
 ]);
-

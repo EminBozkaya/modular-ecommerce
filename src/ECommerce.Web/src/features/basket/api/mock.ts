@@ -49,3 +49,7 @@ export const mockRemoveFromBasket = async (productId: string): Promise<Basket> =
 
     return { ...mockBasket };
 };
+
+export const mockClearBasket = (): void => {
+    mockBasket = { items: [], totalAmount: 0, currency: 'TRY' };
+};

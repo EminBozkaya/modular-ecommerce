@@ -13,6 +13,7 @@ import {
     Facebook,
     Twitter,
     Instagram,
+    Package,
 } from 'lucide-react';
 import { useBasket } from '@/features/basket/hooks/useBasket';
 import { useBasketUiStore } from '@/store/basketUiStore';
@@ -84,6 +85,16 @@ export function MainLayout() {
                                 <Heart className="h-4 w-4" />
                                 <span className="hidden sm:inline">Favoriler</span>
                             </button>
+
+                            {isAuthenticated && (
+                                <Link
+                                    to="/orders"
+                                    className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                    <Package className="h-4 w-4" />
+                                    <span className="hidden sm:inline">Siparislerim</span>
+                                </Link>
+                            )}
 
                             <button
                                 onClick={openDrawer}
