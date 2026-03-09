@@ -12,6 +12,8 @@ import {
     ColumnAutoSizeModule,
     RowApiModule,
     CellStyleModule,
+    RowSelectionModule,
+    RowStyleModule,
     DateFilterModule,
     LocaleModule,
     type ICellRendererParams,
@@ -39,6 +41,8 @@ ModuleRegistry.registerModules([
     ColumnAutoSizeModule,
     RowApiModule,
     CellStyleModule,
+    RowSelectionModule,
+    RowStyleModule,
     DateFilterModule,
     LocaleModule,
 ]);
@@ -135,6 +139,39 @@ const localeTextTr = {
     clear: 'Temizle',
 };
 
+const dateComparator = (filterLocalDate: Date, cellValue: string) => {
+    if (cellValue == null) return -1;
+    const cellDate = new Date(cellValue);
+
+    const filterHasTime = filterLocalDate.getHours() !== 0 || filterLocalDate.getMinutes() !== 0;
+
+    if (filterHasTime) {
+        // User specified a time → compare by minute precision
+        const filterTime = new Date(
+            filterLocalDate.getFullYear(), filterLocalDate.getMonth(), filterLocalDate.getDate(),
+            filterLocalDate.getHours(), filterLocalDate.getMinutes()
+        ).getTime();
+        const cellTime = new Date(
+            cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate(),
+            cellDate.getHours(), cellDate.getMinutes()
+        ).getTime();
+
+        if (filterTime === cellTime) return 0;
+        return cellTime < filterTime ? -1 : 1;
+    } else {
+        // No time specified → compare date only
+        const filterDateOnly = new Date(
+            filterLocalDate.getFullYear(), filterLocalDate.getMonth(), filterLocalDate.getDate()
+        ).getTime();
+        const cellDateOnly = new Date(
+            cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate()
+        ).getTime();
+
+        if (filterDateOnly === cellDateOnly) return 0;
+        return cellDateOnly < filterDateOnly ? -1 : 1;
+    }
+};
+
 
 export default function AdminCategoriesPage() {
     const gridRef = useRef<AgGridReact>(null);
@@ -146,7 +183,7 @@ export default function AdminCategoriesPage() {
     const [saving, setSaving] = useState(false);
     const [gridApi, setGridApi] = useState<GridApi | null>(null);
     const [deleting, setDeleting] = useState(false);
-    const [showDeleted, setShowDeleted] = useState(false);
+    const [showDeleted, setShowDeleted] = useState(true);
 
     const gridComponents = useMemo(() => ({
         agDateInput: AgGridDatePicker,
@@ -340,12 +377,12 @@ export default function AdminCategoriesPage() {
             width: 100,
             cellRenderer: (params: ICellRendererParams<Category>) => {
                 if (params.data?.isDeleted) {
-                    return <span style={{ color: '#94a3b8', fontWeight: '600' }}>Silinmiş</span>;
+                    return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmiş</span>;
                 }
                 return params.value ? (
                     <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span>
                 ) : (
-                    <span style={{ color: '#dc2626', fontWeight: '600' }}>Pasif</span>
+                    <span style={{ color: '#ca8a04', fontWeight: '600' }}>Pasif</span>
                 );
             },
         },
@@ -353,7 +390,10 @@ export default function AdminCategoriesPage() {
             headerName: 'Oluşturulma Tarihi',
             field: 'createdAt',
             sortable: true,
-            filter: false,
+            filter: 'agDateColumnFilter',
+            filterParams: {
+                comparator: dateComparator,
+            },
             width: 180,
             valueFormatter: (params: ValueFormatterParams<Category, string>) => {
                 if (!params.value) return '';
@@ -374,7 +414,10 @@ export default function AdminCategoriesPage() {
             headerName: 'Güncellenme Tarihi',
             field: 'updatedAt',
             sortable: true,
-            filter: false,
+            filter: 'agDateColumnFilter',
+            filterParams: {
+                comparator: dateComparator,
+            },
             width: 180,
             valueFormatter: (params: ValueFormatterParams<Category, string>) => {
                 if (!params.value) return '';
@@ -784,6 +827,19 @@ export default function AdminCategoriesPage() {
                         paginationPageSizeSelector={[10, 20, 50, 100]}
                         loading={loading}
                         animateRows={true}
+                        rowSelection={{ mode: 'singleRow' }}
+                        getRowStyle={(params) => {
+                            if (params.data?.isDeleted) {
+                                return { backgroundColor: '#fef2f2' }; // Light Red/Pink
+                            }
+                            if (params.data?.isActive === false) {
+                                return { backgroundColor: '#f1f5f9' }; // Light Gray
+                            }
+                            if (params.data?.isActive === true) {
+                                return { backgroundColor: '#f0fdf4' }; // Light Green
+                            }
+                            return undefined;
+                        }}
                         defaultColDef={{
                             resizable: true,
                             floatingFilter: true,

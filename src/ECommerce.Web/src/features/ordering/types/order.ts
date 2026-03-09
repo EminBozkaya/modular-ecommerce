@@ -1,10 +1,11 @@
 export type OrderStatus =
     | 'Pending'
-    | 'PaymentProcessing'
-    | 'Confirmed'
+    | 'Processing'
+    | 'Paid'
     | 'Shipped'
     | 'Delivered'
-    | 'Cancelled';
+    | 'Cancelled'
+    | 'Refunded';
 
 export interface OrderItem {
     productId: string;

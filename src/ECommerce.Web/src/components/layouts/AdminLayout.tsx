@@ -4,6 +4,7 @@ import {
     Package,
     FolderTree,
     ShoppingBag,
+    Users,
     ArrowLeft,
     Leaf,
 } from 'lucide-react';
@@ -13,6 +14,7 @@ const navLinks = [
     { to: '/admin/products', label: 'Ürünler', icon: Package, exact: false },
     { to: '/admin/categories', label: 'Kategoriler', icon: FolderTree, exact: false },
     { to: '/admin/orders', label: 'Siparişler', icon: ShoppingBag, exact: false },
+    { to: '/admin/users', label: 'Müşteriler', icon: Users, exact: false },
 ];
 
 export function AdminLayout() {

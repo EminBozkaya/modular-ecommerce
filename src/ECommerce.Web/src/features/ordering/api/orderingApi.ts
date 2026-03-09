@@ -5,11 +5,6 @@ import { mockCreateOrder, mockProcessPayment, mockGetMyOrders, mockGetMyOrderByI
 
 const isMock = import.meta.env.VITE_USE_MOCK_API === 'true';
 
-// NOTE for backend developer:
-// GET /api/orders/my and GET /api/orders/my/{id} are customer-facing order endpoints.
-// These are not yet documented in the backend README.
-// Admin order endpoints (/api/admin/orders) are separate and will be implemented in the Admin milestone.
-
 export async function createOrder(req: CreateOrderRequest): Promise<CreateOrderResponse> {
     if (isMock) {
         return mockCreateOrder(req);
@@ -30,7 +25,7 @@ export async function getMyOrders(): Promise<Order[]> {
     if (isMock) {
         return mockGetMyOrders();
     }
-    const response = await apiClient.get<Order[]>('/api/orders/my');
+    const response = await apiClient.get<Order[]>('/api/order/my');
     return response.data;
 }
 
@@ -38,6 +33,6 @@ export async function getMyOrderById(id: string): Promise<Order> {
     if (isMock) {
         return mockGetMyOrderById(id);
     }
-    const response = await apiClient.get<Order>(`/api/orders/my/${id}`);
+    const response = await apiClient.get<Order>(`/api/order/${id}`);
     return response.data;
 }

@@ -20,6 +20,8 @@ const AdminDashboardPage = lazy(() => import('../../features/admin/pages/AdminDa
 const AdminProductsPage = lazy(() => import('../../features/admin/products/pages/AdminProductsPage'));
 const AdminOrdersPage = lazy(() => import('../../features/admin/orders/pages/AdminOrdersPage'));
 const AdminCategoriesPage = lazy(() => import('../../features/admin/categories/pages/AdminCategoriesPage'));
+const AdminOrderDetailPage = lazy(() => import('../../features/admin/orders/pages/AdminOrderDetailPage'));
+const AdminUsersPage = lazy(() => import('../../features/admin/pages/AdminUsersPage'));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
     <Suspense
@@ -168,6 +170,22 @@ export const router = createBrowserRouter([
                         element: (
                             <SuspenseWrapper>
                                 <AdminOrdersPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'orders/:id',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminOrderDetailPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'users',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminUsersPage />
                             </SuspenseWrapper>
                         ),
                     },

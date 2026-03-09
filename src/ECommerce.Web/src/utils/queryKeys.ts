@@ -19,4 +19,18 @@ export const queryKeys = {
     auth: {
         me: ['auth', 'me'] as const,
     },
+    admin: {
+        dashboard: {
+            summary: (period: string) => ['admin', 'dashboard', 'summary', period] as const,
+            revenueData: ['admin', 'dashboard', 'revenueData'] as const,
+            recentOrders: ['admin', 'dashboard', 'recentOrders'] as const,
+            lowStock: ['admin', 'dashboard', 'lowStock'] as const,
+        },
+        orders: {
+            list: (params: object) => ['admin', 'orders', 'list', params] as const,
+        },
+        users: {
+            all: ['admin', 'users'] as const,
+        },
+    },
 } as const;

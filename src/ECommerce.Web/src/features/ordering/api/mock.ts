@@ -63,7 +63,7 @@ const mockOrders: Order[] = [
     },
     {
         id: 'order-003',
-        status: 'Confirmed',
+        status: 'Paid',
         items: [
             {
                 productId: '5',
@@ -136,10 +136,10 @@ export async function mockProcessPayment(req: PaymentRequest): Promise<PaymentRe
         };
     }
 
-    // Update order status to Confirmed after successful payment
+    // Update order status to Paid after successful payment
     const order = mockOrders.find(o => o.id === req.orderId);
     if (order) {
-        order.status = 'Confirmed';
+        order.status = 'Paid';
     }
 
     return {
