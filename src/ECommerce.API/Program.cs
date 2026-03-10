@@ -15,6 +15,9 @@ builder.Host.UseSerilog((ctx, cfg) => cfg
     .WriteTo.Console());
 
 // ── Layer DI registrations ──
+// Production note: ConnectionStrings__DefaultConnection environment variable
+// automatically overrides appsettings.json (ASP.NET Core env-var convention).
+// Set it via Azure Key Vault reference or CI/CD secret injection — never hardcode prod credentials.
 builder.Services.AddApplication();
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);

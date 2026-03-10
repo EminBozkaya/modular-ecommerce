@@ -11,8 +11,15 @@ public class GetUsersHandler : IRequestHandler<GetUsersQuery, IReadOnlyList<User
     public async Task<IReadOnlyList<UserDto>> Handle(GetUsersQuery q, CancellationToken ct)
     {
         var users = await _users.GetAllAsync(ct);
-        return users.Select(u => new UserDto(u.Id, u.FirstName, u.LastName, u.Email, u.Role.ToString(), u.CreatedAt))
-            .ToList();
+        return users.Select(u => new UserDto(
+            u.Id,
+            u.FullName,
+            u.Email,
+            u.Role.ToString(),
+            u.IsEmailConfirmed,
+            u.IsDeleted,
+            !u.IsDeleted,
+            u.CreatedAt)).ToList();
     }
 }
 

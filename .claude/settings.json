@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install recharts)"
+      "Bash(npm install recharts)",
+      "Bash(xargs grep -l \"AbstractValidator\\\\|Validator<\")"
     ]
   }
 }

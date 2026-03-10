@@ -1,3 +1,4 @@
+using System.Reflection;
 using FluentAssertions;
 using NetArchTest.Rules;
 
@@ -89,6 +90,36 @@ public class ArchitectureTests
 
         // Assert
         result.IsSuccessful.Should().BeTrue();
+    }
+
+    [Fact]
+    public void DomainEntities_Should_NotHavePublicSetters()
+    {
+        // Arrange
+        var assembly = typeof(ECommerce.Domain.Common.BaseEntity).Assembly;
+        var entityTypes = assembly.GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract && t.Namespace != null
+                        && t.Namespace.StartsWith(DomainNamespace)
+                        && !t.Name.EndsWith("Tests"));
+
+        // Audit fields (CreatedAt, CreatedBy, UpdatedAt, UpdatedBy, IsDeleted, DeletedAt)
+        // require public setters so EF Core interceptors can populate them — this is intentional.
+        var auditPropertyNames = new HashSet<string>
+        {
+            "CreatedAt", "CreatedBy", "UpdatedAt", "UpdatedBy", "IsDeleted", "DeletedAt",
+        };
+
+        // Act
+        var violatingMembers = entityTypes
+            .SelectMany(t => t.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.SetMethod is { IsPublic: true } && !auditPropertyNames.Contains(p.Name))
+                .Select(p => $"{t.Name}.{p.Name}"))
+            .ToList();
+
+        // Assert
+        violatingMembers.Should().BeEmpty(
+            because: "domain entities must encapsulate state — public setters break invariants. Violations: {0}",
+            string.Join(", ", violatingMembers));
     }
 
     [Fact]

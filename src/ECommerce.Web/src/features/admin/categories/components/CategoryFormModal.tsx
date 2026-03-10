@@ -42,8 +42,8 @@ export default function CategoryFormModal({
             if (category) {
                 setForm({
                     name: category.name,
-                    description: (category as any).description || '',
-                    imageUrl: (category as any).imageUrl || '',
+                    description: category.description || '',
+                    imageUrl: category.imageUrl || '',
                     isActive: category.isActive !== undefined ? category.isActive : true,
                     parentCategoryId: category.parentCategoryId || '',
                 });

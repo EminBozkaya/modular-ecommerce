@@ -3,6 +3,8 @@ export interface Category {
     name: string;
     slug: string;
     isActive: boolean;
+    description?: string | null;
+    imageUrl?: string | null;
     parentCategoryId?: string | null;
     parentCategoryName?: string | null;
     isDeleted?: boolean;

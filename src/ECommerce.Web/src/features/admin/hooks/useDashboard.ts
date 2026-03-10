@@ -23,6 +23,7 @@ export function useRecentOrders() {
     return useQuery({
         queryKey: queryKeys.admin.dashboard.recentOrders,
         queryFn: getRecentOrders,
+        staleTime: 30_000,
     });
 }
 
@@ -30,5 +31,6 @@ export function useLowStockProducts() {
     return useQuery({
         queryKey: queryKeys.admin.dashboard.lowStock,
         queryFn: getLowStockProducts,
+        staleTime: 60_000,
     });
 }

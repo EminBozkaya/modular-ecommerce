@@ -1,3 +1,4 @@
+using ECommerce.Application.Common.Models;
 using ECommerce.Domain.Ordering;
 using MediatR;
 
@@ -16,6 +17,22 @@ public class GetOrdersHandler : IRequestHandler<GetOrdersQuery, IReadOnlyList<Or
             o.Items.Select(i => new OrderItemDto(i.ProductId, i.ProductName,
                 i.UnitPrice.Amount, i.Quantity, i.LineTotal.Amount)).ToList()))
             .ToList();
+    }
+}
+
+public class GetPagedOrdersHandler : IRequestHandler<GetPagedOrdersQuery, PagedResult<OrderDto>>
+{
+    private readonly IOrderRepository _orders;
+    public GetPagedOrdersHandler(IOrderRepository orders) => _orders = orders;
+
+    public async Task<PagedResult<OrderDto>> Handle(GetPagedOrdersQuery q, CancellationToken ct)
+    {
+        var (orders, total) = await _orders.GetPagedAsync(q.UserId, q.Page, q.PageSize, ct);
+        var items = orders.Select(o => new OrderDto(o.Id, o.OrderNumber, o.Status.ToString(),
+            o.Total.Amount, o.Total.Currency, o.ShippingAddress, o.CreatedAt,
+            o.Items.Select(i => new OrderItemDto(i.ProductId, i.ProductName,
+                i.UnitPrice.Amount, i.Quantity, i.LineTotal.Amount)).ToList())).ToList();
+        return new PagedResult<OrderDto>(items, total, q.Page, q.PageSize);
     }
 }
 

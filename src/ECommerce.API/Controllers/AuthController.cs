@@ -12,7 +12,13 @@ namespace ECommerce.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
-    public AuthController(IMediator mediator) => _mediator = mediator;
+    private readonly IWebHostEnvironment _env;
+
+    public AuthController(IMediator mediator, IWebHostEnvironment env)
+    {
+        _mediator = mediator;
+        _env = env;
+    }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterCommand cmd, CancellationToken ct)
@@ -95,14 +101,17 @@ public class AuthController : ControllerBase
 
     /// <summary>
     /// Sets httpOnly auth cookies — security-rules: JWT via httpOnly cookies, no localStorage.
+    /// SameSite=None in Development (cross-origin: port 5173 → 7136), Strict in Production.
     /// </summary>
     private void SetAuthCookies(LoginResult result)
     {
+        var sameSite = _env.IsDevelopment() ? SameSiteMode.None : SameSiteMode.Strict;
+
         Response.Cookies.Append("access_token", result.AccessToken, new CookieOptions
         {
             HttpOnly = true,
-            Secure = true, // Requires HTTPS (which the backend uses)
-            SameSite = SameSiteMode.None, // Allow cross-origin cookie sending for local dev (5173 -> 7136)
+            Secure = true,
+            SameSite = sameSite,
             MaxAge = TimeSpan.FromMinutes(15)
         });
 
@@ -110,7 +119,7 @@ public class AuthController : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.None,
+            SameSite = sameSite,
             Path = "/api/auth/refresh",
             MaxAge = TimeSpan.FromDays(7)
         });

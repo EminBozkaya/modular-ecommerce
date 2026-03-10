@@ -22,7 +22,7 @@ registerLocale('tr', tr);
 interface AgGridDatePickerProps {
     date: Date | null;
     onDateChange: (date: Date | null) => void;
-    filterParams?: any;
+    filterParams?: Record<string, unknown>;
     location?: string;
     onFocusIn?: () => void;
 }

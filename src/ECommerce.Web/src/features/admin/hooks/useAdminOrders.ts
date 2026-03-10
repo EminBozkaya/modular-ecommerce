@@ -16,7 +16,7 @@ export function useUpdateOrderStatus() {
     return useMutation({
         mutationFn: updateOrderStatus,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
+            queryClient.invalidateQueries({ queryKey: queryKeys.admin.orders.all });
             queryClient.invalidateQueries({ queryKey: queryKeys.admin.dashboard.recentOrders });
         },
     });

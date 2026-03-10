@@ -38,6 +38,22 @@ public class AddToBasketHandlerTests
     }
 
     [Fact]
+    public async Task Handle_OutOfStockProduct_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var productId = Guid.NewGuid();
+        var product = Product.Create("Out of Stock", null, null, new Money(100, "USD"), new StockQuantity(0), Guid.NewGuid(), Guid.NewGuid());
+        _productRepo.GetByIdAsync(productId, Arg.Any<CancellationToken>()).Returns(product);
+        var cmd = new AddToBasketCommand(null, "session-1", productId, 1);
+
+        // Act
+        Func<Task> act = async () => await _handler.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Product is out of stock.");
+    }
+
+    [Fact]
     public async Task Handle_NewGuestBasket_CreatesBasketAndAddsItem()
     {
         // Arrange

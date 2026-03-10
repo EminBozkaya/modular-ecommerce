@@ -1,4 +1,5 @@
 using ECommerce.Application.Common.Interfaces;
+using ECommerce.Domain.Common.Interfaces;
 using ECommerce.Application.Payment.Commands;
 using ECommerce.Domain.Ordering;
 using ECommerce.Domain.Ordering.Entities;
@@ -15,6 +16,7 @@ public class ProcessPaymentHandlerTests
     private readonly IOrderRepository _orders;
     private readonly IPaymentRepository _payments;
     private readonly IPaymentService _paymentService;
+    private readonly ICurrentUserService _currentUser;
     private readonly ProcessPaymentHandler _handler;
 
     public ProcessPaymentHandlerTests()
@@ -22,7 +24,9 @@ public class ProcessPaymentHandlerTests
         _orders = Substitute.For<IOrderRepository>();
         _payments = Substitute.For<IPaymentRepository>();
         _paymentService = Substitute.For<IPaymentService>();
-        _handler = new ProcessPaymentHandler(_orders, _payments, _paymentService);
+        _currentUser = Substitute.For<ICurrentUserService>();
+        _currentUser.UserId.Returns(Guid.NewGuid().ToString());
+        _handler = new ProcessPaymentHandler(_orders, _payments, _paymentService, _currentUser);
     }
 
     [Fact]
@@ -54,7 +58,9 @@ public class ProcessPaymentHandlerTests
         _payments.GetByIdempotencyKeyAsync(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((PaymentRecord?)null);
 
-        var order = Order.Create(Guid.NewGuid(), "test@user.com", "addr", [
+        var userId = Guid.NewGuid();
+        _currentUser.UserId.Returns(userId.ToString());
+        var order = Order.Create(userId, null, "addr", [
             ECommerce.Domain.Ordering.Entities.OrderItem.Create(Guid.NewGuid(), "P1", new Money(100, "USD"), 1)
         ]);
 

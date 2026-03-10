@@ -31,7 +31,7 @@ export function HeaderSearchAutocomplete() {
         return () => clearTimeout(timer);
     }, [searchQuery]);
 
-    const { data: result, isLoading } = useProducts({
+    const { data: result, isLoading, isError } = useProducts({
         search: debouncedQuery,
         pageSize: 5 // We only need a few results for autocomplete
     });
@@ -67,7 +67,7 @@ export function HeaderSearchAutocomplete() {
                 <div className="flex items-center border border-border rounded-md overflow-hidden bg-white shadow-sm relative z-10 transition-colors focus-within:ring-2 focus-within:ring-[var(--color-ebrar-green)] focus-within:border-[var(--color-ebrar-green)]">
                     <input
                         type="text"
-                        placeholder="Premium ürünlerimizi de arayın..."
+                        placeholder="Premium ürünlerimizde arayın..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onFocus={() => {
@@ -95,6 +95,10 @@ export function HeaderSearchAutocomplete() {
                         <div className="p-4 flex items-center justify-center text-muted-foreground gap-2">
                             <Loader2 className="h-5 w-5 animate-spin" />
                             <span className="text-sm font-medium">Aranıyor...</span>
+                        </div>
+                    ) : isError ? (
+                        <div className="p-4 text-center text-sm text-muted-foreground">
+                            Arama sırasında bir hata oluştu.
                         </div>
                     ) : products.length > 0 ? (
                         <div>

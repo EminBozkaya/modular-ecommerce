@@ -25,16 +25,16 @@ public class BasketController : ControllerBase
     public async Task<IActionResult> AddItem([FromBody] AddToBasketRequest req, CancellationToken ct)
     {
         var (userId, sessionId) = GetIdentifiers();
-        await _mediator.Send(new AddToBasketCommand(userId, sessionId, req.ProductId, req.Quantity), ct);
-        return Ok();
+        var result = await _mediator.Send(new AddToBasketCommand(userId, sessionId, req.ProductId, req.Quantity), ct);
+        return Ok(result);
     }
 
     [HttpDelete("items/{productId:guid}")]
     public async Task<IActionResult> RemoveItem(Guid productId, CancellationToken ct)
     {
         var (userId, sessionId) = GetIdentifiers();
-        await _mediator.Send(new RemoveFromBasketCommand(userId, sessionId, productId), ct);
-        return NoContent();
+        var result = await _mediator.Send(new RemoveFromBasketCommand(userId, sessionId, productId), ct);
+        return Ok(result);
     }
 
     [HttpDelete]

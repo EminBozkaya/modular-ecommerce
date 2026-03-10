@@ -7,7 +7,7 @@ import type { ApiError } from '@/api/errorHandling';
 export const useRemoveFromBasket = () => {
     const queryClient = useQueryClient();
 
-    return useMutation<Basket, ApiError, string>({
+    return useMutation<Basket, ApiError, string, { previousBasket: Basket | undefined }>({
         mutationFn: removeFromBasket,
         onMutate: async (productId) => {
             // Cancel any outgoing refetches so they don't overwrite optimistic update
@@ -30,7 +30,7 @@ export const useRemoveFromBasket = () => {
             return { previousBasket };
         },
         // If the mutation fails, use the context returned from onMutate to roll back
-        onError: (_err, _newTodo, context: any) => {
+        onError: (_err, _newTodo, context) => {
             if (context?.previousBasket) {
                 queryClient.setQueryData<Basket>(queryKeys.basket.current, context.previousBasket);
             }

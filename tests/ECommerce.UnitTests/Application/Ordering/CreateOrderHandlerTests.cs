@@ -91,7 +91,7 @@ public class CreateOrderHandlerTests
         var orderId = await _handler.Handle(cmd, CancellationToken.None);
 
         // Assert
-        orderId.Should().NotBeEmpty();
+        orderId.Should().NotBe(Guid.Empty);
         await _orderRepo.Received(1).AddAsync(Arg.Any<Order>(), Arg.Any<CancellationToken>());
         basket.Items.Should().BeEmpty(); // Validates Clear() was called on basket
         await _orderRepo.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());

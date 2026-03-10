@@ -1,3 +1,4 @@
+using ECommerce.Application.Admin.Queries;
 using ECommerce.Application.Catalog.Commands;
 using ECommerce.Application.Catalog.Queries;
 using ECommerce.Application.Identity.Queries;
@@ -88,8 +89,11 @@ public class AdminController : ControllerBase
     // ── Order Management ──
 
     [HttpGet("orders")]
-    public async Task<IActionResult> GetAllOrders(CancellationToken ct)
-        => Ok(await _mediator.Send(new GetOrdersQuery(), ct));
+    public async Task<IActionResult> GetAllOrders(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken ct = default)
+        => Ok(await _mediator.Send(new GetPagedOrdersQuery(null, page, pageSize), ct));
 
     [HttpGet("orders/{id:guid}")]
     public async Task<IActionResult> GetOrder(Guid id, CancellationToken ct)
@@ -97,4 +101,22 @@ public class AdminController : ControllerBase
         var result = await _mediator.Send(new GetOrderByIdQuery(id), ct);
         return result is null ? NotFound() : Ok(result);
     }
+
+    // ── Dashboard ──
+
+    [HttpGet("dashboard/summary")]
+    public async Task<IActionResult> GetDashboardSummary(CancellationToken ct)
+        => Ok(await _mediator.Send(new GetDashboardSummaryQuery(), ct));
+
+    [HttpGet("dashboard/revenue")]
+    public async Task<IActionResult> GetRevenueChart(CancellationToken ct)
+        => Ok(await _mediator.Send(new GetRevenueChartQuery(), ct));
+
+    [HttpGet("dashboard/recent-orders")]
+    public async Task<IActionResult> GetRecentOrders(CancellationToken ct)
+        => Ok(await _mediator.Send(new GetRecentOrdersQuery(), ct));
+
+    [HttpGet("dashboard/low-stock")]
+    public async Task<IActionResult> GetLowStockProducts(CancellationToken ct)
+        => Ok(await _mediator.Send(new GetLowStockProductsQuery(), ct));
 }

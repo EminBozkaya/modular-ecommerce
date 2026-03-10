@@ -7,7 +7,31 @@
       "Bash(dotnet build --no-restore)",
       "Bash(dotnet build src/ECommerce.Domain/ECommerce.Domain.csproj --no-restore)",
       "Bash(dotnet build src/ECommerce.Application/ECommerce.Application.csproj --no-restore)",
-      "Bash(dotnet build src/ECommerce.Persistence/ECommerce.Persistence.csproj --no-restore)"
+      "Bash(dotnet build src/ECommerce.Persistence/ECommerce.Persistence.csproj --no-restore)",
+      "Bash(grep -E \"^using ECommerce\\\\.\\(Persistence|API\\)\" /c/Users/MSI/source/repos/EbrarKuruyemis/src/ECommerce.Infrastructure/*.cs)",
+      "Bash(grep -E \"\\\\.cs$\")",
+      "Bash(xargs grep -l \"^using ECommerce\\\\.Application\")",
+      "Bash(grep -A 5 \"PaymentController\\\\|OrderController\" /c/Users/MSI/source/repos/EbrarKuruyemis/src/ECommerce.API/Controllers/*.cs)",
+      "Bash(xargs grep -l \"PagedResult\\\\|PaginatedResult\")",
+      "Bash(python3 -c \":*)",
+      "Bash(node -e \":*)",
+      "Bash(powershell -Command \":*)",
+      "Bash(powershell.exe -File:*)",
+      "Bash(node write-columns.mjs)",
+      "Bash(node write-page.mjs)",
+      "Bash(rm write-page.mjs)",
+      "Bash(node write-user-columns.mjs)",
+      "Bash(rm write-user-columns.mjs)",
+      "Bash(node write-users-page.mjs)",
+      "Bash(rm write-users-page.mjs)",
+      "Bash(node write-order-files.mjs)",
+      "Bash(node write-header-files.mjs)",
+      "Bash(ls -la /c/Users/MSI/source/repos/EbrarKuruyemis/*.sln)",
+      "Bash(dotnet test ECommerce.sln)",
+      "Bash(dotnet test tests/ECommerce.UnitTests/ECommerce.UnitTests.csproj)",
+      "Bash(dotnet test tests/ECommerce.UnitTests/ECommerce.UnitTests.csproj --filter \"ProcessPaymentHandlerTests\")",
+      "Bash(dotnet test tests/ECommerce.UnitTests/ECommerce.UnitTests.csproj --filter \"Handle_NewPayment_ChargesAndSaves\")",
+      "Bash(dotnet test tests/ECommerce.ArchitectureTests/ECommerce.ArchitectureTests.csproj --filter \"DomainEntities_Should_NotHavePublicSetters\")"
     ]
   }
 }

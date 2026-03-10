@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace ECommerce.API.Controllers;
 
@@ -19,9 +20,19 @@ public class OrderController : ControllerBase
     {
         var userId = GetUserId();
         var sessionId = Request.Cookies["session_id"];
-        var orderId = await _mediator.Send(
-            new CreateOrderCommand(userId, req.GuestEmail, sessionId, req.ShippingAddress), ct);
-        return CreatedAtAction(nameof(GetById), new { id = orderId }, new { id = orderId });
+
+        // Serialize structured ShippingAddress to JSON string for domain storage (Option A)
+        var shippingAddressJson = JsonSerializer.Serialize(req.ShippingAddress);
+
+        var result = await _mediator.Send(
+            new CreateOrderCommand(userId, req.GuestEmail, sessionId, shippingAddressJson), ct);
+
+        return CreatedAtAction(nameof(GetById), new { id = result.OrderId }, new
+        {
+            orderId = result.OrderId,
+            totalAmount = result.TotalAmount,
+            currency = result.Currency
+        });
     }
 
     [HttpGet("{id:guid}")]
@@ -47,4 +58,12 @@ public class OrderController : ControllerBase
     }
 }
 
-public record CreateOrderRequest(string? GuestEmail, string ShippingAddress);
+public record CreateOrderRequest(string? GuestEmail, ShippingAddressRequest ShippingAddress);
+
+public record ShippingAddressRequest(
+    string FullName,
+    string AddressLine1,
+    string? AddressLine2,
+    string City,
+    string PostalCode,
+    string Country);

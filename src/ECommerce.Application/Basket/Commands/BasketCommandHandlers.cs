@@ -1,10 +1,11 @@
+using ECommerce.Application.Basket.Queries;
 using ECommerce.Domain.Basket;
 using ECommerce.Domain.Catalog;
 using MediatR;
 
 namespace ECommerce.Application.Basket.Commands;
 
-public class AddToBasketHandler : IRequestHandler<AddToBasketCommand>
+public class AddToBasketHandler : IRequestHandler<AddToBasketCommand, BasketDto>
 {
     private readonly IBasketRepository _baskets;
     private readonly IProductRepository _products;
@@ -15,14 +16,19 @@ public class AddToBasketHandler : IRequestHandler<AddToBasketCommand>
         _products = products;
     }
 
-    public async Task Handle(AddToBasketCommand cmd, CancellationToken ct)
+    public async Task<BasketDto> Handle(AddToBasketCommand cmd, CancellationToken ct)
     {
         var product = await _products.GetByIdAsync(cmd.ProductId, ct)
             ?? throw new KeyNotFoundException("Product not found.");
 
+        if (!product.Stock.IsAvailable)
+            throw new InvalidOperationException("Product is out of stock.");
+
         var basket = await GetOrCreateBasket(cmd.UserId, cmd.SessionId, ct);
         basket.AddItem(product.Id, product.Name, product.Price, cmd.Quantity);
         await _baskets.SaveChangesAsync(ct);
+
+        return ToDto(basket, product.ImageUrl);
     }
 
     private async Task<Domain.Basket.Entities.Basket> GetOrCreateBasket(Guid? userId, string? sessionId, CancellationToken ct)
@@ -40,21 +46,47 @@ public class AddToBasketHandler : IRequestHandler<AddToBasketCommand>
         }
         return basket;
     }
+
+    // imageUrl of the just-added product is passed in; other items rely on snapshot name only
+    private static BasketDto ToDto(Domain.Basket.Entities.Basket basket, string? addedProductImageUrl)
+    {
+        var items = basket.Items.Select(i => new BasketItemDto(
+            i.ProductId,
+            i.ProductName,
+            i.UnitPriceSnapshot.Amount,
+            i.UnitPriceSnapshot.Currency,
+            i.Quantity,
+            i.LineTotalSnapshot.Amount,
+            null)).ToList();
+        return new BasketDto(basket.Id, items, basket.Total.Amount, basket.Total.Currency);
+    }
 }
 
-public class RemoveFromBasketHandler : IRequestHandler<RemoveFromBasketCommand>
+public class RemoveFromBasketHandler : IRequestHandler<RemoveFromBasketCommand, BasketDto>
 {
     private readonly IBasketRepository _baskets;
     public RemoveFromBasketHandler(IBasketRepository baskets) => _baskets = baskets;
 
-    public async Task Handle(RemoveFromBasketCommand cmd, CancellationToken ct)
+    public async Task<BasketDto> Handle(RemoveFromBasketCommand cmd, CancellationToken ct)
     {
         var basket = cmd.UserId.HasValue
             ? await _baskets.GetByUserIdAsync(cmd.UserId.Value, ct)
             : await _baskets.GetBySessionIdAsync(cmd.SessionId!, ct);
-        if (basket is null) return;
+        if (basket is null)
+            return new BasketDto(Guid.Empty, [], 0, "TRY");
+
         basket.RemoveItem(cmd.ProductId);
         await _baskets.SaveChangesAsync(ct);
+
+        var items = basket.Items.Select(i => new BasketItemDto(
+            i.ProductId,
+            i.ProductName,
+            i.UnitPriceSnapshot.Amount,
+            i.UnitPriceSnapshot.Currency,
+            i.Quantity,
+            i.LineTotalSnapshot.Amount,
+            null)).ToList();
+        return new BasketDto(basket.Id, items, basket.Total.Amount, basket.Total.Currency);
     }
 }
 

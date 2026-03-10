@@ -11,8 +11,10 @@ public record BasketDto(
 public record BasketItemDto(
     Guid ProductId,
     string ProductName,
-    decimal UnitPrice,
+    decimal UnitPriceSnapshot,
+    string Currency,
     int Quantity,
-    decimal LineTotal);
+    decimal LineTotal,
+    string? ImageUrl);
 
 public record GetBasketQuery(Guid? UserId, string? SessionId) : IRequest<BasketDto?>;

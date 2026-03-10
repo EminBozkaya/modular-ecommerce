@@ -6,7 +6,7 @@ using MediatR;
 
 namespace ECommerce.Application.Ordering.Commands;
 
-public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, Guid>
+public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, CreateOrderResult>
 {
     private readonly IOrderRepository _orders;
     private readonly IBasketRepository _baskets;
@@ -19,7 +19,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, Guid>
         _products = products;
     }
 
-    public async Task<Guid> Handle(CreateOrderCommand cmd, CancellationToken ct)
+    public async Task<CreateOrderResult> Handle(CreateOrderCommand cmd, CancellationToken ct)
     {
         var basket = cmd.UserId.HasValue
             ? await _baskets.GetByUserIdAsync(cmd.UserId.Value, ct)
@@ -56,6 +56,6 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, Guid>
         await _orders.AddAsync(order, ct);
         basket.Clear();
         await _orders.SaveChangesAsync(ct);
-        return order.Id;
+        return new CreateOrderResult(order.Id, order.Total.Amount, order.Total.Currency);
     }
 }

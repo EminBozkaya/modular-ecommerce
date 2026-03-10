@@ -6,4 +6,6 @@ public record CreateOrderCommand(
     Guid? UserId,
     string? GuestEmail,
     string? SessionId,   // to locate guest basket
-    string ShippingAddress) : IRequest<Guid>;
+    string ShippingAddress) : IRequest<CreateOrderResult>;
+
+public record CreateOrderResult(Guid OrderId, decimal TotalAmount, string Currency);

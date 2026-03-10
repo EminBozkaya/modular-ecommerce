@@ -22,7 +22,17 @@ public class JwtService : IJwtService
     public string GenerateAccessToken(AppUser user)
     {
         var jwtSection = _config.GetRequiredSection("Jwt");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["Secret"]!));
+
+        // Secret resolution: environment variable (JWT__Secret) takes precedence over appsettings.
+        // If neither is set, fail fast — running without a secret is a critical security misconfiguration.
+        var secret = Environment.GetEnvironmentVariable("JWT__Secret")
+            ?? jwtSection["Secret"];
+
+        if (string.IsNullOrWhiteSpace(secret))
+            throw new InvalidOperationException(
+                "JWT secret is not configured. Set the JWT__Secret environment variable or Jwt:Secret in appsettings.");
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>

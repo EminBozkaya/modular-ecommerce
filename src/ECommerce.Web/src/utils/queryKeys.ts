@@ -2,7 +2,7 @@ export const queryKeys = {
     catalog: {
         products: {
             all: ['catalog', 'products', 'all'] as const,
-            list: (params: any) => ['catalog', 'products', 'list', params] as const,
+            list: (params: Record<string, unknown>) => ['catalog', 'products', 'list', params] as const,
             detail: (id: string) => ['catalog', 'products', 'detail', id] as const,
         },
         categories: {
@@ -31,6 +31,7 @@ export const queryKeys = {
             lowStock: ['admin', 'dashboard', 'lowStock'] as const,
         },
         orders: {
+            all: ['admin', 'orders'] as const,
             list: (params: object) => ['admin', 'orders', 'list', params] as const,
         },
         users: {

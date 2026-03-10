@@ -1,4 +1,5 @@
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, type TooltipProps } from 'recharts';
+import type { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
 import type { RevenueDataPoint } from '../types/dashboard';
 import { formatPrice } from '../../../utils/formatters';
 
@@ -39,8 +40,8 @@ export function RevenueChart({ data }: RevenueChartProps) {
                             tickLine={false}
                         />
                         <Tooltip
-                            formatter={((value: any) => [formatPrice(value, 'TRY'), 'Gelir']) as any}
-                            labelFormatter={formatDateLabel as any}
+                            formatter={(value: ValueType, _name: NameType) => [formatPrice(Number(value), 'TRY'), 'Gelir']}
+                            labelFormatter={(label: string) => formatDateLabel(label)}
                             contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13 }}
                         />
                         <Area

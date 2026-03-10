@@ -1,11 +1,13 @@
 using ECommerce.Application.Payment.Commands;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class PaymentController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -14,9 +16,9 @@ public class PaymentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Process([FromBody] ProcessPaymentRequest req, CancellationToken ct)
     {
-        var paymentId = await _mediator.Send(
+        var transactionId = await _mediator.Send(
             new ProcessPaymentCommand(req.OrderId, req.PaymentToken, req.IdempotencyKey), ct);
-        return Ok(new { paymentId });
+        return Ok(new { success = true, transactionId });
     }
 }
 
