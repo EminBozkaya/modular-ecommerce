@@ -17,6 +17,7 @@ import {
     DateFilterModule,
     LocaleModule,
     CustomFilterModule,
+    TooltipModule,
 } from 'ag-grid-community';
 import { ShoppingBag, Download, FileDown } from 'lucide-react';
 import { getAllOrders } from '../../api/adminApi';
@@ -32,7 +33,7 @@ import { exportOrdersToExcel, exportOrdersToPDF } from '../utils/orderExport';
 ModuleRegistry.registerModules([
     ClientSideRowModelModule, TextFilterModule, NumberFilterModule, PaginationModule,
     ValidationModule, ColumnAutoSizeModule, RowApiModule, CellStyleModule,
-    RowSelectionModule, RowStyleModule, DateFilterModule, LocaleModule, CustomFilterModule,
+    RowSelectionModule, RowStyleModule, DateFilterModule, LocaleModule, CustomFilterModule, TooltipModule,
 ]);
 
 export default function AdminOrdersPage() {
@@ -96,9 +97,12 @@ export default function AdminOrdersPage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden" style={{ border: '1px solid #e5e7eb' }}>
-                <div style={{ height: 'calc(100vh - 260px)', width: '100%' }}>
+            <div className="bg-white rounded-xl shadow-sm overflow-x-auto" style={{ border: '1px solid #e5e7eb' }}>
+                <div style={{ minWidth: 'fit-content' }}>
                     <AgGridReact<Order>
+                        suppressHorizontalScroll={true}
+                        suppressColumnVirtualisation={true}
+                        tooltipShowDelay={300}
                         ref={gridRef}
                         components={gridComponents}
                         rowData={orders}
@@ -108,6 +112,7 @@ export default function AdminOrdersPage() {
                         paginationPageSize={20}
                         paginationPageSizeSelector={[10, 20, 50, 100]}
                         loading={loading}
+                        domLayout="autoHeight"
                         animateRows={true}
                         localeText={localeTextTr}
                         getRowStyle={(params) => {
@@ -116,12 +121,20 @@ export default function AdminOrdersPage() {
                             const colors = statusColors[params.data.status];
                             return colors ? { backgroundColor: colors.bg } : undefined;
                         }}
-                        defaultColDef={{ resizable: true, floatingFilter: true, suppressHeaderMenuButton: true, menuTabs: [] }}
+                        defaultColDef={{
+                            resizable: true,
+                            floatingFilter: true,
+                            suppressHeaderMenuButton: true,
+                            menuTabs: [],
+                            suppressMovable: false,
+                            cellStyle: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+                        }}
                         overlayNoRowsTemplate="<span style='padding:10px;color:#6b7280'>Henuz siparis bulunamadi.</span>"
                         overlayLoadingTemplate="<span style='padding:10px;color:#1B5E3F'>Siparisler yukleniyor...</span>"
                     />
                 </div>
             </div>
+
 
             <div className="flex items-center justify-between mt-3 px-1 text-xs text-gray-500">
                 <span>Toplam kayit: {orders.length}</span>

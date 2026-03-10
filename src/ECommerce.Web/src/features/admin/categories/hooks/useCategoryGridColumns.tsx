@@ -113,16 +113,12 @@ export function useCategoryGridColumns({
         {
             headerName: 'Durum',
             field: 'isActive',
-            filter: 'statusFilter',
+            filter: 'entityStatusFilter',
             floatingFilter: true,
-            floatingFilterComponent: 'statusFilterSummary',
+            floatingFilterComponent: 'entityStatusFloatingFilter',
             suppressHeaderMenuButton: true,
-            suppressFloatingFilterButton: true,
-            suppressMenu: true,
-            menuTabs: [],
             sortable: true,
-            width: 155,
-            minWidth: 155,
+            width: 90,
             cellRenderer: (params: ICellRendererParams<Category>) => {
                 if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmiş</span>;
                 return params.value
@@ -135,16 +131,16 @@ export function useCategoryGridColumns({
             field: 'name',
             filter: 'agTextColumnFilter',
             sortable: true,
-            flex: 2,
-            minWidth: 150,
+            width: 160,
+            tooltipValueGetter: (params) => params.value ?? '',
         },
         {
             headerName: 'Üst Kategori',
             field: 'parentCategoryName',
             filter: 'agTextColumnFilter',
             sortable: true,
-            flex: 2,
-            minWidth: 150,
+            width: 150,
+            tooltipValueGetter: (params) => params.value ?? '',
             cellRenderer: (params: { value?: string | null }) =>
                 params.value
                     ? <span className="text-gray-600">{params.value}</span>
@@ -156,15 +152,23 @@ export function useCategoryGridColumns({
             sortable: true,
             filter: 'agDateColumnFilter',
             filterParams: { comparator: dateComparator },
-            width: 180,
+            width: 160,
             valueFormatter: formatDateCell,
+            tooltipValueGetter: (params) => {
+                if (!params.value) return '';
+                return new Intl.DateTimeFormat('tr-TR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit',
+                }).format(new Date(params.value as string));
+            },
         },
         {
             headerName: 'Oluşturan',
             field: 'createdBy',
             sortable: true,
             filter: 'agTextColumnFilter',
-            width: 150,
+            width: 120,
+            tooltipValueGetter: (params) => params.value ?? '',
         },
         {
             headerName: 'Güncellenme Tarihi',
@@ -172,22 +176,30 @@ export function useCategoryGridColumns({
             sortable: true,
             filter: 'agDateColumnFilter',
             filterParams: { comparator: dateComparator },
-            width: 180,
+            width: 160,
             valueFormatter: formatDateCell,
+            tooltipValueGetter: (params) => {
+                if (!params.value) return '';
+                return new Intl.DateTimeFormat('tr-TR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit',
+                }).format(new Date(params.value as string));
+            },
         },
         {
             headerName: 'Güncelleyen',
             field: 'updatedBy',
             sortable: true,
             filter: 'agTextColumnFilter',
-            width: 150,
+            width: 120,
+            tooltipValueGetter: (params) => params.value ?? '',
         },
         {
             headerName: 'Silinme Tarihi',
             field: 'deletedAt',
             sortable: true,
             filter: false,
-            width: 180,
+            width: 160,
             hide: true,
             valueFormatter: formatDateCell,
         },
@@ -196,7 +208,7 @@ export function useCategoryGridColumns({
             field: 'id',
             sortable: false,
             filter: false,
-            width: 120,
+            width: 90,
             cellRenderer: (params: ICellRendererParams<Category>) => {
                 if (!params.data) return null;
                 const isDeleted = params.data.isDeleted;

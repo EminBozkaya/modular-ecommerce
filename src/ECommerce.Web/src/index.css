@@ -303,6 +303,9 @@ select:focus {
 .ag-header-container,
 .ag-header-row,
 .ag-header-cell,
+.ag-body-viewport,
+.ag-center-cols-viewport,
+.ag-center-cols-container,
 .ag-floating-filter,
 .ag-filter,
 .ag-filter-wrapper,
@@ -318,6 +321,12 @@ select:focus {
 .ag-menu-column-list {
   overflow: visible !important;
 }
+
+/* Hide internal horizontal scroll since we use container scroll */
+.ag-body-horizontal-scroll {
+  display: none !important;
+}
+
 
 /* Ensure the calendar itself has high z-index and no clipping */
 .react-datepicker-popper {

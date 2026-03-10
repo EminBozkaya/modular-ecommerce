@@ -112,7 +112,7 @@ export function useOrderGridColumns({
             floatingFilterComponent: 'orderStatusFloatingFilter',
             suppressHeaderMenuButton: true,
             sortable: true,
-            width: 160,
+            width: 130,
             cellRenderer: (params: ICellRendererParams<Order, OrderStatus>) => {
                 if (!params.value) return null;
                 if (params.data?.isDeleted) {
@@ -135,7 +135,8 @@ export function useOrderGridColumns({
             field: 'id',
             filter: 'agTextColumnFilter',
             sortable: true,
-            width: 140,
+            width: 130,
+            tooltipValueGetter: (params) => params.value ?? '',
             cellRenderer: (params: ICellRendererParams<Order, string>) => {
                 if (!params.value) return '';
                 return (
@@ -150,8 +151,8 @@ export function useOrderGridColumns({
             valueGetter: (params) => params.data?.shippingAddress.fullName ?? '',
             filter: 'agTextColumnFilter',
             sortable: true,
-            flex: 2,
-            minWidth: 160,
+            width: 160,
+            tooltipValueGetter: (params) => params.value ?? '',
         },
         {
             headerName: 'Urun Sayisi',
@@ -161,15 +162,18 @@ export function useOrderGridColumns({
             },
             filter: 'agNumberColumnFilter',
             sortable: true,
-            width: 130,
+            width: 110,
+            tooltipValueGetter: (params) => params.value != null ? String(params.value) : '',
         },
         {
             headerName: 'Tutar (TL)',
             field: 'totalAmount',
             filter: 'agNumberColumnFilter',
             sortable: true,
-            width: 140,
+            width: 110,
             valueFormatter: (params) =>
+                params.value != null ? `TL${Number(params.value).toFixed(2)}` : '',
+            tooltipValueGetter: (params) =>
                 params.value != null ? `TL${Number(params.value).toFixed(2)}` : '',
         },
         {
@@ -177,7 +181,8 @@ export function useOrderGridColumns({
             valueGetter: (params) => params.data?.shippingAddress.city ?? '',
             filter: 'agTextColumnFilter',
             sortable: true,
-            width: 140,
+            width: 110,
+            tooltipValueGetter: (params) => params.value ?? '',
         },
         {
             headerName: 'Urunler',
@@ -187,8 +192,8 @@ export function useOrderGridColumns({
             },
             filter: 'agTextColumnFilter',
             sortable: true,
-            flex: 2,
-            minWidth: 200,
+            width: 200,
+            tooltipValueGetter: (params) => params.value ?? '',
         },
         {
             headerName: 'Siparis Tarihi',
@@ -196,7 +201,7 @@ export function useOrderGridColumns({
             sortable: true,
             filter: 'agDateColumnFilter',
             filterParams: { comparator: dateComparator },
-            width: 180,
+            width: 155,
             valueFormatter: (params: ValueFormatterParams<Order, string>) => {
                 if (!params.value) return '';
                 return new Intl.DateTimeFormat('tr-TR', {
@@ -204,13 +209,20 @@ export function useOrderGridColumns({
                     hour: '2-digit', minute: '2-digit',
                 }).format(new Date(params.value));
             },
+            tooltipValueGetter: (params) => {
+                if (!params.value) return '';
+                return new Intl.DateTimeFormat('tr-TR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit',
+                }).format(new Date(params.value as string));
+            },
         },
         {
             headerName: 'Islemler',
             field: 'id',
             sortable: false,
             filter: false,
-            width: 120,
+            width: 90,
             cellRenderer: (params: ICellRendererParams<Order, string>) => {
                 if (!params.data) return null;
                 const isDeleted = params.data.isDeleted;

@@ -1,6 +1,5 @@
 import { Loader2 } from 'lucide-react';
 import { useAddToBasket } from '../hooks/useAddToBasket';
-import { Button } from '../../../components/ui/button'; // Assuming shadcn UI Button exists
 
 interface AddToBasketButtonProps {
     productId: string;
@@ -12,36 +11,49 @@ export const AddToBasketButton = ({ productId, disabled }: AddToBasketButtonProp
 
     if (disabled) {
         return (
-            <Button disabled className="w-full" variant="secondary">
-                Out of Stock
-            </Button>
+            <button
+                disabled
+                className="w-full py-2.5 px-4 text-sm font-bold bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed border-b-2 border-gray-200"
+            >
+                Stokta Yok
+            </button>
         );
     }
 
     if (isSuccess) {
         return (
-            <Button disabled className="w-full bg-green-600 hover:bg-green-700 text-white">
-                Added ✓
-            </Button>
+            <button
+                disabled
+                className="w-full py-2.5 px-4 text-sm font-bold bg-green-500 text-white rounded-lg border-b-4 border-green-700 shadow-sm"
+            >
+                Eklendi ✓
+            </button>
         );
     }
 
     return (
-        <Button
+        <button
             onClick={() => addToBasket({ productId, quantity: 1 })}
             disabled={isPending}
-            className="w-full"
-            variant={isError ? "destructive" : "default"}
+            className={`
+                w-full py-2.5 px-4 text-sm font-bold text-white rounded-lg 
+                transition-all duration-150 active:translate-y-1 active:border-b-0
+                ${isError
+                    ? 'bg-red-500 border-b-4 border-red-700 hover:bg-red-600'
+                    : 'bg-[#1B5E3F] border-b-4 border-[#12412b] hover:bg-[#164d33] hover:shadow-lg'
+                }
+                disabled:opacity-70 disabled:cursor-wait
+            `}
         >
             {isPending ? (
-                <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Adding...
-                </>
+                <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" /> Ekleniyor...
+                </span>
             ) : isError ? (
-                'Try Again'
+                'Tekrar Dene'
             ) : (
-                'Add to Basket'
+                'Sepete Ekle'
             )}
-        </Button>
+        </button>
     );
 };

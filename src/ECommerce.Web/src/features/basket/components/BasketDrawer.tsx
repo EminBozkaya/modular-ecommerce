@@ -5,7 +5,6 @@ import { BasketItemRow } from './BasketItemRow';
 import { BasketSummary } from './BasketSummary';
 import { EmptyState } from '../../../components/shared/EmptyState';
 import { Loader2, X } from 'lucide-react';
-import { Button } from '../../../components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 export const BasketDrawer = () => {
@@ -38,10 +37,10 @@ export const BasketDrawer = () => {
             <div className="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-white dark:bg-zinc-950 shadow-xl flex flex-col transform transition-transform duration-300 ease-in-out">
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-4 border-b">
-                    <h2 className="text-lg font-semibold">Your Basket</h2>
-                    <Button variant="ghost" size="icon" onClick={closeDrawer}>
+                    <h2 className="text-lg font-semibold">Sepetim</h2>
+                    <button onClick={closeDrawer} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                         <X className="h-5 w-5" />
-                    </Button>
+                    </button>
                 </div>
 
                 {/* Content */}
@@ -52,11 +51,11 @@ export const BasketDrawer = () => {
                         </div>
                     ) : isError ? (
                         <div className="flex justify-center items-center h-full text-red-500">
-                            Failed to load basket.
+                            Sepet yüklenemedi.
                         </div>
                     ) : !basket || !basket.items || basket.items.length === 0 ? (
                         <div className="py-12">
-                            <EmptyState title="Your basket is empty" description="Looks like you haven't added anything yet." />
+                            <EmptyState title="Sepetiniz boş" description="Henüz bir ürün eklemediniz." />
                         </div>
                     ) : (
                         <div className="flex flex-col">
@@ -72,16 +71,15 @@ export const BasketDrawer = () => {
                     <div className="border-t">
                         <BasketSummary basket={basket} />
                         <div className="p-4 pt-0 bg-gray-50 dark:bg-zinc-900">
-                            <Button
-                                className="w-full"
-                                size="lg"
+                            <button
+                                className="w-full py-3 px-4 text-base font-bold text-white rounded-lg bg-[#1B5E3F] border-b-4 border-[#12412b] hover:bg-[#164d33] hover:shadow-lg transition-all duration-150 active:translate-y-1 active:border-b-0"
                                 onClick={() => {
                                     closeDrawer();
                                     navigate('/checkout'); // Placeholder
                                 }}
                             >
-                                Proceed to Checkout
-                            </Button>
+                                Ödemeye Geç
+                            </button>
                         </div>
                     </div>
                 )}

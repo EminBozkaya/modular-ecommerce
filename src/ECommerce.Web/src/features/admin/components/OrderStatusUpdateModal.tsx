@@ -41,7 +41,7 @@ export function OrderStatusUpdateModal({ order, isOpen, onClose }: OrderStatusUp
     };
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto pt-24 pb-10 px-4 bg-black/50 backdrop-blur-sm">
             <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
                 <div className="p-6">
                     <div className="flex items-center justify-between mb-5">

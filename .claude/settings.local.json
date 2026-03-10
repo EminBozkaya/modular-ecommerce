@@ -31,7 +31,11 @@
       "Bash(dotnet test tests/ECommerce.UnitTests/ECommerce.UnitTests.csproj)",
       "Bash(dotnet test tests/ECommerce.UnitTests/ECommerce.UnitTests.csproj --filter \"ProcessPaymentHandlerTests\")",
       "Bash(dotnet test tests/ECommerce.UnitTests/ECommerce.UnitTests.csproj --filter \"Handle_NewPayment_ChargesAndSaves\")",
-      "Bash(dotnet test tests/ECommerce.ArchitectureTests/ECommerce.ArchitectureTests.csproj --filter \"DomainEntities_Should_NotHavePublicSetters\")"
+      "Bash(dotnet test tests/ECommerce.ArchitectureTests/ECommerce.ArchitectureTests.csproj --filter \"DomainEntities_Should_NotHavePublicSetters\")",
+      "Bash(npx vite build)",
+      "Bash(grep -n \"overflow-hidden\\\\|width: ''100%''\" \"c:\\\\Users\\\\MSI\\\\source\\\\repos\\\\EbrarKuruyemis\\\\src\\\\ECommerce.Web\\\\src\\\\features\\\\admin\\\\categories\\\\pages\\\\AdminCategoriesPage.tsx\")",
+      "Bash(grep -n \"height.*calc\\\\|minWidth\\\\|overflow-hidden\\\\|overflowX\\\\|width: ''100%''\" \"c:/Users/MSI/source/repos/EbrarKuruyemis/src/ECommerce.Web/src/features/admin/products/pages/AdminProductsPage.tsx\" \"c:/Users/MSI/source/repos/EbrarKuruyemis/src/ECommerce.Web/src/features/admin/categories/pages/AdminCategoriesPage.tsx\" \"c:/Users/MSI/source/repos/EbrarKuruyemis/src/ECommerce.Web/src/features/admin/pages/AdminUsersPage.tsx\" \"c:/Users/MSI/source/repos/EbrarKuruyemis/src/ECommerce.Web/src/features/admin/orders/pages/AdminOrdersPage.tsx\")",
+      "Bash(node:*)"
     ]
   }
 }
