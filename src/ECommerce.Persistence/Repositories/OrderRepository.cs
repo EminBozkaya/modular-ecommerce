@@ -38,6 +38,10 @@ public class OrderRepository : IOrderRepository
     public async Task AddAsync(Order order, CancellationToken ct = default)
         => await _ctx.Orders.AddAsync(order, ct);
 
+    public async Task<Order?> GetByIdTrackedAsync(Guid id, CancellationToken ct = default)
+        => await _ctx.Orders.Include(o => o.Items)
+            .FirstOrDefaultAsync(o => o.Id == id, ct);
+
     public async Task SaveChangesAsync(CancellationToken ct = default)
         => await _ctx.SaveChangesAsync(ct);
 }

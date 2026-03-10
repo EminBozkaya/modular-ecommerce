@@ -7,7 +7,6 @@ import {
     Twitter,
     Instagram,
 } from 'lucide-react';
-import { BasketDrawer } from '@/features/basket/components/BasketDrawer';
 import { AppHeader } from './header/AppHeader';
 
 export function MainLayout() {
@@ -102,7 +101,6 @@ export function MainLayout() {
                 </div>
             </footer>
 
-            <BasketDrawer />
         </div>
     );
 }

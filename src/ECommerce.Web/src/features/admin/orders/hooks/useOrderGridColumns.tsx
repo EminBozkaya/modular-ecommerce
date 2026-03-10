@@ -6,53 +6,53 @@ import type { Order, OrderStatus } from '../../../ordering/types/order';
 export const localeTextTr = {
     filterOoo: 'Filtrele...',
     applyFilter: 'Uygula',
-    resetFilter: 'Sifirla',
+    resetFilter: 'Sıfırla',
     clearFilter: 'Temizle',
     dateFormatOoo: 'dd.mm.yyyy',
     dateFilterPlaceholder: 'gg.aa.yyyy',
-    before: 'Once',
+    before: 'Önce',
     after: 'Sonra',
-    equals: 'Esittir',
-    notEqual: 'Esit Degil',
-    blank: 'Bos',
+    equals: 'Eşittir',
+    notEqual: 'Eşit Değil',
+    blank: 'Boş',
     notBlank: 'Dolu',
-    contains: 'Icerir',
-    notContains: 'Icermez',
-    startsWith: 'Ile Baslar',
-    endsWith: 'Ile Biter',
-    greaterThan: 'Buyuktur',
-    greaterThanOrEqual: 'Buyuktur veya Esittir',
-    lessThan: 'Kucuktur',
-    lessThanOrEqual: 'Kucuktur veya Esittir',
-    inRange: 'Arasinda',
-    inRangeStart: 'Baslangic',
-    inRangeEnd: 'Bitis',
+    contains: 'İçerir',
+    notContains: 'İçermez',
+    startsWith: 'İle Başlar',
+    endsWith: 'İle Biter',
+    greaterThan: 'Büyüktür',
+    greaterThanOrEqual: 'Büyüktür veya Eşittir',
+    lessThan: 'Küçüktür',
+    lessThanOrEqual: 'Küçüktür veya Eşittir',
+    inRange: 'Arasında',
+    inRangeStart: 'Başlangıç',
+    inRangeEnd: 'Bitiş',
     andCondition: 'VE',
     orCondition: 'VEYA',
-    sortAscending: 'Artan Siralama',
-    sortDescending: 'Azalan Siralama',
-    columnAutoSize: 'Otomatik Genislik',
+    sortAscending: 'Artan Sıralama',
+    sortDescending: 'Azalan Sıralama',
+    columnAutoSize: 'Otomatik Genişlik',
     page: 'Sayfa',
     more: 'Daha Fazla',
     to: '-',
     of: '/',
     next: 'Sonraki',
     last: 'Son',
-    first: 'Ilk',
-    previous: 'Onceki',
+    first: 'İlk',
+    previous: 'Önceki',
     pageSizeSelectorLabel: 'Sayfa Boyutu:',
-    loadingOoo: 'Yukleniyor...',
-    noRowsToShow: 'Henuz kayit bulunamadi.',
+    loadingOoo: 'Yükleniyor...',
+    noRowsToShow: 'Henüz kayıt bulunamadı.',
 };
 
 export const statusLabels: Record<OrderStatus, string> = {
     Pending: 'Beklemede',
-    Processing: 'Isleniyor',
-    Paid: 'Odendi',
+    Processing: 'İşleniyor',
+    Paid: 'Ödendi',
     Shipped: 'Kargoda',
     Delivered: 'Teslim Edildi',
-    Cancelled: 'Iptal Edildi',
-    Refunded: 'Iade Edildi',
+    Cancelled: 'İptal Edildi',
+    Refunded: 'İade Edildi',
 };
 
 export const statusColors: Record<OrderStatus, { text: string; bg: string }> = {
@@ -118,7 +118,7 @@ export function useOrderGridColumns({
                 if (params.data?.isDeleted) {
                     return (
                         <span style={{ color: '#dc2626', backgroundColor: '#fef2f2', padding: '2px 10px', borderRadius: '9999px', fontSize: '12px', fontWeight: 600 }}>
-                            Silinmis
+                            Silinmiş
                         </span>
                     );
                 }
@@ -131,7 +131,7 @@ export function useOrderGridColumns({
             },
         },
         {
-            headerName: 'Siparis No',
+            headerName: 'Sipariş No',
             field: 'id',
             filter: 'agTextColumnFilter',
             sortable: true,
@@ -147,7 +147,7 @@ export function useOrderGridColumns({
             },
         },
         {
-            headerName: 'Musteri',
+            headerName: 'Müşteri',
             valueGetter: (params) => params.data?.shippingAddress.fullName ?? '',
             filter: 'agTextColumnFilter',
             sortable: true,
@@ -155,7 +155,7 @@ export function useOrderGridColumns({
             tooltipValueGetter: (params) => params.value ?? '',
         },
         {
-            headerName: 'Urun Sayisi',
+            headerName: 'Ürün Sayısı',
             valueGetter: (params) => {
                 if (!params.data) return 0;
                 return params.data.items.reduce((sum, item) => sum + item.quantity, 0);
@@ -177,7 +177,7 @@ export function useOrderGridColumns({
                 params.value != null ? `TL${Number(params.value).toFixed(2)}` : '',
         },
         {
-            headerName: 'Sehir',
+            headerName: 'Şehir',
             valueGetter: (params) => params.data?.shippingAddress.city ?? '',
             filter: 'agTextColumnFilter',
             sortable: true,
@@ -185,7 +185,7 @@ export function useOrderGridColumns({
             tooltipValueGetter: (params) => params.value ?? '',
         },
         {
-            headerName: 'Urunler',
+            headerName: 'Ürünler',
             valueGetter: (params) => {
                 if (!params.data) return '';
                 return params.data.items.map(i => i.productName).join(', ');
@@ -196,7 +196,7 @@ export function useOrderGridColumns({
             tooltipValueGetter: (params) => params.value ?? '',
         },
         {
-            headerName: 'Siparis Tarihi',
+            headerName: 'Sipariş Tarihi',
             field: 'createdAt',
             sortable: true,
             filter: 'agDateColumnFilter',
@@ -218,7 +218,7 @@ export function useOrderGridColumns({
             },
         },
         {
-            headerName: 'Islemler',
+            headerName: 'İşlemler',
             field: 'id',
             sortable: false,
             filter: false,
@@ -231,7 +231,7 @@ export function useOrderGridColumns({
                         {!isDeleted ? (
                             <>
                                 <button
-                                    title="Durum Guncelle"
+                                    title="Durum Güncelle"
                                     onClick={(e) => { e.stopPropagation(); onEdit(params.data!); }}
                                     className="p-1 rounded-md transition-colors hover:bg-green-50"
                                     style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
@@ -249,7 +249,7 @@ export function useOrderGridColumns({
                             </>
                         ) : (
                             <button
-                                title="Geri Yukle"
+                                title="Geri Yükle"
                                 onClick={(e) => { e.stopPropagation(); onRestore(params.data!.id); }}
                                 className="p-1 rounded-md transition-colors hover:bg-blue-50"
                                 style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}

@@ -14,13 +14,13 @@ public class BasketItem : BaseEntity
     /// </summary>
     public Money UnitPriceSnapshot { get; private set; } = default!;
 
-    public int Quantity { get; private set; }
+    public decimal Quantity { get; private set; }
 
     public Money LineTotalSnapshot => UnitPriceSnapshot.Multiply(Quantity);
 
     private BasketItem() { }
 
-    public static BasketItem Create(Guid productId, string productName, Money unitPriceSnapshot, int quantity)
+    public static BasketItem Create(Guid productId, string productName, Money unitPriceSnapshot, decimal quantity)
     {
         if (quantity <= 0) throw new ArgumentException("Quantity must be positive.");
         return new BasketItem
@@ -32,7 +32,7 @@ public class BasketItem : BaseEntity
         };
     }
 
-    public void ChangeQuantity(int newQuantity)
+    public void ChangeQuantity(decimal newQuantity)
     {
         if (newQuantity <= 0) throw new ArgumentException("Quantity must be positive.");
         Quantity = newQuantity;

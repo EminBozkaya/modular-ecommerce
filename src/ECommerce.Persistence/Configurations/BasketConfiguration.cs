@@ -29,6 +29,9 @@ public class BasketItemConfiguration : IEntityTypeConfiguration<BasketItem>
 
         builder.Property(i => i.ProductName).IsRequired().HasMaxLength(200);
 
+        builder.Property(i => i.Quantity)
+            .HasPrecision(18, 3);
+
         builder.OwnsOne(i => i.UnitPriceSnapshot, money =>
         {
             money.Property(m => m.Amount).HasColumnName("UnitPrice_Amount").HasPrecision(18, 2);

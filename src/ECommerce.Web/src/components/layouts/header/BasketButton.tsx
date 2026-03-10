@@ -1,15 +1,15 @@
 import { ShoppingCart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useBasket } from '@/features/basket/hooks/useBasket';
-import { useBasketUiStore } from '@/store/basketUiStore';
 
 export function BasketButton() {
     const { data: basket, isLoading: isBasketLoading } = useBasket();
-    const { openDrawer } = useBasketUiStore();
+    const navigate = useNavigate();
     const itemCount = basket?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0;
 
     return (
         <button
-            onClick={openDrawer}
+            onClick={() => navigate('/basket')}
             className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gray-50 text-muted-foreground hover:text-[var(--color-ebrar-green)] hover:bg-green-50 transition-all duration-300"
             aria-label="Sepeti ac"
             title="Sepetim"

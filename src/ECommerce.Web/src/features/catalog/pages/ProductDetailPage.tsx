@@ -1,24 +1,36 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Loader2, ShoppingCart } from 'lucide-react';
 import { useProduct } from '../hooks/useProduct';
 import { formatPrice } from '../../../utils/formatters';
+import { calculateLinePrice } from '../../../utils/priceCalculator';
+import { getUnitConfig } from '../../../utils/unitConfig';
+import { QuantitySelector } from '../../../components/shared/QuantitySelector';
 import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
 import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import { EmptyState } from '../../../components/shared/EmptyState';
-import { ArrowLeft } from 'lucide-react';
-import { AddToBasketButton } from '../../basket/components/AddToBasketButton';
+import { useAddToBasket } from '../../basket/hooks/useAddToBasket';
 
 export default function ProductDetailPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-
-    // id should always be present from the route, but TS needs us to handle the potential undefined case
-    const safeId = id || '';
+    const safeId = id ?? '';
 
     const { data: product, isLoading, error, refetch } = useProduct(safeId);
+    const { mutate: addToBasket, isPending, isSuccess, isError } = useAddToBasket();
 
-    const handleBack = () => {
-        navigate('/products');
-    };
+    // quantity is initialised after product loads; default to 1 until then
+    const unitConfig = product ? getUnitConfig(product.unitName) : null;
+    const [quantity, setQuantity] = useState<number>(1);
+
+    // Sync quantity min when product first loads
+    const [syncedUnit, setSyncedUnit] = useState<string | null>(null);
+    if (product && unitConfig && syncedUnit !== product.unitName) {
+        setSyncedUnit(product.unitName);
+        setQuantity(unitConfig.min);
+    }
+
+    const handleBack = () => navigate('/products');
 
     if (isLoading) {
         return (
@@ -32,15 +44,12 @@ export default function ProductDetailPage() {
     if (error) {
         return (
             <div className="container mx-auto px-4 py-12 max-w-2xl">
-                <button
-                    onClick={handleBack}
-                    className="mb-8 flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-                >
+                <button onClick={handleBack} className="mb-8 flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Ürünlere dön
                 </button>
                 <ErrorMessage
-                    message={error instanceof Error ? error.message : "Ürün detayları yüklenemedi. Lütfen tekrar deneyin."}
+                    message={error instanceof Error ? error.message : 'Ürün detayları yüklenemedi. Lütfen tekrar deneyin.'}
                     onRetry={() => refetch()}
                 />
             </div>
@@ -50,36 +59,28 @@ export default function ProductDetailPage() {
     if (!product) {
         return (
             <div className="container mx-auto px-4 py-12 max-w-2xl">
-                <button
-                    onClick={handleBack}
-                    className="mb-8 flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-                >
+                <button onClick={handleBack} className="mb-8 flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Ürünlere dön
                 </button>
-                <EmptyState
-                    title="Ürün bulunamadı"
-                    description="Aradığınız ürün mevcut değil veya kaldırılmış olabilir."
-                />
+                <EmptyState title="Ürün bulunamadı" description="Aradığınız ürün mevcut değil veya kaldırılmış olabilir." />
             </div>
         );
     }
 
     const inStock = product.stockQuantity > 0;
+    const config = getUnitConfig(product.unitName);
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl">
-            <button
-                onClick={handleBack}
-                className="mb-8 flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-            >
+            <button onClick={handleBack} className="mb-8 flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Ürünlere dön
             </button>
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="flex flex-col md:flex-row">
-                    {/* Image Gallery Area */}
+                    {/* Image */}
                     <div className="md:w-1/2 p-8 md:p-12 bg-gray-50 flex items-center justify-center md:border-r border-gray-100 min-h-[400px]">
                         {product.imageUrl ? (
                             <img
@@ -97,7 +98,7 @@ export default function ProductDetailPage() {
                         )}
                     </div>
 
-                    {/* Product Info Area */}
+                    {/* Info */}
                     <div className="md:w-1/2 p-8 md:p-12 flex flex-col">
                         <div className="mb-2">
                             <span className="text-sm font-bold tracking-wider text-blue-600 uppercase">
@@ -109,10 +110,17 @@ export default function ProductDetailPage() {
                             {product.name}
                         </h1>
 
-                        <div className="flex items-end mb-6">
+                        {/* Unit info */}
+                        <p className="text-sm text-gray-500 mb-2">
+                            Satış birimi:{' '}
+                            <span className="font-semibold text-gray-700">{config.displayName}</span>
+                        </p>
+
+                        <div className="flex items-end mb-4">
                             <span className="text-3xl font-extrabold text-gray-900">
                                 {formatPrice(product.price, product.currency)}
                             </span>
+                            <span className="ml-2 text-base text-gray-400">/ {product.unitName}</span>
                         </div>
 
                         <div className="mb-6 flex items-center space-x-4">
@@ -122,23 +130,90 @@ export default function ProductDetailPage() {
                             </span>
                             {inStock && (
                                 <span className="text-sm font-medium text-gray-500 border border-gray-200 py-1 px-3 rounded-full">
-                                    {product.stockQuantity} adet mevcut
+                                    {product.stockQuantity} {product.unitName} mevcut
                                 </span>
                             )}
                         </div>
 
                         <div className="prose prose-sm md:prose-base text-gray-600 max-w-none mb-8 flex-1">
-                            <p className="leading-relaxed">
-                                {product.description}
-                            </p>
+                            <p className="leading-relaxed">{product.description}</p>
                         </div>
 
-                        <div className="pt-6 border-t border-gray-100 mt-auto">
-                            <AddToBasketButton productId={product.id} disabled={!inStock} />
-                            <p className="text-xs text-center text-gray-400 mt-4">
-                                ₺1500 üzeri siparişlerde kargo bedava
-                            </p>
-                        </div>
+                        {inStock && (
+                            <div className="pt-6 border-t border-gray-100 mt-auto space-y-4">
+                                {/* Quantity selector */}
+                                <div>
+                                    <p className="text-sm font-medium text-gray-700 mb-2">Miktar seçin</p>
+                                    <QuantitySelector
+                                        unitName={product.unitName}
+                                        value={quantity}
+                                        onChange={setQuantity}
+                                        disabled={isPending}
+                                        size="md"
+                                    />
+                                </div>
+
+                                {/* Price preview card */}
+                                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-1.5">
+                                    <div className="flex justify-between text-sm text-gray-600">
+                                        <span>Seçilen miktar</span>
+                                        <span className="font-semibold text-gray-800">{config.formatValue(quantity)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm text-gray-600">
+                                        <span>Birim fiyat</span>
+                                        <span className="font-semibold text-gray-800">
+                                            {formatPrice(product.price, product.currency)} / {product.unitName}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between text-base font-bold text-gray-900 pt-1 border-t border-gray-200 mt-1">
+                                        <span>Tahmini tutar</span>
+                                        <span>{calculateLinePrice(product.price, quantity, product.currency)}</span>
+                                    </div>
+                                    <p className="text-[11px] text-gray-400 pt-0.5">
+                                        * Kesin tutar sepette hesaplanır
+                                    </p>
+                                </div>
+
+                                {/* Add to basket */}
+                                <button
+                                    onClick={() => addToBasket({ productId: product.id, quantity })}
+                                    disabled={isPending || isSuccess}
+                                    className={[
+                                        'w-full py-3 px-4 text-base font-bold text-white rounded-lg',
+                                        'transition-all duration-150 active:translate-y-1 active:border-b-0',
+                                        isSuccess
+                                            ? 'bg-green-500 border-b-4 border-green-700'
+                                            : isError
+                                                ? 'bg-red-500 border-b-4 border-red-700 hover:bg-red-600'
+                                                : 'bg-[#1B5E3F] border-b-4 border-[#12412b] hover:bg-[#164d33] hover:shadow-lg',
+                                        'disabled:opacity-70 disabled:cursor-wait',
+                                    ].join(' ')}
+                                >
+                                    {isPending ? (
+                                        <span className="flex items-center justify-center gap-2">
+                                            <Loader2 className="h-5 w-5 animate-spin" /> Ekleniyor...
+                                        </span>
+                                    ) : isSuccess ? (
+                                        'Sepete Eklendi ✓'
+                                    ) : (
+                                        <span className="flex items-center justify-center gap-2">
+                                            <ShoppingCart className="h-5 w-5" /> Sepete Ekle
+                                        </span>
+                                    )}
+                                </button>
+                                <p className="text-xs text-center text-gray-400">
+                                    ₺1500 üzeri siparişlerde kargo bedava
+                                </p>
+                            </div>
+                        )}
+
+                        {!inStock && (
+                            <div className="pt-6 border-t border-gray-100 mt-auto">
+                                <button disabled className="w-full py-3 px-4 text-base font-bold bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed border-b-2 border-gray-200">
+                                    Stokta Yok
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -11,5 +11,6 @@ public interface IOrderRepository
     Task<IReadOnlyList<Order>> GetAllWithItemsAsync(Guid? userId, CancellationToken ct = default);
     Task<(IReadOnlyList<Order> Items, int TotalCount)> GetPagedAsync(Guid? userId, int page, int pageSize, CancellationToken ct = default);
     Task AddAsync(Order order, CancellationToken ct = default);
+    Task<Order?> GetByIdTrackedAsync(Guid id, CancellationToken ct = default);
     Task SaveChangesAsync(CancellationToken ct = default);
 }

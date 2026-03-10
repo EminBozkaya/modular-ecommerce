@@ -29,6 +29,14 @@ public class BasketController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPut("items")]
+    public async Task<IActionResult> UpdateItem([FromBody] UpdateBasketItemRequest req, CancellationToken ct)
+    {
+        var (userId, sessionId) = GetIdentifiers();
+        var result = await _mediator.Send(new UpdateBasketItemCommand(userId, sessionId, req.ProductId, req.Quantity), ct);
+        return Ok(result);
+    }
+
     [HttpDelete("items/{productId:guid}")]
     public async Task<IActionResult> RemoveItem(Guid productId, CancellationToken ct)
     {
@@ -51,7 +59,6 @@ public class BasketController : ControllerBase
         if (sub is not null && Guid.TryParse(sub, out var userId))
             return (userId, null);
 
-        // Guest — use session cookie
         var sessionId = Request.Cookies["session_id"];
         if (string.IsNullOrEmpty(sessionId))
         {
@@ -67,4 +74,5 @@ public class BasketController : ControllerBase
     }
 }
 
-public record AddToBasketRequest(Guid ProductId, int Quantity);
+public record AddToBasketRequest(Guid ProductId, decimal Quantity);
+public record UpdateBasketItemRequest(Guid ProductId, decimal Quantity);

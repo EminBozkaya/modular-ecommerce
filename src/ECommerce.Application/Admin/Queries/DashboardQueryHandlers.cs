@@ -76,7 +76,7 @@ public class GetRecentOrdersHandler : IRequestHandler<GetRecentOrdersQuery, IRea
         var (orders, _) = await _orders.GetPagedAsync(null, 1, q.Count, ct);
         return orders.Select(o => new OrderDto(
             o.Id, o.OrderNumber, o.Status.ToString(),
-            o.Total.Amount, o.Total.Currency, o.ShippingAddress, o.CreatedAt,
+            o.Total.Amount, o.Total.Currency, ShippingAddressParser.Parse(o.ShippingAddress), o.CreatedAt,
             o.Items.Select(i => new OrderItemDto(
                 i.ProductId, i.ProductName,
                 i.UnitPrice.Amount, i.Quantity, i.LineTotal.Amount)).ToList())).ToList();

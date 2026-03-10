@@ -20,6 +20,7 @@ public record Money
     }
 
     public Money Multiply(int quantity) => new(Amount * quantity, Currency);
+    public Money Multiply(decimal quantity) => new(Amount * quantity, Currency);
 
     public override string ToString() => $"{Amount:F2} {Currency}";
 }

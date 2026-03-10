@@ -10,26 +10,26 @@ import type { AdminUser } from '../types/adminUser';
 export const localeTextTr: Record<string, string> = {
     filterOoo: 'Filtrele...',
     applyFilter: 'Uygula',
-    resetFilter: 'Sifirla',
+    resetFilter: 'Sıfırla',
     clearFilter: 'Temizle',
     dateFormatOoo: 'dd.mm.yyyy',
     dateFilterPlaceholder: 'gg.aa.yyyy',
-    before: 'Once', after: 'Sonra',
-    equals: 'Esittir', notEqual: 'Esit Degil',
-    blank: 'Bos', notBlank: 'Dolu',
-    contains: 'Icerir', notContains: 'Icermez',
-    startsWith: 'Ile Baslar', endsWith: 'Ile Biter',
-    greaterThan: 'Buyuktur', greaterThanOrEqual: 'Buyuktur veya Esittir',
-    lessThan: 'Kucuktur', lessThanOrEqual: 'Kucuktur veya Esittir',
-    inRange: 'Arasinda', inRangeStart: 'Baslangic', inRangeEnd: 'Bitis',
+    before: 'Önce', after: 'Sonra',
+    equals: 'Eşittir', notEqual: 'Eşit Değil',
+    blank: 'Boş', notBlank: 'Dolu',
+    contains: 'İçerir', notContains: 'İçermez',
+    startsWith: 'İle Başlar', endsWith: 'İle Biter',
+    greaterThan: 'Büyüktür', greaterThanOrEqual: 'Büyüktür veya Eşittir',
+    lessThan: 'Küçüktür', lessThanOrEqual: 'Küçüktür veya Eşittir',
+    inRange: 'Arasında', inRangeStart: 'Başlangıç', inRangeEnd: 'Bitiş',
     andCondition: 'VE', orCondition: 'VEYA',
-    sortAscending: 'Artan Siralama', sortDescending: 'Azalan Siralama',
-    columnAutoSize: 'Otomatik Genislik',
+    sortAscending: 'Artan Sıralama', sortDescending: 'Azalan Sıralama',
+    columnAutoSize: 'Otomatik Genişlik',
     page: 'Sayfa', more: 'Daha Fazla', to: '-', of: '/',
-    next: 'Sonraki', last: 'Son', first: 'Ilk', previous: 'Onceki',
+    next: 'Sonraki', last: 'Son', first: 'İlk', previous: 'Önceki',
     pageSizeSelectorLabel: 'Sayfa Boyutu:',
-    loadingOoo: 'Yukleniyor...',
-    noRowsToShow: 'Henuz kayit bulunamadi.',
+    loadingOoo: 'Yükleniyor...',
+    noRowsToShow: 'Henüz kayıt bulunamadı.',
 };
 
 export const dateComparator = (filterLocalDate: Date, cellValue: string) => {
@@ -66,7 +66,7 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
             sortable: true,
             width: 90,
             cellRenderer: (params: ICellRendererParams<AdminUser, boolean>) => {
-                if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmis</span>;
+                if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmiş</span>;
                 return params.value ? <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span> : <span style={{ color: '#ca8a04', fontWeight: '600' }}>Pasif</span>;
             },
         },
@@ -83,13 +83,13 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
                 const isAdmin = params.value === 'Admin';
                 return (
                     <span style={{ color: isAdmin ? '#7c3aed' : '#374151', backgroundColor: isAdmin ? '#f5f3ff' : '#f3f4f6', padding: '2px 10px', borderRadius: '9999px', fontSize: '12px', fontWeight: 600 }}>
-                        {isAdmin ? 'Yonetici' : 'Musteri'}
+                        {isAdmin ? 'Yönetici' : 'Müşteri'}
                     </span>
                 );
             },
         },
         {
-            headerName: 'E-posta Onayi',
+            headerName: 'E-posta Onayı',
             field: 'isEmailConfirmed',
             filter: 'agTextColumnFilter',
             sortable: true,
@@ -107,7 +107,7 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
             },
         },
         {
-            headerName: 'Kayit Tarihi',
+            headerName: 'Kayıt Tarihi',
             field: 'createdAt',
             sortable: true,
             filter: 'agDateColumnFilter',
@@ -123,7 +123,7 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
             },
         },
         {
-            headerName: 'Islemler',
+            headerName: 'İşlemler',
             field: 'id',
             sortable: false,
             filter: false,
@@ -135,11 +135,11 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center', height: '100%' }}>
                         {!isDeleted ? (
                             <>
-                                <button title="Duzenle" onClick={(e) => { e.stopPropagation(); if (params.data) onEdit(params.data); }} className="p-1 rounded-md transition-colors hover:bg-green-50" style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}><Edit2 size={16} color="#1B5E3F" /></button>
+                                <button title="Düzenle" onClick={(e) => { e.stopPropagation(); if (params.data) onEdit(params.data); }} className="p-1 rounded-md transition-colors hover:bg-green-50" style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}><Edit2 size={16} color="#1B5E3F" /></button>
                                 <button title="Sil" onClick={(e) => { e.stopPropagation(); if (params.data) onDelete(params.data.id, params.data.fullName); }} className="p-1 rounded-md transition-colors hover:bg-red-50" style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}><Trash2 size={16} color="#dc2626" /></button>
                             </>
                         ) : (
-                            <button title="Geri Yukle" onClick={(e) => { e.stopPropagation(); if (params.data) onRestore(params.data.id); }} className="p-1 rounded-md transition-colors hover:bg-blue-50" style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}><RotateCcw size={16} color="#2563eb" /></button>
+                            <button title="Geri Yükle" onClick={(e) => { e.stopPropagation(); if (params.data) onRestore(params.data.id); }} className="p-1 rounded-md transition-colors hover:bg-blue-50" style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}><RotateCcw size={16} color="#2563eb" /></button>
                         )}
                     </div>
                 );

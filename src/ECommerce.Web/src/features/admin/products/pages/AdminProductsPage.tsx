@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { type GridReadyEvent, type GridApi, ModuleRegistry, ClientSideRowModelModule, TextFilterModule, NumberFilterModule, PaginationModule, ValidationModule, ColumnAutoSizeModule, RowApiModule, CellStyleModule, RowSelectionModule, RowStyleModule, DateFilterModule, LocaleModule, CustomFilterModule, TooltipModule } from 'ag-grid-community';
-import { PackagePlus, Download, FileDown, Package } from 'lucide-react';
+import { PackagePlus, Package } from 'lucide-react';
 import { getProducts, getCategories, getUnits } from '../../../catalog/api/catalogApi';
 import type { Product, Category, Unit } from '../../../catalog/types/product';
 import type { ProductFormData } from '../components/ProductFormModal';
@@ -12,6 +12,8 @@ import { EntityStatusFilter, EntityStatusFloatingFilter } from '../../components
 import { useProductGridColumns, localeTextTr } from '../hooks/useProductGridColumns';
 import { useProductActions, defaultProductModalSettings, type ProductModalSettings } from '../hooks/useProductActions';
 import { exportProductsToExcel, exportProductsToPDF } from '../utils/productExport';
+import excelIcon from '../../../../assets/excel_download_icon.png';
+import pdfIcon from '../../../../assets/pdf_download_icon.png';
 ModuleRegistry.registerModules([ClientSideRowModelModule, TextFilterModule, NumberFilterModule, PaginationModule, ValidationModule, ColumnAutoSizeModule, RowApiModule, CellStyleModule, RowSelectionModule, RowStyleModule, DateFilterModule, LocaleModule, CustomFilterModule, TooltipModule]);
 export default function AdminProductsPage() {
     const gridRef = useRef<AgGridReact>(null);
@@ -49,31 +51,52 @@ export default function AdminProductsPage() {
     const onGridReady = (params: GridReadyEvent) => { setGridApi(params.api); params.api.sizeColumnsToFit(); };
     return (
         <div>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#ecfdf5' }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#ecfdf5' }}>
                         <Package className="h-5 w-5" style={{ color: '#1B5E3F' }} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold" style={{ color: '#1B5E3F' }}>Urunler</h1>
-                        <p className="text-sm text-gray-500">Toplam {products.length} urun kayitli</p>
+                        <h1 className="text-2xl font-bold" style={{ color: '#1B5E3F' }}>Ürünler</h1>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button onClick={() => exportProductsToExcel(products)} className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"><Download className="h-4 w-4" /> Excel</button>
-                    <button onClick={() => exportProductsToPDF(products).catch(() => alert('PDF hatasi.'))} className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"><FileDown className="h-4 w-4" /> PDF</button>
+                <div className="flex items-center gap-4 self-end sm:self-auto">
                     <button
-                        onClick={() => { setEditingProduct(null); setModalOpen(true); }}
-                        className="flex items-center justify-center w-10 h-10 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
-                        style={{ background: '#1B5E3F' }}
-                        title="Yeni Ürün Ekle"
-                        onMouseEnter={(e) => (e.currentTarget.style.background = '#164A32')}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = '#1B5E3F')}
+                        onClick={() => exportProductsToExcel(products)}
+                        className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group"
+                        title="Excel'e Aktar"
                     >
-                        <PackagePlus className="h-5 w-5" />
+                        <div className="w-14 h-14 flex items-center justify-center">
+                            <img src={excelIcon} alt="Excel" className="h-full w-full object-contain" />
+                        </div>
+                        <span className="hidden xs:inline text-[10px] font-bold text-gray-500 uppercase tracking-wider">Excel</span>
                     </button>
+                    <button
+                        onClick={() => exportProductsToPDF(products).catch(() => alert('PDF hatasi.'))}
+                        className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group"
+                        title="PDF'e Aktar"
+                    >
+                        <div className="w-14 h-14 flex items-center justify-center">
+                            <img src={pdfIcon} alt="PDF" className="h-10 w-10 object-contain" />
+                        </div>
+                        <span className="hidden xs:inline text-[10px] font-bold text-gray-500 uppercase tracking-wider">PDF</span>
+                    </button>
+                    <div className="flex flex-col items-center gap-1">
+                        <button
+                            onClick={() => { setEditingProduct(null); setModalOpen(true); }}
+                            className="flex items-center justify-center w-14 h-14 text-white rounded-xl transition-all duration-200 shadow-sm hover:shadow-md shrink-0"
+                            style={{ background: '#1B5E3F' }}
+                            title="Yeni Ürün Ekle"
+                            onMouseEnter={(e) => (e.currentTarget.style.background = '#164A32')}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = '#1B5E3F')}
+                        >
+                            <PackagePlus className="h-6 w-6" />
+                        </button>
+                        <span className="hidden xs:inline text-[10px] font-bold text-gray-500 uppercase tracking-wider">EKLE</span>
+                    </div>
                 </div>
             </div>
+
             <div className="bg-white rounded-xl shadow-sm overflow-x-auto" style={{ border: '1px solid #e5e7eb' }}>
                 <div style={{ minWidth: 'fit-content' }}>
                     <AgGridReact<Product>

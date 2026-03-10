@@ -101,16 +101,21 @@ public class AuthController : ControllerBase
 
     /// <summary>
     /// Sets httpOnly auth cookies — security-rules: JWT via httpOnly cookies, no localStorage.
-    /// SameSite=None in Development (cross-origin: port 5173 → 7136), Strict in Production.
+    /// Development: Secure=false, SameSite=Lax (Vite proxy makes frontend same-origin as backend).
+    /// Production: Secure=true, SameSite=Strict.
     /// </summary>
     private void SetAuthCookies(LoginResult result)
     {
-        var sameSite = _env.IsDevelopment() ? SameSiteMode.None : SameSiteMode.Strict;
+        bool isDev = _env.IsDevelopment();
+        // Dev: Vite proxy forwards /api → backend on same origin, so SameSite=Lax works fine.
+        // Chrome rejects SameSite=None without Secure=true, so None is avoided in dev.
+        var sameSite = isDev ? SameSiteMode.Lax : SameSiteMode.Strict;
+        bool secure = !isDev;
 
         Response.Cookies.Append("access_token", result.AccessToken, new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,
+            Secure = secure,
             SameSite = sameSite,
             MaxAge = TimeSpan.FromMinutes(15)
         });
@@ -118,7 +123,7 @@ public class AuthController : ControllerBase
         Response.Cookies.Append("refresh_token", result.RefreshToken, new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,
+            Secure = secure,
             SameSite = sameSite,
             Path = "/api/auth/refresh",
             MaxAge = TimeSpan.FromDays(7)

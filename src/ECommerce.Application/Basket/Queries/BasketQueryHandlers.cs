@@ -22,7 +22,6 @@ public class GetBasketHandler : IRequestHandler<GetBasketQuery, BasketDto?>
             : await _baskets.GetBySessionIdAsync(q.SessionId!, ct);
         if (basket is null) return null;
 
-        // Fetch imageUrl per item via product lookup (no domain change, no migration)
         var itemDtos = new List<BasketItemDto>();
         foreach (var i in basket.Items)
         {
@@ -34,7 +33,8 @@ public class GetBasketHandler : IRequestHandler<GetBasketQuery, BasketDto?>
                 i.UnitPriceSnapshot.Currency,
                 i.Quantity,
                 i.LineTotalSnapshot.Amount,
-                product?.ImageUrl));
+                product?.ImageUrl,
+                product?.Unit?.Name));
         }
 
         return new BasketDto(basket.Id, itemDtos, basket.Total.Amount, basket.Total.Currency);

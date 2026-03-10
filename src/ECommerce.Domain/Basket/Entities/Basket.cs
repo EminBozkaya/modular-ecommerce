@@ -12,8 +12,8 @@ public class Basket : BaseEntity
     private readonly List<BasketItem> _items = [];
     public IReadOnlyCollection<BasketItem> Items => _items.AsReadOnly();
 
-    public Money Total => _items.Count == 0 
-        ? new Money(0, "TRY") 
+    public Money Total => _items.Count == 0
+        ? new Money(0, "TRY")
         : _items.Skip(1).Aggregate(_items[0].LineTotalSnapshot, (acc, item) => acc.Add(item.LineTotalSnapshot));
 
     private Basket() { }
@@ -24,13 +24,20 @@ public class Basket : BaseEntity
     public static Basket CreateForGuest(string sessionId) =>
         new() { SessionId = sessionId };
 
-    public void AddItem(Guid productId, string productName, Money unitPrice, int quantity)
+    public void AddItem(Guid productId, string productName, Money unitPrice, decimal quantity)
     {
         var existing = _items.FirstOrDefault(i => i.ProductId == productId);
         if (existing is not null)
             existing.ChangeQuantity(existing.Quantity + quantity);
         else
             _items.Add(BasketItem.Create(productId, productName, unitPrice, quantity));
+    }
+
+    public void UpdateItemQuantity(Guid productId, decimal newQuantity)
+    {
+        var item = _items.FirstOrDefault(i => i.ProductId == productId)
+            ?? throw new KeyNotFoundException($"Item with productId {productId} not found in basket.");
+        item.ChangeQuantity(newQuantity);
     }
 
     public void RemoveItem(Guid productId)

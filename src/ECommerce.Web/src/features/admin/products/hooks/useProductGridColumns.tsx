@@ -10,52 +10,52 @@ import type { Product } from '../../../catalog/types/product';
 export const localeTextTr: Record<string, string> = {
     filterOoo: 'Filtrele...',
     applyFilter: 'Uygula',
-    resetFilter: 'Sifirla',
+    resetFilter: 'Sıfırla',
     clearFilter: 'Temizle',
     dateFormatOoo: 'dd.mm.yyyy',
     dateFilterPlaceholder: 'gg.aa.yyyy',
-    before: 'Once',
+    before: 'Önce',
     after: 'Sonra',
-    equals: 'Esittir',
-    notEqual: 'Esit Degil',
-    blank: 'Bos',
+    equals: 'Eşittir',
+    notEqual: 'Eşit Değil',
+    blank: 'Boş',
     notBlank: 'Dolu',
-    contains: 'Icerir',
-    notContains: 'Icermez',
-    startsWith: 'Ile Baslar',
-    endsWith: 'Ile Biter',
-    greaterThan: 'Buyuktur',
-    greaterThanOrEqual: 'Buyuktur veya Esittir',
-    lessThan: 'Kucuktur',
-    lessThanOrEqual: 'Kucuktur veya Esittir',
-    inRange: 'Arasinda',
-    inRangeStart: 'Baslangic',
-    inRangeEnd: 'Bitis',
+    contains: 'İçerir',
+    notContains: 'İçermez',
+    startsWith: 'İle Başlar',
+    endsWith: 'İle Biter',
+    greaterThan: 'Büyüktür',
+    greaterThanOrEqual: 'Büyüktür veya Eşittir',
+    lessThan: 'Küçüktür',
+    lessThanOrEqual: 'Küçüktür veya Eşittir',
+    inRange: 'Arasında',
+    inRangeStart: 'Başlangıç',
+    inRangeEnd: 'Bitiş',
     andCondition: 'VE',
     orCondition: 'VEYA',
-    sortAscending: 'Artan Siralama',
-    sortDescending: 'Azalan Siralama',
-    columnAutoSize: 'Otomatik Genislik',
+    sortAscending: 'Artan Sıralama',
+    sortDescending: 'Azalan Sıralama',
+    columnAutoSize: 'Otomatik Genişlik',
     page: 'Sayfa',
     more: 'Daha Fazla',
     to: '-',
     of: '/',
     next: 'Sonraki',
     last: 'Son',
-    first: 'Ilk',
-    previous: 'Onceki',
+    first: 'İlk',
+    previous: 'Önceki',
     pageSizeSelectorLabel: 'Sayfa Boyutu:',
-    loadingOoo: 'Yukleniyor...',
-    noRowsToShow: 'Henuz kayit bulunamadi.',
-    january: 'Ocak', february: 'Subat', march: 'Mart', april: 'Nisan',
-    may: 'Mayis', june: 'Haziran', july: 'Temmuz', august: 'Agustos',
-    september: 'Eylul', october: 'Ekim', november: 'Kasim', december: 'Aralik',
-    jan: 'Oca', feb: 'Sub', mar: 'Mar', apr: 'Nis', mayShort: 'May',
-    jun: 'Haz', jul: 'Tem', aug: 'Agu', sep: 'Eyl', oct: 'Eki', nov: 'Kas', dec: 'Ara',
-    sunday: 'Pazar', monday: 'Pazartesi', tuesday: 'Sali', wednesday: 'Carsamba',
-    thursday: 'Persembe', friday: 'Cuma', saturday: 'Cumartesi',
-    sun: 'Paz', mon: 'Pzt', tue: 'Sal', wed: 'Car', thu: 'Per', fri: 'Cum', sat: 'Cmt',
-    today: 'Bugun', clear: 'Temizle',
+    loadingOoo: 'Yükleniyor...',
+    noRowsToShow: 'Henüz kayıt bulunamadı.',
+    january: 'Ocak', february: 'Şubat', march: 'Mart', april: 'Nisan',
+    may: 'Mayıs', june: 'Haziran', july: 'Temmuz', august: 'Ağustos',
+    september: 'Eylül', october: 'Ekim', november: 'Kasım', december: 'Aralık',
+    jan: 'Oca', feb: 'Şub', mar: 'Mar', apr: 'Nis', mayShort: 'May',
+    jun: 'Haz', jul: 'Tem', aug: 'Ağu', sep: 'Eyl', oct: 'Eki', nov: 'Kas', dec: 'Ara',
+    sunday: 'Pazar', monday: 'Pazartesi', tuesday: 'Salı', wednesday: 'Çarşamba',
+    thursday: 'Perşembe', friday: 'Cuma', saturday: 'Cumartesi',
+    sun: 'Paz', mon: 'Pzt', tue: 'Sal', wed: 'Çar', thu: 'Per', fri: 'Cum', sat: 'Cmt',
+    today: 'Bugün', clear: 'Temizle',
 };
 
 export const dateComparator = (filterLocalDate: Date, cellValue: string) => {
@@ -97,11 +97,11 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
             sortable: true,
             width: 90,
             cellRenderer: (params: ICellRendererParams<Product, boolean>) => {
-                if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmis</span>;
+                if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmiş</span>;
                 return params.value ? <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span> : <span style={{ color: '#ca8a04', fontWeight: '600' }}>Pasif</span>;
             },
         },
-        { headerName: 'Urun Adi', field: 'name', filter: 'agTextColumnFilter', sortable: true, width: 160, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'Ürün Adı', field: 'name', filter: 'agTextColumnFilter', sortable: true, width: 160, tooltipValueGetter: (p) => p.value ?? '' },
         { headerName: 'Birim', field: 'unitName', filter: 'agTextColumnFilter', sortable: true, width: 80, tooltipValueGetter: (p) => p.value ?? '' },
         {
             headerName: 'Fiyat (TL)',
@@ -126,14 +126,14 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
             tooltipValueGetter: (p) => p.value != null ? String(p.value) : '',
         },
         { headerName: 'Kategori', field: 'categoryName', filter: 'agTextColumnFilter', sortable: true, width: 130, tooltipValueGetter: (p) => p.value ?? '' },
-        { headerName: 'Aciklama', field: 'description', filter: 'agTextColumnFilter', sortable: true, width: 160, tooltipValueGetter: (p) => p.value ?? '' },
-        { headerName: 'Olusturulma Tarihi', field: 'createdAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, width: 155, valueFormatter: formatDateCell, tooltipValueGetter: (p) => { if (!p.value) return ''; return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(p.value as string)); } },
-        { headerName: 'Olusturan', field: 'createdBy', sortable: true, filter: 'agTextColumnFilter', width: 120, tooltipValueGetter: (p) => p.value ?? '' },
-        { headerName: 'Guncellenme Tarihi', field: 'updatedAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, width: 155, valueFormatter: formatDateCell, tooltipValueGetter: (p) => { if (!p.value) return ''; return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(p.value as string)); } },
-        { headerName: 'Guncelleyen', field: 'updatedBy', sortable: true, filter: 'agTextColumnFilter', width: 120, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'Açıklama', field: 'description', filter: 'agTextColumnFilter', sortable: true, width: 160, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'Oluşturulma Tarihi', field: 'createdAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, width: 155, valueFormatter: formatDateCell, tooltipValueGetter: (p) => { if (!p.value) return ''; return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(p.value as string)); } },
+        { headerName: 'Oluşturan', field: 'createdBy', sortable: true, filter: 'agTextColumnFilter', width: 120, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'Güncellenme Tarihi', field: 'updatedAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, width: 155, valueFormatter: formatDateCell, tooltipValueGetter: (p) => { if (!p.value) return ''; return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(p.value as string)); } },
+        { headerName: 'Güncelleyen', field: 'updatedBy', sortable: true, filter: 'agTextColumnFilter', width: 120, tooltipValueGetter: (p) => p.value ?? '' },
         { headerName: 'Silinme Tarihi', field: 'deletedAt', sortable: true, filter: false, width: 155, hide: true, valueFormatter: formatDateCell },
         {
-            headerName: 'Islemler',
+            headerName: 'İşlemler',
             field: 'id',
             sortable: false,
             filter: false,
@@ -145,11 +145,11 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center', height: '100%' }}>
                         {!isDeleted ? (
                             <>
-                                <button title="Duzenle" onClick={(e) => { e.stopPropagation(); if (params.data) onEdit(params.data); }} className="p-1 rounded-md transition-colors hover:bg-green-50" style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}><Edit2 size={16} color="#1B5E3F" /></button>
+                                <button title="Düzenle" onClick={(e) => { e.stopPropagation(); if (params.data) onEdit(params.data); }} className="p-1 rounded-md transition-colors hover:bg-green-50" style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}><Edit2 size={16} color="#1B5E3F" /></button>
                                 <button title="Sil" onClick={(e) => { e.stopPropagation(); if (params.data) onDelete(params.data.id); }} className="p-1 rounded-md transition-colors hover:bg-red-50" style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}><Trash2 size={16} color="#dc2626" /></button>
                             </>
                         ) : (
-                            <button title="Geri Yukle" onClick={(e) => { e.stopPropagation(); if (params.data) onRestore(params.data.id); }} className="p-1 rounded-md transition-colors hover:bg-blue-50" style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}><RotateCcw size={16} color="#2563eb" /></button>
+                            <button title="Geri Yükle" onClick={(e) => { e.stopPropagation(); if (params.data) onRestore(params.data.id); }} className="p-1 rounded-md transition-colors hover:bg-blue-50" style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}><RotateCcw size={16} color="#2563eb" /></button>
                         )}
                     </div>
                 );

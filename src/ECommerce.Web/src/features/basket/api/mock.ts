@@ -1,4 +1,4 @@
-import type { AddToBasketRequest, Basket } from '../types/basket';
+import type { AddToBasketRequest, Basket, UpdateBasketItemRequest } from '../types/basket';
 import { mockProducts } from '../../catalog/api/mock';
 
 let mockBasket: Basket = { items: [], totalAmount: 0, currency: 'USD' };
@@ -34,6 +34,7 @@ export const mockAddToBasket = async (req: AddToBasketRequest): Promise<Basket> 
             currency: product.currency,
             quantity: req.quantity,
             imageUrl: product.imageUrl,
+            unitName: product.unitName,
         });
     }
 
@@ -47,6 +48,22 @@ export const mockRemoveFromBasket = async (productId: string): Promise<Basket> =
     mockBasket.items = mockBasket.items.filter(i => i.productId !== productId);
     recalculateTotal();
 
+    return { ...mockBasket };
+};
+
+export const mockUpdateBasketItem = async (req: UpdateBasketItemRequest): Promise<Basket> => {
+    await delay(300);
+
+    if (req.quantity <= 0) {
+        mockBasket.items = mockBasket.items.filter(i => i.productId !== req.productId);
+    } else {
+        const index = mockBasket.items.findIndex(i => i.productId === req.productId);
+        if (index >= 0) {
+            mockBasket.items[index].quantity = req.quantity;
+        }
+    }
+
+    recalculateTotal();
     return { ...mockBasket };
 };
 

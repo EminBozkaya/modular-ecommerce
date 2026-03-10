@@ -3,10 +3,18 @@ using MediatR;
 
 namespace ECommerce.Application.Ordering.Queries;
 
+public record ShippingAddressDto(
+    string FullName,
+    string AddressLine1,
+    string? AddressLine2,
+    string City,
+    string PostalCode,
+    string Country);
+
 public record OrderDto(
     Guid Id, string OrderNumber, string Status,
     decimal TotalAmount, string Currency,
-    string ShippingAddress, DateTime CreatedAt,
+    ShippingAddressDto ShippingAddress, DateTime CreatedAt,
     IReadOnlyList<OrderItemDto> Items);
 
 public record OrderItemDto(

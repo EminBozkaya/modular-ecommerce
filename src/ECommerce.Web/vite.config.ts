@@ -20,6 +20,13 @@ export default defineConfig({
       '.ngrok-free.dev', // Tüm ngrok alt domainlerine izin verir
       'loca.lt',        // Eskisi de kalsın isterseniz silmeyebilirsiniz
       '.loca.lt'
-    ]
+    ],
+    proxy: {
+      '/api': {
+        target: 'https://localhost:7136',
+        changeOrigin: true,
+        secure: false, // self-signed cert kabul et
+      },
+    },
   }
 })

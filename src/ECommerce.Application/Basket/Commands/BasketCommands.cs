@@ -7,7 +7,7 @@ public record AddToBasketCommand(
     Guid? UserId,
     string? SessionId,
     Guid ProductId,
-    int Quantity) : IRequest<BasketDto>;
+    decimal Quantity) : IRequest<BasketDto>;
 
 public record RemoveFromBasketCommand(
     Guid? UserId,
@@ -17,3 +17,9 @@ public record RemoveFromBasketCommand(
 public record ClearBasketCommand(
     Guid? UserId,
     string? SessionId) : IRequest;
+
+public record UpdateBasketItemCommand(
+    Guid? UserId,
+    string? SessionId,
+    Guid ProductId,
+    decimal Quantity) : IRequest<BasketDto>;

@@ -19,7 +19,7 @@ import {
     CustomFilterModule,
     TooltipModule,
 } from 'ag-grid-community';
-import { ShoppingBag, Download, FileDown } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 import { getAllOrders } from '../../api/adminApi';
 import type { Order } from '../../../ordering/types/order';
 import { OrderStatusUpdateModal } from '../../components/OrderStatusUpdateModal';
@@ -29,6 +29,8 @@ import { OrderStatusFilter, OrderStatusFloatingFilter } from '../../components/O
 import { useOrderGridColumns, localeTextTr, statusColors } from '../hooks/useOrderGridColumns';
 import { useOrderActions, defaultOrderModalSettings, type OrderModalSettings } from '../hooks/useOrderActions';
 import { exportOrdersToExcel, exportOrdersToPDF } from '../utils/orderExport';
+import excelIcon from '../../../../assets/excel_download_icon.png';
+import pdfIcon from '../../../../assets/pdf_download_icon.png';
 
 ModuleRegistry.registerModules([
     ClientSideRowModelModule, TextFilterModule, NumberFilterModule, PaginationModule,
@@ -77,26 +79,38 @@ export default function AdminOrdersPage() {
 
     return (
         <div>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#ecfdf5' }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#ecfdf5' }}>
                         <ShoppingBag className="h-5 w-5" style={{ color: '#1B5E3F' }} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold" style={{ color: '#1B5E3F' }}>Siparisler</h1>
-                        <p className="text-sm text-gray-500">Toplam {orders.length} siparis kayitli</p>
+                        <h1 className="text-2xl font-bold" style={{ color: '#1B5E3F' }}>Siparişler</h1>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button onClick={() => exportOrdersToExcel(orders)} className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors">
-                        <Download className="h-4 w-4" /> Excel
+                <div className="flex items-center gap-4 self-end sm:self-auto">
+                    <button
+                        onClick={() => exportOrdersToExcel(orders)}
+                        className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group"
+                        title="Excel'e Aktar"
+                    >
+                        <div className="w-14 h-14 flex items-center justify-center">
+                            <img src={excelIcon} alt="Excel" className="h-full w-full object-contain" />
+                        </div>
+                        <span className="hidden xs:inline text-[10px] font-bold text-gray-500 uppercase tracking-wider">Excel</span>
                     </button>
-                    <button onClick={() => exportOrdersToPDF(orders).catch(() => alert('PDF hatasi.'))} className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors">
-                        <FileDown className="h-4 w-4" /> PDF
+                    <button
+                        onClick={() => exportOrdersToPDF(orders).catch(() => alert('PDF hatasi.'))}
+                        className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group"
+                        title="PDF'e Aktar"
+                    >
+                        <div className="w-14 h-14 flex items-center justify-center">
+                            <img src={pdfIcon} alt="PDF" className="h-10 w-10 object-contain" />
+                        </div>
+                        <span className="hidden xs:inline text-[10px] font-bold text-gray-500 uppercase tracking-wider">PDF</span>
                     </button>
                 </div>
             </div>
-
             <div className="bg-white rounded-xl shadow-sm overflow-x-auto" style={{ border: '1px solid #e5e7eb' }}>
                 <div style={{ minWidth: 'fit-content' }}>
                     <AgGridReact<Order>
@@ -141,13 +155,15 @@ export default function AdminOrdersPage() {
                 <span>Gosterilen: {gridApi?.getDisplayedRowCount() ?? orders.length} kayit</span>
             </div>
 
-            {selectedOrder && (
-                <OrderStatusUpdateModal
-                    order={selectedOrder}
-                    isOpen={!!selectedOrder}
-                    onClose={handleModalClose}
-                />
-            )}
+            {
+                selectedOrder && (
+                    <OrderStatusUpdateModal
+                        order={selectedOrder}
+                        isOpen={!!selectedOrder}
+                        onClose={handleModalClose}
+                    />
+                )
+            }
 
             <ConfirmModal
                 open={modalSettings.open}
@@ -160,6 +176,6 @@ export default function AdminOrdersPage() {
                 onClose={() => setModalSettings(prev => ({ ...prev, open: false }))}
                 loading={deleting}
             />
-        </div>
+        </div >
     );
 }

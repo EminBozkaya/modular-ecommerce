@@ -19,6 +19,14 @@ public class BasketRepository : IBasketRepository
         => await _ctx.Baskets.AsNoTracking().Include(b => b.Items)
             .FirstOrDefaultAsync(b => b.SessionId == sessionId, ct);
 
+    public async Task<Basket?> GetByUserIdTrackedAsync(Guid userId, CancellationToken ct = default)
+        => await _ctx.Baskets.Include(b => b.Items)
+            .FirstOrDefaultAsync(b => b.UserId == userId, ct);
+
+    public async Task<Basket?> GetBySessionIdTrackedAsync(string sessionId, CancellationToken ct = default)
+        => await _ctx.Baskets.Include(b => b.Items)
+            .FirstOrDefaultAsync(b => b.SessionId == sessionId, ct);
+
     public async Task AddAsync(Basket basket, CancellationToken ct = default)
         => await _ctx.Baskets.AddAsync(basket, ct);
 

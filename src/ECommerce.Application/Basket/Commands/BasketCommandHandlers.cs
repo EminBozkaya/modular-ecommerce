@@ -28,7 +28,7 @@ public class AddToBasketHandler : IRequestHandler<AddToBasketCommand, BasketDto>
         basket.AddItem(product.Id, product.Name, product.Price, cmd.Quantity);
         await _baskets.SaveChangesAsync(ct);
 
-        return ToDto(basket, product.ImageUrl);
+        return ToDtoSimple(basket);
     }
 
     private async Task<Domain.Basket.Entities.Basket> GetOrCreateBasket(Guid? userId, string? sessionId, CancellationToken ct)
@@ -36,19 +36,20 @@ public class AddToBasketHandler : IRequestHandler<AddToBasketCommand, BasketDto>
         Domain.Basket.Entities.Basket? basket;
         if (userId.HasValue)
         {
-            basket = await _baskets.GetByUserIdAsync(userId.Value, ct);
+            basket = await _baskets.GetByUserIdTrackedAsync(userId.Value, ct);
             if (basket is null) { basket = Domain.Basket.Entities.Basket.CreateForUser(userId.Value); await _baskets.AddAsync(basket, ct); }
         }
         else
         {
-            basket = await _baskets.GetBySessionIdAsync(sessionId!, ct);
+            basket = await _baskets.GetBySessionIdTrackedAsync(sessionId!, ct);
             if (basket is null) { basket = Domain.Basket.Entities.Basket.CreateForGuest(sessionId!); await _baskets.AddAsync(basket, ct); }
         }
         return basket;
     }
 
-    // imageUrl of the just-added product is passed in; other items rely on snapshot name only
-    private static BasketDto ToDto(Domain.Basket.Entities.Basket basket, string? addedProductImageUrl)
+    // ImageUrl and UnitName require a product lookup; commands return null for those fields.
+    // The GET /basket endpoint (GetBasketHandler) hydrates them for the full view.
+    private static BasketDto ToDtoSimple(Domain.Basket.Entities.Basket basket)
     {
         var items = basket.Items.Select(i => new BasketItemDto(
             i.ProductId,
@@ -57,6 +58,7 @@ public class AddToBasketHandler : IRequestHandler<AddToBasketCommand, BasketDto>
             i.UnitPriceSnapshot.Currency,
             i.Quantity,
             i.LineTotalSnapshot.Amount,
+            null,
             null)).ToList();
         return new BasketDto(basket.Id, items, basket.Total.Amount, basket.Total.Currency);
     }
@@ -70,8 +72,8 @@ public class RemoveFromBasketHandler : IRequestHandler<RemoveFromBasketCommand, 
     public async Task<BasketDto> Handle(RemoveFromBasketCommand cmd, CancellationToken ct)
     {
         var basket = cmd.UserId.HasValue
-            ? await _baskets.GetByUserIdAsync(cmd.UserId.Value, ct)
-            : await _baskets.GetBySessionIdAsync(cmd.SessionId!, ct);
+            ? await _baskets.GetByUserIdTrackedAsync(cmd.UserId.Value, ct)
+            : await _baskets.GetBySessionIdTrackedAsync(cmd.SessionId!, ct);
         if (basket is null)
             return new BasketDto(Guid.Empty, [], 0, "TRY");
 
@@ -85,6 +87,7 @@ public class RemoveFromBasketHandler : IRequestHandler<RemoveFromBasketCommand, 
             i.UnitPriceSnapshot.Currency,
             i.Quantity,
             i.LineTotalSnapshot.Amount,
+            null,
             null)).ToList();
         return new BasketDto(basket.Id, items, basket.Total.Amount, basket.Total.Currency);
     }
@@ -98,10 +101,41 @@ public class ClearBasketHandler : IRequestHandler<ClearBasketCommand>
     public async Task Handle(ClearBasketCommand cmd, CancellationToken ct)
     {
         var basket = cmd.UserId.HasValue
-            ? await _baskets.GetByUserIdAsync(cmd.UserId.Value, ct)
-            : await _baskets.GetBySessionIdAsync(cmd.SessionId!, ct);
+            ? await _baskets.GetByUserIdTrackedAsync(cmd.UserId.Value, ct)
+            : await _baskets.GetBySessionIdTrackedAsync(cmd.SessionId!, ct);
         if (basket is null) return;
         basket.Clear();
         await _baskets.SaveChangesAsync(ct);
+    }
+}
+
+public class UpdateBasketItemHandler : IRequestHandler<UpdateBasketItemCommand, BasketDto>
+{
+    private readonly IBasketRepository _baskets;
+
+    public UpdateBasketItemHandler(IBasketRepository baskets) => _baskets = baskets;
+
+    public async Task<BasketDto> Handle(UpdateBasketItemCommand cmd, CancellationToken ct)
+    {
+        var basket = cmd.UserId.HasValue
+            ? await _baskets.GetByUserIdTrackedAsync(cmd.UserId.Value, ct)
+            : await _baskets.GetBySessionIdTrackedAsync(cmd.SessionId!, ct);
+
+        if (basket is null)
+            return new BasketDto(Guid.Empty, [], 0, "TRY");
+
+        basket.UpdateItemQuantity(cmd.ProductId, cmd.Quantity);
+        await _baskets.SaveChangesAsync(ct);
+
+        var items = basket.Items.Select(i => new BasketItemDto(
+            i.ProductId,
+            i.ProductName,
+            i.UnitPriceSnapshot.Amount,
+            i.UnitPriceSnapshot.Currency,
+            i.Quantity,
+            i.LineTotalSnapshot.Amount,
+            null,
+            null)).ToList();
+        return new BasketDto(basket.Id, items, basket.Total.Amount, basket.Total.Currency);
     }
 }

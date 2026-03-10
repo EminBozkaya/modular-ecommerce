@@ -35,7 +35,22 @@
       "Bash(npx vite build)",
       "Bash(grep -n \"overflow-hidden\\\\|width: ''100%''\" \"c:\\\\Users\\\\MSI\\\\source\\\\repos\\\\EbrarKuruyemis\\\\src\\\\ECommerce.Web\\\\src\\\\features\\\\admin\\\\categories\\\\pages\\\\AdminCategoriesPage.tsx\")",
       "Bash(grep -n \"height.*calc\\\\|minWidth\\\\|overflow-hidden\\\\|overflowX\\\\|width: ''100%''\" \"c:/Users/MSI/source/repos/EbrarKuruyemis/src/ECommerce.Web/src/features/admin/products/pages/AdminProductsPage.tsx\" \"c:/Users/MSI/source/repos/EbrarKuruyemis/src/ECommerce.Web/src/features/admin/categories/pages/AdminCategoriesPage.tsx\" \"c:/Users/MSI/source/repos/EbrarKuruyemis/src/ECommerce.Web/src/features/admin/pages/AdminUsersPage.tsx\" \"c:/Users/MSI/source/repos/EbrarKuruyemis/src/ECommerce.Web/src/features/admin/orders/pages/AdminOrdersPage.tsx\")",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(xargs grep -l \"Basket\")",
+      "Bash(dotnet build ECommerce.sln --no-restore)",
+      "Bash(dotnet build src/ECommerce.Application/ECommerce.Application.csproj src/ECommerce.Domain/ECommerce.Domain.csproj src/ECommerce.Persistence/ECommerce.Persistence.csproj --no-restore)",
+      "Bash(dotnet build tests/ECommerce.UnitTests/ECommerce.UnitTests.csproj --no-restore)",
+      "Bash(dotnet test tests/ECommerce.UnitTests/ECommerce.UnitTests.csproj --no-restore --no-build)",
+      "Bash(dotnet ef migrations add BasketItem_Quantity_Decimal --project src/ECommerce.Persistence --startup-project src/ECommerce.API)",
+      "Bash(dotnet ef database update --project src/ECommerce.Persistence --startup-project src/ECommerce.API)",
+      "Bash(dotnet test tests/ECommerce.UnitTests/ECommerce.UnitTests.csproj --no-restore)",
+      "Bash(dotnet build ECommerce.sln)",
+      "Bash(dotnet test ECommerce.sln --no-build)",
+      "Bash(curl -sk https://localhost:7136/swagger/index.html)",
+      "Bash(curl -sk https://localhost:7136/api/catalog/products)",
+      "Bash(curl -sk https://localhost:7136/api/catalog/categories)",
+      "Bash(curl -sk -X POST https://localhost:7136/api/auth/register -H \"Content-Type: application/json\" -d '{\"\"email\"\":\"\"test@example.com\"\",\"\"password\"\":\"\"Test123!\"\",\"\"fullName\"\":\"\"Test Kullanici\"\"}' -D -)",
+      "Bash(curl -sk -X POST https://localhost:7136/api/auth/register -H \"Content-Type: application/json\" --data-raw '{\"\"email\"\":\"\"test@example.com\"\",\"\"password\"\":\"\"Test123x\"\",\"\"fullName\"\":\"\"Test Kullanici\"\"}' -D -)"
     ]
   }
 }

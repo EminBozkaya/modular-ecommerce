@@ -8,6 +8,10 @@ public interface IBasketRepository
 {
     Task<Entities.Basket?> GetByUserIdAsync(Guid userId, CancellationToken ct = default);
     Task<Entities.Basket?> GetBySessionIdAsync(string sessionId, CancellationToken ct = default);
+    /// <summary>Returns tracked basket (for write operations like Clear/Remove).</summary>
+    Task<Entities.Basket?> GetByUserIdTrackedAsync(Guid userId, CancellationToken ct = default);
+    /// <summary>Returns tracked basket (for write operations like Clear/Remove).</summary>
+    Task<Entities.Basket?> GetBySessionIdTrackedAsync(string sessionId, CancellationToken ct = default);
     Task AddAsync(Entities.Basket basket, CancellationToken ct = default);
     Task SaveChangesAsync(CancellationToken ct = default);
 }

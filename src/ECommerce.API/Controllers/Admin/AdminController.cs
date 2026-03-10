@@ -2,6 +2,7 @@ using ECommerce.Application.Admin.Queries;
 using ECommerce.Application.Catalog.Commands;
 using ECommerce.Application.Catalog.Queries;
 using ECommerce.Application.Identity.Queries;
+using ECommerce.Application.Ordering.Commands;
 using ECommerce.Application.Ordering.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -102,6 +103,27 @@ public class AdminController : ControllerBase
         return result is null ? NotFound() : Ok(result);
     }
 
+    [HttpPut("orders/{id:guid}/status")]
+    public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromBody] UpdateOrderStatusRequest req, CancellationToken ct)
+    {
+        await _mediator.Send(new UpdateOrderStatusCommand(id, req.NewStatus), ct);
+        return NoContent();
+    }
+
+    [HttpDelete("orders/{id:guid}")]
+    public async Task<IActionResult> DeleteOrder(Guid id, CancellationToken ct)
+    {
+        await _mediator.Send(new DeleteOrderCommand(id), ct);
+        return NoContent();
+    }
+
+    [HttpPost("orders/restore/{id:guid}")]
+    public async Task<IActionResult> RestoreOrder(Guid id, CancellationToken ct)
+    {
+        await _mediator.Send(new RestoreOrderCommand(id), ct);
+        return NoContent();
+    }
+
     // ── Dashboard ──
 
     [HttpGet("dashboard/summary")]
@@ -120,3 +142,5 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> GetLowStockProducts(CancellationToken ct)
         => Ok(await _mediator.Send(new GetLowStockProductsQuery(), ct));
 }
+
+public record UpdateOrderStatusRequest(string NewStatus);

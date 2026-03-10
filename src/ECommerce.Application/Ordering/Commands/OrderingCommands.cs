@@ -9,3 +9,7 @@ public record CreateOrderCommand(
     string ShippingAddress) : IRequest<CreateOrderResult>;
 
 public record CreateOrderResult(Guid OrderId, decimal TotalAmount, string Currency);
+
+public record UpdateOrderStatusCommand(Guid OrderId, string NewStatus) : IRequest;
+public record DeleteOrderCommand(Guid OrderId) : IRequest;
+public record RestoreOrderCommand(Guid OrderId) : IRequest;
