@@ -23,7 +23,7 @@ export default defineConfig({
     ],
     proxy: {
       '/api': {
-        target: 'https://localhost:7136',
+        target: 'http://localhost:5039',
         changeOrigin: true,
         secure: false, // self-signed cert kabul et
       },
