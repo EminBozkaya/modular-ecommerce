@@ -80,3 +80,6 @@ appsettings.json
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# CLAUDE
+.claude/settings.local.json

@@ -1,8 +1,35 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install recharts)",
-      "Bash(xargs grep -l \"AbstractValidator\\\\|Validator<\")"
+      "Bash(dotnet build*)",
+      "Bash(dotnet test*)",
+      "Bash(dotnet run*)",
+      "Bash(dotnet restore*)",
+      "Bash(dotnet ef migrations add*)",
+      "Bash(dotnet ef database update*)",
+      "Bash(dotnet ef migrations list*)",
+      "Bash(npm run*)",
+      "Bash(npm install*)",
+      "Bash(npx tsc*)",
+      "Bash(npx vite*)",
+      "Bash(node*)",
+      "Bash(grep*)",
+      "Bash(find*)",
+      "Bash(ls*)",
+      "Bash(cat*)",
+      "Bash(curl*)",
+      "Bash(rm *.mjs)",
+      "Bash(powershell -Command*)",
+      "Bash(powershell.exe -File*)",
+      "Bash(python3*)"
+    ],
+    "deny": [
+      "Bash(rm -rf*)",
+      "Bash(git push*)",
+      "Bash(git reset --hard*)",
+      "Bash(dotnet ef database drop*)",
+      "Bash(DROP TABLE*)",
+      "Bash(DELETE FROM*)"
     ]
   }
 }
