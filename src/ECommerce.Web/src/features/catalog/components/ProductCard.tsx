@@ -7,6 +7,9 @@ import { calculateLinePrice } from '../../../utils/priceCalculator';
 import { getUnitConfig } from '../../../utils/unitConfig';
 import { QuantitySelector } from '../../../components/shared/QuantitySelector';
 import { useAddToBasket } from '../../basket/hooks/useAddToBasket';
+import { useBasket } from '../../basket/hooks/useBasket';
+import { useRemoveFromBasket } from '../../basket/hooks/useRemoveFromBasket';
+import { useUpdateBasketItem } from '../../basket/hooks/useUpdateBasketItem';
 import { useWishlistProductIds, useToggleFavorite } from '../../favorites/hooks/useFavorites';
 
 interface ProductCardProps {
@@ -22,7 +25,19 @@ export function ProductCard({ product }: ProductCardProps) {
     const { toggle, isLoading: isToggling } = useToggleFavorite();
     const isFavorited = wishlistIds?.includes(product.id) ?? false;
 
-    const { mutate: addToBasket, isPending, isSuccess, isError } = useAddToBasket();
+    // Basket Hooks
+    const { data: basket } = useBasket();
+    const { mutate: addToBasket, isPending: isAdding, isSuccess: isAddSuccess } = useAddToBasket();
+    const { mutate: removeFromBasket, isPending: isRemoving } = useRemoveFromBasket();
+    const { debouncedMutate: updateBasketItem, isPending: isUpdating } = useUpdateBasketItem();
+
+    const basketItem = basket?.items?.find((item) => item.productId === product.id);
+    const isInBasket = !!basketItem;
+
+    // Use local quantity for items NOT in basket
+    // For items IN basket, we use the quantity from the basket state
+    const currentQuantity = isInBasket ? basketItem.quantity : quantity;
+    const isAnyActionPending = isAdding || isRemoving || isUpdating;
 
     const handleToggleFavorite = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -32,7 +47,19 @@ export function ProductCard({ product }: ProductCardProps) {
     };
 
     const handleAddToBasket = () => {
-        addToBasket({ productId: product.id, quantity });
+        if (isInBasket) {
+            removeFromBasket(product.id);
+        } else {
+            addToBasket({ productId: product.id, quantity });
+        }
+    };
+
+    const handleQuantityChange = (newQty: number) => {
+        if (isInBasket) {
+            updateBasketItem({ productId: product.id, quantity: newQty });
+        } else {
+            setQuantity(newQty);
+        }
     };
 
     return (
@@ -102,36 +129,40 @@ export function ProductCard({ product }: ProductCardProps) {
                     <div onClick={(e) => e.stopPropagation()} className="relative z-20 space-y-2 pt-1">
                         <QuantitySelector
                             unitName={product.unitName}
-                            value={quantity}
-                            onChange={setQuantity}
-                            disabled={isPending}
+                            value={currentQuantity}
+                            onChange={handleQuantityChange}
+                            disabled={isAnyActionPending}
                             size="sm"
                         />
                         <p className="text-xs text-gray-500 font-medium">
                             Toplam:{' '}
                             <span className="text-gray-900 font-bold">
-                                {calculateLinePrice(product.price, quantity, product.currency)}
+                                {calculateLinePrice(product.price, currentQuantity, product.currency)}
                             </span>
                         </p>
                         <button
                             onClick={handleAddToBasket}
-                            disabled={isPending || isSuccess}
+                            disabled={isAnyActionPending}
                             className={[
                                 'w-full py-2.5 px-4 text-sm font-bold text-white rounded-lg',
                                 'transition-all duration-150 active:translate-y-1 active:border-b-0',
-                                isSuccess
-                                    ? 'bg-green-500 border-b-4 border-green-700'
-                                    : isError
-                                        ? 'bg-red-500 border-b-4 border-red-700 hover:bg-red-600'
+                                isInBasket
+                                    ? 'bg-red-600 border-b-4 border-red-800 hover:bg-red-700'
+                                    : isAddSuccess
+                                        ? 'bg-green-600 border-b-4 border-green-800'
                                         : 'bg-[#1B5E3F] border-b-4 border-[#12412b] hover:bg-[#164d33] hover:shadow-lg',
-                                'disabled:opacity-70 disabled:cursor-wait',
+                                'disabled:opacity-70 disabled:cursor-not-allowed',
                             ].join(' ')}
                         >
-                            {isPending ? (
+                            {isAnyActionPending ? (
                                 <span className="flex items-center justify-center gap-2">
-                                    <Loader2 className="h-4 w-4 animate-spin" /> Ekleniyor...
+                                    <Loader2 className="h-4 w-4 animate-spin" /> Bekleyiniz...
                                 </span>
-                            ) : isSuccess ? (
+                            ) : isInBasket ? (
+                                <span className="flex items-center justify-center gap-2">
+                                    <ShoppingCart className="h-4 w-4 fill-white/20" /> Sepetten Çıkar
+                                </span>
+                            ) : isAddSuccess ? (
                                 'Eklendi ✓'
                             ) : (
                                 <span className="flex items-center justify-center gap-2">

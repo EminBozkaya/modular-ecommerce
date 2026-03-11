@@ -11,8 +11,8 @@ export function getUnitConfig(unitName: string): UnitStepConfig {
 
     if (lower.includes('kg') || lower.includes('kilogram')) {
         return {
-            step: 0.5,
-            min: 0.5,
+            step: 0.1,
+            min: 0.1,
             decimals: 1,
             displayName: 'Kilogram',
             formatValue: (v) => `${v.toFixed(1)} kg`,
@@ -21,8 +21,8 @@ export function getUnitConfig(unitName: string): UnitStepConfig {
 
     if (lower.includes('litre') || lower.includes('liter') || lower === 'l') {
         return {
-            step: 0.5,
-            min: 0.5,
+            step: 0.1,
+            min: 0.1,
             decimals: 1,
             displayName: 'Litre',
             formatValue: (v) => `${v.toFixed(1)} L`,

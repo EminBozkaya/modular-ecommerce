@@ -10,6 +10,9 @@ import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
 import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import { EmptyState } from '../../../components/shared/EmptyState';
 import { useAddToBasket } from '../../basket/hooks/useAddToBasket';
+import { useBasket } from '../../basket/hooks/useBasket';
+import { useRemoveFromBasket } from '../../basket/hooks/useRemoveFromBasket';
+import { useUpdateBasketItem } from '../../basket/hooks/useUpdateBasketItem';
 
 export default function ProductDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -17,7 +20,16 @@ export default function ProductDetailPage() {
     const safeId = id ?? '';
 
     const { data: product, isLoading, error, refetch } = useProduct(safeId);
-    const { mutate: addToBasket, isPending, isSuccess, isError } = useAddToBasket();
+    
+    // Basket Hooks
+    const { data: basket } = useBasket();
+    const { mutate: addToBasket, isPending: isAdding, isSuccess: isAddSuccess } = useAddToBasket();
+    const { mutate: removeFromBasket, isPending: isRemoving } = useRemoveFromBasket();
+    const { debouncedMutate: updateBasketItem, isPending: isUpdating } = useUpdateBasketItem();
+
+    const basketItem = basket?.items?.find((item) => item.productId === safeId);
+    const isInBasket = !!basketItem;
+    const isAnyActionPending = isAdding || isRemoving || isUpdating;
 
     // quantity is initialised after product loads; default to 1 until then
     const unitConfig = product ? getUnitConfig(product.unitName) : null;
@@ -29,6 +41,24 @@ export default function ProductDetailPage() {
         setSyncedUnit(product.unitName);
         setQuantity(unitConfig.min);
     }
+
+    const currentQuantity = isInBasket ? basketItem.quantity : quantity;
+
+    const handleQuantityChange = (newQty: number) => {
+        if (isInBasket) {
+            updateBasketItem({ productId: safeId, quantity: newQty });
+        } else {
+            setQuantity(newQty);
+        }
+    };
+
+    const handleBasketAction = () => {
+        if (isInBasket) {
+            removeFromBasket(safeId);
+        } else {
+            addToBasket({ productId: safeId, quantity });
+        }
+    };
 
     const handleBack = () => navigate('/products');
 
@@ -146,9 +176,9 @@ export default function ProductDetailPage() {
                                     <p className="text-sm font-medium text-gray-700 mb-2">Miktar seçin</p>
                                     <QuantitySelector
                                         unitName={product.unitName}
-                                        value={quantity}
-                                        onChange={setQuantity}
-                                        disabled={isPending}
+                                        value={currentQuantity}
+                                        onChange={handleQuantityChange}
+                                        disabled={isAnyActionPending}
                                         size="md"
                                     />
                                 </div>
@@ -157,7 +187,7 @@ export default function ProductDetailPage() {
                                 <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-1.5">
                                     <div className="flex justify-between text-sm text-gray-600">
                                         <span>Seçilen miktar</span>
-                                        <span className="font-semibold text-gray-800">{config.formatValue(quantity)}</span>
+                                        <span className="font-semibold text-gray-800">{config.formatValue(currentQuantity)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm text-gray-600">
                                         <span>Birim fiyat</span>
@@ -167,7 +197,7 @@ export default function ProductDetailPage() {
                                     </div>
                                     <div className="flex justify-between text-base font-bold text-gray-900 pt-1 border-t border-gray-200 mt-1">
                                         <span>Tahmini tutar</span>
-                                        <span>{calculateLinePrice(product.price, quantity, product.currency)}</span>
+                                        <span>{calculateLinePrice(product.price, currentQuantity, product.currency)}</span>
                                     </div>
                                     <p className="text-[11px] text-gray-400 pt-0.5">
                                         * Kesin tutar sepette hesaplanır
@@ -176,24 +206,28 @@ export default function ProductDetailPage() {
 
                                 {/* Add to basket */}
                                 <button
-                                    onClick={() => addToBasket({ productId: product.id, quantity })}
-                                    disabled={isPending || isSuccess}
+                                    onClick={handleBasketAction}
+                                    disabled={isAnyActionPending}
                                     className={[
                                         'w-full py-3 px-4 text-base font-bold text-white rounded-lg',
                                         'transition-all duration-150 active:translate-y-1 active:border-b-0',
-                                        isSuccess
-                                            ? 'bg-green-500 border-b-4 border-green-700'
-                                            : isError
-                                                ? 'bg-red-500 border-b-4 border-red-700 hover:bg-red-600'
+                                        isInBasket
+                                            ? 'bg-red-600 border-b-4 border-red-800 hover:bg-red-700'
+                                            : isAddSuccess
+                                                ? 'bg-green-600 border-b-4 border-green-800'
                                                 : 'bg-[#1B5E3F] border-b-4 border-[#12412b] hover:bg-[#164d33] hover:shadow-lg',
-                                        'disabled:opacity-70 disabled:cursor-wait',
+                                        'disabled:opacity-70 disabled:cursor-not-allowed',
                                     ].join(' ')}
                                 >
-                                    {isPending ? (
+                                    {isAnyActionPending ? (
                                         <span className="flex items-center justify-center gap-2">
-                                            <Loader2 className="h-5 w-5 animate-spin" /> Ekleniyor...
+                                            <Loader2 className="h-5 v-5 animate-spin" /> Bekleyiniz...
                                         </span>
-                                    ) : isSuccess ? (
+                                    ) : isInBasket ? (
+                                        <span className="flex items-center justify-center gap-2">
+                                            <ShoppingCart className="h-5 w-5 fill-white/20" /> Sepetten Çıkar
+                                        </span>
+                                    ) : isAddSuccess ? (
                                         'Sepete Eklendi ✓'
                                     ) : (
                                         <span className="flex items-center justify-center gap-2">

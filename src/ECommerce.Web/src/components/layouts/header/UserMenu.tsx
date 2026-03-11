@@ -50,14 +50,17 @@ export function UserMenu() {
     }
 
     return (
-        <div className="relative" ref={menuRef}>
+        <div className="flex flex-col items-center group relative" ref={menuRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--color-ebrar-green)] text-white font-bold text-sm border-2 border-white shadow-md hover:bg-[var(--color-ebrar-green-dark)] transition-all duration-200"
+                className="flex items-center justify-center w-11 h-11 rounded-full bg-[var(--color-ebrar-green)] text-white font-bold text-sm border-2 border-white shadow-md hover:bg-[var(--color-ebrar-green-dark)] transition-all duration-200"
                 title={user?.fullName}
             >
                 {userInitials}
             </button>
+            <span className="text-[11px] font-bold text-muted-foreground group-hover:text-[var(--color-ebrar-green)] mt-1 transition-colors">
+                Hesabım
+            </span>
 
             {isOpen && (
                 <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-border py-2 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
