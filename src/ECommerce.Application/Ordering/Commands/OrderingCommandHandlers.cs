@@ -58,7 +58,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, CreateOrde
         await _orders.AddAsync(order, ct);
         basket.Clear();
         await _orders.SaveChangesAsync(ct);
-        return new CreateOrderResult(order.Id, order.Total.Amount, order.Total.Currency);
+        return new CreateOrderResult(order.Id, order.Total.Amount, order.Total.Currency.ToString());
     }
 }
 

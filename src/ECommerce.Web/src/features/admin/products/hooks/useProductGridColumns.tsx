@@ -95,20 +95,20 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
             floatingFilterComponent: 'entityStatusFloatingFilter',
             suppressHeaderMenuButton: true,
             sortable: true,
-            width: 90,
+            minWidth: 100,
             cellRenderer: (params: ICellRendererParams<Product, boolean>) => {
                 if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmiş</span>;
                 return params.value ? <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span> : <span style={{ color: '#ca8a04', fontWeight: '600' }}>Pasif</span>;
             },
         },
-        { headerName: 'Ürün Adı', field: 'name', filter: 'agTextColumnFilter', sortable: true, width: 160, tooltipValueGetter: (p) => p.value ?? '' },
-        { headerName: 'Birim', field: 'unitName', filter: 'agTextColumnFilter', sortable: true, width: 80, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'Ürün Adı', field: 'name', filter: 'agTextColumnFilter', sortable: true, minWidth: 160, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'Birim', field: 'unitName', filter: 'agTextColumnFilter', sortable: true, minWidth: 80, tooltipValueGetter: (p) => p.value ?? '' },
         {
             headerName: 'Fiyat (TL)',
             field: 'priceAmount',
             filter: 'agNumberColumnFilter',
             sortable: true,
-            width: 100,
+            minWidth: 120,
             valueFormatter: (params) => params.value != null ? String(Number(params.value).toFixed(2)) + ' TL' : '',
             tooltipValueGetter: (params) => params.value != null ? String(Number(params.value).toFixed(2)) + ' TL' : '',
         },
@@ -117,7 +117,7 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
             field: 'stockQuantity',
             filter: 'agNumberColumnFilter',
             sortable: true,
-            width: 70,
+            minWidth: 80,
             cellStyle: (params) => {
                 if (params.value === 0) return { color: '#dc2626', fontWeight: '600' };
                 if (params.value < 10) return { color: '#f59e0b', fontWeight: '600' };
@@ -125,13 +125,13 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
             },
             tooltipValueGetter: (p) => p.value != null ? String(p.value) : '',
         },
-        { headerName: 'Kategori', field: 'categoryName', filter: 'agTextColumnFilter', sortable: true, width: 130, tooltipValueGetter: (p) => p.value ?? '' },
-        { headerName: 'Açıklama', field: 'description', filter: 'agTextColumnFilter', sortable: true, width: 160, tooltipValueGetter: (p) => p.value ?? '' },
-        { headerName: 'Oluşturulma Tarihi', field: 'createdAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, width: 155, valueFormatter: formatDateCell, tooltipValueGetter: (p) => { if (!p.value) return ''; return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(p.value as string)); } },
-        { headerName: 'Oluşturan', field: 'createdBy', sortable: true, filter: 'agTextColumnFilter', width: 120, tooltipValueGetter: (p) => p.value ?? '' },
-        { headerName: 'Güncellenme Tarihi', field: 'updatedAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, width: 155, valueFormatter: formatDateCell, tooltipValueGetter: (p) => { if (!p.value) return ''; return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(p.value as string)); } },
-        { headerName: 'Güncelleyen', field: 'updatedBy', sortable: true, filter: 'agTextColumnFilter', width: 120, tooltipValueGetter: (p) => p.value ?? '' },
-        { headerName: 'Silinme Tarihi', field: 'deletedAt', sortable: true, filter: false, width: 155, hide: true, valueFormatter: formatDateCell },
+        { headerName: 'Kategori', field: 'categoryName', filter: 'agTextColumnFilter', sortable: true, minWidth: 130, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'Açıklama', field: 'description', filter: 'agTextColumnFilter', sortable: true, minWidth: 160, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'Oluşturulma Tarihi', field: 'createdAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, minWidth: 180, valueFormatter: formatDateCell, tooltipValueGetter: (p) => { if (!p.value) return ''; return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(p.value as string)); } },
+        { headerName: 'Oluşturan', field: 'createdBy', sortable: true, filter: 'agTextColumnFilter', minWidth: 120, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'Güncellenme Tarihi', field: 'updatedAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, minWidth: 180, valueFormatter: formatDateCell, tooltipValueGetter: (p) => { if (!p.value) return ''; return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(p.value as string)); } },
+        { headerName: 'Güncelleyen', field: 'updatedBy', sortable: true, filter: 'agTextColumnFilter', minWidth: 120, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'Silinme Tarihi', field: 'deletedAt', sortable: true, filter: false, minWidth: 180, hide: true, valueFormatter: formatDateCell },
         {
             headerName: 'İşlemler',
             field: 'id',

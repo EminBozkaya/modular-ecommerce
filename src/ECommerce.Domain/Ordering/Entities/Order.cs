@@ -1,5 +1,6 @@
 using ECommerce.Domain.Catalog.ValueObjects;
 using ECommerce.Domain.Common;
+using ECommerce.Domain.Common.Enums;
 using ECommerce.Domain.Ordering.Enums;
 
 namespace ECommerce.Domain.Ordering.Entities;
@@ -17,7 +18,7 @@ public class Order : BaseAuditableEntity
     public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
 
     public Money Total => _items.Count == 0 
-        ? new Money(0, "TRY") 
+        ? new Money(0, Currency.TRY)
         : _items.Skip(1).Aggregate(_items[0].LineTotal, (acc, item) => acc.Add(item.LineTotal));
 
     private Order() { }

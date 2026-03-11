@@ -55,12 +55,12 @@ public class AddToBasketHandler : IRequestHandler<AddToBasketCommand, BasketDto>
             i.ProductId,
             i.ProductName,
             i.UnitPriceSnapshot.Amount,
-            i.UnitPriceSnapshot.Currency,
+            i.UnitPriceSnapshot.Currency.ToString(),
             i.Quantity,
             i.LineTotalSnapshot.Amount,
             null,
             null)).ToList();
-        return new BasketDto(basket.Id, items, basket.Total.Amount, basket.Total.Currency);
+        return new BasketDto(basket.Id, items, basket.Total.Amount, basket.Total.Currency.ToString());
     }
 }
 
@@ -75,7 +75,7 @@ public class RemoveFromBasketHandler : IRequestHandler<RemoveFromBasketCommand, 
             ? await _baskets.GetByUserIdTrackedAsync(cmd.UserId.Value, ct)
             : await _baskets.GetBySessionIdTrackedAsync(cmd.SessionId!, ct);
         if (basket is null)
-            return new BasketDto(Guid.Empty, [], 0, "TRY");
+            return new BasketDto(Guid.Empty, [], 0, "TRY"); // empty basket fallback
 
         basket.RemoveItem(cmd.ProductId);
         await _baskets.SaveChangesAsync(ct);
@@ -84,12 +84,12 @@ public class RemoveFromBasketHandler : IRequestHandler<RemoveFromBasketCommand, 
             i.ProductId,
             i.ProductName,
             i.UnitPriceSnapshot.Amount,
-            i.UnitPriceSnapshot.Currency,
+            i.UnitPriceSnapshot.Currency.ToString(),
             i.Quantity,
             i.LineTotalSnapshot.Amount,
             null,
             null)).ToList();
-        return new BasketDto(basket.Id, items, basket.Total.Amount, basket.Total.Currency);
+        return new BasketDto(basket.Id, items, basket.Total.Amount, basket.Total.Currency.ToString());
     }
 }
 
@@ -122,7 +122,7 @@ public class UpdateBasketItemHandler : IRequestHandler<UpdateBasketItemCommand, 
             : await _baskets.GetBySessionIdTrackedAsync(cmd.SessionId!, ct);
 
         if (basket is null)
-            return new BasketDto(Guid.Empty, [], 0, "TRY");
+            return new BasketDto(Guid.Empty, [], 0, "TRY"); // empty basket fallback
 
         basket.UpdateItemQuantity(cmd.ProductId, cmd.Quantity);
         await _baskets.SaveChangesAsync(ct);
@@ -131,11 +131,11 @@ public class UpdateBasketItemHandler : IRequestHandler<UpdateBasketItemCommand, 
             i.ProductId,
             i.ProductName,
             i.UnitPriceSnapshot.Amount,
-            i.UnitPriceSnapshot.Currency,
+            i.UnitPriceSnapshot.Currency.ToString(),
             i.Quantity,
             i.LineTotalSnapshot.Amount,
             null,
             null)).ToList();
-        return new BasketDto(basket.Id, items, basket.Total.Amount, basket.Total.Currency);
+        return new BasketDto(basket.Id, items, basket.Total.Amount, basket.Total.Currency.ToString());
     }
 }

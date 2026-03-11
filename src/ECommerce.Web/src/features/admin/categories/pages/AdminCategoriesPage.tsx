@@ -42,7 +42,9 @@ export default function AdminCategoriesPage() {
     useEffect(() => { fetchData(); }, [fetchData]);
     const { handleEdit, handleDelete, handleRestore, handleConfirmDelete, handleFormSubmit } = useCategoryActions({ categories, products, setModalSettings, setModalOpen, setEditingCategory, setDeleting, setSaving, fetchData });
     const columnDefs = useCategoryGridColumns({ onEdit: handleEdit, onDelete: handleDelete, onRestore: handleRestore });
-    const onGridReady = (params: GridReadyEvent) => { setGridApi(params.api); params.api.sizeColumnsToFit(); };
+    const onGridReady = (params: GridReadyEvent) => { 
+        setGridApi(params.api); 
+    };
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -94,7 +96,7 @@ export default function AdminCategoriesPage() {
             <div className="bg-white rounded-xl shadow-sm overflow-x-auto" style={{ border: '1px solid #e5e7eb' }}>
                 <div style={{ minWidth: 'fit-content' }}>
                     <AgGridReact<Category>
-                        suppressHorizontalScroll={true}
+                        suppressHorizontalScroll={false}
                         suppressColumnVirtualisation={true}
                         tooltipShowDelay={300}
                         components={gridComponents}
@@ -121,6 +123,9 @@ export default function AdminCategoriesPage() {
                             menuTabs: [],
                             suppressMovable: false,
                             cellStyle: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+                        }}
+                        autoSizeStrategy={{
+                            type: 'fitCellContents'
                         }}
                         localeText={localeTextTr}
                         overlayNoRowsTemplate="<span style='padding:10px;color:#6b7280'>Henuz kategori bulunamadi.</span>"

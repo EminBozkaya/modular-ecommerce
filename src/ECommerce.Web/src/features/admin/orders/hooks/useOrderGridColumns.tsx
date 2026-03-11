@@ -112,7 +112,7 @@ export function useOrderGridColumns({
             floatingFilterComponent: 'orderStatusFloatingFilter',
             suppressHeaderMenuButton: true,
             sortable: true,
-            width: 130,
+            minWidth: 130,
             cellRenderer: (params: ICellRendererParams<Order, OrderStatus>) => {
                 if (!params.value) return null;
                 if (params.data?.isDeleted) {
@@ -135,7 +135,7 @@ export function useOrderGridColumns({
             field: 'id',
             filter: 'agTextColumnFilter',
             sortable: true,
-            width: 130,
+            minWidth: 130,
             tooltipValueGetter: (params) => params.value ?? '',
             cellRenderer: (params: ICellRendererParams<Order, string>) => {
                 if (!params.value) return '';
@@ -151,7 +151,7 @@ export function useOrderGridColumns({
             valueGetter: (params) => params.data?.shippingAddress.fullName ?? '',
             filter: 'agTextColumnFilter',
             sortable: true,
-            width: 160,
+            minWidth: 160,
             tooltipValueGetter: (params) => params.value ?? '',
         },
         {
@@ -162,7 +162,7 @@ export function useOrderGridColumns({
             },
             filter: 'agNumberColumnFilter',
             sortable: true,
-            width: 110,
+            minWidth: 110,
             tooltipValueGetter: (params) => params.value != null ? String(params.value) : '',
         },
         {
@@ -170,7 +170,7 @@ export function useOrderGridColumns({
             field: 'totalAmount',
             filter: 'agNumberColumnFilter',
             sortable: true,
-            width: 110,
+            minWidth: 110,
             valueFormatter: (params) =>
                 params.value != null ? `TL${Number(params.value).toFixed(2)}` : '',
             tooltipValueGetter: (params) =>
@@ -181,7 +181,7 @@ export function useOrderGridColumns({
             valueGetter: (params) => params.data?.shippingAddress.city ?? '',
             filter: 'agTextColumnFilter',
             sortable: true,
-            width: 110,
+            minWidth: 110,
             tooltipValueGetter: (params) => params.value ?? '',
         },
         {
@@ -192,7 +192,7 @@ export function useOrderGridColumns({
             },
             filter: 'agTextColumnFilter',
             sortable: true,
-            width: 200,
+            minWidth: 200,
             tooltipValueGetter: (params) => params.value ?? '',
         },
         {
@@ -201,7 +201,7 @@ export function useOrderGridColumns({
             sortable: true,
             filter: 'agDateColumnFilter',
             filterParams: { comparator: dateComparator },
-            width: 155,
+            minWidth: 180,
             valueFormatter: (params: ValueFormatterParams<Order, string>) => {
                 if (!params.value) return '';
                 return new Intl.DateTimeFormat('tr-TR', {
@@ -222,7 +222,7 @@ export function useOrderGridColumns({
             field: 'id',
             sortable: false,
             filter: false,
-            width: 90,
+            minWidth: 110,
             cellRenderer: (params: ICellRendererParams<Order, string>) => {
                 if (!params.data) return null;
                 const isDeleted = params.data.isDeleted;

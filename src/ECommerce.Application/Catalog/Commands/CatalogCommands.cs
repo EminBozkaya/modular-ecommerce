@@ -1,3 +1,4 @@
+using ECommerce.Domain.Common.Enums;
 using MediatR;
 
 namespace ECommerce.Application.Catalog.Commands;
@@ -8,7 +9,7 @@ public record CreateProductCommand(
     string? Description,
     string? ImageUrl,
     decimal Price,
-    string Currency,
+    Currency Currency,
     int StockQuantity,
     Guid CategoryId,
     Guid UnitId,
@@ -21,7 +22,7 @@ public record UpdateProductCommand(
     string? Description,
     string? ImageUrl,
     decimal Price,
-    string Currency,
+    Currency Currency,
     Guid CategoryId,
     Guid UnitId,
     bool IsActive) : IRequest;

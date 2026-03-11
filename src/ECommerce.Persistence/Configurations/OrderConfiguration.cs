@@ -37,7 +37,7 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
         builder.OwnsOne(i => i.UnitPrice, money =>
         {
             money.Property(m => m.Amount).HasColumnName("UnitPrice_Amount").HasPrecision(18, 2);
-            money.Property(m => m.Currency).HasColumnName("UnitPrice_Currency").HasMaxLength(3);
+            money.Property(m => m.Currency).HasColumnName("UnitPrice_Currency").HasMaxLength(3).HasConversion<string>();
         });
     }
 }

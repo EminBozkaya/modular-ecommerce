@@ -33,7 +33,7 @@ public class GetProductsHandler : IRequestHandler<GetProductsQuery, PagedResult<
 
         var items = products.Select(p => new ProductDto(
             p.Id, p.Name, p.Description, p.ImageUrl,
-            p.Price.Amount, p.Price.Currency, p.Stock.Value, p.IsActive,
+            p.Price.Amount, p.Price.Currency.ToString(), p.Stock.Value, p.IsActive,
             p.CategoryId, p.Category?.Name,
             p.UnitId, p.Unit?.Name,
             p.CreatedAt, p.CreatedBy != null && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
@@ -63,7 +63,7 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, Produc
         var userMap = (await _users.GetAllAsync(ct)).ToDictionary(u => u.Id.ToString(), u => u.FullName);
 
         return new ProductDto(p.Id, p.Name, p.Description, p.ImageUrl,
-            p.Price.Amount, p.Price.Currency, p.Stock.Value, p.IsActive,
+            p.Price.Amount, p.Price.Currency.ToString(), p.Stock.Value, p.IsActive,
             p.CategoryId, p.Category?.Name,
             p.UnitId, p.Unit?.Name,
             p.CreatedAt, p.CreatedBy != null && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,

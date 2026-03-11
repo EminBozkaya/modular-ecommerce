@@ -33,6 +33,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             money.Property(m => m.Currency)
                 .HasColumnName("Price_Currency")
                 .HasMaxLength(3)
+                .HasConversion<string>()
                 .IsRequired();
         });
 

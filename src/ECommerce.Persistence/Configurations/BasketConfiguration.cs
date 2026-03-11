@@ -35,7 +35,7 @@ public class BasketItemConfiguration : IEntityTypeConfiguration<BasketItem>
         builder.OwnsOne(i => i.UnitPriceSnapshot, money =>
         {
             money.Property(m => m.Amount).HasColumnName("UnitPrice_Amount").HasPrecision(18, 2);
-            money.Property(m => m.Currency).HasColumnName("UnitPrice_Currency").HasMaxLength(3);
+            money.Property(m => m.Currency).HasColumnName("UnitPrice_Currency").HasMaxLength(3).HasConversion<string>();
         });
     }
 }

@@ -1,5 +1,6 @@
 using ECommerce.Domain.Catalog.Entities;
 using ECommerce.Domain.Catalog.ValueObjects;
+using ECommerce.Domain.Common.Enums;
 using FluentAssertions;
 
 namespace ECommerce.UnitTests.Domain.Catalog;
@@ -8,7 +9,7 @@ public class ProductTests
 {
     private readonly Guid _categoryId = Guid.NewGuid();
     private readonly Guid _unitId = Guid.NewGuid();
-    private readonly Money _price = new(100, "USD");
+    private readonly Money _price = new(100, Currency.USD);
     private readonly StockQuantity _stock = new(50);
 
     [Fact]

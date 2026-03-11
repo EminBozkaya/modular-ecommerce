@@ -27,6 +27,7 @@ public class ApplicationDbContext : DbContext
 
     // Payment
     public DbSet<PaymentRecord> PaymentRecords => Set<PaymentRecord>();
+    public DbSet<PaymentProviderLog> PaymentProviderLogs => Set<PaymentProviderLog>();
 
     // Identity
     public DbSet<AppUser> Users => Set<AppUser>();

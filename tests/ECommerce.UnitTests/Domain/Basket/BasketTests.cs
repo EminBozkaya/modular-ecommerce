@@ -1,5 +1,6 @@
 using ECommerce.Domain.Basket.Entities;
 using ECommerce.Domain.Catalog.ValueObjects;
+using ECommerce.Domain.Common.Enums;
 using FluentAssertions;
 
 namespace ECommerce.UnitTests.Domain.Basket;
@@ -14,7 +15,7 @@ public class BasketTests
         var productId = Guid.NewGuid();
 
         // Act
-        basket.AddItem(productId, "Product A", new Money(100, "USD"), 2);
+        basket.AddItem(productId, "Product A", new Money(100, Currency.USD), 2);
 
         // Assert
         basket.Items.Should().HaveCount(1);
@@ -30,10 +31,10 @@ public class BasketTests
         // Arrange
         var basket = ECommerce.Domain.Basket.Entities.Basket.CreateForGuest("session-1");
         var productId = Guid.NewGuid();
-        basket.AddItem(productId, "Product A", new Money(100, "USD"), 2);
+        basket.AddItem(productId, "Product A", new Money(100, Currency.USD), 2);
 
         // Act
-        basket.AddItem(productId, "Product A", new Money(100, "USD"), 3); // Price stays the same in snapshot
+        basket.AddItem(productId, "Product A", new Money(100, Currency.USD), 3);
 
         // Assert
         basket.Items.Should().HaveCount(1);
@@ -46,7 +47,7 @@ public class BasketTests
         // Arrange
         var basket = ECommerce.Domain.Basket.Entities.Basket.CreateForGuest("session-1");
         var productId = Guid.NewGuid();
-        basket.AddItem(productId, "Product A", new Money(100, "USD"), 1);
+        basket.AddItem(productId, "Product A", new Money(100, Currency.USD), 1);
 
         // Act
         basket.RemoveItem(productId);
@@ -60,14 +61,14 @@ public class BasketTests
     {
         // Arrange
         var basket = ECommerce.Domain.Basket.Entities.Basket.CreateForGuest("session-1");
-        basket.AddItem(Guid.NewGuid(), "P1", new Money(100, "USD"), 2); // 2 * 100 = 200
-        basket.AddItem(Guid.NewGuid(), "P2", new Money(50, "USD"), 1);  // 1 * 50 = 50
+        basket.AddItem(Guid.NewGuid(), "P1", new Money(100, Currency.USD), 2); // 200
+        basket.AddItem(Guid.NewGuid(), "P2", new Money(50, Currency.USD), 1);  // 50
 
         // Act
         var total = basket.Total;
 
         // Assert
         total.Amount.Should().Be(250);
-        total.Currency.Should().Be("USD");
+        total.Currency.Should().Be(Currency.USD);
     }
 }

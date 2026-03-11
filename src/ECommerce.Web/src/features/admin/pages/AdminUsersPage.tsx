@@ -40,7 +40,9 @@ export default function AdminUsersPage() {
     useEffect(() => { fetchData(); }, [fetchData]);
     const { handleEdit, handleDelete, handleRestore, handleConfirmAction, handleFormSubmit } = useUserActions({ users, setModalSettings, setModalOpen, setEditingUser, setDeleting, setSaving, fetchData });
     const columnDefs = useUserGridColumns({ onEdit: handleEdit, onDelete: handleDelete, onRestore: handleRestore });
-    const onGridReady = (params: GridReadyEvent) => { setGridApi(params.api); params.api.sizeColumnsToFit(); };
+    const onGridReady = (params: GridReadyEvent) => { 
+        setGridApi(params.api); 
+    };
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -92,7 +94,7 @@ export default function AdminUsersPage() {
             <div className="bg-white rounded-xl shadow-sm overflow-x-auto" style={{ border: '1px solid #e5e7eb' }}>
                 <div style={{ minWidth: 'fit-content' }}>
                     <AgGridReact<AdminUser>
-                        suppressHorizontalScroll={true}
+                        suppressHorizontalScroll={false}
                         suppressColumnVirtualisation={true}
                         tooltipShowDelay={300}
                         ref={gridRef}
@@ -120,6 +122,9 @@ export default function AdminUsersPage() {
                             menuTabs: [],
                             suppressMovable: false,
                             cellStyle: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+                        }}
+                        autoSizeStrategy={{
+                            type: 'fitCellContents'
                         }}
                         overlayNoRowsTemplate="<span style='padding:10px;color:#6b7280'>Henuz musteri bulunamadi.</span>"
                         overlayLoadingTemplate="<span style='padding:10px;color:#1B5E3F'>Musteriler yukleniyor...</span>"

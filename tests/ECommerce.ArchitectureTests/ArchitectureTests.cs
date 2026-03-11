@@ -89,7 +89,9 @@ public class ArchitectureTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue();
+        result.IsSuccessful.Should().BeTrue(
+            because: "Controllers must not depend on Domain. Violations: {0}",
+            string.Join(", ", result.FailingTypes?.Select(t => t.FullName) ?? []));
     }
 
     [Fact]
@@ -109,10 +111,14 @@ public class ArchitectureTests
             "CreatedAt", "CreatedBy", "UpdatedAt", "UpdatedBy", "IsDeleted", "DeletedAt",
         };
 
-        // Act
+        // Act — exclude record types (they use init-only setters which are positional, not mutable)
         var violatingMembers = entityTypes
+            .Where(t => t.GetMethod("<Clone>$") is null) // filter out record types
             .SelectMany(t => t.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.SetMethod is { IsPublic: true } && !auditPropertyNames.Contains(p.Name))
+                .Where(p => p.SetMethod is { IsPublic: true }
+                    && !p.SetMethod.ReturnParameter.GetRequiredCustomModifiers()
+                        .Any(m => m.FullName == "System.Runtime.CompilerServices.IsExternalInit")
+                    && !auditPropertyNames.Contains(p.Name))
                 .Select(p => $"{t.Name}.{p.Name}"))
             .ToList();
 

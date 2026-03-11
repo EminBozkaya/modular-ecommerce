@@ -118,7 +118,7 @@ export function useCategoryGridColumns({
             floatingFilterComponent: 'entityStatusFloatingFilter',
             suppressHeaderMenuButton: true,
             sortable: true,
-            width: 90,
+            minWidth: 100,
             cellRenderer: (params: ICellRendererParams<Category>) => {
                 if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmiş</span>;
                 return params.value
@@ -131,7 +131,7 @@ export function useCategoryGridColumns({
             field: 'name',
             filter: 'agTextColumnFilter',
             sortable: true,
-            width: 160,
+            minWidth: 160,
             tooltipValueGetter: (params) => params.value ?? '',
         },
         {
@@ -139,7 +139,7 @@ export function useCategoryGridColumns({
             field: 'parentCategoryName',
             filter: 'agTextColumnFilter',
             sortable: true,
-            width: 150,
+            minWidth: 150,
             tooltipValueGetter: (params) => params.value ?? '',
             cellRenderer: (params: { value?: string | null }) =>
                 params.value
@@ -152,7 +152,7 @@ export function useCategoryGridColumns({
             sortable: true,
             filter: 'agDateColumnFilter',
             filterParams: { comparator: dateComparator },
-            width: 160,
+            minWidth: 180,
             valueFormatter: formatDateCell,
             tooltipValueGetter: (params) => {
                 if (!params.value) return '';
@@ -167,7 +167,7 @@ export function useCategoryGridColumns({
             field: 'createdBy',
             sortable: true,
             filter: 'agTextColumnFilter',
-            width: 120,
+            minWidth: 120,
             tooltipValueGetter: (params) => params.value ?? '',
         },
         {
@@ -176,7 +176,7 @@ export function useCategoryGridColumns({
             sortable: true,
             filter: 'agDateColumnFilter',
             filterParams: { comparator: dateComparator },
-            width: 160,
+            minWidth: 180,
             valueFormatter: formatDateCell,
             tooltipValueGetter: (params) => {
                 if (!params.value) return '';
@@ -191,7 +191,7 @@ export function useCategoryGridColumns({
             field: 'updatedBy',
             sortable: true,
             filter: 'agTextColumnFilter',
-            width: 120,
+            minWidth: 120,
             tooltipValueGetter: (params) => params.value ?? '',
         },
         {
@@ -199,7 +199,7 @@ export function useCategoryGridColumns({
             field: 'deletedAt',
             sortable: true,
             filter: false,
-            width: 160,
+            minWidth: 180,
             hide: true,
             valueFormatter: formatDateCell,
         },
@@ -208,7 +208,7 @@ export function useCategoryGridColumns({
             field: 'id',
             sortable: false,
             filter: false,
-            width: 90,
+            minWidth: 100,
             cellRenderer: (params: ICellRendererParams<Category>) => {
                 if (!params.data) return null;
                 const isDeleted = params.data.isDeleted;

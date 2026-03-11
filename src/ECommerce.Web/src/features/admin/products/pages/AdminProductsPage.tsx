@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { type GridReadyEvent, type GridApi, ModuleRegistry, ClientSideRowModelModule, TextFilterModule, NumberFilterModule, PaginationModule, ValidationModule, ColumnAutoSizeModule, RowApiModule, CellStyleModule, RowSelectionModule, RowStyleModule, DateFilterModule, LocaleModule, CustomFilterModule, TooltipModule } from 'ag-grid-community';
 import { PackagePlus, Package } from 'lucide-react';
@@ -48,7 +48,9 @@ export default function AdminProductsPage() {
     useEffect(() => { fetchData(); }, [fetchData]);
     const { handleEdit, handleDelete, handleRestore, handleConfirmDelete, handleFormSubmit } = useProductActions({ products, categories, setModalSettings, setModalOpen, setEditingProduct, setDeleting, setSaving, fetchData });
     const columnDefs = useProductGridColumns({ onEdit: handleEdit, onDelete: handleDelete, onRestore: handleRestore });
-    const onGridReady = (params: GridReadyEvent) => { setGridApi(params.api); params.api.sizeColumnsToFit(); };
+    const onGridReady = (params: GridReadyEvent) => { 
+        setGridApi(params.api); 
+    };
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -119,7 +121,7 @@ export default function AdminProductsPage() {
                             if (params.data?.isActive === true) return { backgroundColor: '#f0fdf4' };
                             return undefined;
                         }}
-                        suppressHorizontalScroll={true}
+                        suppressHorizontalScroll={false}
                         tooltipShowDelay={300}
                         defaultColDef={{
                             resizable: true,
@@ -128,6 +130,9 @@ export default function AdminProductsPage() {
                             menuTabs: [],
                             suppressMovable: false,
                             cellStyle: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+                        }}
+                        autoSizeStrategy={{
+                            type: 'fitCellContents'
                         }}
                         overlayNoRowsTemplate="<span style='padding:10px;color:#6b7280'>Henuz urun bulunamadi.</span>"
                         overlayLoadingTemplate="<span style='padding:10px;color:#1B5E3F'>Urunler yukleniyor...</span>"

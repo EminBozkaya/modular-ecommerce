@@ -31,16 +31,22 @@ export default function AdminDashboardPage() {
 
     return (
         <div>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <h1 className="text-2xl font-bold" style={{ color: '#1B5E3F' }}>Kontrol Paneli</h1>
 
                 {/* Period Selector */}
-                <div className="flex rounded-lg border border-gray-200 overflow-hidden">
-                    {periodOptions.map((opt) => (
+                <div className="flex flex-wrap rounded-lg border border-gray-200 overflow-hidden w-full sm:w-fit">
+                    {periodOptions.map((opt, index) => (
                         <button
                             key={opt.value}
                             onClick={() => setPeriod(opt.value)}
-                            className="px-3 py-1.5 text-sm font-medium transition-all"
+                            className={`
+                                px-3 py-2 text-sm font-medium transition-all flex-1 min-w-[50%] sm:min-w-0
+                                border-gray-100
+                                ${index % 2 === 0 ? 'border-r' : 'sm:border-r'} 
+                                ${index < 2 ? 'border-b sm:border-b-0' : ''}
+                                last:border-r-0
+                            `}
                             style={{
                                 background: period === opt.value ? '#1B5E3F' : 'white',
                                 color: period === opt.value ? 'white' : '#6b7280',

@@ -64,20 +64,20 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
             floatingFilterComponent: 'entityStatusFloatingFilter',
             suppressHeaderMenuButton: true,
             sortable: true,
-            width: 90,
+            minWidth: 100,
             cellRenderer: (params: ICellRendererParams<AdminUser, boolean>) => {
                 if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmiş</span>;
                 return params.value ? <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span> : <span style={{ color: '#ca8a04', fontWeight: '600' }}>Pasif</span>;
             },
         },
-        { headerName: 'Ad Soyad', field: 'fullName', filter: 'agTextColumnFilter', sortable: true, width: 180, tooltipValueGetter: (p) => p.value ?? '' },
-        { headerName: 'E-posta', field: 'email', filter: 'agTextColumnFilter', sortable: true, width: 220, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'Ad Soyad', field: 'fullName', filter: 'agTextColumnFilter', sortable: true, minWidth: 180, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'E-posta', field: 'email', filter: 'agTextColumnFilter', sortable: true, minWidth: 220, tooltipValueGetter: (p) => p.value ?? '' },
         {
             headerName: 'Rol',
             field: 'role',
             filter: 'agTextColumnFilter',
             sortable: true,
-            width: 110,
+            minWidth: 110,
             cellRenderer: (params: ICellRendererParams<AdminUser, string>) => {
                 if (!params.value) return '';
                 const isAdmin = params.value === 'Admin';
@@ -93,7 +93,7 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
             field: 'isEmailConfirmed',
             filter: 'agTextColumnFilter',
             sortable: true,
-            width: 130,
+            minWidth: 140,
             cellRenderer: (params: ICellRendererParams<AdminUser, boolean>) => {
                 const confirmed = params.value;
                 return (
@@ -112,7 +112,7 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
             sortable: true,
             filter: 'agDateColumnFilter',
             filterParams: { comparator: dateComparator },
-            width: 155,
+            minWidth: 180,
             valueFormatter: (params: ValueFormatterParams<AdminUser, string>) => {
                 if (!params.value) return '';
                 return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(params.value));
@@ -127,7 +127,7 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
             field: 'id',
             sortable: false,
             filter: false,
-            width: 90,
+            minWidth: 100,
             cellRenderer: (params: ICellRendererParams<AdminUser, string>) => {
                 if (!params.data) return null;
                 const isDeleted = params.data.isDeleted;

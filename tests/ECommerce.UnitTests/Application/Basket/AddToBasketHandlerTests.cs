@@ -4,6 +4,7 @@ using ECommerce.Domain.Basket.Entities;
 using ECommerce.Domain.Catalog;
 using ECommerce.Domain.Catalog.Entities;
 using ECommerce.Domain.Catalog.ValueObjects;
+using ECommerce.Domain.Common.Enums;
 using FluentAssertions;
 using NSubstitute;
 
@@ -25,55 +26,46 @@ public class AddToBasketHandlerTests
     [Fact]
     public async Task Handle_ProductNotFound_ThrowsKeyNotFoundException()
     {
-        // Arrange
         _productRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns((Product?)null);
         var cmd = new AddToBasketCommand(null, "session-1", Guid.NewGuid(), 1);
 
-        // Act
         Func<Task> act = async () => await _handler.Handle(cmd, CancellationToken.None);
 
-        // Assert
         await act.Should().ThrowAsync<KeyNotFoundException>().WithMessage("Product not found.");
     }
 
     [Fact]
     public async Task Handle_OutOfStockProduct_ThrowsInvalidOperationException()
     {
-        // Arrange
         var productId = Guid.NewGuid();
-        var product = Product.Create("Out of Stock", null, null, new Money(100, "USD"), new StockQuantity(0), Guid.NewGuid(), Guid.NewGuid());
+        var product = Product.Create("Out of Stock", null, null, new Money(100, Currency.USD), new StockQuantity(0), Guid.NewGuid(), Guid.NewGuid());
         _productRepo.GetByIdAsync(productId, Arg.Any<CancellationToken>()).Returns(product);
         var cmd = new AddToBasketCommand(null, "session-1", productId, 1);
 
-        // Act
         Func<Task> act = async () => await _handler.Handle(cmd, CancellationToken.None);
 
-        // Assert
         await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Product is out of stock.");
     }
 
     [Fact]
     public async Task Handle_NewGuestBasket_CreatesBasketAndAddsItem()
     {
-        // Arrange
         var productId = Guid.NewGuid();
-        var product = Product.Create("Test Product", null, null, new Money(100, "USD"), new StockQuantity(10), Guid.NewGuid(), Guid.NewGuid());
+        var product = Product.Create("Test Product", null, null, new Money(100, Currency.USD), new StockQuantity(10), Guid.NewGuid(), Guid.NewGuid());
         var idProp = typeof(ECommerce.Domain.Common.BaseEntity).GetProperty("Id");
         if (idProp != null) idProp.SetValue(product, productId);
 
         _productRepo.GetByIdAsync(productId, Arg.Any<CancellationToken>())
             .Returns(product);
-        
+
         _basketRepo.GetBySessionIdAsync("session-1", Arg.Any<CancellationToken>())
             .Returns((ECommerce.Domain.Basket.Entities.Basket?)null);
 
         var cmd = new AddToBasketCommand(null, "session-1", productId, 2);
 
-        // Act
         await _handler.Handle(cmd, CancellationToken.None);
 
-        // Assert
         await _basketRepo.Received(1).AddAsync(Arg.Any<ECommerce.Domain.Basket.Entities.Basket>(), Arg.Any<CancellationToken>());
         await _basketRepo.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
@@ -81,27 +73,24 @@ public class AddToBasketHandlerTests
     [Fact]
     public async Task Handle_ExistingUserBasket_AddsItemToBasket()
     {
-        // Arrange
         var userId = Guid.NewGuid();
         var productId = Guid.NewGuid();
         var basket = ECommerce.Domain.Basket.Entities.Basket.CreateForUser(userId);
-        
-        var product = Product.Create("Test Product", null, null, new Money(100, "USD"), new StockQuantity(10), Guid.NewGuid(), Guid.NewGuid());
+
+        var product = Product.Create("Test Product", null, null, new Money(100, Currency.USD), new StockQuantity(10), Guid.NewGuid(), Guid.NewGuid());
         var idProp = typeof(ECommerce.Domain.Common.BaseEntity).GetProperty("Id");
         if (idProp != null) idProp.SetValue(product, productId);
 
         _productRepo.GetByIdAsync(productId, Arg.Any<CancellationToken>())
             .Returns(product);
-        
-        _basketRepo.GetByUserIdAsync(userId, Arg.Any<CancellationToken>())
+
+        _basketRepo.GetByUserIdTrackedAsync(userId, Arg.Any<CancellationToken>())
             .Returns(basket);
 
         var cmd = new AddToBasketCommand(userId, null, productId, 1);
 
-        // Act
         await _handler.Handle(cmd, CancellationToken.None);
 
-        // Assert
         basket.Items.Should().HaveCount(1);
         basket.Items.First().ProductId.Should().Be(productId);
         await _basketRepo.DidNotReceive().AddAsync(Arg.Any<ECommerce.Domain.Basket.Entities.Basket>(), Arg.Any<CancellationToken>());

@@ -1,7 +1,9 @@
 using ECommerce.Application.Common.Interfaces;
 using ECommerce.Domain.Common.Interfaces;
+using ECommerce.Domain.Payment;
 using ECommerce.Infrastructure.Identity;
 using ECommerce.Infrastructure.Payment;
+using ECommerce.Infrastructure.Payment.Providers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,7 +56,23 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IJwtService, JwtService>();
-        services.AddScoped<IPaymentService, StubPaymentService>();
+
+        // Payment — IEnumerable<IPaymentProvider> pattern (no factory needed)
+        services.AddHttpClient("Iyzico").ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(30));
+        services.AddHttpClient("PayTR").ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(30));
+        services.AddHttpClient("PayPal").ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(30));
+
+        services.AddScoped<IPaymentProvider, StubPaymentProvider>();
+        services.AddScoped<IPaymentProvider, IyzicoPaymentProvider>();
+        services.AddScoped<IPaymentProvider, PayTRPaymentProvider>();
+        services.AddScoped<IPaymentProvider, StripePaymentProvider>();
+        services.AddScoped<IPaymentProvider, PayPalPaymentProvider>();
+
+        services.AddScoped<PaymentProviderResolver>();
+
+        // Background jobs
+        services.AddHostedService<PaymentStartupValidator>();
+        services.AddHostedService<PaymentExpirationJob>();
 
         return services;
     }

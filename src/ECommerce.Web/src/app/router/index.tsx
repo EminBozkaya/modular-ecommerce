@@ -23,6 +23,7 @@ const AdminCategoriesPage = lazy(() => import('../../features/admin/categories/p
 const AdminOrderDetailPage = lazy(() => import('../../features/admin/orders/pages/AdminOrderDetailPage'));
 const AdminUsersPage = lazy(() => import('../../features/admin/pages/AdminUsersPage'));
 const FavoritesPage = lazy(() => import('../../features/favorites/pages/FavoritesPage'));
+const PaymentWaitingPage = lazy(() => import('../../features/ordering/pages/PaymentWaitingPage'));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
     <Suspense
@@ -70,6 +71,14 @@ export const router = createBrowserRouter([
                 element: (
                     <SuspenseWrapper>
                         <BasketPage />
+                    </SuspenseWrapper>
+                ),
+            },
+            {
+                path: 'payment/waiting',
+                element: (
+                    <SuspenseWrapper>
+                        <PaymentWaitingPage />
                     </SuspenseWrapper>
                 ),
             },

@@ -74,7 +74,6 @@ export default function AdminOrdersPage() {
 
     const onGridReady = (params: GridReadyEvent) => {
         setGridApi(params.api);
-        params.api.sizeColumnsToFit();
     };
 
     return (
@@ -114,7 +113,7 @@ export default function AdminOrdersPage() {
             <div className="bg-white rounded-xl shadow-sm overflow-x-auto" style={{ border: '1px solid #e5e7eb' }}>
                 <div style={{ minWidth: 'fit-content' }}>
                     <AgGridReact<Order>
-                        suppressHorizontalScroll={true}
+                        suppressHorizontalScroll={false}
                         suppressColumnVirtualisation={true}
                         tooltipShowDelay={300}
                         ref={gridRef}
@@ -142,6 +141,9 @@ export default function AdminOrdersPage() {
                             menuTabs: [],
                             suppressMovable: false,
                             cellStyle: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+                        }}
+                        autoSizeStrategy={{
+                            type: 'fitCellContents'
                         }}
                         overlayNoRowsTemplate="<span style='padding:10px;color:#6b7280'>Henuz siparis bulunamadi.</span>"
                         overlayLoadingTemplate="<span style='padding:10px;color:#1B5E3F'>Siparisler yukleniyor...</span>"

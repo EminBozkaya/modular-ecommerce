@@ -23,6 +23,10 @@ export const queryKeys = {
         items: ['wishlist', 'items'] as const,
         productIds: ['wishlist', 'productIds'] as const,
     },
+    payment: {
+        providers: ['payment', 'providers'] as const,
+        returnStatus: (orderId: string) => ['payment', 'returnStatus', orderId] as const,
+    },
     admin: {
         dashboard: {
             summary: (period: string) => ['admin', 'dashboard', 'summary', period] as const,

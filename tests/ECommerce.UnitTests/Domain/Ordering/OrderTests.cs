@@ -1,4 +1,5 @@
 using ECommerce.Domain.Catalog.ValueObjects;
+using ECommerce.Domain.Common.Enums;
 using ECommerce.Domain.Ordering.Entities;
 using ECommerce.Domain.Ordering.Enums;
 using FluentAssertions;
@@ -10,7 +11,7 @@ public class OrderTests
     private readonly string _shippingAddress = "123 Main St, Anytown";
     private readonly List<OrderItem> _validItems =
     [
-        OrderItem.Create(Guid.NewGuid(), "Product A", new Money(50, "USD"), 2) // 100 USD
+        OrderItem.Create(Guid.NewGuid(), "Product A", new Money(50, Currency.USD), 2) // 100 USD
     ];
 
     [Fact]

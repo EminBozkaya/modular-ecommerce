@@ -30,7 +30,7 @@ public class GetDashboardSummaryHandler : IRequestHandler<GetDashboardSummaryQue
             .Where(o => o.Status != Domain.Ordering.Enums.OrderStatus.Cancelled)
             .Sum(o => o.Total.Amount);
 
-        var revenueCurrency = allOrders.FirstOrDefault()?.Total.Currency ?? "TRY";
+        var revenueCurrency = allOrders.FirstOrDefault()?.Total.Currency.ToString() ?? "TRY";
         var lowStockCount = allProducts.Count(p => p.Stock.Value <= 5);
 
         return new DashboardSummaryDto(
@@ -76,7 +76,7 @@ public class GetRecentOrdersHandler : IRequestHandler<GetRecentOrdersQuery, IRea
         var (orders, _) = await _orders.GetPagedAsync(null, 1, q.Count, ct);
         return orders.Select(o => new OrderDto(
             o.Id, o.OrderNumber, o.Status.ToString(),
-            o.Total.Amount, o.Total.Currency, ShippingAddressParser.Parse(o.ShippingAddress), o.CreatedAt,
+            o.Total.Amount, o.Total.Currency.ToString(), ShippingAddressParser.Parse(o.ShippingAddress), o.CreatedAt,
             o.Items.Select(i => new OrderItemDto(
                 i.ProductId, i.ProductName,
                 i.UnitPrice.Amount, i.Quantity, i.LineTotal.Amount)).ToList())).ToList();
@@ -98,7 +98,7 @@ public class GetLowStockProductsHandler : IRequestHandler<GetLowStockProductsQue
             .OrderBy(p => p.Stock.Value)
             .Select(p => new ProductDto(
                 p.Id, p.Name, p.Description, p.ImageUrl,
-                p.Price.Amount, p.Price.Currency,
+                p.Price.Amount, p.Price.Currency.ToString(),
                 p.Stock.Value, p.IsActive,
                 p.CategoryId, p.Category?.Name,
                 p.UnitId, p.Unit?.Name,

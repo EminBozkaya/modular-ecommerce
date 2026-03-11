@@ -1,88 +1,76 @@
-import { useState, useCallback, useRef } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import { createOrder, processPayment } from '../api/orderingApi';
-import { queryKeys } from '../../../utils/queryKeys';
+import { useState, useCallback } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { createOrder } from '../api/orderingApi';
+import { initializePayment } from '../api/paymentApi';
+import { generateIdempotencyKey } from '../../../utils/idempotency';
 import type { ShippingAddress, CreateOrderResponse } from '../types/order';
-import type { PaymentRequest, PaymentResponse } from '../types/payment';
+import type { InitializePaymentRequest, InitializePaymentResponse } from '../types/payment';
 import type { ApiError } from '../../../api/errorHandling';
 
-type CheckoutStep = 'idle' | 'creating_order' | 'processing_payment' | 'success' | 'error';
-
-interface PaymentData {
-    cardHolderName: string;
-    cardNumber: string;
-    expiryMonth: string;
-    expiryYear: string;
-    cvv: string;
-}
+type CheckoutStep = 'idle' | 'creating_order' | 'redirecting' | 'error';
 
 export function useCheckout() {
-    const queryClient = useQueryClient();
-    const navigate = useNavigate();
     const [step, setStep] = useState<CheckoutStep>('idle');
     const [error, setError] = useState<string | null>(null);
-    const navigatedRef = useRef(false);
 
     const createOrderMutation = useMutation<CreateOrderResponse, ApiError, ShippingAddress>({
         mutationFn: (shippingAddress) => createOrder({ shippingAddress }),
     });
 
-    const processPaymentMutation = useMutation<PaymentResponse, ApiError, PaymentRequest>({
-        mutationFn: (paymentReq) => processPayment(paymentReq),
+    const initializePaymentMutation = useMutation<
+        InitializePaymentResponse,
+        ApiError,
+        InitializePaymentRequest
+    >({
+        mutationFn: (req) => initializePayment(req),
     });
 
     const submitCheckout = useCallback(
         async (
             shippingAddress: ShippingAddress,
-            paymentData: PaymentData,
+            providerName: string,
             idempotencyKey: string,
         ): Promise<boolean> => {
             setStep('creating_order');
             setError(null);
-            navigatedRef.current = false;
 
             try {
                 const orderResponse = await createOrderMutation.mutateAsync(shippingAddress);
 
-                setStep('processing_payment');
+                setStep('redirecting');
 
-                const paymentRequest: PaymentRequest = {
+                const paymentReq: InitializePaymentRequest = {
                     orderId: orderResponse.orderId,
+                    providerName,
                     idempotencyKey,
-                    cardHolderName: paymentData.cardHolderName,
-                    cardNumber: paymentData.cardNumber.replace(/\s/g, ''),
-                    expiryMonth: paymentData.expiryMonth,
-                    expiryYear: paymentData.expiryYear,
-                    cvv: paymentData.cvv,
+                    returnUrl: `${window.location.origin}/payment/waiting`,
                 };
 
-                await processPaymentMutation.mutateAsync(paymentRequest);
+                const paymentResponse = await initializePaymentMutation.mutateAsync(paymentReq);
 
-                setStep('success');
+                if (!paymentResponse.isSuccess || !paymentResponse.redirectUrl) {
+                    throw new Error(paymentResponse.errorMessage ?? 'Ödeme başlatılamadı.');
+                }
 
-                queryClient.invalidateQueries({ queryKey: queryKeys.basket.current });
-                queryClient.invalidateQueries({ queryKey: queryKeys.orders.all });
-
-                navigatedRef.current = true;
-                navigate(`/orders/${orderResponse.orderId}/confirmation`);
+                window.location.href = paymentResponse.redirectUrl;
                 return true;
             } catch (err: unknown) {
                 setStep('error');
                 const apiErr = err as ApiError;
-                setError(apiErr?.message || 'An unexpected error occurred. Please try again.');
+                setError(apiErr?.message ?? 'Bir hata oluştu, lütfen tekrar deneyin.');
                 return false;
             }
         },
-        [createOrderMutation, processPaymentMutation, queryClient, navigate],
+        [createOrderMutation, initializePaymentMutation],
     );
 
-    const isLoading = step === 'creating_order' || step === 'processing_payment';
+    const isLoading = step === 'creating_order' || step === 'redirecting';
 
     return {
         submitCheckout,
         isLoading,
         error,
         step,
+        generateNewKey: generateIdempotencyKey,
     };
 }

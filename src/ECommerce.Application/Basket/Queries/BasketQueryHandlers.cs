@@ -30,13 +30,13 @@ public class GetBasketHandler : IRequestHandler<GetBasketQuery, BasketDto?>
                 i.ProductId,
                 i.ProductName,
                 i.UnitPriceSnapshot.Amount,
-                i.UnitPriceSnapshot.Currency,
+                i.UnitPriceSnapshot.Currency.ToString(),
                 i.Quantity,
                 i.LineTotalSnapshot.Amount,
                 product?.ImageUrl,
                 product?.Unit?.Name));
         }
 
-        return new BasketDto(basket.Id, itemDtos, basket.Total.Amount, basket.Total.Currency);
+        return new BasketDto(basket.Id, itemDtos, basket.Total.Amount, basket.Total.Currency.ToString());
     }
 }

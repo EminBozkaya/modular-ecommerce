@@ -31,7 +31,7 @@ public class GetWishlistHandler : IRequestHandler<GetWishlistQuery, IReadOnlyLis
                 product.Id,
                 product.Name,
                 product.Price.Amount,
-                product.Price.Currency,
+                product.Price.Currency.ToString(),
                 product.ImageUrl,
                 product.Category?.Name ?? "",
                 product.Stock.Value,

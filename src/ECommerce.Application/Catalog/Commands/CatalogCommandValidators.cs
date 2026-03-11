@@ -25,6 +25,35 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
     }
 }
 
+public class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommand>
+{
+    public UpdateProductCommandValidator()
+    {
+        RuleFor(x => x.Id).NotEqual(Guid.Empty);
+        RuleFor(x => x.Name).NotEmpty().MinimumLength(2).MaximumLength(100);
+        RuleFor(x => x.Price).GreaterThan(0);
+        RuleFor(x => x.CategoryId).NotEqual(Guid.Empty);
+        RuleFor(x => x.UnitId).NotEqual(Guid.Empty);
+    }
+}
+
+public class DeleteProductCommandValidator : AbstractValidator<DeleteProductCommand>
+{
+    public DeleteProductCommandValidator()
+    {
+        RuleFor(x => x.Id).NotEqual(Guid.Empty);
+    }
+}
+
+public class UpdateStockCommandValidator : AbstractValidator<UpdateStockCommand>
+{
+    public UpdateStockCommandValidator()
+    {
+        RuleFor(x => x.ProductId).NotEqual(Guid.Empty);
+        RuleFor(x => x.NewQuantity).GreaterThanOrEqualTo(0);
+    }
+}
+
 public class CreateCategoryCommandValidator : AbstractValidator<CreateCategoryCommand>
 {
     public CreateCategoryCommandValidator()
@@ -33,5 +62,22 @@ public class CreateCategoryCommandValidator : AbstractValidator<CreateCategoryCo
             .NotEmpty()
             .MinimumLength(2)
             .MaximumLength(50);
+    }
+}
+
+public class UpdateCategoryCommandValidator : AbstractValidator<UpdateCategoryCommand>
+{
+    public UpdateCategoryCommandValidator()
+    {
+        RuleFor(x => x.Id).NotEqual(Guid.Empty);
+        RuleFor(x => x.Name).NotEmpty().MinimumLength(2).MaximumLength(50);
+    }
+}
+
+public class DeleteCategoryCommandValidator : AbstractValidator<DeleteCategoryCommand>
+{
+    public DeleteCategoryCommandValidator()
+    {
+        RuleFor(x => x.Id).NotEqual(Guid.Empty);
     }
 }
