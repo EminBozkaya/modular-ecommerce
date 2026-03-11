@@ -40,7 +40,10 @@ export function AppHeader() {
     return (
         <>
             {/* ── Top Row — normal flow, scrolls away with the page ──────────── */}
-            <header ref={headerRef} className="relative z-[51] bg-[#FDF6EE]">
+            <header
+                ref={headerRef}
+                className="relative z-[51] bg-[#FDF6EE]"
+            >
                 <div className="w-full px-4 sm:px-6 lg:px-10 pt-1 lg:pt-0 pb-1 lg:pb-0">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-8 min-h-[70px] lg:min-h-[85px]">
 

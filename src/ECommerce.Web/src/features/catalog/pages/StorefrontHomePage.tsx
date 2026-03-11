@@ -88,7 +88,7 @@ export default function StorefrontHomePage() {
             </section>
 
             {/* ========== MAIN CATEGORIES ========== */}
-            <section className="py-12 bg-[#FDF6EE]" id="main-categories">
+            <section className="py-12 bg-transparent" id="main-categories">
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {mainCategories.map((category) => (
@@ -117,7 +117,7 @@ export default function StorefrontHomePage() {
             </section>
 
             {/* ========== FEATURED PRODUCTS GRID ========== */}
-            <section className="py-8 bg-[#FDF6EE]" id="featured-products">
+            <section className="py-8 bg-transparent" id="featured-products">
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* This Week's Special - Large Card */}
@@ -264,7 +264,7 @@ export default function StorefrontHomePage() {
             </section>
 
             {/* ========== NEWS & TIPS ========== */}
-            <section className="py-16 bg-[#FDF6EE]" id="news-tips">
+            <section className="py-16 bg-transparent" id="news-tips">
                 <div className="container mx-auto px-4">
                     <h2 className="text-2xl font-serif font-bold text-center mb-8 text-foreground">
                         HABERLER & İPUÇLARI
@@ -298,7 +298,7 @@ export default function StorefrontHomePage() {
             </section>
 
             {/* ========== TESTIMONIALS ========== */}
-            <section className="py-16 bg-[#FDF6EE]" id="testimonials">
+            <section className="py-16 bg-transparent" id="testimonials">
                 <div className="container mx-auto px-4">
                     <h2 className="text-2xl font-serif font-bold text-center mb-12 text-foreground">
                         MÜŞTERİLERİMİZ NE DİYOR?

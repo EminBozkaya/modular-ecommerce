@@ -8,26 +8,33 @@ import {
     Instagram,
 } from 'lucide-react';
 import { AppHeader } from './header/AppHeader';
+import bgPattern from '@/assets/background-pattern_2.jpg';
 
 export function MainLayout() {
     return (
-        <div className="min-h-screen bg-[#FDF6EE] flex flex-col">
+        <div className="relative min-h-screen flex flex-col bg-[#FDF6EE]">
+            {/* Background pattern layer — opacity only affects the image */}
+            <div
+                className="fixed inset-0 bg-cover bg-center bg-fixed opacity-20 pointer-events-none z-0"
+                style={{ backgroundImage: `url(${bgPattern})` }}
+            />
+
             <AppHeader />
 
             {/* Free Shipping Banner */}
-            <div className="bg-[var(--color-ebrar-green)] py-2">
+            <div className="relative z-10 bg-[var(--color-ebrar-green)] py-2">
                 <p className="text-center text-sm font-medium text-white tracking-wide">
                     1000TL UZERI SIPARISLERDE KARGO BEDAVA!
                 </p>
             </div>
 
             {/* Main Content */}
-            <main className="flex-1">
+            <main className="relative z-10 flex-1">
                 <Outlet />
             </main>
 
             {/* Footer */}
-            <footer className="bg-[var(--color-ebrar-green)] text-white">
+            <footer className="relative z-10 bg-[var(--color-ebrar-green)] text-white">
                 <div className="container mx-auto px-4 py-12">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 max-w-5xl mx-auto text-center lg:text-left">
                         <div>
