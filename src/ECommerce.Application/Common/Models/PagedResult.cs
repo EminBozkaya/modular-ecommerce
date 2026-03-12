@@ -11,12 +11,12 @@ public class PagedResult<T>
     public bool HasPreviousPage => Page > 1;
     public bool HasNextPage => Page < TotalPages;
 
-    public PagedResult(IReadOnlyList<T> items, int count, int page, int pageSize)
+    public PagedResult(IReadOnlyList<T> items, int totalCount, int page, int pageSize)
     {
         Page = page;
         PageSize = pageSize;
-        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-        TotalCount = count;
+        TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+        TotalCount = totalCount;
         Items = items;
     }
 }
