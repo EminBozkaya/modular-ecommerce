@@ -1,31 +1,52 @@
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
 import { useRegister } from '@/features/auth/hooks/useRegister';
+import { registerSchema, type RegisterFormData } from '@/lib/validations/auth.schema';
+import { applyServerErrors } from '@/utils/formErrors';
+import logoImg from '@/assets/ebrar-logo.png';
 
 export default function RegisterPage() {
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [clientError, setClientError] = useState('');
+    const { mutate: register, isPending } = useRegister();
 
-    const { mutate: register, isPending, error } = useRegister();
+    const {
+        register: rhfRegister,
+        handleSubmit,
+        setError,
+        formState: { errors },
+    } = useForm<RegisterFormData>({
+        resolver: zodResolver(registerSchema),
+    });
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        setClientError('');
-
-        if (password !== confirmPassword) {
-            setClientError('Passwords do not match');
-            return;
-        }
-
-        register({ firstName, lastName, email, password, confirmPassword });
+    const onSubmit = (data: RegisterFormData) => {
+        // confirmPassword backend'e gönderilmiyor
+        const { confirmPassword: _, ...rest } = data;
+        register(
+            {
+                firstName: rest.firstName,
+                lastName: rest.lastName,
+                email: rest.email,
+                password: rest.password,
+                confirmPassword: data.confirmPassword,
+            },
+            {
+                onError: (error) => {
+                    applyServerErrors(error, setError);
+                },
+            },
+        );
     };
 
     return (
-        <div className="flex min-h-[80vh] items-center justify-center p-4">
+        <div className="flex min-h-screen flex-col items-center justify-center p-4">
+            <Link to="/" className="mb-8 block transition-transform hover:scale-105 duration-300">
+                <img
+                    src={logoImg}
+                    alt="Ebrar Kuruyemiş"
+                    className="h-24 sm:h-32 w-auto object-contain"
+                />
+            </Link>
+
             <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 shadow-2xl shadow-black/5 border border-gray-100 relative overflow-hidden">
                 {/* Decorative background element */}
                 <div className="absolute top-0 left-0 -mt-4 -ml-4 h-24 w-24 rounded-full bg-[var(--color-ebrar-green)]/10 blur-3xl" />
@@ -71,119 +92,106 @@ export default function RegisterPage() {
                         </div>
                     </div>
 
-                    <form className="space-y-4" onSubmit={handleSubmit}>
-                        {(clientError || error?.message) && (
+                    <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+                        {/* Genel sunucu hatası */}
+                        {errors.root && (
                             <div className="rounded-xl bg-red-50 p-4 border border-red-100">
-                                <div className="text-xs font-bold text-red-700">
-                                    {clientError || (error?.status === 400 ? 'Lütfen bilgilerinizi kontrol edin.' : error?.message)}
-                                </div>
+                                <div className="text-xs font-bold text-red-700">{errors.root.message}</div>
                             </div>
                         )}
 
                         <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label htmlFor="firstName" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
+                                    <label htmlFor="reg-firstName" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
                                         Ad
                                     </label>
                                     <input
-                                        id="firstName"
-                                        name="firstName"
+                                        id="reg-firstName"
                                         type="text"
                                         autoComplete="given-name"
-                                        required
-                                        value={firstName}
-                                        onChange={(e) => setFirstName(e.target.value)}
-                                        className="block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
+                                        {...rhfRegister('firstName')}
+                                        className={`block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all ${errors.firstName ? 'ring-red-400' : 'ring-gray-200'}`}
                                         placeholder="Ali"
                                     />
-                                    {(error?.errors?.firstName || error?.errors?.FirstName) && (
-                                        <p className="mt-2 text-xs font-bold text-red-600 ml-1">{(error.errors.firstName || error.errors.FirstName)[0]}</p>
+                                    {errors.firstName && (
+                                        <p className="mt-2 text-xs font-bold text-red-600 ml-1" role="alert">{errors.firstName.message}</p>
                                     )}
                                 </div>
 
                                 <div>
-                                    <label htmlFor="lastName" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
+                                    <label htmlFor="reg-lastName" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
                                         Soyad
                                     </label>
                                     <input
-                                        id="lastName"
-                                        name="lastName"
+                                        id="reg-lastName"
                                         type="text"
                                         autoComplete="family-name"
-                                        required
-                                        value={lastName}
-                                        onChange={(e) => setLastName(e.target.value)}
-                                        className="block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
+                                        {...rhfRegister('lastName')}
+                                        className={`block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all ${errors.lastName ? 'ring-red-400' : 'ring-gray-200'}`}
                                         placeholder="Yılmaz"
                                     />
-                                    {(error?.errors?.lastName || error?.errors?.LastName) && (
-                                        <p className="mt-2 text-xs font-bold text-red-600 ml-1">{(error.errors.lastName || error.errors.LastName)[0]}</p>
+                                    {errors.lastName && (
+                                        <p className="mt-2 text-xs font-bold text-red-600 ml-1" role="alert">{errors.lastName.message}</p>
                                     )}
                                 </div>
                             </div>
 
                             <div>
-                                <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
+                                <label htmlFor="reg-email" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
                                     E-posta Adresi
                                 </label>
                                 <input
-                                    id="email"
-                                    name="email"
+                                    id="reg-email"
                                     type="email"
                                     autoComplete="email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
+                                    {...rhfRegister('email')}
+                                    className={`block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all ${errors.email ? 'ring-red-400' : 'ring-gray-200'}`}
                                     placeholder="ornek@ebrahim.com"
                                 />
-                                {(error?.errors?.email || error?.errors?.Email) && (
-                                    <p className="mt-2 text-xs font-bold text-red-600 ml-1">{(error.errors.email || error.errors.Email)[0]}</p>
+                                {errors.email && (
+                                    <p className="mt-2 text-xs font-bold text-red-600 ml-1" role="alert">{errors.email.message}</p>
                                 )}
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
+                                    <label htmlFor="reg-password" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
                                         Şifre
                                     </label>
                                     <input
-                                        id="password"
-                                        name="password"
+                                        id="reg-password"
                                         type="password"
                                         autoComplete="new-password"
-                                        required
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className="block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
+                                        {...rhfRegister('password')}
+                                        className={`block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all ${errors.password ? 'ring-red-400' : 'ring-gray-200'}`}
                                         placeholder="••••••••"
                                     />
+                                    {errors.password && (
+                                        <p className="mt-2 text-xs font-bold text-red-600 ml-1" role="alert">{errors.password.message}</p>
+                                    )}
                                 </div>
 
                                 <div>
-                                    <label htmlFor="confirmPassword" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
+                                    <label htmlFor="reg-confirmPassword" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
                                         Şifre Tekrar
                                     </label>
                                     <input
-                                        id="confirmPassword"
-                                        name="confirmPassword"
+                                        id="reg-confirmPassword"
                                         type="password"
                                         autoComplete="new-password"
-                                        required
-                                        value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                        className="block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
+                                        {...rhfRegister('confirmPassword')}
+                                        className={`block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all ${errors.confirmPassword ? 'ring-red-400' : 'ring-gray-200'}`}
                                         placeholder="••••••••"
                                     />
+                                    {errors.confirmPassword && (
+                                        <p className="mt-2 text-xs font-bold text-red-600 ml-1" role="alert">{errors.confirmPassword.message}</p>
+                                    )}
                                 </div>
                             </div>
-                            {error?.errors?.Password || error?.errors?.password ? (
-                                <p className="mt-1 text-xs font-bold text-red-600 ml-1">{(error.errors.Password || error.errors.password)[0]}</p>
-                            ) : null}
                         </div>
 
-                        <div className="pt-2">
+                        <div className="pt-2 space-y-3">
                             <button
                                 type="submit"
                                 disabled={isPending}
@@ -191,6 +199,13 @@ export default function RegisterPage() {
                             >
                                 {isPending ? 'Hesap Oluşturuluyor...' : 'Hesap Oluştur'}
                             </button>
+
+                            <Link
+                                to="/"
+                                className="flex w-full justify-center rounded-xl bg-gray-50 px-4 py-3 text-sm font-bold text-gray-600 border border-gray-100 hover:bg-gray-100 transition-all active:scale-[0.98] text-center"
+                            >
+                                Misafir Olarak Devam Et
+                            </Link>
                         </div>
                     </form>
                 </div>

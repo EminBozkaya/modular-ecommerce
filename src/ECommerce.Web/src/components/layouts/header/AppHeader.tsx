@@ -13,7 +13,7 @@ import { useCategories } from '@/features/catalog/hooks/useCategories';
 export function AppHeader() {
     const { isAuthenticated, isAuthLoading } = useAuthStore();
     const { data: categories, isLoading: isCategoriesLoading } = useCategories({ onlyMain: true });
-    
+
     const headerRef = useRef<HTMLElement>(null);
     const [isStuck, setIsStuck] = useState(false);
 
@@ -35,7 +35,7 @@ export function AppHeader() {
             {/* ── Top Row — normal flow, scrolls away with the page ──────────── */}
             <header
                 ref={headerRef}
-                className="relative z-[51] bg-[#FDF6EE]"
+                className="relative z-[51] bg-[#F5FFEA]"
             >
                 <div className="w-full px-4 sm:px-6 lg:px-10 pt-1 lg:pt-0 pb-1 lg:pb-0">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-8 min-h-[70px] lg:min-h-[85px]">
@@ -98,7 +98,7 @@ export function AppHeader() {
                 className={[
                     'sticky top-0 z-50 w-full shadow-sm',
                     'transition-all duration-300 ease-in-out',
-                    isStuck ? 'bg-[var(--color-ebrar-green)]' : 'bg-[#FDF6EE]',
+                    isStuck ? 'bg-[var(--color-ebrar-green)]' : 'bg-[#F5FFEA]',
                 ].join(' ')}
             >
                 <div className={[

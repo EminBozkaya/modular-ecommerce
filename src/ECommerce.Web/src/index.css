@@ -113,12 +113,12 @@ body {
   font-family: var(--font-sans);
 }
 
-/* ── AG Grid Ebrar Green Theme ── */
+  /* ── AG Grid Ebrar Green Theme ── */
 .ag-theme-alpine,
 .ag-root-wrapper {
   --ag-alpine-active-color: #1B5E3F;
-  --ag-selected-row-background-color: #ecfdf5;
-  --ag-row-hover-color: #f0fdf4;
+  --ag-selected-row-background-color: #cbd5e1; /* Selection Gray (Slate 300) */
+  --ag-row-hover-color: #e2e8f0; /* Hover Gray (Slate 200) */
   --ag-header-background-color: #f8faf9;
   --ag-header-foreground-color: #1B5E3F;
   --ag-border-color: #e5e7eb;
@@ -127,6 +127,65 @@ body {
   --ag-range-selection-border-color: #1B5E3F;
   --ag-checkbox-checked-color: #1B5E3F;
   --ag-input-focus-border-color: #1B5E3F;
+}
+
+/* Fix browser default selection highlight to Ebrar Green */
+.ag-theme-alpine ::selection {
+  background-color: #16a34a !important;
+  color: white !important;
+}
+
+/* Row selection styles */
+.ag-row {
+  transition: background-color 0.2s;
+}
+
+/* Custom Mobile Detail Row Styles */
+.mobile-detail-card {
+  padding: 12px 16px;
+  background: white !important;
+  border-bottom: 2px solid #1B5E3F;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+.ag-full-width-row {
+  background-color: white !important;
+  z-index: 5;
+}
+
+.mobile-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mobile-detail-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1B5E3F;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mobile-detail-value {
+  font-size: 14px;
+  color: #374151;
+  word-break: break-word;
+  white-space: normal;
+}
+
+/* Force selection color to override getRowStyle inline backgrounds */
+.ag-row-selected {
+  background-color: var(--ag-selected-row-background-color) !important;
+}
+
+.ag-row-selected::before {
+  background-color: var(--ag-selected-row-background-color) !important;
 }
 
 .ag-header-cell-text {

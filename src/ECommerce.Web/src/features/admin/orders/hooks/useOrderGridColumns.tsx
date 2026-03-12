@@ -136,7 +136,6 @@ export function useOrderGridColumns({
             filter: 'agTextColumnFilter',
             sortable: true,
             minWidth: 130,
-            tooltipValueGetter: (params) => params.value ?? '',
             cellRenderer: (params: ICellRendererParams<Order, string>) => {
                 if (!params.value) return '';
                 return (
@@ -152,7 +151,6 @@ export function useOrderGridColumns({
             filter: 'agTextColumnFilter',
             sortable: true,
             minWidth: 160,
-            tooltipValueGetter: (params) => params.value ?? '',
         },
         {
             headerName: 'Ürün Sayısı',
@@ -163,7 +161,6 @@ export function useOrderGridColumns({
             filter: 'agNumberColumnFilter',
             sortable: true,
             minWidth: 110,
-            tooltipValueGetter: (params) => params.value != null ? String(params.value) : '',
         },
         {
             headerName: 'Tutar (TL)',
@@ -173,8 +170,6 @@ export function useOrderGridColumns({
             minWidth: 110,
             valueFormatter: (params) =>
                 params.value != null ? `TL${Number(params.value).toFixed(2)}` : '',
-            tooltipValueGetter: (params) =>
-                params.value != null ? `TL${Number(params.value).toFixed(2)}` : '',
         },
         {
             headerName: 'Şehir',
@@ -182,7 +177,6 @@ export function useOrderGridColumns({
             filter: 'agTextColumnFilter',
             sortable: true,
             minWidth: 110,
-            tooltipValueGetter: (params) => params.value ?? '',
         },
         {
             headerName: 'Ürünler',
@@ -193,7 +187,6 @@ export function useOrderGridColumns({
             filter: 'agTextColumnFilter',
             sortable: true,
             minWidth: 200,
-            tooltipValueGetter: (params) => params.value ?? '',
         },
         {
             headerName: 'Sipariş Tarihi',
@@ -208,13 +201,6 @@ export function useOrderGridColumns({
                     year: 'numeric', month: '2-digit', day: '2-digit',
                     hour: '2-digit', minute: '2-digit',
                 }).format(new Date(params.value));
-            },
-            tooltipValueGetter: (params) => {
-                if (!params.value) return '';
-                return new Intl.DateTimeFormat('tr-TR', {
-                    year: 'numeric', month: '2-digit', day: '2-digit',
-                    hour: '2-digit', minute: '2-digit',
-                }).format(new Date(params.value as string));
             },
         },
         {

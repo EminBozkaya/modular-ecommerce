@@ -1,20 +1,41 @@
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
 import { useLogin } from '@/features/auth/hooks/useLogin';
+import { loginSchema, type LoginFormData } from '@/lib/validations/auth.schema';
+import { applyServerErrors } from '@/utils/formErrors';
+import logoImg from '@/assets/ebrar-logo.png';
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const { mutate: login, isPending } = useLogin();
 
-    const { mutate: login, isPending, error } = useLogin();
+    const {
+        register,
+        handleSubmit,
+        setError,
+        formState: { errors },
+    } = useForm<LoginFormData>({
+        resolver: zodResolver(loginSchema),
+    });
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        login({ email, password });
+    const onSubmit = (data: LoginFormData) => {
+        login(data, {
+            onError: (error) => {
+                applyServerErrors(error, setError);
+            },
+        });
     };
 
     return (
-        <div className="flex min-h-[80vh] items-center justify-center p-4">
+        <div className="flex min-h-screen flex-col items-center justify-center p-4">
+            <Link to="/" className="mb-8 block transition-transform hover:scale-105 duration-300">
+                <img
+                    src={logoImg}
+                    alt="Ebrar Kuruyemiş"
+                    className="h-24 sm:h-32 w-auto object-contain"
+                />
+            </Link>
+
             <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 shadow-2xl shadow-black/5 border border-gray-100 relative overflow-hidden">
                 {/* Decorative background element */}
                 <div className="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 rounded-full bg-[var(--color-ebrar-green)]/10 blur-3xl" />
@@ -60,56 +81,51 @@ export default function LoginPage() {
                         </div>
                     </div>
 
-                    <form className="space-y-4" onSubmit={handleSubmit}>
-                        {error?.message && (
+                    <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+                        {/* Genel sunucu hatası */}
+                        {errors.root && (
                             <div className="rounded-xl bg-red-50 p-4 border border-red-100">
-                                <div className="text-xs font-bold text-red-700">{error.message}</div>
+                                <div className="text-xs font-bold text-red-700">{errors.root.message}</div>
                             </div>
                         )}
 
                         <div className="space-y-4">
                             <div>
-                                <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
+                                <label htmlFor="login-email" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
                                     E-posta Adresi
                                 </label>
                                 <input
-                                    id="email"
-                                    name="email"
+                                    id="login-email"
                                     type="email"
                                     autoComplete="email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="block w-full rounded-xl border-0 py-3 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
+                                    {...register('email')}
+                                    className={`block w-full rounded-xl border-0 py-3 text-gray-900 bg-white ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all ${errors.email ? 'ring-red-400 focus:ring-red-500' : 'ring-gray-200'}`}
                                     placeholder="ornek@ebrahim.com"
                                 />
-                                {error?.errors?.Email?.[0] && (
-                                    <p className="mt-2 text-xs font-bold text-red-600 ml-1">{error.errors.Email[0]}</p>
+                                {errors.email && (
+                                    <p className="mt-2 text-xs font-bold text-red-600 ml-1" role="alert">{errors.email.message}</p>
                                 )}
                             </div>
 
                             <div>
-                                <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
+                                <label htmlFor="login-password" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
                                     Şifre
                                 </label>
                                 <input
-                                    id="password"
-                                    name="password"
+                                    id="login-password"
                                     type="password"
                                     autoComplete="current-password"
-                                    required
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="block w-full rounded-xl border-0 py-3 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
+                                    {...register('password')}
+                                    className={`block w-full rounded-xl border-0 py-3 text-gray-900 bg-white ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all ${errors.password ? 'ring-red-400 focus:ring-red-500' : 'ring-gray-200'}`}
                                     placeholder="••••••••"
                                 />
-                                {error?.errors?.Password?.[0] && (
-                                    <p className="mt-2 text-xs font-bold text-red-600 ml-1">{error.errors.Password[0]}</p>
+                                {errors.password && (
+                                    <p className="mt-2 text-xs font-bold text-red-600 ml-1" role="alert">{errors.password.message}</p>
                                 )}
                             </div>
                         </div>
 
-                        <div className="pt-2">
+                        <div className="pt-2 space-y-3">
                             <button
                                 type="submit"
                                 disabled={isPending}
@@ -117,6 +133,13 @@ export default function LoginPage() {
                             >
                                 {isPending ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
                             </button>
+
+                            <Link
+                                to="/"
+                                className="flex w-full justify-center rounded-xl bg-gray-50 px-4 py-3 text-sm font-bold text-gray-600 border border-gray-100 hover:bg-gray-100 transition-all active:scale-[0.98] text-center"
+                            >
+                                Misafir Olarak Devam Et
+                            </Link>
                         </div>
                     </form>
                 </div>

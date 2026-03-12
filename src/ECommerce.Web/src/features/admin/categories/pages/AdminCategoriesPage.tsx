@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
-import { type GridReadyEvent, type GridApi, ModuleRegistry, ClientSideRowModelModule, TextFilterModule, PaginationModule, ValidationModule, ColumnAutoSizeModule, RowApiModule, CellStyleModule, RowSelectionModule, RowStyleModule, DateFilterModule, LocaleModule, CustomFilterModule, TooltipModule } from 'ag-grid-community';
-import { FolderPlus, FolderTree } from 'lucide-react';
+import { type GridReadyEvent, type GridApi, ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
+import { FolderPlus, FolderTree, ChevronRight, ChevronDown } from 'lucide-react';
 import { getCategories, getProducts } from '../../../catalog/api/catalogApi';
 import type { Category, Product } from '../../../catalog/types/product';
 import type { CategoryFormData } from '../components/CategoryFormModal';
@@ -14,7 +14,7 @@ import { useCategoryActions, defaultModalSettings, type ModalSettings } from '..
 import { exportCategoriesToExcel, exportCategoriesToPDF } from '../utils/categoryExport';
 import excelIcon from '../../../../assets/excel_download_icon.png';
 import pdfIcon from '../../../../assets/pdf_download_icon.png';
-ModuleRegistry.registerModules([ClientSideRowModelModule, TextFilterModule, PaginationModule, ValidationModule, ColumnAutoSizeModule, RowApiModule, CellStyleModule, RowSelectionModule, RowStyleModule, DateFilterModule, LocaleModule, CustomFilterModule, TooltipModule]);
+ModuleRegistry.registerModules([AllCommunityModule]);
 export default function AdminCategoriesPage() {
     const gridRef = useRef<AgGridReact>(null);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -26,6 +26,23 @@ export default function AdminCategoriesPage() {
     const [gridApi, setGridApi] = useState<GridApi | null>(null);
     const [deleting, setDeleting] = useState(false);
     const [modalSettings, setModalSettings] = useState<ModalSettings>(defaultModalSettings);
+    const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+    const [isMobile, setIsMobile] = useState(false);
+    const isDragging = useRef(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    useEffect(() => {
+        const handleMouseUp = () => { isDragging.current = false; };
+        window.addEventListener('mouseup', handleMouseUp);
+        return () => window.removeEventListener('mouseup', handleMouseUp);
+    }, []);
+
     const gridComponents = useMemo(() => ({ agDateInput: AgGridDatePicker, entityStatusFilter: EntityStatusFilter, entityStatusFloatingFilter: EntityStatusFloatingFilter }), []);
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -41,7 +58,87 @@ export default function AdminCategoriesPage() {
     }, []);
     useEffect(() => { fetchData(); }, [fetchData]);
     const { handleEdit, handleDelete, handleRestore, handleConfirmDelete, handleFormSubmit } = useCategoryActions({ categories, products, setModalSettings, setModalOpen, setEditingCategory, setDeleting, setSaving, fetchData });
-    const columnDefs = useCategoryGridColumns({ onEdit: handleEdit, onDelete: handleDelete, onRestore: handleRestore });
+    
+    const baseColumnDefs = useCategoryGridColumns({ onEdit: handleEdit, onDelete: handleDelete, onRestore: handleRestore });
+    
+    const columnDefs = useMemo(() => {
+        if (!isMobile) return baseColumnDefs;
+        const expandCol: any = {
+            headerName: '',
+            width: 50,
+            minWidth: 50,
+            maxWidth: 50,
+            pinned: 'left',
+            cellRenderer: (params: any) => {
+                const isExpanded = expandedRows.has(params.node.id);
+                return (
+                    <div className="flex items-center justify-center h-full cursor-pointer" onClick={(e) => {
+                        e.stopPropagation();
+                        const newExpanded = new Set(expandedRows);
+                        if (isExpanded) newExpanded.delete(params.node.id);
+                        else newExpanded.add(params.node.id);
+                        setExpandedRows(newExpanded);
+                        setTimeout(() => {
+                            params.api.resetRowHeights();
+                            params.api.redrawRows({ rowNodes: [params.node] });
+                        }, 0);
+                    }}>
+                        {isExpanded ? <ChevronDown size={20} className="text-[#1B5E3F]" /> : <ChevronRight size={20} className="text-gray-400" />}
+                    </div>
+                );
+            }
+        };
+        return [expandCol, ...baseColumnDefs];
+    }, [baseColumnDefs, isMobile, expandedRows]);
+
+    const fullWidthCellRenderer = useMemo(() => (params: any) => {
+        const c = params.data as Category;
+        const status = c.isDeleted ? 'Silinmiş' : (c.isActive ? 'Aktif' : 'Pasif');
+        const statusColor = c.isDeleted ? '#dc2626' : (c.isActive ? '#16a34a' : '#ca8a04');
+
+        return (
+            <div className="mobile-detail-card" onClick={() => {
+                const newExpanded = new Set(expandedRows);
+                newExpanded.delete(params.node.id);
+                setExpandedRows(newExpanded);
+                setTimeout(() => {
+                    params.api.resetRowHeights();
+                    params.api.redrawRows({ rowNodes: [params.node] });
+                }, 0);
+            }}>
+                <div className="flex justify-between items-start border-b border-gray-100 pb-2 mb-2">
+                   <div className="font-bold text-[#1B5E3F] text-lg">{c.name}</div>
+                   <div style={{ color: statusColor, fontWeight: '700', fontSize: '12px' }}>{status}</div>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-3">
+                    <div className="mobile-detail-item">
+                        <span className="mobile-detail-label">Üst Kategori</span>
+                        <span className="mobile-detail-value font-medium">{c.parentCategoryName || 'Ana Kategori'}</span>
+                    </div>
+                    <div className="mobile-detail-item">
+                        <span className="mobile-detail-label">Oluşturan</span>
+                        <span className="mobile-detail-value">{c.createdBy}</span>
+                    </div>
+                    <div className="mobile-detail-item">
+                        <span className="mobile-detail-label">Tarih</span>
+                        <span className="mobile-detail-value">{new Date(c.createdAt).toLocaleDateString('tr-TR')}</span>
+                    </div>
+                </div>
+
+                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+                    {!c.isDeleted ? (
+                        <>
+                            <button onClick={(e) => { e.stopPropagation(); handleEdit(c); }} className="flex-1 bg-green-50 text-[#1B5E3F] py-2 rounded-lg font-bold text-sm border border-green-100">DÜZENLE</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleDelete(c.id); }} className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm border border-red-100">SİL</button>
+                        </>
+                    ) : (
+                        <button onClick={(e) => { e.stopPropagation(); handleRestore(c.id); }} className="flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm border border-blue-100">GERİ YÜKLE</button>
+                    )}
+                </div>
+            </div>
+        );
+    }, [expandedRows, handleEdit, handleDelete, handleRestore]);
     const onGridReady = (params: GridReadyEvent) => { 
         setGridApi(params.api); 
     };
@@ -99,6 +196,46 @@ export default function AdminCategoriesPage() {
                         suppressHorizontalScroll={false}
                         suppressColumnVirtualisation={true}
                         tooltipShowDelay={300}
+                        rowSelection={isMobile ? { mode: 'multiRow', enableClickSelection: false } : { mode: 'multiRow', enableSelectionWithoutKeys: false }}
+                        enableCellTextSelection={false}
+                        ensureDomOrder={true}
+                        isFullWidthRow={(params) => isMobile && expandedRows.has(params.rowNode.id || '')}
+                        fullWidthCellRenderer={fullWidthCellRenderer}
+                        getRowHeight={(params) => {
+                            if (isMobile && expandedRows.has(params.node.id || '')) return 240;
+                            return 48;
+                        }}
+                        suppressCellFocus={isMobile}
+                        onCellMouseDown={(params) => {
+                            const mouseEvent = params.event as MouseEvent;
+                            if (mouseEvent?.button !== 0 || (params.event as any).pointerType === 'touch' || isMobile) return;
+                            const target = mouseEvent?.target as HTMLElement;
+                            if (target.closest('button')) return;
+                            
+                            isDragging.current = true;
+                            if (!mouseEvent.ctrlKey && !mouseEvent.shiftKey) {
+                                params.api.deselectAll();
+                            }
+                            params.node.setSelected(true);
+                        }}
+                        onCellMouseOver={(params) => {
+                            if (isDragging.current && (params.event as any).pointerType !== 'touch') {
+                                params.node.setSelected(true);
+                            }
+                        }}
+                        onCellDoubleClicked={(params) => {
+                            const cell = params.event?.target as HTMLElement;
+                            if (cell) {
+                                cell.style.userSelect = 'text';
+                                const range = document.createRange();
+                                range.selectNodeContents(cell);
+                                const selection = window.getSelection();
+                                if (selection) {
+                                    selection.removeAllRanges();
+                                    selection.addRange(range);
+                                }
+                            }
+                        }}
                         components={gridComponents}
                         ref={gridRef}
                         rowData={categories}

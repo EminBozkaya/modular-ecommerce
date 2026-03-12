@@ -131,7 +131,11 @@ export default function AdminDashboardPage() {
                                         <tr
                                             key={order.id}
                                             className="border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors"
-                                            onClick={() => navigate(`/admin/orders/${order.id}`)}
+                                            onClick={() => {
+                                                if (!window.getSelection()?.toString()) {
+                                                    navigate(`/admin/orders/${order.id}`);
+                                                }
+                                            }}
                                         >
                                             <td className="py-2 px-2 text-gray-900">{order.shippingAddress.fullName}</td>
                                             <td className="py-2 px-2 text-gray-600">{formatDate(order.createdAt)}</td>

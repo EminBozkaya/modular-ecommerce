@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import type { Product, Category, Unit } from '../../../catalog/types/product';
 import { X } from 'lucide-react';
+import { productSchema, type ProductFormData } from '@/lib/validations/admin.schema';
 
 interface ProductFormModalProps {
     open: boolean;
@@ -12,29 +15,8 @@ interface ProductFormModalProps {
     loading?: boolean;
 }
 
-export interface ProductFormData {
-    name: string;
-    description: string;
-    imageUrl: string;
-    price: number;
-    currency: string;
-    stockQuantity: number;
-    categoryId: string;
-    unitId: string;
-    isActive: boolean;
-}
-
-const initialFormData: ProductFormData = {
-    name: '',
-    description: '',
-    imageUrl: '',
-    price: 0,
-    currency: 'TRY',
-    stockQuantity: 0,
-    categoryId: '',
-    unitId: '',
-    isActive: true,
-};
+// ProductFormData artık ProductFormModal.tsx'ten değil admin.schema.ts'ten gelir
+export type { ProductFormData };
 
 export default function ProductFormModal({
     open,
@@ -45,11 +27,29 @@ export default function ProductFormModal({
     units,
     loading,
 }: ProductFormModalProps) {
-    const [form, setForm] = useState<ProductFormData>(initialFormData);
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<ProductFormData>({
+        resolver: zodResolver(productSchema),
+        defaultValues: {
+            name: '',
+            description: '',
+            imageUrl: '',
+            price: 0,
+            currency: 'TRY',
+            stockQuantity: 0,
+            categoryId: '',
+            unitId: '',
+            isActive: true,
+        },
+    });
 
     useEffect(() => {
         if (product) {
-            setForm({
+            reset({
                 name: product.name,
                 description: product.description || '',
                 imageUrl: product.imageUrl || '',
@@ -61,9 +61,19 @@ export default function ProductFormModal({
                 isActive: product.isActive ?? true,
             });
         } else {
-            setForm(initialFormData);
+            reset({
+                name: '',
+                description: '',
+                imageUrl: '',
+                price: 0,
+                currency: 'TRY',
+                stockQuantity: 0,
+                categoryId: '',
+                unitId: '',
+                isActive: true,
+            });
         }
-    }, [product, open]);
+    }, [product, open, reset]);
 
     if (!open) return null;
 
@@ -77,20 +87,15 @@ export default function ProductFormModal({
         getCategoryPath(a).localeCompare(getCategoryPath(b))
     );
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target;
-        const finalValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+    const inputClass = (hasError: boolean) =>
+        `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors ${
+            hasError
+                ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30'
+                : 'border-gray-300 focus:ring-[#1B5E3F]/30 focus:border-[#1B5E3F]'
+        }`;
 
-        setForm((prev) => ({
-            ...prev,
-            [name]: name === 'price' || name === 'stockQuantity' ? Number(finalValue) : finalValue,
-        }));
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSubmit(form);
-    };
+    const errorMsg = (msg: string | undefined) =>
+        msg ? <p className="mt-1 text-xs font-semibold text-red-600" role="alert">{msg}</p> : null;
 
     return (
         <div
@@ -120,89 +125,65 @@ export default function ProductFormModal({
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    {product?.isDeleted && !form.categoryId && (
+                <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4" noValidate>
+                    {product?.isDeleted && !product.categoryId && (
                         <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-xs font-medium">
                             <p>Bu ürünün bağlı olduğu eski kategori silinmiş. Lütfen devam etmek için yeni bir aktif kategori seçin.</p>
                         </div>
                     )}
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Ürün Adı *</label>
                         <input
-                            name="name"
-                            value={form.name}
-                            onChange={(e) => {
-                                handleChange(e);
-                                e.target.setCustomValidity('');
-                            }}
-                            onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Lütfen bu alanı doldurun.')}
-                            required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-                            style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                            {...register('name')}
+                            className={inputClass(!!errors.name)}
                             placeholder="Ürün adını girin"
                         />
+                        {errorMsg(errors.name?.message)}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Açıklama</label>
                         <textarea
-                            name="description"
-                            value={form.description}
-                            onChange={handleChange}
+                            {...register('description')}
                             rows={3}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm resize-none"
-                            style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm resize-none transition-colors ${errors.description ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30' : 'border-gray-300 focus:ring-[#1B5E3F]/30 focus:border-[#1B5E3F]'}`}
                             placeholder="Ürün açıklaması"
                         />
+                        {errorMsg(errors.description?.message)}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Görsel URL</label>
                         <input
-                            name="imageUrl"
-                            value={form.imageUrl}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-                            style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                            {...register('imageUrl')}
+                            className={inputClass(!!errors.imageUrl)}
                             placeholder="https://..."
                         />
+                        {errorMsg(errors.imageUrl?.message)}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Fiyat (₺) *</label>
                             <input
-                                name="price"
                                 type="number"
                                 step="0.01"
                                 min="0"
-                                value={form.price}
-                                onChange={(e) => {
-                                    handleChange(e);
-                                    e.target.setCustomValidity('');
-                                }}
-                                onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Lütfen geçerli bir fiyat girin.')}
-                                required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-                                style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                                {...register('price', { valueAsNumber: true })}
+                                className={inputClass(!!errors.price)}
                             />
+                            {errorMsg(errors.price?.message)}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Stok Miktarı *</label>
                             <input
-                                name="stockQuantity"
                                 type="number"
                                 min="0"
-                                value={form.stockQuantity}
-                                onChange={(e) => {
-                                    handleChange(e);
-                                    e.target.setCustomValidity('');
-                                }}
-                                onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Lütfen geçerli bir stok miktarı girin.')}
-                                required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-                                style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                                {...register('stockQuantity', { valueAsNumber: true })}
+                                className={inputClass(!!errors.stockQuantity)}
                             />
+                            {errorMsg(errors.stockQuantity?.message)}
                         </div>
                     </div>
 
@@ -210,21 +191,13 @@ export default function ProductFormModal({
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Kategori *</label>
                             <select
-                                name="categoryId"
-                                value={form.categoryId}
-                                onChange={(e) => {
-                                    handleChange(e);
-                                    e.target.setCustomValidity('');
-                                }}
-                                onInvalid={(e) => (e.target as HTMLSelectElement).setCustomValidity('Lütfen listeden bir öğe seçin.')}
-                                required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-                                style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                                {...register('categoryId')}
+                                className={inputClass(!!errors.categoryId)}
                             >
                                 <option value="">Kategori seçin</option>
                                 {sortedCategories
                                     .filter(cat =>
-                                        isEdit ? (cat.id === form.categoryId || cat.isActive !== false) : cat.isActive !== false
+                                        isEdit ? (cat.id === product?.categoryId || cat.isActive !== false) : cat.isActive !== false
                                     )
                                     .map((cat) => (
                                         <option key={cat.id} value={cat.id}>
@@ -232,20 +205,13 @@ export default function ProductFormModal({
                                         </option>
                                     ))}
                             </select>
+                            {errorMsg(errors.categoryId?.message)}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Birim *</label>
                             <select
-                                name="unitId"
-                                value={form.unitId}
-                                onChange={(e) => {
-                                    handleChange(e);
-                                    e.target.setCustomValidity('');
-                                }}
-                                onInvalid={(e) => (e.target as HTMLSelectElement).setCustomValidity('Lütfen bir birim seçin.')}
-                                required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-                                style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                                {...register('unitId')}
+                                className={inputClass(!!errors.unitId)}
                             >
                                 <option value="">Birim seçin</option>
                                 {units.map((unit) => (
@@ -254,6 +220,7 @@ export default function ProductFormModal({
                                     </option>
                                 ))}
                             </select>
+                            {errorMsg(errors.unitId?.message)}
                         </div>
                     </div>
 
@@ -261,9 +228,7 @@ export default function ProductFormModal({
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input
                                 type="checkbox"
-                                name="isActive"
-                                checked={form.isActive}
-                                onChange={handleChange}
+                                {...register('isActive')}
                                 className="sr-only peer"
                             />
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B5E3F]"></div>
