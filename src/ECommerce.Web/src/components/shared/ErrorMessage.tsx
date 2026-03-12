@@ -5,12 +5,12 @@ interface ErrorMessageProps {
 
 export function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
     return (
-        <div className="rounded-md bg-destructive/10 p-4 border border-destructive/20 text-destructive text-center">
-            <p className="text-sm font-medium">{message}</p>
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-center">
+            <p className="text-sm font-medium text-red-700">{message}</p>
             {onRetry && (
                 <button
                     onClick={onRetry}
-                    className="mt-3 px-4 py-2 text-sm font-medium text-destructive-foreground bg-destructive rounded-md hover:bg-destructive/90 transition-colors"
+                    className="mt-3 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
                 >
                     Tekrar Dene
                 </button>

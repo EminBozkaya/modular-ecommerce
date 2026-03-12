@@ -14,7 +14,7 @@ export function CategoryFilter({ selectedCategoryId, onSelect }: CategoryFilterP
         return (
             <div className="flex items-center py-2 mb-6">
                 <LoadingSpinner size="sm" />
-                <span className="ml-2 text-sm text-gray-500">Loading categories...</span>
+                <span className="ml-2 text-sm text-gray-500 font-medium font-serif">Kategoriler yükleniyor...</span>
             </div>
         );
     }
@@ -23,7 +23,7 @@ export function CategoryFilter({ selectedCategoryId, onSelect }: CategoryFilterP
         return (
             <div className="mb-6">
                 <ErrorMessage
-                    message="Failed to load categories"
+                    message="Kategoriler yüklenemedi"
                     onRetry={() => refetch()}
                 />
             </div>
@@ -36,12 +36,12 @@ export function CategoryFilter({ selectedCategoryId, onSelect }: CategoryFilterP
                 role="tab"
                 aria-selected={selectedCategoryId === undefined}
                 onClick={() => onSelect(undefined)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategoryId === undefined
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 shadow-sm border ${selectedCategoryId === undefined
+                    ? 'bg-[var(--color-ebrar-green)] text-white border-[var(--color-ebrar-green-dark)]'
+                    : 'bg-white text-gray-700 border-gray-200 hover:border-[var(--color-ebrar-green)] hover:text-[var(--color-ebrar-green)]'
                     }`}
             >
-                All
+                Tümü
             </button>
             {categories?.map((category) => (
                 <button
@@ -49,9 +49,9 @@ export function CategoryFilter({ selectedCategoryId, onSelect }: CategoryFilterP
                     role="tab"
                     aria-selected={selectedCategoryId === category.id}
                     onClick={() => onSelect(category.id)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategoryId === category.id
-                        ? 'bg-blue-600 text-white shadow-sm'
-                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 shadow-sm border ${selectedCategoryId === category.id
+                        ? 'bg-[var(--color-ebrar-green)] text-white border-[var(--color-ebrar-green-dark)]'
+                        : 'bg-white text-gray-700 border-gray-200 hover:border-[var(--color-ebrar-green)] hover:text-[var(--color-ebrar-green)]'
                         }`}
                 >
                     {category.name}

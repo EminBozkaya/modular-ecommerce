@@ -31,6 +31,7 @@ public class ApplicationDbContext : DbContext
 
     // Identity
     public DbSet<AppUser> Users => Set<AppUser>();
+    public DbSet<UserAddress> UserAddresses => Set<UserAddress>();
 
     // Wishlist
     public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
@@ -49,5 +50,6 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Order>().HasQueryFilter(o => !o.IsDeleted);
         modelBuilder.Entity<AppUser>().HasQueryFilter(u => !u.IsDeleted);
         modelBuilder.Entity<WishlistItem>().HasQueryFilter(w => !w.IsDeleted);
+        modelBuilder.Entity<UserAddress>().HasQueryFilter(a => !a.IsDeleted);
     }
 }

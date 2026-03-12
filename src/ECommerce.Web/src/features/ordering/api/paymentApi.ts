@@ -14,6 +14,18 @@ async function mockGetProviders(): Promise<PaymentProviderInfo[]> {
     await new Promise((r) => setTimeout(r, 300));
     return [
         {
+            providerName: 'Iyzico',
+            displayName: 'Kredi / Banka Kartı',
+            logoUrl: '/images/providers/iyzico.svg',
+            supportedCurrencies: ['TRY', 'USD', 'EUR', 'GBP'],
+        },
+        {
+            providerName: 'Stripe',
+            displayName: 'Stripe (Uluslararası Kart)',
+            logoUrl: '/images/providers/stripe.svg',
+            supportedCurrencies: ['USD', 'EUR', 'GBP', 'TRY', 'JPY'],
+        },
+        {
             providerName: 'Stub',
             displayName: 'Test Ödemesi',
             logoUrl: '/images/providers/stub.svg',

@@ -18,6 +18,7 @@ export const queryKeys = {
     },
     auth: {
         me: ['auth', 'me'] as const,
+        addresses: ['auth', 'addresses'] as const,
     },
     wishlist: {
         items: ['wishlist', 'items'] as const,

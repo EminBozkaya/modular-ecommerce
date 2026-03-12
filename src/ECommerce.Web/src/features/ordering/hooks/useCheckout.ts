@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { createOrder } from '../api/orderingApi';
 import { initializePayment } from '../api/paymentApi';
 import { generateIdempotencyKey } from '../../../utils/idempotency';
@@ -10,6 +11,7 @@ import type { ApiError } from '../../../api/errorHandling';
 type CheckoutStep = 'idle' | 'creating_order' | 'redirecting' | 'error';
 
 export function useCheckout() {
+    const navigate = useNavigate();
     const [step, setStep] = useState<CheckoutStep>('idle');
     const [error, setError] = useState<string | null>(null);
 
@@ -52,16 +54,31 @@ export function useCheckout() {
                     throw new Error(paymentResponse.errorMessage ?? 'Ödeme başlatılamadı.');
                 }
 
-                window.location.href = paymentResponse.redirectUrl;
+                const url = paymentResponse.redirectUrl;
+                // Same-origin relative paths: use React Router to stay in SPA
+                // External URLs (real providers like Stripe, Iyzico): hard navigate
+                if (url.startsWith('/') || url.startsWith(window.location.origin)) {
+                    const relativePath = url.startsWith(window.location.origin)
+                        ? url.slice(window.location.origin.length)
+                        : url;
+                    navigate(relativePath);
+                } else {
+                    window.location.href = url;
+                }
                 return true;
             } catch (err: unknown) {
                 setStep('error');
-                const apiErr = err as ApiError;
-                setError(apiErr?.message ?? 'Bir hata oluştu, lütfen tekrar deneyin.');
+                // Axios errors have response.data.message; Error instances have .message
+                const axiosData = (err as { response?: { data?: { message?: string } } })?.response?.data;
+                const message =
+                    axiosData?.message ??
+                    (err instanceof Error ? err.message : null) ??
+                    'Bir hata oluştu, lütfen tekrar deneyin.';
+                setError(message);
                 return false;
             }
         },
-        [createOrderMutation, initializePaymentMutation],
+        [createOrderMutation, initializePaymentMutation, navigate],
     );
 
     const isLoading = step === 'creating_order' || step === 'redirecting';

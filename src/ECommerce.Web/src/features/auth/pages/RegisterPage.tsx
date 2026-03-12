@@ -26,76 +26,101 @@ export default function RegisterPage() {
 
     return (
         <div className="flex min-h-[80vh] items-center justify-center p-4">
-            <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-8 shadow-lg ring-1 ring-gray-200">
-                <div>
-                    <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
-                        Create an account
+            <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 shadow-2xl shadow-black/5 border border-gray-100 relative overflow-hidden">
+                {/* Decorative background element */}
+                <div className="absolute top-0 left-0 -mt-4 -ml-4 h-24 w-24 rounded-full bg-[var(--color-ebrar-green)]/10 blur-3xl" />
+
+                <div className="relative z-10 text-center">
+                    <h2 className="text-3xl font-black tracking-tight text-gray-900 font-serif lowercase">
+                        Hesap <span className="text-[var(--color-ebrar-green)]">Oluştur</span>
                     </h2>
-                    <p className="mt-2 text-center text-sm text-gray-600">
-                        Or{' '}
-                        <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
-                            sign in to existing account
+                    <p className="mt-3 text-sm text-gray-500 font-medium">
+                        Zaten bir hesabınız var mı?{' '}
+                        <Link to="/login" className="font-bold text-[var(--color-ebrar-green)] hover:text-[var(--color-ebrar-green-dark)] transition-colors underline decoration-2 underline-offset-4">
+                            Giriş Yapın
                         </Link>
                     </p>
                 </div>
 
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    {(clientError || error?.message) && (
-                        <div className="rounded-md bg-red-50 p-4">
-                            <div className="text-sm text-red-700">
-                                {clientError || error?.message}
-                            </div>
-                        </div>
-                    )}
+                <div className="relative z-10 mt-8 space-y-6">
+                    {/* Social Login Section */}
+                    <div className="grid grid-cols-2 gap-3">
+                        <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-200 hover:bg-gray-50 transition-all active:scale-95">
+                            <svg className="h-5 w-5" viewBox="0 0 24 24">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-1 .67-2.28 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                            </svg>
+                            Google
+                        </button>
+                        <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-black transition-all active:scale-95">
+                            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12c0-5.523-4.477-10-10-10z" />
+                            </svg>
+                            Facebook
+                        </button>
+                    </div>
 
-                    <div className="space-y-4">
-                        <div>
-                            <label htmlFor="firstName" className="block text-sm font-medium leading-6 text-gray-900">
-                                First Name
-                            </label>
-                            <div className="mt-2">
-                                <input
-                                    id="firstName"
-                                    name="firstName"
-                                    type="text"
-                                    autoComplete="given-name"
-                                    required
-                                    value={firstName}
-                                    onChange={(e) => setFirstName(e.target.value)}
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3"
-                                />
-                                {error?.errors?.FirstName && (
-                                    <p className="mt-2 text-sm text-red-600">{error.errors.FirstName[0]}</p>
-                                )}
-                            </div>
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                            <div className="w-full border-t border-gray-200"></div>
                         </div>
-
-                        <div>
-                            <label htmlFor="lastName" className="block text-sm font-medium leading-6 text-gray-900">
-                                Last Name
-                            </label>
-                            <div className="mt-2">
-                                <input
-                                    id="lastName"
-                                    name="lastName"
-                                    type="text"
-                                    autoComplete="family-name"
-                                    required
-                                    value={lastName}
-                                    onChange={(e) => setLastName(e.target.value)}
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3"
-                                />
-                                {error?.errors?.LastName && (
-                                    <p className="mt-2 text-sm text-red-600">{error.errors.LastName[0]}</p>
-                                )}
-                            </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-white px-2 text-gray-500 font-bold tracking-widest leading-none">veya bilgilerinizle</span>
                         </div>
+                    </div>
 
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                Email address
-                            </label>
-                            <div className="mt-2">
+                    <form className="space-y-4" onSubmit={handleSubmit}>
+                        {(clientError || error?.message) && (
+                            <div className="rounded-xl bg-red-50 p-4 border border-red-100">
+                                <div className="text-xs font-bold text-red-700">
+                                    {clientError || error?.message}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label htmlFor="firstName" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
+                                        Ad
+                                    </label>
+                                    <input
+                                        id="firstName"
+                                        name="firstName"
+                                        type="text"
+                                        autoComplete="given-name"
+                                        required
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                        className="block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
+                                        placeholder="Ali"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="lastName" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
+                                        Soyad
+                                    </label>
+                                    <input
+                                        id="lastName"
+                                        name="lastName"
+                                        type="text"
+                                        autoComplete="family-name"
+                                        required
+                                        value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)}
+                                        className="block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
+                                        placeholder="Yılmaz"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
+                                    E-posta Adresi
+                                </label>
                                 <input
                                     id="email"
                                     name="email"
@@ -104,67 +129,65 @@ export default function RegisterPage() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3"
+                                    className="block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
+                                    placeholder="ornek@ebrahim.com"
                                 />
                                 {error?.errors?.Email && (
-                                    <p className="mt-2 text-sm text-red-600">{error.errors.Email[0]}</p>
+                                    <p className="mt-2 text-xs font-bold text-red-600 ml-1">{error.errors.Email[0]}</p>
                                 )}
                             </div>
-                        </div>
 
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                                Password
-                            </label>
-                            <div className="mt-2">
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    autoComplete="new-password"
-                                    required
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3"
-                                />
-                                {error?.errors?.Password && (
-                                    <p className="mt-2 text-sm text-red-600">{error.errors.Password[0]}</p>
-                                )}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
+                                        Şifre
+                                    </label>
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        autoComplete="new-password"
+                                        required
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
+                                        placeholder="••••••••"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="confirmPassword" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
+                                        Şifre Tekrar
+                                    </label>
+                                    <input
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        type="password"
+                                        autoComplete="new-password"
+                                        required
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        className="block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
+                                        placeholder="••••••••"
+                                    />
+                                </div>
                             </div>
+                            {error?.errors?.Password && (
+                                <p className="mt-1 text-xs font-bold text-red-600 ml-1">{error.errors.Password[0]}</p>
+                            )}
                         </div>
 
-                        <div>
-                            <label htmlFor="confirmPassword" className="block text-sm font-medium leading-6 text-gray-900">
-                                Confirm Password
-                            </label>
-                            <div className="mt-2">
-                                <input
-                                    id="confirmPassword"
-                                    name="confirmPassword"
-                                    type="password"
-                                    autoComplete="new-password"
-                                    required
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3"
-                                />
-                                {error?.errors?.ConfirmPassword && (
-                                    <p className="mt-2 text-sm text-red-600">{error.errors.ConfirmPassword[0]}</p>
-                                )}
-                            </div>
+                        <div className="pt-2">
+                            <button
+                                type="submit"
+                                disabled={isPending}
+                                className="flex w-full justify-center rounded-xl bg-[var(--color-ebrar-green)] px-4 py-3 text-sm font-black text-white shadow-xl shadow-green-900/10 hover:bg-[var(--color-ebrar-green-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-ebrar-green)] disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
+                            >
+                                {isPending ? 'Hesap Oluşturuluyor...' : 'Hesap Oluştur'}
+                            </button>
                         </div>
-                    </div>
-
-                    <div>
-                        <button
-                            type="submit"
-                            disabled={isPending}
-                            className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                            {isPending ? 'Registering...' : 'Register'}
-                        </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     );

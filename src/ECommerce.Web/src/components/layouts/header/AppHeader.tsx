@@ -4,7 +4,6 @@ import { ChevronDown } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { UserCircle } from 'lucide-react';
 import logoImg from '@/assets/ebrar-logo.png';
-import menuBgImg from '@/assets/menu_background.png';
 import { HeaderSearchAutocomplete } from '@/features/catalog/components/HeaderSearchAutocomplete';
 import { FavoriteButton } from './FavoriteButton';
 import { BasketButton } from './BasketButton';
@@ -103,11 +102,10 @@ export function AppHeader() {
             {/* ── Category Nav — sticky, stays pinned at viewport top ────────── */}
             <nav
                 className={[
-                    'sticky top-0 z-50 w-full shadow-sm bg-cover bg-center',
+                    'sticky top-0 z-50 w-full shadow-sm',
                     'transition-all duration-300 ease-in-out',
-                    isStuck ? '' : 'bg-[#FDF6EE]',
+                    isStuck ? 'bg-[var(--color-ebrar-green)]' : 'bg-[#FDF6EE]',
                 ].join(' ')}
-                style={isStuck ? { backgroundImage: `url(${menuBgImg})` } : undefined}
             >
                 <div className={[
                     'w-full lg:w-fit lg:min-w-[672px] mx-auto',

@@ -1,7 +1,7 @@
 import type { AddToBasketRequest, Basket, UpdateBasketItemRequest } from '../types/basket';
 import { mockProducts } from '../../catalog/api/mock';
 
-let mockBasket: Basket = { items: [], totalAmount: 0, currency: 'USD' };
+let mockBasket: Basket = { items: [], totalAmount: 0, currency: 'TRY' };
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 

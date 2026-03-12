@@ -7,8 +7,8 @@ interface OrderSummaryProps {
 
 export function OrderSummary({ basket }: OrderSummaryProps) {
     return (
-        <div className="rounded-lg border border-border bg-gray-50 p-6">
-            <h3 className="text-lg font-semibold mb-4">Siparis Ozeti</h3>
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xl shadow-black/5">
+            <h3 className="text-lg font-bold mb-4 font-serif text-gray-900 border-b pb-2">Sipariş Özeti</h3>
 
             <div className="space-y-3">
                 {basket.items.map((item) => (

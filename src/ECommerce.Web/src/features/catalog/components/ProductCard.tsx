@@ -82,75 +82,64 @@ export function ProductCard({ product }: ProductCardProps) {
                     )}
                 </Link>
 
-                <div className="absolute top-3 right-3 flex flex-col items-center gap-2 z-10">
-                    <button
-                        onClick={handleToggleFavorite}
-                        disabled={isToggling || isWishlistError}
-                        className={`p-2 rounded-full shadow-lg backdrop-blur-sm transition-all duration-300 transform hover:scale-110 active:scale-95 ${isFavorited
-                            ? 'bg-red-500 text-white'
-                            : 'bg-white/90 text-gray-400 hover:text-red-500 hover:bg-white'
-                            }`}
-                        title={isFavorited ? 'Favorilerden Kaldır' : 'Favorilere Ekle'}
-                    >
-                        <Heart className={`h-5 w-5 transition-colors ${isFavorited ? 'fill-current' : ''}`} />
-                    </button>
-                    {inStock ? (
-                        <span className="inline-flex items-center rounded-full bg-green-500/90 backdrop-blur-sm px-3 py-1 text-[10px] font-bold text-white shadow-sm uppercase tracking-wider">
-                            Stokta
-                        </span>
-                    ) : (
-                        <span className="inline-flex items-center rounded-full bg-red-500/90 backdrop-blur-sm px-3 py-1 text-[10px] font-bold text-white shadow-sm uppercase tracking-wider">
-                            Tükendi
-                        </span>
-                    )}
+                <button
+                    onClick={handleToggleFavorite}
+                    disabled={isToggling || isWishlistError}
+                    className={`absolute top-3 right-3 z-10 p-2 rounded-full shadow-lg backdrop-blur-sm transition-all duration-300 transform hover:scale-110 active:scale-95 ${isFavorited
+                        ? 'bg-red-500 text-white'
+                        : 'bg-white/90 text-gray-400 hover:text-red-500 hover:bg-white'
+                        }`}
+                    title={isFavorited ? 'Favorilerden Kaldır' : 'Favorilere Ekle'}
+                >
+                    <Heart className={`h-5 w-5 transition-colors ${isFavorited ? 'fill-current' : ''}`} />
+                </button>
+
+                {/* Price overlay on bottom-right of image */}
+                <div className="absolute bottom-0 right-0 z-10 bg-black/60 backdrop-blur-sm rounded-tl-xl px-3 py-1.5">
+                    <span className="text-lg font-black text-white font-serif">
+                        {formatPrice(product.price, product.currency)}
+                    </span>
+                    <span className="text-[10px] text-white/70 ml-0.5">/ {product.unitName}</span>
                 </div>
             </div>
 
-            <div className="flex flex-1 flex-col p-5 space-y-3">
-                <div className="space-y-1">
-                    <p className="text-xs font-serif italic text-[var(--color-ebrar-green)] tracking-wide">
+            <div className="flex flex-1 flex-col px-4 py-3 gap-2">
+                <div>
+                    <p className="text-[11px] font-serif italic text-[var(--color-ebrar-green)] tracking-wide leading-none">
                         {product.categoryName}
                     </p>
-                    <h3 className="text-base font-bold text-gray-900 line-clamp-2 leading-tight min-h-[2.5rem]">
+                    <h3 className="text-sm font-bold text-gray-900 line-clamp-2 leading-snug mt-0.5">
                         <Link to={`/products/${product.id}`} className="hover:text-[var(--color-ebrar-green)] transition-colors duration-300">
                             {product.name}
                         </Link>
                     </h3>
                 </div>
 
-                <div className="flex items-baseline gap-1 pt-1">
-                    <span className="text-2xl font-black text-gray-900 font-serif">
-                        {formatPrice(product.price, product.currency)}
-                    </span>
-                    <span className="text-xs text-gray-400">/ {product.unitName}</span>
-                </div>
-
                 {inStock && (
-                    <div onClick={(e) => e.stopPropagation()} className="relative z-20 space-y-2 pt-1">
-                        <QuantitySelector
-                            unitName={product.unitName}
-                            value={currentQuantity}
-                            onChange={handleQuantityChange}
-                            disabled={isAnyActionPending}
-                            size="sm"
-                        />
-                        <p className="text-xs text-gray-500 font-medium">
-                            Toplam:{' '}
-                            <span className="text-gray-900 font-bold">
+                    <div onClick={(e) => e.stopPropagation()} className="relative z-20 flex flex-col gap-2">
+                        <div className="flex items-center justify-center gap-2">
+                            <QuantitySelector
+                                unitName={product.unitName}
+                                value={currentQuantity}
+                                onChange={handleQuantityChange}
+                                disabled={isAnyActionPending}
+                                size="sm"
+                            />
+                            <span className="text-sm font-black text-[var(--color-ebrar-green)] tabular-nums whitespace-nowrap">
                                 {calculateLinePrice(product.price, currentQuantity, product.currency)}
                             </span>
-                        </p>
+                        </div>
                         <button
                             onClick={handleAddToBasket}
                             disabled={isAnyActionPending}
                             className={[
-                                'w-full py-2.5 px-4 text-sm font-bold text-white rounded-lg',
-                                'transition-all duration-150 active:translate-y-1 active:border-b-0',
+                                'w-full py-2 px-3 text-sm font-bold text-white rounded-lg',
+                                'transition-all duration-150 active:translate-y-0.5 active:border-b-0',
                                 isInBasket
-                                    ? 'bg-red-600 border-b-4 border-red-800 hover:bg-red-700'
+                                    ? 'bg-red-600 border-b-3 border-red-800 hover:bg-red-700'
                                     : isAddSuccess
-                                        ? 'bg-green-600 border-b-4 border-green-800'
-                                        : 'bg-[#1B5E3F] border-b-4 border-[#12412b] hover:bg-[#164d33] hover:shadow-lg',
+                                        ? 'bg-green-600 border-b-3 border-green-800'
+                                        : 'bg-[#1B5E3F] border-b-3 border-[#12412b] hover:bg-[#164d33] hover:shadow-lg',
                                 'disabled:opacity-70 disabled:cursor-not-allowed',
                             ].join(' ')}
                         >
@@ -174,14 +163,12 @@ export function ProductCard({ product }: ProductCardProps) {
                 )}
 
                 {!inStock && (
-                    <div className="pt-2">
-                        <button
-                            disabled
-                            className="w-full py-2.5 px-4 text-sm font-bold bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed border-b-2 border-gray-200"
-                        >
-                            Stokta Yok
-                        </button>
-                    </div>
+                    <button
+                        disabled
+                        className="w-full py-2 px-3 text-sm font-bold bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed border-b-2 border-gray-200"
+                    >
+                        Stokta Yok
+                    </button>
                 )}
             </div>
         </div>

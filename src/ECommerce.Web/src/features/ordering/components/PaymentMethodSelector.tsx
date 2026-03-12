@@ -14,28 +14,48 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center py-8">
-                <LoadingSpinner size="md" />
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                <div className="flex items-center gap-3 mb-5">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-ebrar-green)] text-white text-xs font-bold shrink-0">
+                        2
+                    </div>
+                    <h2 className="text-base font-semibold text-gray-900">Odeme Yontemi</h2>
+                </div>
+                <div className="flex items-center justify-center py-6">
+                    <LoadingSpinner size="md" />
+                </div>
             </div>
         );
     }
 
     if (error) {
-        return <ErrorMessage message="Ödeme yöntemleri yüklenemedi." onRetry={() => refetch()} />;
+        return (
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                <ErrorMessage message="Odeme yontemleri yuklenemedi." onRetry={() => refetch()} />
+            </div>
+        );
     }
 
     if (!providers || providers.length === 0) {
         return (
-            <EmptyState
-                title="Ödeme yöntemi bulunamadı"
-                description="Şu anda aktif ödeme yöntemi bulunmuyor."
-            />
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                <EmptyState
+                    title="Odeme yontemi bulunamadi"
+                    description="Su anda aktif odeme yontemi bulunmuyor."
+                />
+            </div>
         );
     }
 
     return (
-        <div className="space-y-3">
-            <h2 className="text-base font-semibold text-gray-900">Ödeme Yöntemi</h2>
+        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-5">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-ebrar-green)] text-white text-xs font-bold shrink-0">
+                    2
+                </div>
+                <h2 className="text-base font-semibold text-gray-900">Odeme Yontemi</h2>
+            </div>
+
             <div className="space-y-2">
                 {providers.map((provider) => {
                     const isSelected = selectedProvider === provider.providerName;
@@ -46,39 +66,61 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
                             disabled={disabled}
                             onClick={() => onSelect(provider.providerName)}
                             className={[
-                                'w-full flex items-center gap-4 rounded-lg border-2 px-4 py-3 text-left transition-colors',
+                                'group w-full flex items-center gap-4 rounded-xl border-2 px-4 py-3.5 text-left transition-all duration-150',
                                 isSelected
-                                    ? 'border-[var(--color-ebrar-green)] bg-[var(--color-ebrar-green)]/5'
-                                    : 'border-gray-200 bg-white hover:border-gray-300',
-                                disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+                                    ? 'border-[var(--color-ebrar-green)] bg-[var(--color-ebrar-green)]/5 shadow-sm'
+                                    : 'border-gray-100 bg-gray-50 hover:border-gray-200 hover:bg-white',
+                                disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
                             ].join(' ')}
                         >
+                            {/* Radio circle */}
+                            <div
+                                className={[
+                                    'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors',
+                                    isSelected
+                                        ? 'border-[var(--color-ebrar-green)]'
+                                        : 'border-gray-300 group-hover:border-gray-400',
+                                ].join(' ')}
+                            >
+                                {isSelected && (
+                                    <div className="h-2.5 w-2.5 rounded-full bg-[var(--color-ebrar-green)]" />
+                                )}
+                            </div>
+
+                            {/* Logo */}
                             <img
                                 src={provider.logoUrl}
                                 alt={provider.displayName}
-                                className="h-8 w-12 object-contain"
+                                className="h-7 w-10 object-contain"
                                 onError={(e) => {
                                     (e.currentTarget as HTMLImageElement).style.display = 'none';
                                 }}
                             />
-                            <span className="flex-1 text-sm font-medium text-gray-900">
+
+                            {/* Name */}
+                            <span
+                                className={[
+                                    'flex-1 text-sm font-medium transition-colors',
+                                    isSelected ? 'text-gray-900' : 'text-gray-600',
+                                ].join(' ')}
+                            >
                                 {provider.displayName}
                             </span>
-                            <span className="text-xs text-gray-400">
-                                {provider.supportedCurrencies.join(', ')}
+
+                            {/* Supported currencies */}
+                            <span className="text-[11px] text-gray-400 tabular-nums">
+                                {provider.supportedCurrencies.join(' · ')}
                             </span>
-                            <div
-                                className={[
-                                    'h-4 w-4 rounded-full border-2 flex-shrink-0',
-                                    isSelected
-                                        ? 'border-[var(--color-ebrar-green)] bg-[var(--color-ebrar-green)]'
-                                        : 'border-gray-300',
-                                ].join(' ')}
-                            />
                         </button>
                     );
                 })}
             </div>
+
+            {!selectedProvider && (
+                <p className="mt-3 text-xs text-gray-400">
+                    Devam etmek icin bir odeme yontemi secin.
+                </p>
+            )}
         </div>
     );
 }

@@ -2,9 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useBasket } from '../../basket/hooks/useBasket';
 import { useCheckout } from '../hooks/useCheckout';
-import { useAddresses } from '../../auth/hooks/useAddresses';
 import { ShippingAddressForm } from '../components/ShippingAddressForm';
-import { SavedAddressPicker } from '../components/SavedAddressPicker';
 import { PaymentMethodSelector } from '../components/PaymentMethodSelector';
 import { OrderSummary } from '../components/OrderSummary';
 import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
@@ -24,57 +22,16 @@ const emptyAddress: ShippingAddress = {
 
 export default function CheckoutPage() {
     const { data: basket, isLoading: isBasketLoading, error: basketError, refetch } = useBasket();
-    const { data: savedAddresses } = useAddresses();
     const { submitCheckout, isLoading, error: checkoutError, step } = useCheckout();
 
-    const hasSaved = (savedAddresses?.length ?? 0) > 0;
-
-    const [selectedSavedId, setSelectedSavedId] = useState<string | null>(null);
-    const [useNewAddress, setUseNewAddress] = useState(false);
     const [shippingAddress, setShippingAddress] = useState<ShippingAddress>(emptyAddress);
     const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
     const [idempotencyKey, setIdempotencyKey] = useState(() => generateIdempotencyKey());
 
-    // Auto-select default saved address
-    const effectiveSelectedId =
-        !hasSaved || useNewAddress
-            ? null
-            : selectedSavedId ?? savedAddresses?.find((a) => a.isDefault)?.id ?? savedAddresses?.[0]?.id ?? null;
-
-    // Determine final address to submit
-    const activeAddress: ShippingAddress = (() => {
-        if (!useNewAddress && effectiveSelectedId && savedAddresses) {
-            const found = savedAddresses.find((a) => a.id === effectiveSelectedId);
-            if (found) {
-                return {
-                    fullName: found.fullName,
-                    addressLine1: found.addressLine1,
-                    addressLine2: found.addressLine2,
-                    city: found.city,
-                    postalCode: found.postalCode,
-                    country: found.country,
-                };
-            }
-        }
-        return shippingAddress;
-    })();
-
-    const handleSelectSaved = (id: string, address: ShippingAddress) => {
-        setSelectedSavedId(id);
-        setUseNewAddress(false);
-        setShippingAddress(address);
-    };
-
-    const handleUseNew = () => {
-        setUseNewAddress(true);
-        setSelectedSavedId(null);
-        setShippingAddress(emptyAddress);
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedProvider) return;
-        const success = await submitCheckout(activeAddress, selectedProvider, idempotencyKey);
+        const success = await submitCheckout(shippingAddress, selectedProvider, idempotencyKey);
         if (!success) {
             setIdempotencyKey(generateIdempotencyKey());
         }
@@ -118,8 +75,6 @@ export default function CheckoutPage() {
             ? 'Siparissiniz olusturuluyor...'
             : 'Odeme sayfasina yonlendiriliyor...';
 
-    const showManualForm = !hasSaved || useNewAddress;
-
     return (
         <div className="min-h-screen bg-gray-50/60">
             <div className="container mx-auto max-w-5xl px-4 py-10">
@@ -153,38 +108,11 @@ export default function CheckoutPage() {
                     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                         {/* Left: forms */}
                         <div className="space-y-4 lg:col-span-2">
-                            {/* Shipping address card */}
-                            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                                <div className="flex items-center gap-3 mb-5">
-                                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-ebrar-green)] text-white text-xs font-bold shrink-0">
-                                        1
-                                    </div>
-                                    <h2 className="text-base font-semibold text-gray-900">
-                                        Teslimat Adresi
-                                    </h2>
-                                </div>
-
-                                {hasSaved && (
-                                    <SavedAddressPicker
-                                        selectedId={effectiveSelectedId ?? null}
-                                        onSelect={handleSelectSaved}
-                                        onUseNew={handleUseNew}
-                                        disabled={isLoading}
-                                    />
-                                )}
-
-                                {showManualForm && (
-                                    <div className={hasSaved ? 'mt-4 pt-4 border-t border-gray-100' : ''}>
-                                        <ShippingAddressForm
-                                            value={shippingAddress}
-                                            onChange={setShippingAddress}
-                                            disabled={isLoading}
-                                            hideHeader
-                                        />
-                                    </div>
-                                )}
-                            </div>
-
+                            <ShippingAddressForm
+                                value={shippingAddress}
+                                onChange={setShippingAddress}
+                                disabled={isLoading}
+                            />
                             <PaymentMethodSelector
                                 selectedProvider={selectedProvider}
                                 onSelect={setSelectedProvider}

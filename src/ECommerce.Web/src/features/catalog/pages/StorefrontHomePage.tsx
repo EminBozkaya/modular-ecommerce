@@ -27,14 +27,19 @@ export default function StorefrontHomePage() {
                 <div
                     className="absolute inset-0 bg-cover bg-center transition-all duration-700"
                     style={{
-                        backgroundImage: `url('${heroSlides[currentSlide].image}')`,
+                        backgroundImage: heroSlides[currentSlide].image
+                            ? `url('${heroSlides[currentSlide].image}')`
+                            : undefined,
+                        backgroundColor: heroSlides[currentSlide].image ? undefined : '#F5F0E8',
                     }}
                 >
-                    <div className="absolute inset-0 bg-black/40" />
+                    {heroSlides[currentSlide].image && (
+                        <div className="absolute inset-0 bg-black/40" />
+                    )}
                 </div>
 
                 <div className="relative container mx-auto px-4 h-full flex items-center">
-                    <div className="max-w-lg text-white">
+                    <div className={`max-w-lg ${heroSlides[currentSlide].image ? 'text-white' : 'text-[var(--color-ebrar-green)]'}`}>
                         <h2 className="text-4xl md:text-5xl font-serif font-bold mb-2 leading-tight">
                             {heroSlides[currentSlide].title}
                         </h2>

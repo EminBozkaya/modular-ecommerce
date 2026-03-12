@@ -85,7 +85,7 @@ export function UserMenu() {
                             </Link>
                         )}
                         <button
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => { setIsOpen(false); navigate('/profil'); }}
                             className="w-full flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-gray-50 transition-colors text-left"
                         >
                             <UserCircle className="h-4 w-4 text-muted-foreground" />
@@ -96,10 +96,10 @@ export function UserMenu() {
                             className="w-full flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-gray-50 transition-colors text-left"
                         >
                             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-                            Siparislerim
+                            Siparişlerim
                         </button>
                         <button
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => { setIsOpen(false); navigate('/adreslerim'); }}
                             className="w-full flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-gray-50 transition-colors text-left"
                         >
                             <MapPinIcon className="h-4 w-4 text-muted-foreground" />
