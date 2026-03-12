@@ -29,28 +29,52 @@ public class ExceptionHandlingMiddleware
 
     private async Task HandleExceptionAsync(HttpContext context, Exception ex)
     {
-        var (statusCode, message) = ex switch
+        context.Response.ContentType = "application/json";
+
+        var statusCode = ex switch
         {
-            ValidationException ve => (HttpStatusCode.BadRequest, string.Join("; ", ve.Errors.Select(e => e.ErrorMessage))),
-            UnauthorizedAccessException => (HttpStatusCode.Unauthorized, "Unauthorized."),
-            KeyNotFoundException ke => (HttpStatusCode.NotFound, ke.Message),
-            InvalidOperationException ioe => (HttpStatusCode.BadRequest, ioe.Message),
-            ArgumentException ae => (HttpStatusCode.BadRequest, ae.Message),
-            _ => (HttpStatusCode.InternalServerError, "An unexpected error occurred.")
+            ValidationException => HttpStatusCode.BadRequest,
+            UnauthorizedAccessException => HttpStatusCode.Unauthorized,
+            KeyNotFoundException => HttpStatusCode.NotFound,
+            InvalidOperationException => HttpStatusCode.BadRequest,
+            ArgumentException => HttpStatusCode.BadRequest,
+            _ => HttpStatusCode.InternalServerError
         };
 
-        // backend-rules §4: Sensitive data MUST NOT be logged
+        context.Response.StatusCode = (int)statusCode;
+
+        object response;
+        if (ex is ValidationException ve)
+        {
+            response = new
+            {
+                status = (int)statusCode,
+                message = "Validation failed.",
+                errors = ve.Errors
+                    .GroupBy(e => e.PropertyName)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.Select(x => x.ErrorMessage).ToArray()
+                    )
+            };
+        }
+        else
+        {
+            response = new
+            {
+                status = (int)statusCode,
+                message = statusCode == HttpStatusCode.InternalServerError
+                    ? "An unexpected error occurred."
+                    : ex.Message
+            };
+        }
+
         if (statusCode == HttpStatusCode.InternalServerError)
             _logger.LogError(ex, "Unhandled exception");
         else
-            _logger.LogWarning("Handled exception ({StatusCode}): {Message}", (int)statusCode, message);
+            _logger.LogWarning("Handled exception ({StatusCode}): {Message}", (int)statusCode, ex.Message);
 
-        context.Response.StatusCode = (int)statusCode;
-        context.Response.ContentType = "application/json";
-        await context.Response.WriteAsync(JsonSerializer.Serialize(new
-        {
-            status = (int)statusCode,
-            error = message
-        }));
+        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response, options));
     }
 }

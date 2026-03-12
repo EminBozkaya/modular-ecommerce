@@ -8,10 +8,11 @@ export interface ApiError {
 
 export function parseApiError(error: unknown): ApiError {
     if (axios.isAxiosError(error) && error.response) {
+        const data = error.response.data;
         return {
             status: error.response.status,
-            message: error.response.data?.message || error.message,
-            errors: error.response.data?.errors,
+            message: data?.message || data?.error || error.message,
+            errors: data?.errors,
         };
     }
 

@@ -75,7 +75,7 @@ export default function RegisterPage() {
                         {(clientError || error?.message) && (
                             <div className="rounded-xl bg-red-50 p-4 border border-red-100">
                                 <div className="text-xs font-bold text-red-700">
-                                    {clientError || error?.message}
+                                    {clientError || (error?.status === 400 ? 'Lütfen bilgilerinizi kontrol edin.' : error?.message)}
                                 </div>
                             </div>
                         )}
@@ -97,6 +97,9 @@ export default function RegisterPage() {
                                         className="block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
                                         placeholder="Ali"
                                     />
+                                    {(error?.errors?.firstName || error?.errors?.FirstName) && (
+                                        <p className="mt-2 text-xs font-bold text-red-600 ml-1">{(error.errors.firstName || error.errors.FirstName)[0]}</p>
+                                    )}
                                 </div>
 
                                 <div>
@@ -114,6 +117,9 @@ export default function RegisterPage() {
                                         className="block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
                                         placeholder="Yılmaz"
                                     />
+                                    {(error?.errors?.lastName || error?.errors?.LastName) && (
+                                        <p className="mt-2 text-xs font-bold text-red-600 ml-1">{(error.errors.lastName || error.errors.LastName)[0]}</p>
+                                    )}
                                 </div>
                             </div>
 
@@ -132,8 +138,8 @@ export default function RegisterPage() {
                                     className="block w-full rounded-xl border-0 py-2.5 text-gray-900 bg-white ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all"
                                     placeholder="ornek@ebrahim.com"
                                 />
-                                {error?.errors?.Email && (
-                                    <p className="mt-2 text-xs font-bold text-red-600 ml-1">{error.errors.Email[0]}</p>
+                                {(error?.errors?.email || error?.errors?.Email) && (
+                                    <p className="mt-2 text-xs font-bold text-red-600 ml-1">{(error.errors.email || error.errors.Email)[0]}</p>
                                 )}
                             </div>
 
@@ -172,9 +178,9 @@ export default function RegisterPage() {
                                     />
                                 </div>
                             </div>
-                            {error?.errors?.Password && (
-                                <p className="mt-1 text-xs font-bold text-red-600 ml-1">{error.errors.Password[0]}</p>
-                            )}
+                            {error?.errors?.Password || error?.errors?.password ? (
+                                <p className="mt-1 text-xs font-bold text-red-600 ml-1">{(error.errors.Password || error.errors.password)[0]}</p>
+                            ) : null}
                         </div>
 
                         <div className="pt-2">
