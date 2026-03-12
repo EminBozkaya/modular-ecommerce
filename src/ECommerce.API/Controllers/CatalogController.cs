@@ -35,8 +35,11 @@ public class CatalogController : ControllerBase
     }
 
     [HttpGet("categories")]
-    public async Task<IActionResult> GetCategories([FromQuery] bool includeDeleted, CancellationToken ct)
-        => Ok(await _mediator.Send(new GetCategoriesQuery(includeDeleted), ct));
+    public async Task<IActionResult> GetCategories(
+        [FromQuery] bool onlyMain,
+        [FromQuery] bool includeDeleted,
+        CancellationToken ct = default)
+        => Ok(await _mediator.Send(new GetCategoriesQuery(onlyMain, includeDeleted), ct));
 
     [HttpGet("units")]
     public async Task<IActionResult> GetUnits(CancellationToken ct)

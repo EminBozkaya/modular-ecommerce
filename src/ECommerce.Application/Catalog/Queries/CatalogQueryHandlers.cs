@@ -85,7 +85,7 @@ public class GetCategoriesHandler : IRequestHandler<GetCategoriesQuery, IReadOnl
 
     public async Task<IReadOnlyList<CategoryDto>> Handle(GetCategoriesQuery q, CancellationToken ct)
     {
-        var categories = await _categories.GetAllAsync(q.IncludeDeleted, ct);
+        var categories = await _categories.GetAllAsync(q.IncludeDeleted, q.OnlyMain, ct);
         var userMap = (await _users.GetAllAsync(ct)).ToDictionary(u => u.Id.ToString(), u => u.FullName);
 
         return categories.Select(c => new CategoryDto(

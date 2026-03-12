@@ -52,12 +52,15 @@ export async function getProductById(id: string): Promise<Product> {
     return response.data;
 }
 
-export async function getCategories(params?: { includeDeleted?: boolean }): Promise<Category[]> {
+export async function getCategories(params?: { includeDeleted?: boolean, onlyMain?: boolean }): Promise<Category[]> {
     if (isMock) {
         await delay(400);
         let items = [...mockCategories];
         if (params?.includeDeleted === false || params?.includeDeleted === undefined) {
-            items = items.filter(c => !c.isDeleted); // Assuming a property 'isDeleted' for mock categories
+            items = items.filter(c => !c.isDeleted);
+        }
+        if (params?.onlyMain) {
+            items = items.filter(c => !c.parentCategoryId);
         }
         return items;
     }

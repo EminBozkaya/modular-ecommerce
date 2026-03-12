@@ -41,7 +41,11 @@ public record GetProductsQuery(
     public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
 }
 public record GetProductByIdQuery(Guid Id) : IRequest<ProductDto?>;
-public record GetCategoriesQuery(bool IncludeDeleted = false) : IRequest<IReadOnlyList<CategoryDto>>;
+public record GetCategoriesQuery(bool OnlyMain = false, bool IncludeDeleted = false) : IRequest<IReadOnlyList<CategoryDto>>, ICacheableQuery
+{
+    public string CacheKey => $"catalog:categories:main:{OnlyMain}:deleted:{IncludeDeleted}";
+    public TimeSpan? Expiration => TimeSpan.FromHours(1);
+}
 public record GetUnitsQuery() : IRequest<IReadOnlyList<UnitDto>>, ICacheableQuery
 {
     public string CacheKey => "catalog:units";

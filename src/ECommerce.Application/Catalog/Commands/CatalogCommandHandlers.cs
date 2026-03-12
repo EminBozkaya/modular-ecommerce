@@ -132,11 +132,16 @@ public class UpdateStockHandler : IRequestHandler<UpdateStockCommand>
 public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, Guid>
 {
     private readonly ICategoryRepository _categories;
-    public CreateCategoryHandler(ICategoryRepository categories) => _categories = categories;
+    private readonly ICacheService _cacheService;
+    public CreateCategoryHandler(ICategoryRepository categories, ICacheService cacheService)
+    {
+        _categories = categories;
+        _cacheService = cacheService;
+    }
 
     public async Task<Guid> Handle(CreateCategoryCommand cmd, CancellationToken ct)
     {
-        var allCats = await _categories.GetAllAsync(true, ct); 
+        var allCats = await _categories.GetAllAsync(includeDeleted: true, ct: ct); 
         var exactMatch = allCats.FirstOrDefault(c => c.Name.Trim().Equals(cmd.Name.Trim(), StringComparison.OrdinalIgnoreCase));
 
         if (exactMatch != null)
@@ -151,6 +156,7 @@ public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, Guid
         var category = Category.Create(cmd.Name, cmd.Description, cmd.ImageUrl, cmd.IsActive, cmd.ParentCategoryId);
         await _categories.AddAsync(category, ct);
         await _categories.SaveChangesAsync(ct);
+        await _cacheService.RemoveByPrefixAsync("catalog", ct);
         return category.Id;
     }
 }
@@ -158,7 +164,12 @@ public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, Guid
 public class RestoreCategoryHandler : IRequestHandler<RestoreCategoryCommand>
 {
     private readonly ICategoryRepository _categories;
-    public RestoreCategoryHandler(ICategoryRepository categories) => _categories = categories;
+    private readonly ICacheService _cacheService;
+    public RestoreCategoryHandler(ICategoryRepository categories, ICacheService cacheService)
+    {
+        _categories = categories;
+        _cacheService = cacheService;
+    }
 
     public async Task Handle(RestoreCategoryCommand cmd, CancellationToken ct)
     {
@@ -167,6 +178,7 @@ public class RestoreCategoryHandler : IRequestHandler<RestoreCategoryCommand>
         category.Restore();
         _categories.Update(category);
         await _categories.SaveChangesAsync(ct);
+        await _cacheService.RemoveByPrefixAsync("catalog", ct);
     }
 }
 
@@ -174,12 +186,14 @@ public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand>
 {
     private readonly ICategoryRepository _categories;
     private readonly IProductRepository _products;
+    private readonly ICacheService _cacheService;
     private readonly ILogger<UpdateCategoryHandler> _logger;
 
-    public UpdateCategoryHandler(ICategoryRepository categories, IProductRepository products, ILogger<UpdateCategoryHandler> logger)
+    public UpdateCategoryHandler(ICategoryRepository categories, IProductRepository products, ICacheService cacheService, ILogger<UpdateCategoryHandler> logger)
     {
         _categories = categories;
         _products = products;
+        _cacheService = cacheService;
         _logger = logger;
     }
 
@@ -193,6 +207,7 @@ public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand>
         category.Update(cmd.Name, cmd.Description, cmd.ImageUrl, cmd.IsActive, cmd.ParentCategoryId);
         _categories.Update(category);
         await _categories.SaveChangesAsync(ct);
+        await _cacheService.RemoveByPrefixAsync("catalog", ct);
     }
 }
 
@@ -200,11 +215,13 @@ public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand>
 {
     private readonly ICategoryRepository _categories;
     private readonly IProductRepository _products;
+    private readonly ICacheService _cacheService;
 
-    public DeleteCategoryHandler(ICategoryRepository categories, IProductRepository products)
+    public DeleteCategoryHandler(ICategoryRepository categories, IProductRepository products, ICacheService cacheService)
     {
         _categories = categories;
         _products = products;
+        _cacheService = cacheService;
     }
 
     public async Task Handle(DeleteCategoryCommand cmd, CancellationToken ct)
@@ -273,5 +290,6 @@ public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand>
         }
 
         await _categories.SaveChangesAsync(ct);
+        await _cacheService.RemoveByPrefixAsync("catalog", ct);
     }
 }

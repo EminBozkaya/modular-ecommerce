@@ -8,18 +8,12 @@ import { HeaderSearchAutocomplete } from '@/features/catalog/components/HeaderSe
 import { FavoriteButton } from './FavoriteButton';
 import { BasketButton } from './BasketButton';
 import { UserMenu } from './UserMenu';
-
-const navItems = [
-    { label: 'Kuruyemis', to: '/products?categoryId=1', hasDropdown: true },
-    { label: 'Kuru Meyve', to: '/products?categoryId=4', hasDropdown: true },
-    { label: 'Tohum & Bakliyat', to: '/products?categoryId=2', hasDropdown: true },
-    { label: 'Uyelik Kulubu', to: '/products', hasDropdown: false },
-    { label: 'Hediyeler', to: '/products', hasDropdown: false },
-    { label: 'Tum Urunler', to: '/products', hasDropdown: false, isHighlighted: true },
-];
+import { useCategories } from '@/features/catalog/hooks/useCategories';
 
 export function AppHeader() {
     const { isAuthenticated, isAuthLoading } = useAuthStore();
+    const { data: categories, isLoading: isCategoriesLoading } = useCategories({ onlyMain: true });
+    
     const headerRef = useRef<HTMLElement>(null);
     const [isStuck, setIsStuck] = useState(false);
 
@@ -111,24 +105,20 @@ export function AppHeader() {
                     'w-full lg:w-fit lg:min-w-[672px] mx-auto',
                     isStuck ? '' : 'border-t border-border',
                 ].join(' ')}>
-                    <ul className="flex items-center justify-start lg:justify-center gap-6 lg:gap-10 py-2 overflow-x-auto scrollbar-hide px-4 lg:px-2">
-                        {navItems.map((item) => (
-                            <li key={item.label} className="flex-shrink-0">
+                    <ul className="flex items-center justify-start lg:justify-center gap-6 lg:gap-10 py-2 overflow-x-auto scrollbar-hide px-4 lg:px-2 min-h-[44px]">
+                        {!isCategoriesLoading && categories?.map((category) => (
+                            <li key={category.id} className="flex-shrink-0">
                                 <Link
-                                    to={item.to}
+                                    to={`/products?categoryId=${category.id}`}
                                     className={[
                                         'flex items-center gap-1 text-sm font-medium font-serif transition-colors duration-300 whitespace-nowrap',
                                         isStuck
-                                            ? (item.isHighlighted
-                                                ? 'text-white hover:text-white/80 border-b-2 border-white'
-                                                : 'text-white hover:text-white/80')
-                                            : (item.isHighlighted
-                                                ? 'text-[var(--color-ebrar-green)] hover:text-[var(--color-ebrar-green-dark)] border-b-2 border-[var(--color-ebrar-green)]'
-                                                : 'text-foreground hover:text-[var(--color-ebrar-green)]'),
+                                            ? 'text-white hover:text-white/80'
+                                            : 'text-foreground hover:text-[var(--color-ebrar-green)]',
                                     ].join(' ')}
                                 >
-                                    {item.label}
-                                    {item.hasDropdown && <ChevronDown className="h-3 w-3" />}
+                                    {category.name}
+                                    <ChevronDown className="h-3 w-3" />
                                 </Link>
                             </li>
                         ))}

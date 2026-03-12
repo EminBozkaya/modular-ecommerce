@@ -17,10 +17,11 @@ public class CategoryRepository : ICategoryRepository
             .Include(c => c.SubCategories)
             .FirstOrDefaultAsync(c => c.Id == id, ct);
 
-    public async Task<IReadOnlyList<Category>> GetAllAsync(bool includeDeleted = false, CancellationToken ct = default)
+    public async Task<IReadOnlyList<Category>> GetAllAsync(bool includeDeleted = false, bool onlyMain = false, CancellationToken ct = default)
     {
         var query = _ctx.Categories.Include(c => c.ParentCategory).AsNoTracking();
         if (includeDeleted) query = query.IgnoreQueryFilters();
+        if (onlyMain) query = query.Where(c => c.ParentCategoryId == null);
         return await query.ToListAsync(ct);
     }
 
