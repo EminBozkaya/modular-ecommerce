@@ -107,10 +107,9 @@ public class AuthController : ControllerBase
     private void SetAuthCookies(LoginResult result)
     {
         bool isDev = _env.IsDevelopment();
-        // Dev: Vite proxy forwards /api → backend on same origin, so SameSite=Lax works fine.
-        // Chrome rejects SameSite=None without Secure=true, so None is avoided in dev.
-        var sameSite = isDev ? SameSiteMode.Lax : SameSiteMode.Strict;
+        // Dev'de her zaman secure=false — Vite proxy HTTP üzerinden iletir
         bool secure = !isDev;
+        var sameSite = isDev ? SameSiteMode.Lax : SameSiteMode.Strict;
 
         Response.Cookies.Append("access_token", result.AccessToken, new CookieOptions
         {
@@ -127,6 +126,17 @@ public class AuthController : ControllerBase
             SameSite = sameSite,
             Path = "/api/auth/refresh",
             MaxAge = TimeSpan.FromDays(7)
+        });
+    }
+
+    [HttpGet("debug-env")]
+    public IActionResult DebugEnv()
+    {
+        return Ok(new
+        {
+            isDev = _env.IsDevelopment(),
+            isHttps = Request.IsHttps,
+            env = _env.EnvironmentName
         });
     }
 }

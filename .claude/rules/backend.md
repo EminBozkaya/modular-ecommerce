@@ -34,3 +34,19 @@
 ## Scope Control
 - Do NOT add extra endpoints beyond what was requested
 - Do NOT propose scope expansion
+
+## HTTPS Yönlendirme Kuralı
+`app.UseHttpsRedirection()` yalnızca production'da aktif olmalıdır.
+Development'ta Vite proxy cookie sorunlarına yol açar.
+```csharp
+// DOĞRU:
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+// YANLIŞ — asla ekleme:
+// app.UseHttpsRedirection();
+```
+
+Bu kural Program.cs düzenlenirken her zaman geçerlidir.

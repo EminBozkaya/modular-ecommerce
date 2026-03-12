@@ -21,6 +21,9 @@ public static class DependencyInjection
     {
         // JWT — security-rules: httpOnly cookie via API layer, short-lived tokens
         var jwtSection = configuration.GetRequiredSection("Jwt");
+        var secret = Environment.GetEnvironmentVariable("JWT__Secret")
+            ?? jwtSection["Secret"];
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -33,7 +36,7 @@ public static class DependencyInjection
                     ValidIssuer = jwtSection["Issuer"],
                     ValidAudience = jwtSection["Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtSection["Secret"]!)),
+                        Encoding.UTF8.GetBytes(secret!)),
                     ClockSkew = TimeSpan.Zero,  // Short-lived tokens: no clock skew tolerance
                     RoleClaimType = ClaimTypes.Role,
                     NameClaimType = ClaimTypes.NameIdentifier
