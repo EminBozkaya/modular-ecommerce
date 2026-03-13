@@ -8,7 +8,7 @@ namespace ECommerce.Application.Catalog.Queries;
 public record ProductDto(
     Guid Id, string Name, string? Description, string? ImageUrl,
     decimal PriceAmount, string PriceCurrency,
-    int StockQuantity, bool IsActive,
+    decimal StockQuantity, bool IsActive,
     Guid CategoryId, string? CategoryName,
     Guid UnitId, string? UnitName,
     DateTime CreatedAt, string? CreatedBy,

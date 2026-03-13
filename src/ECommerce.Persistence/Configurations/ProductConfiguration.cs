@@ -42,6 +42,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         {
             stock.Property(s => s.Value)
                 .HasColumnName("StockQuantity")
+                .HasPrecision(18, 3)
                 .IsRequired();
         });
 

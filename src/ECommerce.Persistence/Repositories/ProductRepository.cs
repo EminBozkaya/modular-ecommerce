@@ -19,6 +19,12 @@ public class ProductRepository : IProductRepository
             .Include(p => p.Unit)
             .FirstOrDefaultAsync(p => p.Id == id, ct);
 
+    public async Task<Product?> GetByIdAsNoTrackingAsync(Guid id, CancellationToken ct = default)
+        => await _ctx.Products.AsNoTracking().IgnoreQueryFilters()
+            .Include(p => p.Category)
+            .Include(p => p.Unit)
+            .FirstOrDefaultAsync(p => p.Id == id, ct);
+
     public async Task<IReadOnlyList<Product>> GetAllActiveAsync(CancellationToken ct = default)
         => await _ctx.Products.AsNoTracking()
             .Include(p => p.Category)

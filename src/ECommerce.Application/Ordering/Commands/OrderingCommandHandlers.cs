@@ -41,9 +41,8 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, CreateOrde
         }
 
         // Build order using snapshot prices (basket = advisory, order = legal commitment)
-        // Quantity is cast to int: orders always commit in whole units even for weight-based products
         var orderItems = basket.Items.Select(i =>
-            OrderItem.Create(i.ProductId, i.ProductName, i.UnitPriceSnapshot, (int)Math.Ceiling(i.Quantity)));
+            OrderItem.Create(i.ProductId, i.ProductName, i.UnitPriceSnapshot, i.Quantity));
 
         var order = Order.Create(cmd.UserId, cmd.GuestEmail, cmd.ShippingAddress, orderItems);
 
@@ -52,7 +51,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, CreateOrde
         {
             var product = await _products.GetByIdAsync(item.ProductId, ct)
                 ?? throw new KeyNotFoundException($"Product {item.ProductId} not found.");
-            product.DecreaseStock((int)Math.Ceiling(item.Quantity));
+            product.DecreaseStock(item.Quantity);
         }
 
         await _orders.AddAsync(order, ct);

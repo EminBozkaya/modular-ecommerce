@@ -18,7 +18,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
     const unitConfig = getUnitConfig(product.unitName);
-    const [quantity, setQuantity] = useState<number>(unitConfig.min);
+    const [quantity, setQuantity] = useState<number>(Math.max(unitConfig.min, 1));
 
     const inStock = product.stockQuantity > 0;
     const { data: wishlistIds, isError: isWishlistError } = useWishlistProductIds();

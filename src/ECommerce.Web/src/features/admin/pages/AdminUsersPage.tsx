@@ -28,6 +28,7 @@ export default function AdminUsersPage() {
     const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
     const [isMobile, setIsMobile] = useState(false);
     const isDragging = useRef(false);
+    const rowHeights = useRef<Map<string, number>>(new Map());
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -93,12 +94,25 @@ export default function AdminUsersPage() {
         const u = params.data as AdminUser;
         const status = u.isDeleted ? 'Silinmiş' : (u.isActive ? 'Aktif' : 'Pasif');
         const statusColor = u.isDeleted ? '#dc2626' : (u.isActive ? '#16a34a' : '#ca8a04');
+        const nodeId = params.node.id as string;
+
+        const measuredRef = (el: HTMLDivElement | null) => {
+            if (!el) return;
+            requestAnimationFrame(() => {
+                const h = el.scrollHeight + 24;
+                if (rowHeights.current.get(nodeId) !== h) {
+                    rowHeights.current.set(nodeId, h);
+                    params.api.resetRowHeights();
+                }
+            });
+        };
 
         return (
-            <div className="mobile-detail-card" onClick={() => {
+            <div ref={measuredRef} className="mobile-detail-card" onClick={() => {
                 const newExpanded = new Set(expandedRows);
                 newExpanded.delete(params.node.id);
                 setExpandedRows(newExpanded);
+                rowHeights.current.delete(nodeId);
                 setTimeout(() => {
                     params.api.resetRowHeights();
                     params.api.redrawRows({ rowNodes: [params.node] });
@@ -204,7 +218,10 @@ export default function AdminUsersPage() {
                         isFullWidthRow={(params) => isMobile && expandedRows.has(params.rowNode.id || '')}
                         fullWidthCellRenderer={fullWidthCellRenderer}
                         getRowHeight={(params) => {
-                            if (isMobile && expandedRows.has(params.node.id || '')) return 280;
+                            const id = params.node.id || '';
+                            if (isMobile && expandedRows.has(id)) {
+                                return rowHeights.current.get(id) ?? 320;
+                            }
                             return 48;
                         }}
                         suppressCellFocus={isMobile}

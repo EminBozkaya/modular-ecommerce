@@ -11,6 +11,14 @@ public record UserAddressDto(
     string City,
     string PostalCode,
     string Country,
-    bool IsDefault);
+    bool IsDefault,
+    bool IsActive,
+    bool IsDeleted,
+    DateTime CreatedAt,
+    string? CreatedBy,
+    DateTime? UpdatedAt,
+    string? UpdatedBy,
+    string? UserFullName = null);
 
 public record GetUserAddressesQuery(Guid UserId) : IRequest<IReadOnlyList<UserAddressDto>>;
+public record GetAdminAddressesQuery : IRequest<IReadOnlyList<UserAddressDto>>;

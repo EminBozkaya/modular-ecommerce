@@ -39,5 +39,8 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
             money.Property(m => m.Amount).HasColumnName("UnitPrice_Amount").HasPrecision(18, 2);
             money.Property(m => m.Currency).HasColumnName("UnitPrice_Currency").HasMaxLength(3).HasConversion<string>();
         });
+
+        builder.Property(i => i.Quantity)
+            .HasPrecision(18, 3);
     }
 }

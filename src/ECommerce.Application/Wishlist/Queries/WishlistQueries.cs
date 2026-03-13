@@ -10,7 +10,7 @@ public record WishlistItemDto(
     string Currency,
     string? ImageUrl,
     string CategoryName,
-    int StockQuantity,
+    decimal StockQuantity,
     bool IsActive,
     DateTime AddedAt);
 

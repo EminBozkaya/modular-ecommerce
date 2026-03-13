@@ -1,6 +1,7 @@
 using ECommerce.Application.Basket.Queries;
 using ECommerce.Domain.Basket;
 using ECommerce.Domain.Catalog;
+using ECommerce.Domain.Catalog.ValueObjects;
 using MediatR;
 
 namespace ECommerce.Application.Basket.Commands;
@@ -18,14 +19,17 @@ public class AddToBasketHandler : IRequestHandler<AddToBasketCommand, BasketDto>
 
     public async Task<BasketDto> Handle(AddToBasketCommand cmd, CancellationToken ct)
     {
-        var product = await _products.GetByIdAsync(cmd.ProductId, ct)
+        var product = await _products.GetByIdAsNoTrackingAsync(cmd.ProductId, ct)
             ?? throw new KeyNotFoundException("Product not found.");
 
         if (!product.Stock.IsAvailable)
             throw new InvalidOperationException("Product is out of stock.");
 
         var basket = await GetOrCreateBasket(cmd.UserId, cmd.SessionId, ct);
-        basket.AddItem(product.Id, product.Name, product.Price, cmd.Quantity);
+        
+        // Use a new instance of Money (since it's an owned entity reference) to avoid EF tracking conflicts
+        var priceSnapshot = new Money(product.Price.Amount, product.Price.Currency);
+        basket.AddItem(product.Id, product.Name, priceSnapshot, cmd.Quantity);
         await _baskets.SaveChangesAsync(ct);
 
         return ToDtoSimple(basket);

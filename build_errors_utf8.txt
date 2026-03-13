@@ -1,0 +1,11 @@
+﻿C:\Users\MSI\source\repos\EbrarKuruyemis\src\ECommerce.Application\Wishlist\Queries\WishlistQueryHandlers.cs(37,17): error CS1503: 8 ba─ş─▒ms─▒z de─şi┼şkeni: 'decimal' ├Â─şesinden 'int' ├Â─şesine d├Ân├╝┼şt├╝r├╝lemiyor [C:\Users\MSI\source\repos\EbrarKuruyemis\src\ECommerce.Application\ECommerce.Application.csproj]
+C:\Users\MSI\source\repos\EbrarKuruyemis\src\ECommerce.Application\Admin\Queries\DashboardQueryHandlers.cs(102,17): error CS1503: 7 ba─ş─▒ms─▒z de─şi┼şkeni: 'decimal' ├Â─şesinden 'int' ├Â─şesine d├Ân├╝┼şt├╝r├╝lemiyor [C:\Users\MSI\source\repos\EbrarKuruyemis\src\ECommerce.Application\ECommerce.Application.csproj]
+C:\Users\MSI\source\repos\EbrarKuruyemis\src\ECommerce.Application\Catalog\Queries\CatalogQueryHandlers.cs(66,58): error CS1503: 7 ba─ş─▒ms─▒z de─şi┼şkeni: 'decimal' ├Â─şesinden 'int' ├Â─şesine d├Ân├╝┼şt├╝r├╝lemiyor [C:\Users\MSI\source\repos\EbrarKuruyemis\src\ECommerce.Application\ECommerce.Application.csproj]
+C:\Users\MSI\source\repos\EbrarKuruyemis\src\ECommerce.Application\Catalog\Queries\CatalogQueryHandlers.cs(36,58): error CS1503: 7 ba─ş─▒ms─▒z de─şi┼şkeni: 'decimal' ├Â─şesinden 'int' ├Â─şesine d├Ân├╝┼şt├╝r├╝lemiyor [C:\Users\MSI\source\repos\EbrarKuruyemis\src\ECommerce.Application\ECommerce.Application.csproj]
+C:\Users\MSI\source\repos\EbrarKuruyemis\src\ECommerce.Application\Payment\InitializePayment\Handler.cs(90,13): error CS1503: 4 ba─ş─▒ms─▒z de─şi┼şkeni: 'decimal' ├Â─şesinden 'int' ├Â─şesine d├Ân├╝┼şt├╝r├╝lemiyor [C:\Users\MSI\source\repos\EbrarKuruyemis\src\ECommerce.Application\ECommerce.Application.csproj]
+
+Olu┼şturma BA┼ŞARISIZ OLDU.
+    0 Uyar─▒
+    5 Hata
+
+Ge├ğen S├╝re 00:00:02.01

@@ -19,12 +19,12 @@ export const productSchema = z.object({
         .optional()
         .or(z.literal('')),
     price: z
-        .number({ invalid_type_error: msg('invalidPrice') })
+        .number({ message: msg('invalidPrice') })
         .positive(msg('positiveNumber'))
         .multipleOf(0.01),
     currency: z.string().default('TRY'),
     stockQuantity: z
-        .number({ invalid_type_error: msg('required') })
+        .number({ message: msg('required') })
         .int()
         .min(0, msg('minValue', 0)),
     categoryId: z
@@ -80,3 +80,19 @@ export const adminUserSchema = z.object({
 });
 
 export type AdminUserFormData = z.infer<typeof adminUserSchema>;
+
+// ─── Address ──────────────────────────────────────────────────────────────────
+
+export const addressSchema = z.object({
+    userId: z.string().uuid(msg('required')).optional(),
+    title: z.string().min(1, msg('required')),
+    fullName: z.string().min(1, msg('required')),
+    addressLine1: z.string().min(1, msg('required')),
+    addressLine2: z.string().optional().or(z.literal('')),
+    city: z.string().min(1, msg('required')),
+    postalCode: z.string().min(1, msg('required')),
+    country: z.string().min(1, msg('required')),
+    isActive: z.boolean(),
+});
+
+export type AddressFormData = z.infer<typeof addressSchema>;

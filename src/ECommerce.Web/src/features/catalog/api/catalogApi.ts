@@ -29,13 +29,23 @@ export async function getProducts(params: ProductListParams): Promise<PaginatedR
 
     const response = await apiClient.get<PaginatedResult<Product> | { value: PaginatedResult<Product> }>('/api/catalog/products', { params });
 
-    // Check if the response is wrapped in an object with a 'value' property
+    let result: PaginatedResult<Product>;
     if (response.data && 'value' in response.data && response.data.value && 'items' in response.data.value) {
-        return response.data.value;
+        result = response.data.value;
+    } else {
+        result = response.data as PaginatedResult<Product>;
     }
 
-    // Otherwise, assume it's directly a PaginatedResult
-    return response.data as PaginatedResult<Product>;
+    // Map price and currency fields for frontend compatibility
+    if (result.items) {
+        result.items = result.items.map(p => ({
+            ...p,
+            price: p.price ?? p.priceAmount,
+            currency: p.currency ?? p.priceCurrency
+        }));
+    }
+
+    return result;
 }
 
 export async function getProductById(id: string): Promise<Product> {
@@ -49,7 +59,14 @@ export async function getProductById(id: string): Promise<Product> {
     }
 
     const response = await apiClient.get<Product>(`/api/catalog/products/${id}`);
-    return response.data;
+    const product = response.data;
+
+    // Map price and currency fields for frontend compatibility
+    return {
+        ...product,
+        price: product.price ?? product.priceAmount,
+        currency: product.currency ?? product.priceCurrency
+    };
 }
 
 export async function getCategories(params?: { includeDeleted?: boolean, onlyMain?: boolean }): Promise<Category[]> {

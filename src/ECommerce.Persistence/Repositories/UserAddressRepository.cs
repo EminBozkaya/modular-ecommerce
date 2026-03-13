@@ -25,8 +25,20 @@ public class UserAddressRepository : IUserAddressRepository
             .ThenByDescending(a => a.CreatedAt)
             .ToListAsync(ct);
 
-    public async Task<UserAddress?> GetByIdAsync(Guid id, CancellationToken ct = default)
-        => await _db.UserAddresses.FirstOrDefaultAsync(a => a.Id == id, ct);
+    public async Task<IReadOnlyList<UserAddress>> GetAllAsync(bool includeDeleted = false, CancellationToken ct = default)
+    {
+        var query = includeDeleted ? _db.UserAddresses.IgnoreQueryFilters() : _db.UserAddresses;
+        return await query.AsNoTracking()
+            .Include(a => a.User)
+            .OrderByDescending(a => a.CreatedAt)
+            .ToListAsync(ct);
+    }
+
+    public async Task<UserAddress?> GetByIdAsync(Guid id, bool includeDeleted = false, CancellationToken ct = default)
+    {
+        var query = includeDeleted ? _db.UserAddresses.IgnoreQueryFilters() : _db.UserAddresses;
+        return await query.Include(a => a.User).FirstOrDefaultAsync(a => a.Id == id, ct);
+    }
 
     public async Task AddAsync(UserAddress address, CancellationToken ct = default)
         => await _db.UserAddresses.AddAsync(address, ct);

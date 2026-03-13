@@ -22,6 +22,7 @@ const AdminOrdersPage = lazy(() => import('../../features/admin/orders/pages/Adm
 const AdminCategoriesPage = lazy(() => import('../../features/admin/categories/pages/AdminCategoriesPage'));
 const AdminOrderDetailPage = lazy(() => import('../../features/admin/orders/pages/AdminOrderDetailPage'));
 const AdminUsersPage = lazy(() => import('../../features/admin/pages/AdminUsersPage'));
+const AdminAddressesPage = lazy(() => import('../../features/admin/pages/AdminAddressesPage'));
 const FavoritesPage = lazy(() => import('../../features/favorites/pages/FavoritesPage'));
 const PaymentWaitingPage = lazy(() => import('../../features/ordering/pages/PaymentWaitingPage'));
 const ProfilePage = lazy(() => import('../../features/auth/pages/ProfilePage'));
@@ -222,6 +223,14 @@ export const router = createBrowserRouter([
                         element: (
                             <SuspenseWrapper>
                                 <AdminUsersPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'addresses',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminAddressesPage />
                             </SuspenseWrapper>
                         ),
                     },

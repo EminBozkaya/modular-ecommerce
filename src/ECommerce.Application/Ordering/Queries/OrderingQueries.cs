@@ -19,7 +19,7 @@ public record OrderDto(
 
 public record OrderItemDto(
     Guid ProductId, string ProductName,
-    decimal UnitPrice, int Quantity, decimal LineTotal);
+    decimal UnitPrice, decimal Quantity, decimal LineTotal);
 
 public record GetOrdersQuery(Guid? UserId = null) : IRequest<IReadOnlyList<OrderDto>>;
 public record GetPagedOrdersQuery(Guid? UserId = null, int Page = 1, int PageSize = 20) : IRequest<PagedResult<OrderDto>>;

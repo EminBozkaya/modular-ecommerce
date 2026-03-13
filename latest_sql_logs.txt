@@ -1,0 +1,50 @@
+﻿      SELECT b1."Id", b1."SessionId", b1."UserId", b0."Id", b0."BasketId", b0."ProductId", b0."ProductName", b0."Quantity", b0."UnitPrice_Amount", b0."UnitPrice_Currency"
+      FROM (
+          SELECT b."Id", b."SessionId", b."UserId"
+          FROM "Baskets" AS b
+          WHERE b."UserId" = @userId
+          LIMIT 1
+      ) AS b1
+      LEFT JOIN "BasketItems" AS b0 ON b1."Id" = b0."BasketId"
+      ORDER BY b1."Id"info: 13.03.2026 17:40:18.050 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (15ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = Guid), @p2='?' (DbType = Guid), @p3='?', @p4='?' (DbType = Decimal), @p5='?' (DbType = Decimal), @p6='?'], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "BasketItems" ("Id", "BasketId", "ProductId", "ProductName", "Quantity", "UnitPrice_Amount", "UnitPrice_Currency")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);info: 13.03.2026 17:40:18.075 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (2ms) [Parameters=[@userId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT b1."Id", b1."SessionId", b1."UserId", b0."Id", b0."BasketId", b0."ProductId", b0."ProductName", b0."Quantity", b0."UnitPrice_Amount", b0."UnitPrice_Currency"
+      FROM (
+          SELECT b."Id", b."SessionId", b."UserId"
+          FROM "Baskets" AS b
+          WHERE b."UserId" = @userId
+          LIMIT 1
+      ) AS b1
+      LEFT JOIN "BasketItems" AS b0 ON b1."Id" = b0."BasketId"
+      ORDER BY b1."Id"info: 13.03.2026 17:40:18.080 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (2ms) [Parameters=[@id='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT p."Id", p."CategoryId", p."CreatedAt", p."CreatedBy", p."DeletedAt", p."Description", p."ImageUrl", p."IsActive", p."IsDeleted", p."Name", p."UnitId", p."UpdatedAt", p."UpdatedBy", p."Price_Amount", p."Price_Currency", p."StockQuantity", c."Id", c."CreatedAt", c."CreatedBy", c."DeletedAt", c."Description", c."ImageUrl", c."IsActive", c."IsDeleted", c."Name", c."ParentCategoryId", c."UpdatedAt", c."UpdatedBy", u."Id", u."Code", u."CreatedAt", u."CreatedBy", u."DeletedAt", u."IsDeleted", u."Name", u."UpdatedAt", u."UpdatedBy"
+      FROM "Products" AS p
+      INNER JOIN "Categories" AS c ON p."CategoryId" = c."Id"
+      INNER JOIN "Units" AS u ON p."UnitId" = u."Id"
+      WHERE p."Id" = @id
+      LIMIT 1info: 13.03.2026 17:40:18.083 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (2ms) [Parameters=[@id='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT p."Id", p."CategoryId", p."CreatedAt", p."CreatedBy", p."DeletedAt", p."Description", p."ImageUrl", p."IsActive", p."IsDeleted", p."Name", p."UnitId", p."UpdatedAt", p."UpdatedBy", p."Price_Amount", p."Price_Currency", p."StockQuantity", c."Id", c."CreatedAt", c."CreatedBy", c."DeletedAt", c."Description", c."ImageUrl", c."IsActive", c."IsDeleted", c."Name", c."ParentCategoryId", c."UpdatedAt", c."UpdatedBy", u."Id", u."Code", u."CreatedAt", u."CreatedBy", u."DeletedAt", u."IsDeleted", u."Name", u."UpdatedAt", u."UpdatedBy"
+      FROM "Products" AS p
+      INNER JOIN "Categories" AS c ON p."CategoryId" = c."Id"
+      INNER JOIN "Units" AS u ON p."UnitId" = u."Id"
+      WHERE p."Id" = @id
+      LIMIT 1info: 13.03.2026 17:40:18.086 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (2ms) [Parameters=[@id='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT p."Id", p."CategoryId", p."CreatedAt", p."CreatedBy", p."DeletedAt", p."Description", p."ImageUrl", p."IsActive", p."IsDeleted", p."Name", p."UnitId", p."UpdatedAt", p."UpdatedBy", p."Price_Amount", p."Price_Currency", p."StockQuantity", c."Id", c."CreatedAt", c."CreatedBy", c."DeletedAt", c."Description", c."ImageUrl", c."IsActive", c."IsDeleted", c."Name", c."ParentCategoryId", c."UpdatedAt", c."UpdatedBy", u."Id", u."Code", u."CreatedAt", u."CreatedBy", u."DeletedAt", u."IsDeleted", u."Name", u."UpdatedAt", u."UpdatedBy"
+      FROM "Products" AS p
+      INNER JOIN "Categories" AS c ON p."CategoryId" = c."Id"
+      INNER JOIN "Units" AS u ON p."UnitId" = u."Id"
+      WHERE p."Id" = @id
+      LIMIT 1info: 13.03.2026 17:40:18.088 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command) 
+      Executed DbCommand (2ms) [Parameters=[@id='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT p."Id", p."CategoryId", p."CreatedAt", p."CreatedBy", p."DeletedAt", p."Description", p."ImageUrl", p."IsActive", p."IsDeleted", p."Name", p."UnitId", p."UpdatedAt", p."UpdatedBy", p."Price_Amount", p."Price_Currency", p."StockQuantity", c."Id", c."CreatedAt", c."CreatedBy", c."DeletedAt", c."Description", c."ImageUrl", c."IsActive", c."IsDeleted", c."Name", c."ParentCategoryId", c."UpdatedAt", c."UpdatedBy", u."Id", u."Code", u."CreatedAt", u."CreatedBy", u."DeletedAt", u."IsDeleted", u."Name", u."UpdatedAt", u."UpdatedBy"
+      FROM "Products" AS p
+      INNER JOIN "Categories" AS c ON p."CategoryId" = c."Id"
+      INNER JOIN "Units" AS u ON p."UnitId" = u."Id"
+      WHERE p."Id" = @id
+      LIMIT 1

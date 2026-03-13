@@ -10,7 +10,7 @@ public record CreateProductCommand(
     string? ImageUrl,
     decimal Price,
     Currency Currency,
-    int StockQuantity,
+    decimal StockQuantity,
     Guid CategoryId,
     Guid UnitId,
     bool IsActive = true) : IRequest<Guid>;
@@ -34,7 +34,7 @@ public record DeleteProductCommand(Guid Id) : IRequest;
 public record RestoreProductCommand(Guid Id) : IRequest;
 
 // --- UpdateStock ---
-public record UpdateStockCommand(Guid ProductId, int NewQuantity) : IRequest;
+public record UpdateStockCommand(Guid ProductId, decimal NewQuantity) : IRequest;
 
 // --- CreateCategory ---
 public record CreateCategoryCommand(

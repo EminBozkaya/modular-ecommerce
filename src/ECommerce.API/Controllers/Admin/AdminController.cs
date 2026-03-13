@@ -1,6 +1,7 @@
 using ECommerce.Application.Admin.Queries;
 using ECommerce.Application.Catalog.Commands;
 using ECommerce.Application.Catalog.Queries;
+using ECommerce.Application.Identity.Commands;
 using ECommerce.Application.Identity.Queries;
 using ECommerce.Application.Ordering.Commands;
 using ECommerce.Application.Ordering.Queries;
@@ -141,6 +142,37 @@ public class AdminController : ControllerBase
     [HttpGet("dashboard/low-stock")]
     public async Task<IActionResult> GetLowStockProducts(CancellationToken ct)
         => Ok(await _mediator.Send(new GetLowStockProductsQuery(), ct));
+
+    // ── Address Management ──
+
+    [HttpGet("addresses")]
+    public async Task<IActionResult> GetAddresses(CancellationToken ct)
+        => Ok(await _mediator.Send(new GetAdminAddressesQuery(), ct));
+
+    [HttpPost("addresses")]
+    public async Task<IActionResult> CreateAddress([FromBody] AdminCreateAddressCommand cmd, CancellationToken ct)
+        => Ok(await _mediator.Send(cmd, ct));
+
+    [HttpPut("addresses")]
+    public async Task<IActionResult> UpdateAddress([FromBody] AdminUpdateAddressCommand cmd, CancellationToken ct)
+    {
+        await _mediator.Send(cmd, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("addresses/{id:guid}")]
+    public async Task<IActionResult> DeleteAddress(Guid id, CancellationToken ct)
+    {
+        await _mediator.Send(new AdminDeleteAddressCommand(id), ct);
+        return NoContent();
+    }
+
+    [HttpPost("addresses/restore/{id:guid}")]
+    public async Task<IActionResult> RestoreAddress(Guid id, CancellationToken ct)
+    {
+        await _mediator.Send(new AdminRestoreAddressCommand(id), ct);
+        return NoContent();
+    }
 }
 
 public record UpdateOrderStatusRequest(string NewStatus);
