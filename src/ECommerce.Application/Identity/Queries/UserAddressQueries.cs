@@ -11,6 +11,9 @@ public record UserAddressDto(
     string City,
     string PostalCode,
     string Country,
-    bool IsDefault);
+    bool IsDefault,
+    int? CountryId = null,
+    int? CityId = null,
+    int? DistrictId = null);
 
 public record GetUserAddressesQuery(Guid UserId) : IRequest<IReadOnlyList<UserAddressDto>>;

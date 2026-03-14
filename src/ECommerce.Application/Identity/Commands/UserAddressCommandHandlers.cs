@@ -23,7 +23,7 @@ public class AddUserAddressHandler : IRequestHandler<AddUserAddressCommand, Guid
             cmd.UserId, cmd.Title, cmd.FullName,
             cmd.AddressLine1, cmd.AddressLine2,
             cmd.City, cmd.PostalCode, cmd.Country,
-            cmd.IsDefault);
+            cmd.IsDefault, cmd.CountryId, cmd.CityId, cmd.DistrictId);
 
         await _repo.AddAsync(address, ct);
         await _repo.SaveChangesAsync(ct);
@@ -45,7 +45,8 @@ public class UpdateUserAddressHandler : IRequestHandler<UpdateUserAddressCommand
             throw new UnauthorizedAccessException("You do not have permission to modify this address.");
 
         address.Update(cmd.Title, cmd.FullName, cmd.AddressLine1, cmd.AddressLine2,
-            cmd.City, cmd.PostalCode, cmd.Country);
+            cmd.City, cmd.PostalCode, cmd.Country,
+            cmd.CountryId, cmd.CityId, cmd.DistrictId);
 
         await _repo.SaveChangesAsync(ct);
     }

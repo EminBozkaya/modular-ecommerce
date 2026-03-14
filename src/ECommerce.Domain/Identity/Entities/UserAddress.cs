@@ -9,10 +9,23 @@ public class UserAddress : BaseAuditableEntity
     public string FullName { get; private set; } = null!;
     public string AddressLine1 { get; private set; } = null!;
     public string? AddressLine2 { get; private set; }
+
+    // ── Legacy string snapshot columns (backward-compat) ──
     public string City { get; private set; } = null!;
     public string PostalCode { get; private set; } = null!;
     public string Country { get; private set; } = null!;
+
     public bool IsDefault { get; private set; }
+
+    // ── Relational FK columns (nullable for backward-compat) ──
+    public int? CountryId { get; private set; }
+    public int? CityId { get; private set; }
+    public int? DistrictId { get; private set; }
+
+    // ── Navigation properties ──
+    public Country? CountryRef { get; private set; }
+    public City? CityRef { get; private set; }
+    public District? DistrictRef { get; private set; }
 
     private UserAddress() { }
 
@@ -25,7 +38,10 @@ public class UserAddress : BaseAuditableEntity
         string city,
         string postalCode,
         string country,
-        bool isDefault = false)
+        bool isDefault = false,
+        int? countryId = null,
+        int? cityId = null,
+        int? districtId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
         ArgumentException.ThrowIfNullOrWhiteSpace(fullName);
@@ -45,6 +61,9 @@ public class UserAddress : BaseAuditableEntity
             PostalCode = postalCode,
             Country = country,
             IsDefault = isDefault,
+            CountryId = countryId,
+            CityId = cityId,
+            DistrictId = districtId,
             CreatedAt = DateTime.UtcNow
         };
     }
@@ -56,7 +75,10 @@ public class UserAddress : BaseAuditableEntity
         string? addressLine2,
         string city,
         string postalCode,
-        string country)
+        string country,
+        int? countryId = null,
+        int? cityId = null,
+        int? districtId = null)
     {
         Title = title;
         FullName = fullName;
@@ -65,6 +87,9 @@ public class UserAddress : BaseAuditableEntity
         City = city;
         PostalCode = postalCode;
         Country = country;
+        CountryId = countryId;
+        CityId = cityId;
+        DistrictId = districtId;
         UpdatedAt = DateTime.UtcNow;
     }
 

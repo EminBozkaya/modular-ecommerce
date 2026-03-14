@@ -11,7 +11,10 @@ public record AddUserAddressCommand(
     string City,
     string PostalCode,
     string Country,
-    bool IsDefault) : IRequest<Guid>;
+    bool IsDefault,
+    int? CountryId = null,
+    int? CityId = null,
+    int? DistrictId = null) : IRequest<Guid>;
 
 public record UpdateUserAddressCommand(
     Guid AddressId,
@@ -22,7 +25,10 @@ public record UpdateUserAddressCommand(
     string? AddressLine2,
     string City,
     string PostalCode,
-    string Country) : IRequest;
+    string Country,
+    int? CountryId = null,
+    int? CityId = null,
+    int? DistrictId = null) : IRequest;
 
 public record DeleteUserAddressCommand(
     Guid AddressId,
