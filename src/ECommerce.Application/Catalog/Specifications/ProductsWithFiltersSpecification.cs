@@ -1,5 +1,7 @@
 using ECommerce.Domain.Catalog.Entities;
 using ECommerce.Domain.Common.Specifications;
+using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace ECommerce.Application.Catalog.Specifications;
 
@@ -7,7 +9,13 @@ public class ProductsWithFiltersSpecification : BaseSpecification<Product>
 {
     public ProductsWithFiltersSpecification(string? searchTerm, decimal? minPrice, decimal? maxPrice, Guid? categoryId, string? sortBy, bool descending, int pageNumber, int pageSize, bool includeInactive = false, bool includeDeleted = false)
         : base(x =>
-            (string.IsNullOrEmpty(searchTerm) || x.Name.Contains(searchTerm) || (x.Description != null && x.Description.Contains(searchTerm))) &&
+            (string.IsNullOrEmpty(searchTerm) || 
+             EF.Functions.ILike(x.Name, $"%{searchTerm}%") || 
+             EF.Functions.ILike(x.Name, $"%{searchTerm.Replace('ı', 'i').Replace('İ', 'i').Replace('I', 'i')}%") ||
+             (x.Description != null && (
+                EF.Functions.ILike(x.Description, $"%{searchTerm}%") || 
+                EF.Functions.ILike(x.Description, $"%{searchTerm.Replace('ı', 'i').Replace('İ', 'i').Replace('I', 'i')}%")
+             ))) &&
             (!minPrice.HasValue || x.Price.Amount >= minPrice.Value) &&
             (!maxPrice.HasValue || x.Price.Amount <= maxPrice.Value) &&
             (!categoryId.HasValue || x.CategoryId == categoryId.Value) &&

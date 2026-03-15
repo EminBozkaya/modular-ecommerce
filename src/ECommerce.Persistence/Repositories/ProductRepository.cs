@@ -46,7 +46,7 @@ public class ProductRepository : IProductRepository
     public async Task<int> CountAsync(ISpecification<Product> spec, CancellationToken ct = default)
     {
         var query = _ctx.Products.AsNoTracking();
-        return await SpecificationEvaluator<Product>.GetQuery(query, spec).CountAsync(ct);
+        return await SpecificationEvaluator<Product>.GetQuery(query, spec, evaluatePaging: false).CountAsync(ct);
     }
 
     public async Task AddAsync(Product product, CancellationToken ct = default)

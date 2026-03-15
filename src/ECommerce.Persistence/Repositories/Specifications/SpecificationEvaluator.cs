@@ -5,7 +5,7 @@ namespace ECommerce.Persistence.Repositories.Specifications;
 
 public class SpecificationEvaluator<T> where T : class
 {
-    public static IQueryable<T> GetQuery(IQueryable<T> inputQuery, ISpecification<T> specification)
+    public static IQueryable<T> GetQuery(IQueryable<T> inputQuery, ISpecification<T> specification, bool evaluatePaging = true)
     {
         var query = inputQuery;
 
@@ -30,7 +30,7 @@ public class SpecificationEvaluator<T> where T : class
             query = query.OrderByDescending(specification.OrderByDescending);
         }
 
-        if (specification.IsPagingEnabled)
+        if (specification.IsPagingEnabled && evaluatePaging)
         {
             query = query.Skip(specification.Skip ?? 0).Take(specification.Take ?? 0);
         }

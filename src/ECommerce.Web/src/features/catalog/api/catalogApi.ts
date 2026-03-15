@@ -3,7 +3,7 @@ import type { Category, Product, ProductListParams, Unit } from '../types/produc
 import type { PaginatedResult } from '../../../types/api';
 import { mockCategories, mockProducts, mockPaginate } from './mock';
 
-const isMock = import.meta.env.VITE_USE_MOCK_API === 'true';
+const isMock = import.meta.env.VITE_USE_MOCK === 'true';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -28,6 +28,7 @@ export async function getProducts(params: ProductListParams): Promise<PaginatedR
     }
 
     const response = await apiClient.get<PaginatedResult<Product> | { value: PaginatedResult<Product> }>('/api/catalog/products', { params });
+
 
     let result: PaginatedResult<Product>;
     if (response.data && 'value' in response.data && response.data.value && 'items' in response.data.value) {

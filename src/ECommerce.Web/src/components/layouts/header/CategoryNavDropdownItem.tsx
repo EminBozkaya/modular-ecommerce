@@ -56,7 +56,7 @@ function FlyoutSubMenu({ node, level, closeAll }: { node: CategoryTreeNode; leve
                 <Link
                     to={`/products?categoryId=${node.category.id}`}
                     onClick={closeAll}
-                    className="block px-4 py-2 text-[13px] text-foreground hover:bg-gray-100 hover:text-[var(--color-ebrar-green)] transition-colors"
+                    className="block mx-1.5 px-3 py-2.5 text-[13px] text-foreground hover:bg-gray-100 hover:text-[var(--color-ebrar-green)] transition-colors rounded-lg"
                 >
                     {node.category.name}
                 </Link>
@@ -79,7 +79,7 @@ function FlyoutSubMenu({ node, level, closeAll }: { node: CategoryTreeNode; leve
                     setIsOpen((prev) => !prev);
                 }}
                 className={cn(
-                    "w-full flex items-center justify-between px-4 py-2 cursor-pointer group transition-colors text-left",
+                    "w-full flex items-center justify-between mx-1.5 w-[calc(100%-12px)] px-3 py-2.5 cursor-pointer group transition-colors text-left rounded-lg",
                     isOpen ? "bg-gray-50" : "hover:bg-gray-100"
                 )}
             >
@@ -97,7 +97,7 @@ function FlyoutSubMenu({ node, level, closeAll }: { node: CategoryTreeNode; leve
 
             {isOpen && (
                 <ul className={cn(
-                    "absolute top-[34px] min-w-[220px] bg-white border border-border/60 shadow-lg py-1 rounded-md z-50 animate-in fade-in duration-200",
+                    "absolute top-[34px] min-w-[220px] bg-white border border-border/60 shadow-lg py-1.5 rounded-xl z-50 animate-in fade-in duration-200",
                     openDirection === 'right' ? "left-full ml-1 slide-in-from-left-2" : "right-full mr-1 slide-in-from-right-2"
                 )}>
                     {node.subCategories.map((childNode) => (
@@ -191,7 +191,7 @@ export function CategoryNavDropdownItem({ node, isStuck }: Props) {
     }, [open]);
 
     const navLinkCls = cn(
-        'group inline-flex h-[50px] w-max items-center justify-center rounded-sm bg-transparent px-4 py-2 text-[14px] font-medium transition-colors hover:bg-transparent focus:bg-transparent focus:outline-none disabled:pointer-events-none select-none cursor-pointer',
+        'group inline-flex h-[50px] w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-[14px] font-medium transition-colors hover:bg-transparent focus:bg-transparent focus:outline-none disabled:pointer-events-none select-none cursor-pointer',
         isStuck
             ? 'text-white hover:text-white/80 focus:text-white/80'
             : 'text-foreground hover:text-[var(--color-ebrar-green)] focus:text-[var(--color-ebrar-green)]',
@@ -245,7 +245,7 @@ export function CategoryNavDropdownItem({ node, isStuck }: Props) {
                     }}
                     className="z-[200] pt-1" // Düğmenin 1px altına
                 >
-                    <ul className="min-w-[220px] rounded-md border border-border/60 bg-white shadow-xl py-1 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <ul className="min-w-[220px] rounded-xl border border-border/60 bg-white shadow-xl py-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
                         {node.subCategories.map((childNode) => (
                             <FlyoutSubMenu key={childNode.category.id} node={childNode} level={1} closeAll={closeAll} />
                         ))}
