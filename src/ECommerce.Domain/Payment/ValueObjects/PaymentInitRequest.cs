@@ -19,7 +19,7 @@ public record PaymentItem(
     string Name,
     string Category,
     decimal Price,
-    int Quantity
+    decimal Quantity
 );
 
 public record PaymentInitResult(

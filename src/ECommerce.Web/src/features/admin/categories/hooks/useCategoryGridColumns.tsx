@@ -132,7 +132,6 @@ export function useCategoryGridColumns({
             filter: 'agTextColumnFilter',
             sortable: true,
             minWidth: 160,
-            tooltipValueGetter: (params) => params.value ?? '',
         },
         {
             headerName: 'Üst Kategori',
@@ -140,7 +139,6 @@ export function useCategoryGridColumns({
             filter: 'agTextColumnFilter',
             sortable: true,
             minWidth: 150,
-            tooltipValueGetter: (params) => params.value ?? '',
             cellRenderer: (params: { value?: string | null }) =>
                 params.value
                     ? <span className="text-gray-600">{params.value}</span>
@@ -154,13 +152,6 @@ export function useCategoryGridColumns({
             filterParams: { comparator: dateComparator },
             minWidth: 180,
             valueFormatter: formatDateCell,
-            tooltipValueGetter: (params) => {
-                if (!params.value) return '';
-                return new Intl.DateTimeFormat('tr-TR', {
-                    year: 'numeric', month: '2-digit', day: '2-digit',
-                    hour: '2-digit', minute: '2-digit',
-                }).format(new Date(params.value as string));
-            },
         },
         {
             headerName: 'Oluşturan',
@@ -178,13 +169,6 @@ export function useCategoryGridColumns({
             filterParams: { comparator: dateComparator },
             minWidth: 180,
             valueFormatter: formatDateCell,
-            tooltipValueGetter: (params) => {
-                if (!params.value) return '';
-                return new Intl.DateTimeFormat('tr-TR', {
-                    year: 'numeric', month: '2-digit', day: '2-digit',
-                    hour: '2-digit', minute: '2-digit',
-                }).format(new Date(params.value as string));
-            },
         },
         {
             headerName: 'Güncelleyen',
@@ -192,7 +176,6 @@ export function useCategoryGridColumns({
             sortable: true,
             filter: 'agTextColumnFilter',
             minWidth: 120,
-            tooltipValueGetter: (params) => params.value ?? '',
         },
         {
             headerName: 'Silinme Tarihi',

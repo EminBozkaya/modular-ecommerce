@@ -9,6 +9,7 @@ namespace ECommerce.Domain.Catalog;
 public interface IProductRepository
 {
     Task<Product?> GetByIdAsync(Guid id, CancellationToken ct = default);
+    Task<Product?> GetByIdAsNoTrackingAsync(Guid id, CancellationToken ct = default);
     Task<IReadOnlyList<Product>> GetAllActiveAsync(CancellationToken ct = default);
     Task<IReadOnlyList<Product>> GetByCategoryAsync(Guid categoryId, CancellationToken ct = default);
     Task<IReadOnlyList<Product>> ListAsync(ISpecification<Product> spec, CancellationToken ct = default);

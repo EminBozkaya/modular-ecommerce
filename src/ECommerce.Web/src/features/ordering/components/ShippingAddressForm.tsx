@@ -1,3 +1,7 @@
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { shippingAddressSchema, type ShippingAddressFormData } from '@/lib/validations/checkout.schema';
 import type { ShippingAddress } from '../types/order';
 
 interface ShippingAddressFormProps {
@@ -8,16 +12,41 @@ interface ShippingAddressFormProps {
     hideHeader?: boolean;
 }
 
-const inputClass =
-    'w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-[var(--color-ebrar-green)] focus:bg-white focus:ring-2 focus:ring-[var(--color-ebrar-green)]/20 disabled:cursor-not-allowed disabled:opacity-50';
-
-const labelClass = 'block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1.5';
+const errorClass = 'mt-1.5 text-xs font-semibold text-red-600 ml-0.5';
 
 export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: ShippingAddressFormProps) {
-    const handleChange =
-        (field: keyof ShippingAddress) => (e: React.ChangeEvent<HTMLInputElement>) => {
-            onChange({ ...value, [field]: e.target.value });
-        };
+    const {
+        register,
+        watch,
+        formState: { errors },
+        reset,
+    } = useForm<ShippingAddressFormData>({
+        resolver: zodResolver(shippingAddressSchema),
+        defaultValues: value,
+        mode: 'onChange',
+    });
+
+    // Parent value değişince formu senkronize et (kayıtlı adres seçimi gibi durumlarda)
+    useEffect(() => {
+        reset(value);
+    }, [value.fullName, value.addressLine1, value.city, value.postalCode, value.country]);
+
+    // İzlenen değerleri parent'a bildiren effect
+    useEffect(() => {
+        const subscription = watch((formValues) => {
+            onChange(formValues as ShippingAddress);
+        });
+        return () => subscription.unsubscribe();
+    }, [watch, onChange]);
+
+    const inputClass = (hasError: boolean) =>
+        `w-full rounded-lg border px-4 py-2.5 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-white focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+            hasError
+                ? 'border-red-400 bg-red-50/30 focus:border-red-500 focus:ring-red-500/20'
+                : 'border-gray-200 bg-gray-50 focus:border-[var(--color-ebrar-green)] focus:ring-[var(--color-ebrar-green)]/20'
+        }`;
+
+    const labelClass = 'block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1.5';
 
     const fields = (
         <div className="space-y-4">
@@ -27,12 +56,12 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
                 </label>
                 <input
                     type="text"
-                    value={value.fullName}
-                    onChange={handleChange('fullName')}
+                    {...register('fullName')}
                     disabled={disabled}
-                    className={inputClass}
+                    className={inputClass(!!errors.fullName)}
                     placeholder="Ali Yilmaz"
                 />
+                {errors.fullName && <p className={errorClass} role="alert">{errors.fullName.message}</p>}
             </div>
 
             <div>
@@ -41,24 +70,24 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
                 </label>
                 <input
                     type="text"
-                    value={value.addressLine1}
-                    onChange={handleChange('addressLine1')}
+                    {...register('addressLine1')}
                     disabled={disabled}
-                    className={inputClass}
+                    className={inputClass(!!errors.addressLine1)}
                     placeholder="Sokak, Mahalle, Kapi No"
                 />
+                {errors.addressLine1 && <p className={errorClass} role="alert">{errors.addressLine1.message}</p>}
             </div>
 
             <div>
                 <label className={labelClass}>Adres Satiri 2</label>
                 <input
                     type="text"
-                    value={value.addressLine2 || ''}
-                    onChange={handleChange('addressLine2')}
+                    {...register('addressLine2')}
                     disabled={disabled}
-                    className={inputClass}
+                    className={inputClass(!!errors.addressLine2)}
                     placeholder="Kat, Daire (istege bagli)"
                 />
+                {errors.addressLine2 && <p className={errorClass} role="alert">{errors.addressLine2.message}</p>}
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -68,12 +97,12 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
                     </label>
                     <input
                         type="text"
-                        value={value.city}
-                        onChange={handleChange('city')}
+                        {...register('city')}
                         disabled={disabled}
-                        className={inputClass}
+                        className={inputClass(!!errors.city)}
                         placeholder="Istanbul"
                     />
+                    {errors.city && <p className={errorClass} role="alert">{errors.city.message}</p>}
                 </div>
                 <div>
                     <label className={labelClass}>
@@ -81,12 +110,12 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
                     </label>
                     <input
                         type="text"
-                        value={value.postalCode}
-                        onChange={handleChange('postalCode')}
+                        {...register('postalCode')}
                         disabled={disabled}
-                        className={inputClass}
+                        className={inputClass(!!errors.postalCode)}
                         placeholder="34000"
                     />
+                    {errors.postalCode && <p className={errorClass} role="alert">{errors.postalCode.message}</p>}
                 </div>
             </div>
 
@@ -96,12 +125,12 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
                 </label>
                 <input
                     type="text"
-                    value={value.country}
-                    onChange={handleChange('country')}
+                    {...register('country')}
                     disabled={disabled}
-                    className={inputClass}
+                    className={inputClass(!!errors.country)}
                     placeholder="Turkiye"
                 />
+                {errors.country && <p className={errorClass} role="alert">{errors.country.message}</p>}
             </div>
         </div>
     );

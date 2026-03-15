@@ -101,8 +101,8 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
                 return params.value ? <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span> : <span style={{ color: '#ca8a04', fontWeight: '600' }}>Pasif</span>;
             },
         },
-        { headerName: 'Ürün Adı', field: 'name', filter: 'agTextColumnFilter', sortable: true, minWidth: 160, tooltipValueGetter: (p) => p.value ?? '' },
-        { headerName: 'Birim', field: 'unitName', filter: 'agTextColumnFilter', sortable: true, minWidth: 80, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'Ürün Adı', field: 'name', filter: 'agTextColumnFilter', sortable: true, minWidth: 160 },
+        { headerName: 'Birim', field: 'unitName', filter: 'agTextColumnFilter', sortable: true, minWidth: 80 },
         {
             headerName: 'Fiyat (TL)',
             field: 'priceAmount',
@@ -110,7 +110,6 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
             sortable: true,
             minWidth: 120,
             valueFormatter: (params) => params.value != null ? String(Number(params.value).toFixed(2)) + ' TL' : '',
-            tooltipValueGetter: (params) => params.value != null ? String(Number(params.value).toFixed(2)) + ' TL' : '',
         },
         {
             headerName: 'Stok',
@@ -123,14 +122,13 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
                 if (params.value < 10) return { color: '#f59e0b', fontWeight: '600' };
                 return { color: '#16a34a', fontWeight: '400' };
             },
-            tooltipValueGetter: (p) => p.value != null ? String(p.value) : '',
         },
-        { headerName: 'Kategori', field: 'categoryName', filter: 'agTextColumnFilter', sortable: true, minWidth: 130, tooltipValueGetter: (p) => p.value ?? '' },
-        { headerName: 'Açıklama', field: 'description', filter: 'agTextColumnFilter', sortable: true, minWidth: 160, tooltipValueGetter: (p) => p.value ?? '' },
-        { headerName: 'Oluşturulma Tarihi', field: 'createdAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, minWidth: 180, valueFormatter: formatDateCell, tooltipValueGetter: (p) => { if (!p.value) return ''; return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(p.value as string)); } },
-        { headerName: 'Oluşturan', field: 'createdBy', sortable: true, filter: 'agTextColumnFilter', minWidth: 120, tooltipValueGetter: (p) => p.value ?? '' },
-        { headerName: 'Güncellenme Tarihi', field: 'updatedAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, minWidth: 180, valueFormatter: formatDateCell, tooltipValueGetter: (p) => { if (!p.value) return ''; return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(p.value as string)); } },
-        { headerName: 'Güncelleyen', field: 'updatedBy', sortable: true, filter: 'agTextColumnFilter', minWidth: 120, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'Kategori', field: 'categoryName', filter: 'agTextColumnFilter', sortable: true, minWidth: 130 },
+        { headerName: 'Açıklama', field: 'description', filter: 'agTextColumnFilter', sortable: true, minWidth: 160 },
+        { headerName: 'Oluşturulma Tarihi', field: 'createdAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, minWidth: 180, valueFormatter: formatDateCell },
+        { headerName: 'Oluşturan', field: 'createdBy', sortable: true, filter: 'agTextColumnFilter', minWidth: 120 },
+        { headerName: 'Güncellenme Tarihi', field: 'updatedAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, minWidth: 180, valueFormatter: formatDateCell },
+        { headerName: 'Güncelleyen', field: 'updatedBy', sortable: true, filter: 'agTextColumnFilter', minWidth: 120 },
         { headerName: 'Silinme Tarihi', field: 'deletedAt', sortable: true, filter: false, minWidth: 180, hide: true, valueFormatter: formatDateCell },
         {
             headerName: 'İşlemler',

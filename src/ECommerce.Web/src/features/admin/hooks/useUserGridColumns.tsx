@@ -70,8 +70,8 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
                 return params.value ? <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span> : <span style={{ color: '#ca8a04', fontWeight: '600' }}>Pasif</span>;
             },
         },
-        { headerName: 'Ad Soyad', field: 'fullName', filter: 'agTextColumnFilter', sortable: true, minWidth: 180, tooltipValueGetter: (p) => p.value ?? '' },
-        { headerName: 'E-posta', field: 'email', filter: 'agTextColumnFilter', sortable: true, minWidth: 220, tooltipValueGetter: (p) => p.value ?? '' },
+        { headerName: 'Ad Soyad', field: 'fullName', filter: 'agTextColumnFilter', sortable: true, minWidth: 180 },
+        { headerName: 'E-posta', field: 'email', filter: 'agTextColumnFilter', sortable: true, minWidth: 220 },
         {
             headerName: 'Rol',
             field: 'role',
@@ -116,10 +116,6 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
             valueFormatter: (params: ValueFormatterParams<AdminUser, string>) => {
                 if (!params.value) return '';
                 return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(params.value));
-            },
-            tooltipValueGetter: (params) => {
-                if (!params.value) return '';
-                return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(params.value as string));
             },
         },
         {

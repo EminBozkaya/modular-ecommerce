@@ -9,7 +9,7 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
         RuleFor(x => x.Name)
             .NotEmpty()
             .MinimumLength(2)
-            .MaximumLength(100);
+            .MaximumLength(200);
 
         RuleFor(x => x.Price)
             .GreaterThan(0);
@@ -30,7 +30,7 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
     public UpdateProductCommandValidator()
     {
         RuleFor(x => x.Id).NotEqual(Guid.Empty);
-        RuleFor(x => x.Name).NotEmpty().MinimumLength(2).MaximumLength(100);
+        RuleFor(x => x.Name).NotEmpty().MinimumLength(2).MaximumLength(200);
         RuleFor(x => x.Price).GreaterThan(0);
         RuleFor(x => x.CategoryId).NotEqual(Guid.Empty);
         RuleFor(x => x.UnitId).NotEqual(Guid.Empty);

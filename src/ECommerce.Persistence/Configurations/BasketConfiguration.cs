@@ -14,9 +14,13 @@ public class BasketConfiguration : IEntityTypeConfiguration<Domain.Basket.Entiti
         builder.Property(b => b.SessionId).HasMaxLength(128);
 
         builder.HasMany(b => b.Items)
-            .WithOne()
-            .HasForeignKey("BasketId")
+            .WithOne(i => i.Basket)
+            .HasForeignKey(i => i.BasketId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
+
+        // EF Core must use the private backing field _items for collection navigation
+        builder.Navigation(b => b.Items).UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }
 

@@ -38,7 +38,7 @@ public class UpdateUserAddressHandler : IRequestHandler<UpdateUserAddressCommand
 
     public async Task Handle(UpdateUserAddressCommand cmd, CancellationToken ct)
     {
-        var address = await _repo.GetByIdAsync(cmd.AddressId, ct)
+        var address = await _repo.GetByIdAsync(cmd.AddressId, ct: ct)
             ?? throw new KeyNotFoundException($"Address {cmd.AddressId} not found.");
 
         if (address.UserId != cmd.UserId)
@@ -59,7 +59,7 @@ public class DeleteUserAddressHandler : IRequestHandler<DeleteUserAddressCommand
 
     public async Task Handle(DeleteUserAddressCommand cmd, CancellationToken ct)
     {
-        var address = await _repo.GetByIdAsync(cmd.AddressId, ct)
+        var address = await _repo.GetByIdAsync(cmd.AddressId, ct: ct)
             ?? throw new KeyNotFoundException($"Address {cmd.AddressId} not found.");
 
         if (address.UserId != cmd.UserId)
@@ -79,7 +79,7 @@ public class SetDefaultAddressHandler : IRequestHandler<SetDefaultAddressCommand
     public async Task Handle(SetDefaultAddressCommand cmd, CancellationToken ct)
     {
         // GetByIdAsync returns tracked entity
-        var target = await _repo.GetByIdAsync(cmd.AddressId, ct)
+        var target = await _repo.GetByIdAsync(cmd.AddressId, ct: ct)
             ?? throw new KeyNotFoundException($"Address {cmd.AddressId} not found.");
 
         if (target.UserId != cmd.UserId)
@@ -90,6 +90,73 @@ public class SetDefaultAddressHandler : IRequestHandler<SetDefaultAddressCommand
         foreach (var addr in allTracked)
             addr.SetDefault(addr.Id == cmd.AddressId);
 
+        await _repo.SaveChangesAsync(ct);
+    }
+}
+
+public class AdminCreateAddressHandler : IRequestHandler<AdminCreateAddressCommand, Guid>
+{
+    private readonly IUserAddressRepository _repo;
+    public AdminCreateAddressHandler(IUserAddressRepository repo) => _repo = repo;
+
+    public async Task<Guid> Handle(AdminCreateAddressCommand cmd, CancellationToken ct)
+    {
+        var address = UserAddress.Create(
+            cmd.UserId, cmd.Title, cmd.FullName,
+            cmd.AddressLine1, cmd.AddressLine2,
+            cmd.City, cmd.PostalCode, cmd.Country,
+            isDefault: false,
+            isActive: cmd.IsActive);
+
+        await _repo.AddAsync(address, ct);
+        await _repo.SaveChangesAsync(ct);
+        return address.Id;
+    }
+}
+
+public class AdminUpdateAddressHandler : IRequestHandler<AdminUpdateAddressCommand>
+{
+    private readonly IUserAddressRepository _repo;
+    public AdminUpdateAddressHandler(IUserAddressRepository repo) => _repo = repo;
+
+    public async Task Handle(AdminUpdateAddressCommand cmd, CancellationToken ct)
+    {
+        var address = await _repo.GetByIdAsync(cmd.Id, includeDeleted: false, ct)
+            ?? throw new KeyNotFoundException($"Address {cmd.Id} not found.");
+
+        address.Update(cmd.Title, cmd.FullName, cmd.AddressLine1, cmd.AddressLine2,
+            cmd.City, cmd.PostalCode, cmd.Country, cmd.IsActive);
+
+        await _repo.SaveChangesAsync(ct);
+    }
+}
+
+public class AdminDeleteAddressHandler : IRequestHandler<AdminDeleteAddressCommand>
+{
+    private readonly IUserAddressRepository _repo;
+    public AdminDeleteAddressHandler(IUserAddressRepository repo) => _repo = repo;
+
+    public async Task Handle(AdminDeleteAddressCommand cmd, CancellationToken ct)
+    {
+        var address = await _repo.GetByIdAsync(cmd.Id, includeDeleted: false, ct)
+            ?? throw new KeyNotFoundException($"Address {cmd.Id} not found.");
+
+        _repo.Remove(address); // Audit interceptor handles soft delete
+        await _repo.SaveChangesAsync(ct);
+    }
+}
+
+public class AdminRestoreAddressHandler : IRequestHandler<AdminRestoreAddressCommand>
+{
+    private readonly IUserAddressRepository _repo;
+    public AdminRestoreAddressHandler(IUserAddressRepository repo) => _repo = repo;
+
+    public async Task Handle(AdminRestoreAddressCommand cmd, CancellationToken ct)
+    {
+        var address = await _repo.GetByIdAsync(cmd.Id, includeDeleted: true, ct)
+            ?? throw new KeyNotFoundException($"Address {cmd.Id} not found.");
+
+        address.Restore();
         await _repo.SaveChangesAsync(ct);
     }
 }

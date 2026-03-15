@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminUser } from '../types/adminUser';
 import { X } from 'lucide-react';
+import { adminUserSchema, type AdminUserFormData } from '@/lib/validations/admin.schema';
 
 interface UserFormModalProps {
     open: boolean;
@@ -10,19 +13,8 @@ interface UserFormModalProps {
     loading?: boolean;
 }
 
-export interface UserFormData {
-    fullName: string;
-    email: string;
-    role: 'Customer' | 'Admin';
-    isActive: boolean;
-}
-
-const initialFormData: UserFormData = {
-    fullName: '',
-    email: '',
-    role: 'Customer',
-    isActive: true,
-};
+// UserFormData artık admin.schema.ts'ten gelir — geriye dönük uyumluluk için re-export
+export type UserFormData = AdminUserFormData;
 
 export default function UserFormModal({
     open,
@@ -31,39 +23,52 @@ export default function UserFormModal({
     user,
     loading,
 }: UserFormModalProps) {
-    const [form, setForm] = useState<UserFormData>(initialFormData);
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<AdminUserFormData>({
+        resolver: zodResolver(adminUserSchema),
+        defaultValues: {
+            fullName: '',
+            email: '',
+            role: 'Customer',
+            isActive: true,
+        },
+    });
 
     useEffect(() => {
         if (user) {
-            setForm({
+            reset({
                 fullName: user.fullName,
                 email: user.email,
                 role: user.role,
                 isActive: user.isActive ?? true,
             });
         } else {
-            setForm(initialFormData);
+            reset({
+                fullName: '',
+                email: '',
+                role: 'Customer',
+                isActive: true,
+            });
         }
-    }, [user, open]);
+    }, [user, open, reset]);
 
     if (!open) return null;
 
     const isEdit = !!user;
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target;
-        const finalValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+    const inputClass = (hasError: boolean) =>
+        `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors ${
+            hasError
+                ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30'
+                : 'border-gray-300 focus:ring-[#1B5E3F]/30 focus:border-[#1B5E3F]'
+        }`;
 
-        setForm((prev) => ({
-            ...prev,
-            [name]: finalValue,
-        }));
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSubmit(form);
-    };
+    const errorMsg = (msg: string | undefined) =>
+        msg ? <p className="mt-1 text-xs font-semibold text-red-600" role="alert">{msg}</p> : null;
 
     return (
         <div
@@ -93,63 +98,45 @@ export default function UserFormModal({
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4" noValidate>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Ad Soyad *</label>
                         <input
-                            name="fullName"
-                            value={form.fullName}
-                            onChange={(e) => {
-                                handleChange(e);
-                                e.target.setCustomValidity('');
-                            }}
-                            onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Lütfen bu alanı doldurun.')}
-                            required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-                            style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                            {...register('fullName')}
+                            className={inputClass(!!errors.fullName)}
                             placeholder="Ad ve soyadı girin"
                         />
+                        {errorMsg(errors.fullName?.message)}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">E-posta *</label>
                         <input
-                            name="email"
                             type="email"
-                            value={form.email}
-                            onChange={(e) => {
-                                handleChange(e);
-                                e.target.setCustomValidity('');
-                            }}
-                            onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Lütfen geçerli bir e-posta adresi girin.')}
-                            required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-                            style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                            {...register('email')}
+                            className={inputClass(!!errors.email)}
                             placeholder="ornek@email.com"
                         />
+                        {errorMsg(errors.email?.message)}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Rol *</label>
                         <select
-                            name="role"
-                            value={form.role}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-                            style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                            {...register('role')}
+                            className={inputClass(!!errors.role)}
                         >
                             <option value="Customer">Müşteri</option>
                             <option value="Admin">Yönetici</option>
                         </select>
+                        {errorMsg(errors.role?.message)}
                     </div>
 
                     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input
                                 type="checkbox"
-                                name="isActive"
-                                checked={form.isActive}
-                                onChange={handleChange}
+                                {...register('isActive')}
                                 className="sr-only peer"
                             />
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B5E3F]"></div>

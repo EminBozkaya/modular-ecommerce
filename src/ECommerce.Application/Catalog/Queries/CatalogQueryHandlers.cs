@@ -28,16 +28,16 @@ public class GetProductsHandler : IRequestHandler<GetProductsQuery, PagedResult<
         var products = await _products.ListAsync(spec, ct);
 
         // Map User IDs to Names
-        var users = await _users.GetAllAsync(ct);
-        var userMap = users.ToDictionary(u => u.Id.ToString(), u => u.FullName);
+        var users = await _users.GetAllWithDeletedAsync(ct);
+        var userMap = users.ToDictionary(u => u.Id.ToString(), u => u.FullName, StringComparer.OrdinalIgnoreCase);
 
         var items = products.Select(p => new ProductDto(
             p.Id, p.Name, p.Description, p.ImageUrl,
             p.Price.Amount, p.Price.Currency.ToString(), p.Stock.Value, p.IsActive,
             p.CategoryId, p.Category?.Name,
             p.UnitId, p.Unit?.Name,
-            p.CreatedAt, p.CreatedBy != null && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
-            p.UpdatedAt, p.UpdatedBy != null && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
+            p.CreatedAt, !string.IsNullOrEmpty(p.CreatedBy) && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
+            p.UpdatedAt, !string.IsNullOrEmpty(p.UpdatedBy) && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
             p.DeletedAt, p.IsDeleted)).ToList();
             
         return new PagedResult<ProductDto>(items, count, q.Page, q.PageSize);
@@ -60,14 +60,14 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, Produc
         var p = await _products.GetByIdAsync(q.Id, ct);
         if (p is null) return null;
 
-        var userMap = (await _users.GetAllAsync(ct)).ToDictionary(u => u.Id.ToString(), u => u.FullName);
+        var userMap = (await _users.GetAllWithDeletedAsync(ct)).ToDictionary(u => u.Id.ToString(), u => u.FullName, StringComparer.OrdinalIgnoreCase);
 
         return new ProductDto(p.Id, p.Name, p.Description, p.ImageUrl,
             p.Price.Amount, p.Price.Currency.ToString(), p.Stock.Value, p.IsActive,
             p.CategoryId, p.Category?.Name,
             p.UnitId, p.Unit?.Name,
-            p.CreatedAt, p.CreatedBy != null && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
-            p.UpdatedAt, p.UpdatedBy != null && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
+            p.CreatedAt, !string.IsNullOrEmpty(p.CreatedBy) && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
+            p.UpdatedAt, !string.IsNullOrEmpty(p.UpdatedBy) && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
             p.DeletedAt, p.IsDeleted);
     }
 }
@@ -85,13 +85,13 @@ public class GetCategoriesHandler : IRequestHandler<GetCategoriesQuery, IReadOnl
 
     public async Task<IReadOnlyList<CategoryDto>> Handle(GetCategoriesQuery q, CancellationToken ct)
     {
-        var categories = await _categories.GetAllAsync(q.IncludeDeleted, ct);
-        var userMap = (await _users.GetAllAsync(ct)).ToDictionary(u => u.Id.ToString(), u => u.FullName);
+        var categories = await _categories.GetAllAsync(q.IncludeDeleted, q.OnlyMain, ct);
+        var userMap = (await _users.GetAllWithDeletedAsync(ct)).ToDictionary(u => u.Id.ToString(), u => u.FullName, StringComparer.OrdinalIgnoreCase);
 
         return categories.Select(c => new CategoryDto(
             c.Id, c.Name, c.Description, c.ImageUrl, c.IsActive, c.ParentCategoryId, c.ParentCategory?.Name,
-            c.CreatedAt, c.CreatedBy != null && userMap.TryGetValue(c.CreatedBy, out var cb) ? cb : c.CreatedBy,
-            c.UpdatedAt, c.UpdatedBy != null && userMap.TryGetValue(c.UpdatedBy, out var ub) ? ub : c.UpdatedBy,
+            c.CreatedAt, !string.IsNullOrEmpty(c.CreatedBy) && userMap.TryGetValue(c.CreatedBy, out var cb) ? cb : c.CreatedBy,
+            c.UpdatedAt, !string.IsNullOrEmpty(c.UpdatedBy) && userMap.TryGetValue(c.UpdatedBy, out var ub) ? ub : c.UpdatedBy,
             c.DeletedAt, c.IsDeleted)).ToList();
     }
 }

@@ -5,6 +5,7 @@ import type { AdminUser } from '../types/adminUser';
 import type { Order, OrderStatus } from '../../ordering/types/order';
 import type { Product } from '../../catalog/types/product';
 import type { PaginatedResult } from '../../../types/api';
+import type { AddressFormData } from '@/lib/validations/admin.schema';
 import {
     mockGetDashboardSummary,
     mockGetRevenueData,
@@ -189,4 +190,62 @@ export async function deleteUser(id: string): Promise<void> {
 export async function restoreUser(id: string): Promise<void> {
     if (isMock) return mockRestoreUser(id);
     await apiClient.post(`/api/admin/users/restore/${id}`);
+}
+
+export type { AdminUser };
+
+// ── Admin Addresses ──
+
+export interface AdminAddress {
+    id: string;
+    userId: string;
+    title: string;
+    fullName: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    postalCode: string;
+    country: string;
+    isDefault: boolean;
+    isActive: boolean;
+    isDeleted: boolean;
+    createdAt: string;
+    createdBy?: string;
+    updatedAt?: string;
+    updatedBy?: string;
+    userFullName?: string;
+}
+
+export interface UpdateAddressData {
+    id: string;
+    title: string;
+    fullName: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    postalCode: string;
+    country: string;
+    isActive: boolean;
+}
+
+export async function getAddresses(): Promise<AdminAddress[]> {
+    const response = await apiClient.get<AdminAddress[]>('/api/admin/addresses');
+    return response.data;
+}
+
+export async function createAddress(data: AddressFormData): Promise<string> {
+    const response = await apiClient.post<{ id: string }>('/api/admin/addresses', data);
+    return response.data.id;
+}
+
+export async function updateAddress(data: UpdateAddressData): Promise<void> {
+    await apiClient.put('/api/admin/addresses', data);
+}
+
+export async function deleteAddress(id: string): Promise<void> {
+    await apiClient.delete(`/api/admin/addresses/${id}`);
+}
+
+export async function restoreAddress(id: string): Promise<void> {
+    await apiClient.post(`/api/admin/addresses/restore/${id}`);
 }

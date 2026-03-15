@@ -2,9 +2,9 @@ namespace ECommerce.Domain.Catalog.ValueObjects;
 
 public record StockQuantity
 {
-    public int Value { get; }
+    public decimal Value { get; }
 
-    public StockQuantity(int value)
+    public StockQuantity(decimal value)
     {
         if (value < 0) throw new ArgumentException("Stock cannot be negative.", nameof(value));
         Value = value;
@@ -12,11 +12,11 @@ public record StockQuantity
 
     public bool IsAvailable => Value > 0;
 
-    public StockQuantity Decrease(int amount)
+    public StockQuantity Decrease(decimal amount)
     {
         if (amount > Value) throw new InvalidOperationException("Insufficient stock.");
         return new StockQuantity(Value - amount);
     }
 
-    public StockQuantity Increase(int amount) => new(Value + amount);
+    public StockQuantity Increase(decimal amount) => new(Value + amount);
 }

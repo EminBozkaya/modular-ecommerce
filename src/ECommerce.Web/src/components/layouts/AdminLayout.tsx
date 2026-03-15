@@ -5,6 +5,7 @@ import {
     FolderTree,
     ShoppingBag,
     Users,
+    MapPin,
     ArrowLeft,
     Leaf,
     ChevronLeft,
@@ -18,6 +19,7 @@ const navLinks = [
     { to: '/admin/categories', label: 'Kategoriler', icon: FolderTree, exact: false },
     { to: '/admin/orders', label: 'Siparişler', icon: ShoppingBag, exact: false },
     { to: '/admin/users', label: 'Müşteriler', icon: Users, exact: false },
+    { to: '/admin/addresses', label: 'Adresler', icon: MapPin, exact: false },
 ];
 
 export function AdminLayout() {

@@ -50,13 +50,13 @@ public class Product : BaseAuditableEntity
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void UpdateStock(int quantity)
+    public void UpdateStock(decimal quantity)
     {
         Stock = new StockQuantity(quantity);
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void DecreaseStock(int amount)
+    public void DecreaseStock(decimal amount)
     {
         Stock = Stock.Decrease(amount);
         UpdatedAt = DateTime.UtcNow;

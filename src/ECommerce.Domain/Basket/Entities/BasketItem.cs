@@ -8,6 +8,9 @@ public class BasketItem : BaseEntity
     public Guid ProductId { get; private set; }
     public string ProductName { get; private set; } = default!;
 
+    public Guid BasketId { get; private set; }
+    public Basket Basket { get; private set; } = default!;
+
     /// <summary>
     /// Price captured at the moment the item was added to the basket.
     /// This snapshot is never updated from Product — it preserves the price the user saw.

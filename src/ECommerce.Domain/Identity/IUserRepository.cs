@@ -12,6 +12,7 @@ public interface IUserRepository
     Task<AppUser?> GetByRefreshTokenAsync(string refreshToken, CancellationToken ct = default);
     Task<bool> ExistsByEmailAsync(string email, CancellationToken ct = default);
     Task<IReadOnlyList<AppUser>> GetAllAsync(CancellationToken ct = default);
+    Task<IReadOnlyList<AppUser>> GetAllWithDeletedAsync(CancellationToken ct = default);
     Task AddAsync(AppUser user, CancellationToken ct = default);
     Task SaveChangesAsync(CancellationToken ct = default);
     Task<bool> HasAnyAdminAsync(CancellationToken ct = default);

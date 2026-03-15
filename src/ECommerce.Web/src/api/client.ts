@@ -7,15 +7,27 @@ export const apiClient = axios.create({
 
 apiClient.interceptors.response.use(
     (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            const url = error.config?.url;
-            // Do not redirect or show error if the request was to /login or /me
-            if (url && (url.includes('/api/auth/login') || url.includes('/api/auth/me'))) {
-                console.warn(`API 401: Expected unauthenticated response from ${url}`);
+    async (error) => {
+        const originalRequest = error.config;
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            const url = originalRequest.url;
+            // Do not retry or show error if the request was to /login or /me or /refresh
+            if (url && (url.includes('/api/auth/login') || url.includes('/api/auth/me') || url.includes('/api/auth/refresh'))) {
+                if (!url.includes('/api/auth/login')) {
+                    console.warn(`API 401: Expected unauthenticated response from ${url}`);
+                }
             } else {
-                console.error('API Error 401: Unauthorized. Redirecting to login...');
-                window.location.href = '/login';
+                originalRequest._retry = true;
+                try {
+                    console.log('Attempting token refresh...');
+                    await apiClient.post('/api/auth/refresh');
+                    console.log('Token refresh successful. Retrying request:', url);
+                    return apiClient(originalRequest);
+                } catch (refreshError) {
+                    console.error('Token refresh failed. Redirecting to login...');
+                    window.location.href = '/login';
+                }
             }
         } else if (error.response?.status === 403) {
             console.error('API Error 403: Forbidden. User lacks required roles.');

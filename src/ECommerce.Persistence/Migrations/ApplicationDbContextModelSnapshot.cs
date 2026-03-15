@@ -46,7 +46,7 @@ namespace ECommerce.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("BasketId")
+                    b.Property<Guid>("BasketId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ProductId")
@@ -6831,6 +6831,9 @@ namespace ECommerce.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDefault")
                         .HasColumnType("boolean");
 
@@ -6940,8 +6943,9 @@ namespace ECommerce.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
 
                     b.HasKey("Id");
 
@@ -7134,10 +7138,11 @@ namespace ECommerce.Persistence.Migrations
 
             modelBuilder.Entity("ECommerce.Domain.Basket.Entities.BasketItem", b =>
                 {
-                    b.HasOne("ECommerce.Domain.Basket.Entities.Basket", null)
+                    b.HasOne("ECommerce.Domain.Basket.Entities.Basket", "Basket")
                         .WithMany("Items")
                         .HasForeignKey("BasketId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.OwnsOne("ECommerce.Domain.Catalog.ValueObjects.Money", "UnitPriceSnapshot", b1 =>
                         {
@@ -7162,6 +7167,8 @@ namespace ECommerce.Persistence.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("BasketItemId");
                         });
+
+                    b.Navigation("Basket");
 
                     b.Navigation("UnitPriceSnapshot")
                         .IsRequired();
@@ -7220,8 +7227,9 @@ namespace ECommerce.Persistence.Migrations
                             b1.Property<Guid>("ProductId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<int>("Value")
-                                .HasColumnType("integer")
+                            b1.Property<decimal>("Value")
+                                .HasPrecision(18, 3)
+                                .HasColumnType("numeric(18,3)")
                                 .HasColumnName("StockQuantity");
 
                             b1.HasKey("ProductId");
@@ -7287,6 +7295,15 @@ namespace ECommerce.Persistence.Migrations
                     b.Navigation("CountryRef");
 
                     b.Navigation("DistrictRef");
+            modelBuilder.Entity("ECommerce.Domain.Identity.Entities.UserAddress", b =>
+                {
+                    b.HasOne("ECommerce.Domain.Identity.Entities.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ECommerce.Domain.Ordering.Entities.OrderItem", b =>

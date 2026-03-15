@@ -28,7 +28,11 @@ export function LowStockTable({ products }: LowStockTableProps) {
                                 <tr
                                     key={product.id}
                                     className="border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors"
-                                    onClick={() => navigate('/admin/products')}
+                                    onClick={() => {
+                                        if (!window.getSelection()?.toString()) {
+                                            navigate('/admin/products');
+                                        }
+                                    }}
                                 >
                                     <td className="py-2.5 px-3 font-medium text-gray-900">{product.name}</td>
                                     <td className="py-2.5 px-3 text-gray-600">{product.categoryName}</td>

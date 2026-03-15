@@ -16,6 +16,10 @@ public class UserAddress : BaseAuditableEntity
     public string Country { get; private set; } = null!;
 
     public bool IsDefault { get; private set; }
+    public bool IsActive { get; private set; }
+
+    // Navigation
+    public AppUser User { get; private set; } = null!;
 
     // ── Relational FK columns (nullable for backward-compat) ──
     public int? CountryId { get; private set; }
@@ -41,7 +45,8 @@ public class UserAddress : BaseAuditableEntity
         bool isDefault = false,
         int? countryId = null,
         int? cityId = null,
-        int? districtId = null)
+        int? districtId = null,
+        bool isActive = true)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
         ArgumentException.ThrowIfNullOrWhiteSpace(fullName);
@@ -64,6 +69,7 @@ public class UserAddress : BaseAuditableEntity
             CountryId = countryId,
             CityId = cityId,
             DistrictId = districtId,
+            IsActive = isActive,
             CreatedAt = DateTime.UtcNow
         };
     }
@@ -76,9 +82,9 @@ public class UserAddress : BaseAuditableEntity
         string city,
         string postalCode,
         string country,
-        int? countryId = null,
         int? cityId = null,
-        int? districtId = null)
+        int? districtId = null,
+        bool? isActive = null)
     {
         Title = title;
         FullName = fullName;
@@ -90,12 +96,24 @@ public class UserAddress : BaseAuditableEntity
         CountryId = countryId;
         CityId = cityId;
         DistrictId = districtId;
+        if (isActive.HasValue) IsActive = isActive.Value;
         UpdatedAt = DateTime.UtcNow;
     }
 
     public void SetDefault(bool isDefault)
     {
         IsDefault = isDefault;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Activate() { IsActive = true; UpdatedAt = DateTime.UtcNow; }
+    public void Deactivate() { IsActive = false; UpdatedAt = DateTime.UtcNow; }
+
+    public void Restore()
+    {
+        IsDeleted = false;
+        DeletedAt = null;
+        IsActive = true;
         UpdatedAt = DateTime.UtcNow;
     }
 }

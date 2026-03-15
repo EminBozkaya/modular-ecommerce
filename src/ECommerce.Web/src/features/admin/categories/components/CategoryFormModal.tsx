@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { X } from 'lucide-react';
 import type { Category } from '../../../catalog/types/product';
+import { categorySchema, type CategoryFormData } from '@/lib/validations/admin.schema';
 
 interface CategoryFormModalProps {
     open: boolean;
@@ -11,21 +14,8 @@ interface CategoryFormModalProps {
     loading?: boolean;
 }
 
-export interface CategoryFormData {
-    name: string;
-    description: string;
-    imageUrl: string;
-    isActive: boolean;
-    parentCategoryId: string;
-}
-
-const initialFormData: CategoryFormData = {
-    name: '',
-    description: '',
-    imageUrl: '',
-    isActive: true,
-    parentCategoryId: '',
-};
+// CategoryFormData artık admin.schema.ts'ten export edilir
+export type { CategoryFormData };
 
 export default function CategoryFormModal({
     open,
@@ -35,12 +25,27 @@ export default function CategoryFormModal({
     categories,
     loading,
 }: CategoryFormModalProps) {
-    const [form, setForm] = useState<CategoryFormData>(initialFormData);
+    const {
+        register,
+        handleSubmit,
+        reset,
+        watch,
+        formState: { errors },
+    } = useForm<CategoryFormData>({
+        resolver: zodResolver(categorySchema),
+        defaultValues: {
+            name: '',
+            description: '',
+            imageUrl: '',
+            isActive: true,
+            parentCategoryId: '',
+        },
+    });
 
     useEffect(() => {
         if (open) {
             if (category) {
-                setForm({
+                reset({
                     name: category.name,
                     description: category.description || '',
                     imageUrl: category.imageUrl || '',
@@ -48,10 +53,16 @@ export default function CategoryFormModal({
                     parentCategoryId: category.parentCategoryId || '',
                 });
             } else {
-                setForm(initialFormData);
+                reset({
+                    name: '',
+                    description: '',
+                    imageUrl: '',
+                    isActive: true,
+                    parentCategoryId: '',
+                });
             }
         }
-    }, [open, category]);
+    }, [open, category, reset]);
 
     if (!open) return null;
 
@@ -63,15 +74,17 @@ export default function CategoryFormModal({
         getCategoryPath(a).localeCompare(getCategoryPath(b))
     );
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
-    };
+    const currentParentId = watch('parentCategoryId');
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSubmit(form);
-    };
+    const inputClass = (hasError: boolean) =>
+        `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors ${
+            hasError
+                ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30'
+                : 'border-gray-300 focus:ring-[#1B5E3F]/30 focus:border-[#1B5E3F]'
+        }`;
+
+    const errorMsg = (msg: string | undefined) =>
+        msg ? <p className="mt-1 text-xs font-semibold text-red-600" role="alert">{msg}</p> : null;
 
     return (
         <div
@@ -99,65 +112,51 @@ export default function CategoryFormModal({
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4" noValidate>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Kategori Adı *</label>
                         <input
-                            name="name"
-                            value={form.name}
-                            onChange={(e) => {
-                                handleChange(e);
-                                (e.target as HTMLInputElement).setCustomValidity('');
-                            }}
-                            onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Lütfen bu alanı doldurun.')}
-                            required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-                            style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                            {...register('name')}
+                            className={inputClass(!!errors.name)}
                             placeholder="Kategori adını girin"
                         />
+                        {errorMsg(errors.name?.message)}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Açıklama</label>
                         <textarea
-                            name="description"
-                            value={form.description}
-                            onChange={handleChange}
+                            {...register('description')}
                             rows={3}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm resize-none"
-                            style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm resize-none transition-colors ${errors.description ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30' : 'border-gray-300 focus:ring-[#1B5E3F]/30 focus:border-[#1B5E3F]'}`}
                             placeholder="Kategori açıklaması"
                         />
+                        {errorMsg(errors.description?.message)}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Görsel URL</label>
                         <input
-                            name="imageUrl"
-                            value={form.imageUrl}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-                            style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                            {...register('imageUrl')}
+                            className={inputClass(!!errors.imageUrl)}
                             placeholder="https://..."
                         />
+                        {errorMsg(errors.imageUrl?.message)}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Üst Kategori (Opsiyonel)</label>
                         <select
-                            name="parentCategoryId"
-                            value={form.parentCategoryId}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 text-sm"
-                            style={{ '--tw-ring-color': '#1B5E3F' } as React.CSSProperties}
+                            {...register('parentCategoryId')}
+                            className={inputClass(!!errors.parentCategoryId)}
                         >
                             <option value="">Ana Kategori (Yok)</option>
                             {sortedCategories
                                 .filter(cat => {
-                                    // Kategori düzenlenirken, kendisini (veya kendi altını - şimdilik sadece kendisini tutuyoruz) üst kategori olarak seçmemelidir.
+                                    // Kategori düzenlenirken kendisini üst olarak seçemesin
                                     if (category && cat.id === category.id) return false;
-                                    // Sadece aktif olanları göster, fakat mevcut üst kategorisiyse (pasif olsa bile) seçili kalması için göster
-                                    return cat.isActive !== false || cat.id === form.parentCategoryId;
+                                    // Aktif olanları göster, fakat mevcut üst kategori pasif olsa bile seç
+                                    return cat.isActive !== false || cat.id === currentParentId;
                                 })
                                 .map(cat => (
                                     <option key={cat.id} value={cat.id}>
@@ -166,15 +165,14 @@ export default function CategoryFormModal({
                                 ))
                             }
                         </select>
+                        {errorMsg(errors.parentCategoryId?.message)}
                     </div>
 
                     <div>
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input
                                 type="checkbox"
-                                name="isActive"
-                                checked={form.isActive}
-                                onChange={(e) => setForm(prev => ({ ...prev, isActive: e.target.checked }))}
+                                {...register('isActive')}
                                 className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                             />
                             <span className="text-sm font-medium text-gray-700">Kategori Aktif (Sitede Gösterilsin mi?)</span>

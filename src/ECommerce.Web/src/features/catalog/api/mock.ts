@@ -2,11 +2,11 @@ import type { Category, Product } from '../types/product';
 import type { PaginatedResult } from '../../../types/api';
 
 export const mockCategories: Category[] = [
-    { id: '1', name: 'Kuruyemiş', slug: 'kuruyemis', isActive: true, createdAt: new Date().toISOString() },
-    { id: '2', name: 'Baharat & Şifalı Bitkiler', slug: 'baharat-sifali-bitkiler', isActive: true, createdAt: new Date().toISOString() },
-    { id: '3', name: 'Genel', slug: 'genel', isActive: true, createdAt: new Date().toISOString() },
-    { id: '4', name: 'Kuru Meyve', slug: 'kuru-meyve', isActive: true, createdAt: new Date().toISOString() },
-    { id: '5', name: 'Atıştırmalık & Mix', slug: 'atistirmalik-mix', isActive: true, createdAt: new Date().toISOString() },
+    { id: '1', name: 'Kuruyemiş', slug: 'kuruyemis', isActive: true, createdAt: new Date().toISOString(), createdBy: 'Emin Bozkaya' },
+    { id: '2', name: 'Baharat & Şifalı Bitkiler', slug: 'baharat-sifali-bitkiler', isActive: true, createdAt: new Date().toISOString(), createdBy: 'Emin Bozkaya' },
+    { id: '3', name: 'Genel', slug: 'genel', isActive: true, createdAt: new Date().toISOString(), createdBy: 'Emin Bozkaya' },
+    { id: '4', name: 'Kuru Meyve', slug: 'kuru-meyve', isActive: true, createdAt: new Date().toISOString(), createdBy: 'Emin Bozkaya' },
+    { id: '5', name: 'Atıştırmalık & Mix', slug: 'atistirmalik-mix', isActive: true, createdAt: new Date().toISOString(), createdBy: 'Emin Bozkaya' },
 ];
 
 export const mockProducts: Product[] = [
@@ -25,7 +25,8 @@ export const mockProducts: Product[] = [
         unitName: 'kg',
         imageUrl: 'https://images.unsplash.com/photo-1608797178974-15b35a64ede9?w=300&h=300&fit=crop',
         isActive: true,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        createdBy: 'Emin Bozkaya'
     },
     {
         id: 'p2',
