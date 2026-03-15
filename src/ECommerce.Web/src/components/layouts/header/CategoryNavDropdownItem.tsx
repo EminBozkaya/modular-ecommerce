@@ -18,8 +18,23 @@ interface Props {
 // ── Alt Kategoriler için (Sağa açılan / Uçan Flyout Menü) ──────────────
 function FlyoutSubMenu({ node, level, closeAll }: { node: CategoryTreeNode; level: number; closeAll: () => void }) {
     const [isOpen, setIsOpen] = useState(false);
+    const [openDirection, setOpenDirection] = useState<'right' | 'left'>('right');
+    const liRef = useRef<HTMLLIElement>(null);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const hasChildren = node.subCategories.length > 0;
+
+    useEffect(() => {
+        if (isOpen && liRef.current) {
+            const rect = liRef.current.getBoundingClientRect();
+            const menuWidth = 220; // min-w-[220px]
+            // Eğer sağda yer yoksa sola açıl
+            if (rect.right + menuWidth > window.innerWidth) {
+                setOpenDirection('left');
+            } else {
+                setOpenDirection('right');
+            }
+        }
+    }, [isOpen]);
 
     const handleMouseEnter = () => {
         if (typeof window !== 'undefined' && window.innerWidth < 1024) return; // Yalnızca masaüstünde hover
@@ -51,6 +66,7 @@ function FlyoutSubMenu({ node, level, closeAll }: { node: CategoryTreeNode; leve
 
     return (
         <li
+            ref={liRef}
             className="relative"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
@@ -62,9 +78,15 @@ function FlyoutSubMenu({ node, level, closeAll }: { node: CategoryTreeNode; leve
                     e.preventDefault();
                     setIsOpen((prev) => !prev);
                 }}
-                className="w-full flex items-center justify-between px-4 py-2 cursor-pointer hover:bg-gray-100 group transition-colors text-left"
+                className={cn(
+                    "w-full flex items-center justify-between px-4 py-2 cursor-pointer group transition-colors text-left",
+                    isOpen ? "bg-gray-50" : "hover:bg-gray-100"
+                )}
             >
-                <span className="flex-1 text-[13px] text-foreground group-hover:text-[var(--color-ebrar-green)]">
+                <span className={cn(
+                    "flex-1 text-[13px] transition-colors",
+                    isOpen ? "text-[var(--color-ebrar-green)] font-semibold" : "text-foreground group-hover:text-[var(--color-ebrar-green)]"
+                )}>
                     {node.category.name}
                 </span>
                 <ChevronRight className={cn(
@@ -74,7 +96,10 @@ function FlyoutSubMenu({ node, level, closeAll }: { node: CategoryTreeNode; leve
             </button>
 
             {isOpen && (
-                <ul className="absolute left-full top-0 ml-1 min-w-[220px] bg-white border border-border/60 shadow-lg py-1 rounded-md z-50 animate-in fade-in slide-in-from-left-2 duration-200">
+                <ul className={cn(
+                    "absolute top-[34px] min-w-[220px] bg-white border border-border/60 shadow-lg py-1 rounded-md z-50 animate-in fade-in duration-200",
+                    openDirection === 'right' ? "left-full ml-1 slide-in-from-left-2" : "right-full mr-1 slide-in-from-right-2"
+                )}>
                     {node.subCategories.map((childNode) => (
                         <FlyoutSubMenu key={childNode.category.id} node={childNode} level={level + 1} closeAll={closeAll} />
                     ))}
@@ -215,7 +240,8 @@ export function CategoryNavDropdownItem({ node, isStuck }: Props) {
                     style={{
                         position: 'fixed',
                         top: rect ? rect.bottom : 0,
-                        left: rect ? rect.left : 0, 
+                        // Ekranın sağına taşmayı önlemek için akıllı hizalama
+                        left: rect ? Math.min(rect.left, window.innerWidth - 230) : 0, 
                     }}
                     className="z-[200] pt-1" // Düğmenin 1px altına
                 >

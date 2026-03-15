@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
-import { UserCircle } from 'lucide-react';
+import { UserCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import logoImg from '@/assets/ebrar-logo.png';
 import { HeaderSearchAutocomplete } from '@/features/catalog/components/HeaderSearchAutocomplete';
 import { FavoriteButton } from './FavoriteButton';
@@ -26,6 +26,7 @@ export function AppHeader() {
 
     // Scroll ve Peek Effect State
     const scrollRef = useRef<HTMLDivElement>(null);
+    const scrollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
 
@@ -56,8 +57,32 @@ export function AppHeader() {
     useEffect(() => {
         checkScroll();
         window.addEventListener('resize', checkScroll);
-        return () => window.removeEventListener('resize', checkScroll);
+        // Sayfa her yüklendiğinde veya kategori değiştiğinde kısa bir gecikmeyle kontrol et
+        const timeout = setTimeout(checkScroll, 500);
+        return () => {
+            window.removeEventListener('resize', checkScroll);
+            clearTimeout(timeout);
+        };
     }, [allCategories, isStuck]);
+
+    // Hover ile kaydırma mantığı
+    const startScrolling = (direction: 'left' | 'right') => {
+        if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current);
+        scrollIntervalRef.current = setInterval(() => {
+            if (scrollRef.current) {
+                const scrollAmount = direction === 'left' ? -12 : 12; // Hız ayarı
+                scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'auto' });
+                checkScroll();
+            }
+        }, 16); // ~60fps smooth scroll
+    };
+
+    const stopScrolling = () => {
+        if (scrollIntervalRef.current) {
+            clearInterval(scrollIntervalRef.current);
+            scrollIntervalRef.current = null;
+        }
+    };
 
     // Kategori ağacını kur: sonsuz derinlikte alt-kategori desteği
     const categoryTree = useMemo(() => {
@@ -96,7 +121,7 @@ export function AppHeader() {
                             </Link>
 
                             {/* Mobile Actions (Icons visible only on mobile) */}
-                            <div className="flex md:hidden items-center gap-3 sm:gap-5 flex-shrink-0">
+                            <div className="flex md:hidden items-center gap-2 sm:gap-4 flex-shrink-0">
                                 <LanguageToggle />
                                 <FavoriteButton />
                                 <BasketButton />
@@ -104,16 +129,34 @@ export function AppHeader() {
                                     isAuthenticated
                                         ? <UserMenu />
                                         : (
-                                            <div className="flex flex-col items-center group">
-                                                <Link
-                                                    to="/login"
-                                                    className="flex items-center justify-center w-11 h-11 rounded-full bg-gray-50 text-muted-foreground group-hover:text-[var(--color-ebrar-green)] group-hover:bg-green-50 transition-colors shadow-sm"
-                                                >
-                                                    <UserCircle className="h-6 w-6" />
-                                                </Link>
-                                                <span className="text-[11px] font-bold text-muted-foreground group-hover:text-[var(--color-ebrar-green)] mt-1 transition-colors">
-                                                    {t('header.login')}
-                                                </span>
+                                            <div className="flex items-center">
+                                                {/* Adaptif Giriş Paneli: 540px üzerinde geniş butonlar, altında sadece ikon */}
+                                                <div className="hidden min-[540px]:flex items-center gap-2 ml-1 sm:ml-2 border-l border-gray-200 pl-2 sm:pl-3">
+                                                    <Link
+                                                        to="/login"
+                                                        className="text-[13px] font-bold text-muted-foreground hover:text-[var(--color-ebrar-green)] px-1 transition-colors whitespace-nowrap"
+                                                    >
+                                                        {t('header.login')}
+                                                    </Link>
+                                                    <Link
+                                                        to="/register"
+                                                        className="px-4 py-2 text-[13px] font-bold text-white bg-[var(--color-ebrar-green)] rounded-full hover:bg-[var(--color-ebrar-green-dark)] shadow-md transition-all active:scale-95 whitespace-nowrap"
+                                                    >
+                                                        {t('userMenu.register')}
+                                                    </Link>
+                                                </div>
+
+                                                <div className="flex min-[540px]:hidden flex-col items-center group">
+                                                    <Link
+                                                        to="/login"
+                                                        className="flex items-center justify-center w-11 h-11 rounded-full bg-gray-50 text-muted-foreground group-hover:text-[var(--color-ebrar-green)] group-hover:bg-green-50 transition-colors shadow-sm"
+                                                    >
+                                                        <UserCircle className="h-6 w-6" />
+                                                    </Link>
+                                                    <span className="text-[11px] font-bold text-muted-foreground group-hover:text-[var(--color-ebrar-green)] mt-1 transition-colors">
+                                                        {t('header.login')}
+                                                    </span>
+                                                </div>
                                             </div>
                                         )
                                 )}
@@ -158,17 +201,28 @@ export function AppHeader() {
                     'relative w-full mx-auto flex items-center',
                     !isStuck && 'border-t border-border mt-1'
                 )}>
-                    {/* Sol Peek Gradient */}
+                    {/* Sol Kaydırma Oku & Gradient */}
                     <div
-                        aria-hidden="true"
                         className={cn(
-                            'absolute top-0 h-full w-12 md:w-20 pointer-events-none transition-opacity duration-300 z-10',
-                            !isStuck ? 'left-4 md:left-[236px] xl:left-[336px]' : 'left-0',
-                            'bg-gradient-to-r to-transparent',
-                            isStuck ? 'from-[var(--color-ebrar-green)]' : 'from-[#F5FFEA]',
-                            canScrollLeft ? 'opacity-100' : 'opacity-0'
+                            'absolute top-0 h-full flex items-center transition-all duration-300 z-20',
+                            !isStuck ? 'left-[220px] xl:left-[320px]' : 'left-0',
+                            canScrollLeft ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
                         )}
-                    />
+                    >
+                        <div className={cn(
+                            'absolute inset-0 w-24 pointer-events-none bg-gradient-to-r to-transparent',
+                            isStuck ? 'from-[var(--color-ebrar-green)]' : 'from-[#F5FFEA]'
+                        )} />
+                        <button
+                            type="button"
+                            onMouseEnter={() => startScrolling('left')}
+                            onMouseLeave={stopScrolling}
+                            onClick={() => scrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
+                            className="relative ml-2 w-8 h-8 rounded-full bg-white/40 hover:bg-white border border-white/20 shadow-sm flex items-center justify-center text-[var(--color-ebrar-green)] transition-all transform hover:scale-110 active:scale-95 group backdrop-blur-[2px]"
+                        >
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+                    </div>
 
                     {/* Menü Scroll Container */}
                     {/* PL (Padding) yerine ML (Margin) kullanarak dışardan taşıp gitmesini/arkada görünmesini engelliyoruz */}
@@ -194,16 +248,27 @@ export function AppHeader() {
                         </ul>
                     </div>
 
-                    {/* Sağ Peek Gradient */}
+                    {/* Sağ Kaydırma Oku & Gradient */}
                     <div
-                        aria-hidden="true"
                         className={cn(
-                            'absolute right-0 top-0 h-full w-16 md:w-32 pointer-events-none transition-opacity duration-300 z-10',
-                            'bg-gradient-to-l to-transparent',
-                            isStuck ? 'from-[var(--color-ebrar-green)]' : 'from-[#F5FFEA]',
-                            canScrollRight ? 'opacity-100' : 'opacity-0'
+                            'absolute right-0 top-0 h-full flex items-center px-4 transition-all duration-300 z-20',
+                            canScrollRight ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
                         )}
-                    />
+                    >
+                        <div className={cn(
+                            'absolute inset-0 w-32 left-auto right-0 pointer-events-none bg-gradient-to-l to-transparent',
+                            isStuck ? 'from-[var(--color-ebrar-green)]' : 'from-[#F5FFEA]'
+                        )} />
+                        <button
+                            type="button"
+                            onMouseEnter={() => startScrolling('right')}
+                            onMouseLeave={stopScrolling}
+                            onClick={() => scrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
+                            className="relative w-8 h-8 rounded-full bg-white/40 hover:bg-white border border-white/20 shadow-sm flex items-center justify-center text-[var(--color-ebrar-green)] transition-all transform hover:scale-110 active:scale-95 group backdrop-blur-[2px]"
+                        >
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
+                    </div>
                 </div>
             </nav>
         </>
