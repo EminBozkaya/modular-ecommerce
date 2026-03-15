@@ -1,0 +1,38 @@
+{
+  "history": {
+    "title": "Siparişlerim",
+    "empty": "Henüz siparişiniz yok",
+    "emptyDesc": "İlk siparişinizi vermek için ürünlere göz atın."
+  },
+  "detail": {
+    "backToOrders": "Siparişlerime Dön",
+    "orderTitle": "Sipariş #{{id}}...",
+    "products": "Ürünler",
+    "product": "Ürün",
+    "quantity": "Adet",
+    "unitPrice": "Birim Fiyat",
+    "total": "Toplam",
+    "grandTotal": "Genel Toplam",
+    "shippingAddress": "Teslimat Adresi",
+    "notFound": "Sipariş bulunamadı"
+  },
+  "confirmation": {
+    "success": "Siparişiniz Alındı!",
+    "orderNumber": "Sipariş numaranız:",
+    "detailTitle": "Sipariş Detayı",
+    "total": "Toplam",
+    "shippingAddress": "Teslimat Adresi",
+    "continueShopping": "Alışverişe Devam Et",
+    "myOrders": "Siparişlerim",
+    "notFound": "Sipariş bulunamadı"
+  },
+  "status": {
+    "Pending": "Beklemede",
+    "Processing": "İşleniyor",
+    "Paid": "Ödendi",
+    "Shipped": "Kargoya Verildi",
+    "Delivered": "Teslim Edildi",
+    "Cancelled": "İptal Edildi",
+    "Refunded": "İade Edildi"
+  }
+}

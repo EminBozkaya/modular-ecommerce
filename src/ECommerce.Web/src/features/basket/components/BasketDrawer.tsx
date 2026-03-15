@@ -6,8 +6,10 @@ import { BasketSummary } from './BasketSummary';
 import { EmptyState } from '../../../components/shared/EmptyState';
 import { Loader2, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export const BasketDrawer = () => {
+    const { t } = useTranslation('basket');
     const { isDrawerOpen, closeDrawer } = useBasketUiStore();
     const { data: basket, isLoading, isError } = useBasket();
     const navigate = useNavigate();
@@ -37,7 +39,7 @@ export const BasketDrawer = () => {
             <div className="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-white dark:bg-zinc-950 shadow-xl flex flex-col transform transition-transform duration-300 ease-in-out">
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-4 border-b">
-                    <h2 className="text-lg font-semibold">Sepetim</h2>
+                    <h2 className="text-lg font-semibold">{t('drawer.title')}</h2>
                     <button onClick={closeDrawer} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                         <X className="h-5 w-5" />
                     </button>
@@ -51,11 +53,11 @@ export const BasketDrawer = () => {
                         </div>
                     ) : isError ? (
                         <div className="flex justify-center items-center h-full text-red-500">
-                            Sepet yüklenemedi.
+                            {t('drawer.loadError')}
                         </div>
                     ) : !basket || !basket.items || basket.items.length === 0 ? (
                         <div className="py-12">
-                            <EmptyState title="Sepetiniz boş" description="Henüz bir ürün eklemediniz." />
+                            <EmptyState title={t('drawer.empty')} description={t('drawer.emptyDesc')} />
                         </div>
                     ) : (
                         <div className="flex flex-col">
@@ -78,7 +80,7 @@ export const BasketDrawer = () => {
                                     navigate('/checkout'); // Placeholder
                                 }}
                             >
-                                Ödemeye Geç
+                                {t('drawer.checkout')}
                             </button>
                         </div>
                     </div>

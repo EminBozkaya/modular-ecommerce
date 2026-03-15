@@ -1,0 +1,161 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "periods": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    },
+    "cards": {
+      "totalOrders": "Total Orders",
+      "totalRevenue": "Total Revenue",
+      "totalCustomers": "Total Customers",
+      "lowStock": "Low Stock",
+      "lowStockDesc": "Products with 5 or fewer units"
+    },
+    "recentOrders": "Recent Orders",
+    "noOrders": "No orders yet.",
+    "table": {
+      "customer": "Customer",
+      "date": "Date",
+      "amount": "Amount",
+      "status": "Status"
+    },
+    "summaryError": "Failed to load summary data.",
+    "revenueError": "Failed to load revenue chart.",
+    "recentOrdersError": "Failed to load recent orders.",
+    "lowStockError": "Failed to load low stock data."
+  },
+  "products": {
+    "title": "Products",
+    "addTooltip": "Add New Product",
+    "excelTooltip": "Export to Excel",
+    "pdfTooltip": "Export to PDF",
+    "noProducts": "No products found.",
+    "loadingProducts": "Loading products...",
+    "mobile": {
+      "price": "Price",
+      "stock": "Stock",
+      "category": "Category",
+      "description": "Description",
+      "noDesc": "None",
+      "createdBy": "Created By",
+      "date": "Date",
+      "edit": "EDIT",
+      "delete": "DELETE",
+      "restore": "RESTORE"
+    },
+    "grid": {
+      "name": "Product Name",
+      "category": "Category",
+      "price": "Price",
+      "stock": "Stock",
+      "unit": "Unit",
+      "status": "Status",
+      "createdBy": "Created By",
+      "createdAt": "Date",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "passive": "Passive",
+      "deleted": "Deleted"
+    }
+  },
+  "categories": {
+    "title": "Categories",
+    "addTooltip": "Add New Category",
+    "excelTooltip": "Export to Excel",
+    "pdfTooltip": "Export to PDF",
+    "noCategories": "No categories found.",
+    "loadingCategories": "Loading categories...",
+    "mobile": {
+      "parentCategory": "Parent Category",
+      "mainCategory": "Main Category",
+      "createdBy": "Created By",
+      "date": "Date",
+      "edit": "EDIT",
+      "delete": "DELETE",
+      "restore": "RESTORE"
+    },
+    "grid": {
+      "name": "Category Name",
+      "parentCategory": "Parent Category",
+      "status": "Status",
+      "createdBy": "Created By",
+      "createdAt": "Date",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "passive": "Passive",
+      "deleted": "Deleted"
+    }
+  },
+  "orders": {
+    "title": "Orders",
+    "excelTooltip": "Export to Excel",
+    "pdfTooltip": "Export to PDF",
+    "noOrders": "No orders found.",
+    "loadingOrders": "Loading orders...",
+    "mobile": {
+      "customer": "Customer",
+      "amount": "Amount",
+      "products": "Products",
+      "address": "Address",
+      "date": "Date",
+      "updateStatus": "UPDATE STATUS",
+      "delete": "DELETE",
+      "restore": "RESTORE"
+    },
+    "grid": {
+      "orderId": "Order ID",
+      "customer": "Customer",
+      "amount": "Amount",
+      "status": "Status",
+      "date": "Date",
+      "actions": "Actions"
+    }
+  },
+  "users": {
+    "title": "Customers",
+    "addTooltip": "Add New Customer",
+    "excelTooltip": "Export to Excel",
+    "pdfTooltip": "Export to PDF",
+    "noUsers": "No customers found.",
+    "loadingUsers": "Loading customers...",
+    "mobile": {
+      "email": "Email",
+      "role": "Role",
+      "emailConfirmed": "Email Confirmation",
+      "confirmed": "✅ Confirmed",
+      "notConfirmed": "❌ Not Confirmed",
+      "registrationDate": "Registration Date",
+      "roleAdmin": "Administrator",
+      "roleCustomer": "Customer",
+      "edit": "EDIT",
+      "delete": "DELETE",
+      "restore": "RESTORE"
+    },
+    "grid": {
+      "fullName": "Full Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "emailConfirmed": "Email Confirmed",
+      "createdAt": "Registration Date",
+      "actions": "Actions"
+    }
+  },
+  "common": {
+    "excel": "Excel",
+    "pdf": "PDF",
+    "add": "ADD",
+    "totalRecords": "Total records: {{count}}",
+    "showing": "Showing: {{count}} records",
+    "deleted": "Deleted",
+    "active": "Active",
+    "passive": "Passive"
+  }
+}

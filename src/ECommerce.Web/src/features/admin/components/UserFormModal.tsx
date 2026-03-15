@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminUser } from '../types/adminUser';
 import { X } from 'lucide-react';
-import { adminUserSchema, type AdminUserFormData } from '@/lib/validations/admin.schema';
+import { useAdminUserSchema, type AdminUserFormData } from '@/lib/validations/admin.schema';
 
 interface UserFormModalProps {
     open: boolean;
@@ -23,6 +23,7 @@ export default function UserFormModal({
     user,
     loading,
 }: UserFormModalProps) {
+    const adminUserSchema = useAdminUserSchema();
     const {
         register,
         handleSubmit,

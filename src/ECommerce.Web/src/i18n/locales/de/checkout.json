@@ -1,0 +1,56 @@
+{
+  "page": {
+    "title": "Bestellung abschließen",
+    "subtitle": "Füllen Sie Ihre Daten aus und wählen Sie eine Zahlungsmethode.",
+    "emptyBasket": "Ihr Warenkorb ist leer",
+    "emptyBasketDesc": "Legen Sie Produkte in den Warenkorb, um mit der Zahlung fortzufahren.",
+    "continueShopping": "Weiter einkaufen",
+    "processing": "Wird verarbeitet...",
+    "proceed": "Zur Zahlung",
+    "terms": "Mit der Bestätigung Ihrer Bestellung stimmen Sie unseren",
+    "termsLink": "Nutzungsbedingungen",
+    "termsEnd": " zu.",
+    "creatingOrder": "Ihre Bestellung wird erstellt...",
+    "redirecting": "Weiterleitung zur Zahlungsseite..."
+  },
+  "shipping": {
+    "sectionTitle": "Lieferadresse",
+    "savedAddresses": "Meine gespeicherten Adressen",
+    "loading": "Gespeicherte Adressen werden geladen...",
+    "default": "Standard",
+    "useNew": "Andere Adresse verwenden",
+    "fullName": "Vollständiger Name",
+    "fullNamePlaceholder": "Max Mustermann",
+    "address1": "Adresse",
+    "address1Placeholder": "Straße, Hausnummer",
+    "address2": "Adresszusatz",
+    "address2Placeholder": "Etage, Wohnung (optional)",
+    "city": "Stadt",
+    "cityPlaceholder": "Berlin",
+    "postalCode": "Postleitzahl",
+    "postalCodePlaceholder": "10115",
+    "country": "Land",
+    "countryPlaceholder": "Deutschland"
+  },
+  "payment": {
+    "sectionTitle": "Zahlungsmethode",
+    "loading": "Zahlungsmethoden werden geladen...",
+    "loadError": "Zahlungsmethoden konnten nicht geladen werden.",
+    "notFound": "Keine Zahlungsmethode gefunden",
+    "notFoundDesc": "Derzeit sind keine aktiven Zahlungsmethoden verfügbar.",
+    "selectRequired": "Wählen Sie eine Zahlungsmethode, um fortzufahren."
+  },
+  "summary": {
+    "title": "Bestellübersicht",
+    "total": "Gesamt"
+  },
+  "waiting": {
+    "titleTimeout": "Zahlung wird verarbeitet",
+    "descTimeout": "Die Zahlungsbestätigung kann etwas länger dauern. Sie können sie in Ihren Bestellungen verfolgen.",
+    "goToOrders": "Zu meinen Bestellungen",
+    "titleError": "Status konnte nicht abgerufen werden",
+    "descError": "Sie können den Zahlungsstatus in Ihren Bestellungen prüfen.",
+    "titleProcessing": "Zahlung wird überprüft...",
+    "descProcessing": "Dieser Vorgang kann einige Sekunden dauern."
+  }
+}

@@ -4,6 +4,7 @@ import { useAddresses, useAddAddress, useUpdateAddress, useDeleteAddress, useSet
 import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
 import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import type { UserAddress, AddUserAddressRequest, UpdateUserAddressRequest } from '../types/address';
+import { useTranslation } from 'react-i18next';
 
 // ─── Inline address form ───────────────────────────────────────────────────────
 
@@ -42,6 +43,8 @@ interface AddressFormProps {
 
 function AddressForm({ initial = emptyForm, onSave, onCancel, isSaving }: AddressFormProps) {
     const [form, setForm] = useState<AddressFormState>(initial);
+    const { t } = useTranslation('auth');
+    const { t: tc } = useTranslation('common');
     const set = (field: keyof AddressFormState) => (e: React.ChangeEvent<HTMLInputElement>) =>
         setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
@@ -51,34 +54,34 @@ function AddressForm({ initial = emptyForm, onSave, onCancel, isSaving }: Addres
         <div className="space-y-3 rounded-2xl border border-[var(--color-ebrar-green)]/30 bg-[var(--color-ebrar-green)]/5 p-5">
             <div className="grid grid-cols-2 gap-3">
                 <div>
-                    <label className={labelClass}>Adres Başlığı *</label>
-                    <input className={inputClass} value={form.title} onChange={set('title')} placeholder="Ev Adresim" />
+                    <label className={labelClass}>{t('addresses.form.titleField')}</label>
+                    <input className={inputClass} value={form.title} onChange={set('title')} placeholder={t('addresses.form.titlePlaceholder')} />
                 </div>
                 <div>
-                    <label className={labelClass}>Ad Soyad *</label>
-                    <input className={inputClass} value={form.fullName} onChange={set('fullName')} placeholder="Ali Yılmaz" />
+                    <label className={labelClass}>{t('addresses.form.fullName')}</label>
+                    <input className={inputClass} value={form.fullName} onChange={set('fullName')} placeholder={t('addresses.form.fullNamePlaceholder')} />
                 </div>
             </div>
             <div>
-                <label className={labelClass}>Adres *</label>
-                <input className={inputClass} value={form.addressLine1} onChange={set('addressLine1')} placeholder="Sokak, Mahalle, Kapı No" />
+                <label className={labelClass}>{t('addresses.form.addressLine1')}</label>
+                <input className={inputClass} value={form.addressLine1} onChange={set('addressLine1')} placeholder={t('addresses.form.addressPlaceholder')} />
             </div>
             <div>
-                <label className={labelClass}>Adres Satırı 2</label>
-                <input className={inputClass} value={form.addressLine2} onChange={set('addressLine2')} placeholder="Kat, Daire (isteğe bağlı)" />
+                <label className={labelClass}>{t('addresses.form.addressLine2')}</label>
+                <input className={inputClass} value={form.addressLine2} onChange={set('addressLine2')} placeholder={t('addresses.form.address2Placeholder')} />
             </div>
             <div className="grid grid-cols-3 gap-3">
                 <div>
-                    <label className={labelClass}>Şehir *</label>
-                    <input className={inputClass} value={form.city} onChange={set('city')} placeholder="İstanbul" />
+                    <label className={labelClass}>{t('addresses.form.city')}</label>
+                    <input className={inputClass} value={form.city} onChange={set('city')} placeholder={t('addresses.form.cityPlaceholder')} />
                 </div>
                 <div>
-                    <label className={labelClass}>Posta Kodu *</label>
-                    <input className={inputClass} value={form.postalCode} onChange={set('postalCode')} placeholder="34000" />
+                    <label className={labelClass}>{t('addresses.form.postalCode')}</label>
+                    <input className={inputClass} value={form.postalCode} onChange={set('postalCode')} placeholder={t('addresses.form.postalPlaceholder')} />
                 </div>
                 <div>
-                    <label className={labelClass}>Ülke *</label>
-                    <input className={inputClass} value={form.country} onChange={set('country')} placeholder="Türkiye" />
+                    <label className={labelClass}>{t('addresses.form.country')}</label>
+                    <input className={inputClass} value={form.country} onChange={set('country')} placeholder={t('addresses.form.countryPlaceholder')} />
                 </div>
             </div>
             <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-600">
@@ -88,7 +91,7 @@ function AddressForm({ initial = emptyForm, onSave, onCancel, isSaving }: Addres
                     onChange={(e) => setForm((prev) => ({ ...prev, isDefault: e.target.checked }))}
                     className="rounded accent-[var(--color-ebrar-green)]"
                 />
-                Varsayılan adres olarak ayarla
+                {t('addresses.form.setAsDefault')}
             </label>
             <div className="flex gap-2 pt-1">
                 <button
@@ -98,7 +101,7 @@ function AddressForm({ initial = emptyForm, onSave, onCancel, isSaving }: Addres
                     className="flex items-center gap-1.5 rounded-xl bg-[var(--color-ebrar-green)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50 hover:bg-[var(--color-ebrar-green-dark)] transition-colors"
                 >
                     {isSaving ? <LoadingSpinner size="sm" /> : <Check className="h-4 w-4" />}
-                    Kaydet
+                    {tc('buttons.save')}
                 </button>
                 <button
                     type="button"
@@ -106,7 +109,7 @@ function AddressForm({ initial = emptyForm, onSave, onCancel, isSaving }: Addres
                     className="flex items-center gap-1.5 rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
                 >
                     <X className="h-4 w-4" />
-                    İptal
+                    {tc('buttons.cancel')}
                 </button>
             </div>
         </div>
@@ -121,6 +124,7 @@ export default function AddressesPage() {
     const updateMutation = useUpdateAddress();
     const deleteMutation = useDeleteAddress();
     const setDefaultMutation = useSetDefaultAddress();
+    const { t } = useTranslation('auth');
 
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -155,7 +159,7 @@ export default function AddressesPage() {
     };
 
     const handleDelete = async (id: string) => {
-        if (!window.confirm('Bu adresi silmek istediğinize emin misiniz?')) return;
+        if (!window.confirm(t('addresses.deleteConfirm'))) return;
         await deleteMutation.mutateAsync(id);
     };
 
@@ -174,7 +178,7 @@ export default function AddressesPage() {
     if (isError) {
         return (
             <div className="container mx-auto px-4 py-12">
-                <ErrorMessage message="Adresler yüklenirken bir hata oluştu." onRetry={() => refetch()} />
+                <ErrorMessage message={t('addresses.loadError')} onRetry={() => refetch()} />
             </div>
         );
     }
@@ -190,10 +194,10 @@ export default function AddressesPage() {
                         </div>
                         <div>
                             <h1 className="text-3xl font-black text-gray-900 font-serif">
-                                Kayıtlı <span className="text-[var(--color-ebrar-green)]">Adreslerim</span>
+                                {t('addresses.title')} <span className="text-[var(--color-ebrar-green)]">{t('addresses.titleHighlight')}</span>
                             </h1>
                             <p className="text-sm text-gray-500">
-                                Siparişlerinizde kullanabileceğiniz adresleri buradan yönetebilirsiniz.
+                                {t('addresses.subtitle')}
                             </p>
                         </div>
                     </div>
@@ -204,7 +208,7 @@ export default function AddressesPage() {
                             className="flex items-center justify-center gap-2 bg-[var(--color-ebrar-green)] text-white font-bold px-6 py-3.5 rounded-2xl shadow-lg shadow-green-900/10 hover:bg-[var(--color-ebrar-green-dark)] transition-all active:scale-95"
                         >
                             <Plus className="h-5 w-5" />
-                            Yeni Adres Ekle
+                            {t('addresses.addNew')}
                         </button>
                     )}
                 </div>
@@ -253,7 +257,7 @@ export default function AddressesPage() {
                                                 <h3 className="font-bold text-gray-900">{addr.title}</h3>
                                                 {addr.isDefault && (
                                                     <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--color-ebrar-green)]">
-                                                        Varsayılan
+                                                        {t('addresses.default')}
                                                     </span>
                                                 )}
                                             </div>
@@ -261,7 +265,7 @@ export default function AddressesPage() {
                                         <div className="flex items-center gap-1">
                                             {!addr.isDefault && (
                                                 <button
-                                                    title="Varsayılan yap"
+                                                    title={t('addresses.makeDefault')}
                                                     onClick={() => handleSetDefault(addr.id)}
                                                     disabled={setDefaultMutation.isPending}
                                                     className="p-2 text-gray-400 hover:text-yellow-500 hover:bg-yellow-50 rounded-lg transition-colors"
@@ -307,14 +311,14 @@ export default function AddressesPage() {
                             <div className="h-12 w-12 rounded-full bg-gray-50 flex items-center justify-center">
                                 <Plus className="h-6 w-6" />
                             </div>
-                            <span className="text-sm font-bold">Başka Bir Adres Ekle</span>
+                            <span className="text-sm font-bold">{t('addresses.addAnother')}</span>
                         </button>
                     )}
                 </div>
 
                 {addresses?.length === 0 && !showAddForm && (
                     <p className="text-center text-gray-400 mt-8 text-sm">
-                        Henüz kayıtlı adresiniz yok. Yukarıdan ekleyebilirsiniz.
+                        {t('addresses.noAddresses')}
                     </p>
                 )}
             </div>

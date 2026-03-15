@@ -1,0 +1,18 @@
+{
+  "drawer": {
+    "title": "Sepetim",
+    "loadError": "Sepet yüklenemedi.",
+    "empty": "Sepetiniz boş",
+    "emptyDesc": "Henüz bir ürün eklemediniz.",
+    "checkout": "Ödemeye Geç"
+  },
+  "item": {
+    "noImage": "Görsel yok",
+    "removeAriaLabel": "Ürünü sepetten kaldır",
+    "remove": "Kaldır"
+  },
+  "summary": {
+    "products": "Ürünler ({{count}})",
+    "total": "Toplam"
+  }
+}

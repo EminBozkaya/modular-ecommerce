@@ -13,8 +13,10 @@ import { useAddToBasket } from '../../basket/hooks/useAddToBasket';
 import { useBasket } from '../../basket/hooks/useBasket';
 import { useRemoveFromBasket } from '../../basket/hooks/useRemoveFromBasket';
 import { useUpdateBasketItem } from '../../basket/hooks/useUpdateBasketItem';
+import { useTranslation } from 'react-i18next';
 
 export default function ProductDetailPage() {
+    const { t } = useTranslation('catalog');
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const safeId = id ?? '';
@@ -66,7 +68,7 @@ export default function ProductDetailPage() {
         return (
             <div className="container mx-auto px-4 py-20 flex flex-col items-center justify-center min-h-[50vh]">
                 <LoadingSpinner size="lg" />
-                <p className="mt-4 text-gray-500 font-medium">Ürün detayları yükleniyor...</p>
+                <p className="mt-4 text-gray-500 font-medium">{t('detail.loading')}</p>
             </div>
         );
     }
@@ -76,10 +78,10 @@ export default function ProductDetailPage() {
             <div className="container mx-auto px-4 py-12 max-w-2xl">
                 <button onClick={handleBack} className="mb-8 flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Ürünlere dön
+                    {t('detail.backToProducts')}
                 </button>
                 <ErrorMessage
-                    message={error instanceof Error ? error.message : 'Ürün detayları yüklenemedi. Lütfen tekrar deneyin.'}
+                    message={error instanceof Error ? error.message : t('detail.loadError')}
                     onRetry={() => refetch()}
                 />
             </div>
@@ -91,9 +93,9 @@ export default function ProductDetailPage() {
             <div className="container mx-auto px-4 py-12 max-w-2xl">
                 <button onClick={handleBack} className="mb-8 flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Ürünlere dön
+                    {t('detail.backToProducts')}
                 </button>
-                <EmptyState title="Ürün bulunamadı" description="Aradığınız ürün mevcut değil veya kaldırılmış olabilir." />
+                <EmptyState title={t('detail.notFound')} description={t('detail.notFoundDesc')} />
             </div>
         );
     }
@@ -105,7 +107,7 @@ export default function ProductDetailPage() {
         <div className="container mx-auto px-4 py-8 max-w-6xl">
             <button onClick={handleBack} className="mb-8 flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Ürünlere dön
+                {t('detail.backToProducts')}
             </button>
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -123,7 +125,7 @@ export default function ProductDetailPage() {
                                 <svg className="h-24 w-24 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                                <span className="text-lg font-medium">Görsel bulunamadı</span>
+                                <span className="text-lg font-medium">{t('detail.noImage')}</span>
                             </div>
                         )}
                     </div>
@@ -142,7 +144,7 @@ export default function ProductDetailPage() {
 
                         {/* Unit info */}
                         <p className="text-sm text-gray-500 mb-2">
-                            Satış birimi:{' '}
+                            {t('detail.salesUnit')}{' '}
                             <span className="font-semibold text-gray-700">{config.displayName}</span>
                         </p>
 
@@ -156,11 +158,11 @@ export default function ProductDetailPage() {
                         <div className="mb-6 flex items-center space-x-4">
                             <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                 <span className={`w-2 h-2 rounded-full mr-2 ${inStock ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                                {inStock ? 'Stokta Var' : 'Stokta Yok'}
+                                {inStock ? t('detail.inStock') : t('detail.outOfStock')}
                             </span>
                             {inStock && (
                                 <span className="text-sm font-medium text-gray-500 border border-gray-200 py-1 px-3 rounded-full">
-                                    {product.stockQuantity} {product.unitName} mevcut
+                                    {t('detail.stockAvailable', { count: product.stockQuantity, unit: product.unitName })}
                                 </span>
                             )}
                         </div>
@@ -173,7 +175,7 @@ export default function ProductDetailPage() {
                             <div className="pt-6 border-t border-gray-100 mt-auto space-y-4">
                                 {/* Quantity selector */}
                                 <div>
-                                    <p className="text-sm font-medium text-gray-700 mb-2">Miktar seçin</p>
+                                    <p className="text-sm font-medium text-gray-700 mb-2">{t('detail.selectQuantity')}</p>
                                     <QuantitySelector
                                         unitName={product.unitName}
                                         value={currentQuantity}
@@ -186,21 +188,21 @@ export default function ProductDetailPage() {
                                 {/* Price preview card */}
                                 <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-1.5">
                                     <div className="flex justify-between text-sm text-gray-600">
-                                        <span>Seçilen miktar</span>
+                                        <span>{t('detail.selectedQuantity')}</span>
                                         <span className="font-semibold text-gray-800">{config.formatValue(currentQuantity)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm text-gray-600">
-                                        <span>Birim fiyat</span>
+                                        <span>{t('detail.unitPrice')}</span>
                                         <span className="font-semibold text-gray-800">
                                             {formatPrice(product.price, product.currency)} / {product.unitName}
                                         </span>
                                     </div>
                                     <div className="flex justify-between text-base font-bold text-gray-900 pt-1 border-t border-gray-200 mt-1">
-                                        <span>Tahmini tutar</span>
+                                        <span>{t('detail.estimatedTotal')}</span>
                                         <span>{calculateLinePrice(product.price, currentQuantity, product.currency)}</span>
                                     </div>
                                     <p className="text-[11px] text-gray-400 pt-0.5">
-                                        * Kesin tutar sepette hesaplanır
+                                        {t('detail.pricingNote')}
                                     </p>
                                 </div>
 
@@ -221,22 +223,22 @@ export default function ProductDetailPage() {
                                 >
                                     {isAnyActionPending ? (
                                         <span className="flex items-center justify-center gap-2">
-                                            <Loader2 className="h-5 v-5 animate-spin" /> Bekleyiniz...
+                                            <Loader2 className="h-5 v-5 animate-spin" /> {t('product.waiting')}
                                         </span>
                                     ) : isInBasket ? (
                                         <span className="flex items-center justify-center gap-2">
-                                            <ShoppingCart className="h-5 w-5 fill-white/20" /> Sepetten Çıkar
+                                            <ShoppingCart className="h-5 w-5 fill-white/20" /> {t('product.removeFromBasket')}
                                         </span>
                                     ) : isAddSuccess ? (
-                                        'Sepete Eklendi ✓'
+                                        t('product.basketAdded')
                                     ) : (
                                         <span className="flex items-center justify-center gap-2">
-                                            <ShoppingCart className="h-5 w-5" /> Sepete Ekle
+                                            <ShoppingCart className="h-5 w-5" /> {t('product.addToBasket')}
                                         </span>
                                     )}
                                 </button>
                                 <p className="text-xs text-center text-gray-400">
-                                    ₺1500 üzeri siparişlerde kargo bedava
+                                    {t('detail.freeShipping')}
                                 </p>
                             </div>
                         )}
@@ -244,7 +246,7 @@ export default function ProductDetailPage() {
                         {!inStock && (
                             <div className="pt-6 border-t border-gray-100 mt-auto">
                                 <button disabled className="w-full py-3 px-4 text-base font-bold bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed border-b-2 border-gray-200">
-                                    Stokta Yok
+                                    {t('detail.outOfStock')}
                                 </button>
                             </div>
                         )}

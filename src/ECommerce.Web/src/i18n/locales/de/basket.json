@@ -1,0 +1,18 @@
+{
+  "drawer": {
+    "title": "Mein Warenkorb",
+    "loadError": "Warenkorb konnte nicht geladen werden.",
+    "empty": "Ihr Warenkorb ist leer",
+    "emptyDesc": "Sie haben noch keine Produkte hinzugefügt.",
+    "checkout": "Zur Kasse"
+  },
+  "item": {
+    "noImage": "Kein Bild",
+    "removeAriaLabel": "Produkt aus dem Warenkorb entfernen",
+    "remove": "Entfernen"
+  },
+  "summary": {
+    "products": "Produkte ({{count}})",
+    "total": "Gesamt"
+  }
+}

@@ -2,12 +2,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
 import { useRegister } from '@/features/auth/hooks/useRegister';
-import { registerSchema, type RegisterFormData } from '@/lib/validations/auth.schema';
+import { useRegisterSchema, type RegisterFormData } from '@/lib/validations/auth.schema';
 import { applyServerErrors } from '@/utils/formErrors';
 import logoImg from '@/assets/ebrar-logo.png';
+import { useTranslation } from 'react-i18next';
 
 export default function RegisterPage() {
     const { mutate: register, isPending } = useRegister();
+    const { t } = useTranslation('auth');
+
+    const registerSchema = useRegisterSchema();
 
     const {
         register: rhfRegister,
@@ -53,12 +57,12 @@ export default function RegisterPage() {
 
                 <div className="relative z-10 text-center">
                     <h2 className="text-3xl font-black tracking-tight text-gray-900 font-serif lowercase">
-                        Hesap <span className="text-[var(--color-ebrar-green)]">Oluştur</span>
+                        {t('register.title')} <span className="text-[var(--color-ebrar-green)]">{t('register.titleHighlight')}</span>
                     </h2>
                     <p className="mt-3 text-sm text-gray-500 font-medium">
-                        Zaten bir hesabınız var mı?{' '}
+                        {t('register.hasAccount')}{' '}
                         <Link to="/login" className="font-bold text-[var(--color-ebrar-green)] hover:text-[var(--color-ebrar-green-dark)] transition-colors underline decoration-2 underline-offset-4">
-                            Giriş Yapın
+                            {t('register.loginLink')}
                         </Link>
                     </p>
                 </div>
@@ -88,7 +92,7 @@ export default function RegisterPage() {
                             <div className="w-full border-t border-gray-200"></div>
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-white px-2 text-gray-500 font-bold tracking-widest leading-none">veya bilgilerinizle</span>
+                            <span className="bg-white px-2 text-gray-500 font-bold tracking-widest leading-none">{t('register.orWithInfo')}</span>
                         </div>
                     </div>
 
@@ -104,7 +108,7 @@ export default function RegisterPage() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label htmlFor="reg-firstName" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
-                                        Ad
+                                        {t('register.firstName')}
                                     </label>
                                     <input
                                         id="reg-firstName"
@@ -121,7 +125,7 @@ export default function RegisterPage() {
 
                                 <div>
                                     <label htmlFor="reg-lastName" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
-                                        Soyad
+                                        {t('register.lastName')}
                                     </label>
                                     <input
                                         id="reg-lastName"
@@ -139,7 +143,7 @@ export default function RegisterPage() {
 
                             <div>
                                 <label htmlFor="reg-email" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
-                                    E-posta Adresi
+                                    {t('register.email')}
                                 </label>
                                 <input
                                     id="reg-email"
@@ -157,7 +161,7 @@ export default function RegisterPage() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label htmlFor="reg-password" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
-                                        Şifre
+                                        {t('register.password')}
                                     </label>
                                     <input
                                         id="reg-password"
@@ -174,7 +178,7 @@ export default function RegisterPage() {
 
                                 <div>
                                     <label htmlFor="reg-confirmPassword" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
-                                        Şifre Tekrar
+                                        {t('register.confirmPassword')}
                                     </label>
                                     <input
                                         id="reg-confirmPassword"
@@ -197,14 +201,14 @@ export default function RegisterPage() {
                                 disabled={isPending}
                                 className="flex w-full justify-center rounded-xl bg-[var(--color-ebrar-green)] px-4 py-3 text-sm font-black text-white shadow-xl shadow-green-900/10 hover:bg-[var(--color-ebrar-green-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-ebrar-green)] disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
                             >
-                                {isPending ? 'Hesap Oluşturuluyor...' : 'Hesap Oluştur'}
+                                {isPending ? t('register.submitting') : t('register.submit')}
                             </button>
 
                             <Link
                                 to="/"
                                 className="flex w-full justify-center rounded-xl bg-gray-50 px-4 py-3 text-sm font-bold text-gray-600 border border-gray-100 hover:bg-gray-100 transition-all active:scale-[0.98] text-center"
                             >
-                                Misafir Olarak Devam Et
+                                {t('register.continueAsGuest')}
                             </Link>
                         </div>
                     </form>

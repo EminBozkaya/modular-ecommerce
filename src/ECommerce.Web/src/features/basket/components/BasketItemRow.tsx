@@ -5,12 +5,14 @@ import { useUpdateBasketItem } from '../hooks/useUpdateBasketItem';
 import { formatPrice } from '../../../utils/formatters';
 import { getUnitConfig } from '../../../utils/unitConfig';
 import { QuantitySelector } from '../../../components/shared/QuantitySelector';
+import { useTranslation } from 'react-i18next';
 
 interface BasketItemRowProps {
     item: BasketItem;
 }
 
 export const BasketItemRow = ({ item }: BasketItemRowProps) => {
+    const { t } = useTranslation('basket');
     const { mutate: removeFromBasket, isPending: isRemoving } = useRemoveFromBasket();
     const { debouncedMutate: updateItem, isPending: isUpdating } = useUpdateBasketItem();
 
@@ -35,7 +37,7 @@ export const BasketItemRow = ({ item }: BasketItemRowProps) => {
                     <img src={item.imageUrl} alt={item.productName} className="h-full w-full object-cover" />
                 ) : (
                     <div className="h-full w-full flex items-center justify-center text-gray-400 text-xs text-center">
-                        Görsel yok
+                        {t('item.noImage')}
                     </div>
                 )}
             </div>
@@ -44,7 +46,7 @@ export const BasketItemRow = ({ item }: BasketItemRowProps) => {
             <div className="flex-1 min-w-0 space-y-1.5">
                 <h4 className="text-sm font-medium text-gray-900 truncate">{item.productName}</h4>
                 <span className="inline-block text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                    {unitConfig.displayName}
+                    {item.unitName === 'adet' ? t('..common.unit.adet', { defaultValue: 'adet' }) : unitConfig.displayName}
                 </span>
                 <div>
                     <QuantitySelector
@@ -59,10 +61,10 @@ export const BasketItemRow = ({ item }: BasketItemRowProps) => {
                     onClick={() => removeFromBasket(item.productId)}
                     disabled={isDisabled}
                     className="flex items-center gap-1 text-xs text-red-500 hover:text-red-700 disabled:opacity-50 mt-0.5"
-                    aria-label="Ürünü sepetten kaldır"
+                    aria-label={t('item.removeAriaLabel')}
                 >
                     <Trash2 className="h-3 w-3" />
-                    Kaldır
+                    {t('item.remove')}
                 </button>
             </div>
 

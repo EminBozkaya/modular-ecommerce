@@ -6,6 +6,7 @@ import {
 } from 'ag-grid-community';
 import { Edit2, Trash2, RotateCcw } from 'lucide-react';
 import type { AdminUser } from '../types/adminUser';
+import { useTranslation } from 'react-i18next';
 
 export const localeTextTr: Record<string, string> = {
     filterOoo: 'Filtrele...',
@@ -55,9 +56,20 @@ interface UseUserGridColumnsParams {
 }
 
 export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridColumnsParams): ColDef<AdminUser>[] {
-    return useMemo<ColDef<AdminUser>[]>(() => [
+    const { t, i18n } = useTranslation('admin');
+
+    return useMemo<ColDef<AdminUser>[]>(() => {
+        const formatDateCell = (params: ValueFormatterParams<AdminUser, string>) => {
+            if (!params.value) return '';
+            return new Intl.DateTimeFormat(i18n.language === 'tr' ? 'tr-TR' : 'en-US', {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit',
+            }).format(new Date(params.value));
+        };
+
+        return [
         {
-            headerName: 'Durum',
+            headerName: t('users.grid.status'),
             field: 'isActive',
             filter: 'entityStatusFilter',
             floatingFilter: true,
@@ -66,14 +78,14 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
             sortable: true,
             minWidth: 100,
             cellRenderer: (params: ICellRendererParams<AdminUser, boolean>) => {
-                if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmiş</span>;
-                return params.value ? <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span> : <span style={{ color: '#ca8a04', fontWeight: '600' }}>Pasif</span>;
+                if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>{t('common.deleted')}</span>;
+                return params.value ? <span style={{ color: '#16a34a', fontWeight: '600' }}>{t('common.active')}</span> : <span style={{ color: '#ca8a04', fontWeight: '600' }}>{t('common.passive')}</span>;
             },
         },
-        { headerName: 'Ad Soyad', field: 'fullName', filter: 'agTextColumnFilter', sortable: true, minWidth: 180 },
-        { headerName: 'E-posta', field: 'email', filter: 'agTextColumnFilter', sortable: true, minWidth: 220 },
+        { headerName: t('users.grid.fullName'), field: 'fullName', filter: 'agTextColumnFilter', sortable: true, minWidth: 180 },
+        { headerName: t('users.grid.email'), field: 'email', filter: 'agTextColumnFilter', sortable: true, minWidth: 220 },
         {
-            headerName: 'Rol',
+            headerName: t('users.grid.role'),
             field: 'role',
             filter: 'agTextColumnFilter',
             sortable: true,
@@ -83,13 +95,13 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
                 const isAdmin = params.value === 'Admin';
                 return (
                     <span style={{ color: isAdmin ? '#7c3aed' : '#374151', backgroundColor: isAdmin ? '#f5f3ff' : '#f3f4f6', padding: '2px 10px', borderRadius: '9999px', fontSize: '12px', fontWeight: 600 }}>
-                        {isAdmin ? 'Yönetici' : 'Müşteri'}
+                        {isAdmin ? t('users.mobile.roleAdmin') : t('users.mobile.roleCustomer')}
                     </span>
                 );
             },
         },
         {
-            headerName: 'E-posta Onayı',
+            headerName: t('users.grid.emailConfirmed'),
             field: 'isEmailConfirmed',
             filter: 'agTextColumnFilter',
             sortable: true,
@@ -98,28 +110,25 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
                 const confirmed = params.value;
                 return (
                     <span style={{ color: confirmed ? '#16a34a' : '#6b7280', backgroundColor: confirmed ? '#f0fdf4' : '#f3f4f6', padding: '2px 10px', borderRadius: '9999px', fontSize: '12px', fontWeight: 600 }}>
-                        {confirmed ? 'Onaylı' : 'Onaysız'}
+                        {confirmed ? t('users.mobile.confirmed').replace('✅ ', '') : t('users.mobile.notConfirmed').replace('❌ ', '')}
                     </span>
                 );
             },
             filterParams: {
-                valueFormatter: (params: ValueFormatterParams<AdminUser, boolean>) => params.value ? 'Onaylı' : 'Onaysız',
+                valueFormatter: (params: ValueFormatterParams<AdminUser, boolean>) => params.value ? t('users.mobile.confirmed').replace('✅ ', '') : t('users.mobile.notConfirmed').replace('❌ ', ''),
             },
         },
         {
-            headerName: 'Kayıt Tarihi',
+            headerName: t('users.grid.createdAt'),
             field: 'createdAt',
             sortable: true,
             filter: 'agDateColumnFilter',
             filterParams: { comparator: dateComparator },
             minWidth: 180,
-            valueFormatter: (params: ValueFormatterParams<AdminUser, string>) => {
-                if (!params.value) return '';
-                return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(params.value));
-            },
+            valueFormatter: formatDateCell,
         },
         {
-            headerName: 'İşlemler',
+            headerName: t('users.grid.actions'),
             field: 'id',
             sortable: false,
             filter: false,
@@ -141,5 +150,6 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
                 );
             },
         },
-    ], [onEdit, onDelete, onRestore]);
+    ];
+    }, [onEdit, onDelete, onRestore, t, i18n.language]);
 }

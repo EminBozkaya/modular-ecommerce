@@ -1,0 +1,18 @@
+{
+  "drawer": {
+    "title": "My Basket",
+    "loadError": "Failed to load basket.",
+    "empty": "Your basket is empty",
+    "emptyDesc": "You haven't added any products yet.",
+    "checkout": "Proceed to Checkout"
+  },
+  "item": {
+    "noImage": "No image",
+    "removeAriaLabel": "Remove product from basket",
+    "remove": "Remove"
+  },
+  "summary": {
+    "products": "Products ({{count}})",
+    "total": "Total"
+  }
+}

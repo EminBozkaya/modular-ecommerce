@@ -6,6 +6,7 @@ import {
     LogOut, Settings, LayoutDashboard, UserCircle,
     MapPin as MapPinIcon, ShoppingBag,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export function UserMenu() {
     const { isAuthenticated, user, isAuthLoading } = useAuthStore();
@@ -13,6 +14,7 @@ export function UserMenu() {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+    const { t } = useTranslation('common');
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -37,13 +39,13 @@ export function UserMenu() {
                     to="/login"
                     className="text-sm font-semibold text-foreground hover:text-[var(--color-ebrar-green)] transition-all"
                 >
-                    Giris
+                    {t('userMenu.login')}
                 </Link>
                 <Link
                     to="/register"
                     className="px-4 py-2 text-sm font-bold text-white bg-[var(--color-ebrar-green)] rounded-full hover:bg-[var(--color-ebrar-green-dark)] shadow-md transition-all active:scale-95"
                 >
-                    Kayit Ol
+                    {t('userMenu.register')}
                 </Link>
             </div>
         );
@@ -59,7 +61,7 @@ export function UserMenu() {
                 {userInitials}
             </button>
             <span className="text-[11px] font-bold text-muted-foreground group-hover:text-[var(--color-ebrar-green)] mt-1 transition-colors">
-                Hesabım
+                {t('userMenu.myAccount')}
             </span>
 
             {isOpen && (
@@ -69,7 +71,7 @@ export function UserMenu() {
                         <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                         {user?.role === 'Admin' && (
                             <span className="inline-block mt-1 px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full uppercase tracking-wider">
-                                Yonetici
+                                {t('userMenu.admin')}
                             </span>
                         )}
                     </div>
@@ -81,7 +83,7 @@ export function UserMenu() {
                                 className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-gray-50 transition-colors"
                             >
                                 <LayoutDashboard className="h-4 w-4 text-blue-600" />
-                                Admin Paneli
+                                {t('userMenu.adminPanel')}
                             </Link>
                         )}
                         <button
@@ -89,28 +91,28 @@ export function UserMenu() {
                             className="w-full flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-gray-50 transition-colors text-left"
                         >
                             <UserCircle className="h-4 w-4 text-muted-foreground" />
-                            Profil Bilgileri
+                            {t('userMenu.profile')}
                         </button>
                         <button
                             onClick={() => { setIsOpen(false); navigate('/orders'); }}
                             className="w-full flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-gray-50 transition-colors text-left"
                         >
                             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-                            Siparişlerim
+                            {t('userMenu.orders')}
                         </button>
                         <button
                             onClick={() => { setIsOpen(false); navigate('/adreslerim'); }}
                             className="w-full flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-gray-50 transition-colors text-left"
                         >
                             <MapPinIcon className="h-4 w-4 text-muted-foreground" />
-                            Adreslerim
+                            {t('userMenu.addresses')}
                         </button>
                         <button
                             onClick={() => setIsOpen(false)}
                             className="w-full flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-gray-50 transition-colors text-left"
                         >
                             <Settings className="h-4 w-4 text-muted-foreground" />
-                            Ayarlar
+                            {t('userMenu.settings')}
                         </button>
                     </div>
                     <div className="mt-1 pt-1 border-t border-border">
@@ -119,7 +121,7 @@ export function UserMenu() {
                             className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left disabled:opacity-50"
                         >
                             <LogOut className="h-4 w-4" />
-                            Guvenli Cikis
+                            {t('userMenu.logout')}
                         </button>
                     </div>
                 </div>

@@ -6,6 +6,7 @@ import {
 } from 'ag-grid-community';
 import { Edit2, Trash2, RotateCcw } from 'lucide-react';
 import type { Category } from '../../../catalog/types/product';
+import { useTranslation } from 'react-i18next';
 
 // ── AG Grid locale (Turkish) ──────────────────────────────────────────────────
 export const localeTextTr: Record<string, string> = {
@@ -88,15 +89,6 @@ export const dateComparator = (filterLocalDate: Date, cellValue: string) => {
     return cellDateOnly < filterDateOnly ? -1 : 1;
 };
 
-// ── Date value formatter ──────────────────────────────────────────────────────
-const formatDateCell = (params: ValueFormatterParams<Category, string>) => {
-    if (!params.value) return '';
-    return new Intl.DateTimeFormat('tr-TR', {
-        year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit',
-    }).format(new Date(params.value));
-};
-
 // ── Hook ──────────────────────────────────────────────────────────────────────
 interface UseCategoryGridColumnsParams {
     onEdit: (category: Category) => void;
@@ -109,9 +101,20 @@ export function useCategoryGridColumns({
     onDelete,
     onRestore,
 }: UseCategoryGridColumnsParams): ColDef<Category>[] {
-    return useMemo<ColDef<Category>[]>(() => [
+    const { t, i18n } = useTranslation('admin');
+
+    return useMemo<ColDef<Category>[]>(() => {
+        const formatDateCell = (params: ValueFormatterParams<Category, string>) => {
+            if (!params.value) return '';
+            return new Intl.DateTimeFormat(i18n.language === 'tr' ? 'tr-TR' : 'en-US', {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit',
+            }).format(new Date(params.value));
+        };
+
+        return [
         {
-            headerName: 'Durum',
+            headerName: t('categories.grid.status'),
             field: 'isActive',
             filter: 'entityStatusFilter',
             floatingFilter: true,
@@ -120,21 +123,21 @@ export function useCategoryGridColumns({
             sortable: true,
             minWidth: 100,
             cellRenderer: (params: ICellRendererParams<Category>) => {
-                if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmiş</span>;
+                if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>{t('categories.status.deleted')}</span>;
                 return params.value
-                    ? <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span>
-                    : <span style={{ color: '#ca8a04', fontWeight: '600' }}>Pasif</span>;
+                    ? <span style={{ color: '#16a34a', fontWeight: '600' }}>{t('categories.status.active')}</span>
+                    : <span style={{ color: '#ca8a04', fontWeight: '600' }}>{t('categories.status.passive')}</span>;
             },
         },
         {
-            headerName: 'Kategori Adı',
+            headerName: t('categories.grid.name'),
             field: 'name',
             filter: 'agTextColumnFilter',
             sortable: true,
             minWidth: 160,
         },
         {
-            headerName: 'Üst Kategori',
+            headerName: t('categories.grid.parentCategory'),
             field: 'parentCategoryName',
             filter: 'agTextColumnFilter',
             sortable: true,
@@ -142,10 +145,10 @@ export function useCategoryGridColumns({
             cellRenderer: (params: { value?: string | null }) =>
                 params.value
                     ? <span className="text-gray-600">{params.value}</span>
-                    : <span className="text-gray-400 italic">Ana Kategori</span>,
+                    : <span className="text-gray-400 italic">{t('categories.mobile.mainCategory')}</span>,
         },
         {
-            headerName: 'Oluşturulma Tarihi',
+            headerName: t('categories.grid.createdAt'),
             field: 'createdAt',
             sortable: true,
             filter: 'agDateColumnFilter',
@@ -154,7 +157,7 @@ export function useCategoryGridColumns({
             valueFormatter: formatDateCell,
         },
         {
-            headerName: 'Oluşturan',
+            headerName: t('categories.grid.createdBy'),
             field: 'createdBy',
             sortable: true,
             filter: 'agTextColumnFilter',
@@ -162,7 +165,7 @@ export function useCategoryGridColumns({
             tooltipValueGetter: (params) => params.value ?? '',
         },
         {
-            headerName: 'Güncellenme Tarihi',
+            headerName: t('common.updatedAt', 'Güncellenme Tarihi'),
             field: 'updatedAt',
             sortable: true,
             filter: 'agDateColumnFilter',
@@ -171,14 +174,14 @@ export function useCategoryGridColumns({
             valueFormatter: formatDateCell,
         },
         {
-            headerName: 'Güncelleyen',
+            headerName: t('common.updatedBy', 'Güncelleyen'),
             field: 'updatedBy',
             sortable: true,
             filter: 'agTextColumnFilter',
             minWidth: 120,
         },
         {
-            headerName: 'Silinme Tarihi',
+            headerName: t('common.deletedAt', 'Silinme Tarihi'),
             field: 'deletedAt',
             sortable: true,
             filter: false,
@@ -187,7 +190,7 @@ export function useCategoryGridColumns({
             valueFormatter: formatDateCell,
         },
         {
-            headerName: 'İşlemler',
+            headerName: t('categories.grid.actions'),
             field: 'id',
             sortable: false,
             filter: false,
@@ -230,5 +233,6 @@ export function useCategoryGridColumns({
                 );
             },
         },
-    ], [onEdit, onDelete, onRestore]);
+    ];
+    }, [onEdit, onDelete, onRestore, t, i18n.language]);
 }

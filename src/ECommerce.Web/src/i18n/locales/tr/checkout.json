@@ -1,0 +1,56 @@
+{
+  "page": {
+    "title": "Sipariş Tamamla",
+    "subtitle": "Bilgilerinizi doldurun ve ödeme yöntemini seçin.",
+    "emptyBasket": "Sepetiniz boş",
+    "emptyBasketDesc": "Ödeme yapabilmek için sepetinize ürün ekleyin.",
+    "continueShopping": "Alışverişe Devam Et",
+    "processing": "İşleniyor...",
+    "proceed": "Ödemeye Geç",
+    "terms": "Siparişinizi onayladığınızda",
+    "termsLink": "kullanım şartlarını",
+    "termsEnd": "kabul etmiş olursunuz.",
+    "creatingOrder": "Siparişiniz oluşturuluyor...",
+    "redirecting": "Ödeme sayfasına yönlendiriliyor..."
+  },
+  "shipping": {
+    "sectionTitle": "Teslimat Adresi",
+    "savedAddresses": "Kayıtlı Adreslerim",
+    "loading": "Kayıtlı adresler yükleniyor...",
+    "default": "Varsayılan",
+    "useNew": "Farklı bir adres kullan",
+    "fullName": "Ad Soyad",
+    "fullNamePlaceholder": "Ali Yılmaz",
+    "address1": "Adres",
+    "address1Placeholder": "Sokak, Mahalle, Kapı No",
+    "address2": "Adres Satırı 2",
+    "address2Placeholder": "Kat, Daire (isteğe bağlı)",
+    "city": "Şehir",
+    "cityPlaceholder": "İstanbul",
+    "postalCode": "Posta Kodu",
+    "postalCodePlaceholder": "34000",
+    "country": "Ülke",
+    "countryPlaceholder": "Türkiye"
+  },
+  "payment": {
+    "sectionTitle": "Ödeme Yöntemi",
+    "loading": "Ödeme yöntemleri yükleniyor...",
+    "loadError": "Ödeme yöntemleri yüklenemedi.",
+    "notFound": "Ödeme yöntemi bulunamadı",
+    "notFoundDesc": "Şu anda aktif ödeme yöntemi bulunmuyor.",
+    "selectRequired": "Devam etmek için bir ödeme yöntemi seçin."
+  },
+  "summary": {
+    "title": "Sipariş Özeti",
+    "total": "Toplam"
+  },
+  "waiting": {
+    "titleTimeout": "Ödemeniz işleniyor",
+    "descTimeout": "Ödeme onayı biraz daha sürebilir. Siparişlerinizden takip edebilirsiniz.",
+    "goToOrders": "Siparişlerime Git",
+    "titleError": "Durum sorgulanamadı",
+    "descError": "Siparişlerinizden ödeme durumunu kontrol edebilirsiniz.",
+    "titleProcessing": "Ödemeniz doğrulanıyor...",
+    "descProcessing": "Bu işlem birkaç saniye sürebilir."
+  }
+}

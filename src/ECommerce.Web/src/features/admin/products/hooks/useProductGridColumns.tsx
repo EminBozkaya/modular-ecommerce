@@ -6,6 +6,7 @@ import {
 } from 'ag-grid-community';
 import { Edit2, Trash2, RotateCcw } from 'lucide-react';
 import type { Product } from '../../../catalog/types/product';
+import { useTranslation } from 'react-i18next';
 
 export const localeTextTr: Record<string, string> = {
     filterOoo: 'Filtrele...',
@@ -74,11 +75,6 @@ export const dateComparator = (filterLocalDate: Date, cellValue: string) => {
     return cellDateOnly < filterDateOnly ? -1 : 1;
 };
 
-const formatDateCell = (params: ValueFormatterParams<Product, string>) => {
-    if (!params.value) return '';
-    return new Intl.DateTimeFormat('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(params.value));
-};
-
 interface UseProductGridColumnsParams {
     onEdit: (product: Product) => void;
     onDelete: (id: string) => void;
@@ -86,9 +82,20 @@ interface UseProductGridColumnsParams {
 }
 
 export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProductGridColumnsParams): ColDef<Product>[] {
-    return useMemo<ColDef<Product>[]>(() => [
+    const { t, i18n } = useTranslation('admin');
+
+    return useMemo<ColDef<Product>[]>(() => {
+        const formatDateCell = (params: ValueFormatterParams<Product, string>) => {
+            if (!params.value) return '';
+            return new Intl.DateTimeFormat(i18n.language === 'tr' ? 'tr-TR' : 'en-US', {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit',
+            }).format(new Date(params.value));
+        };
+
+        return [
         {
-            headerName: 'Durum',
+            headerName: t('products.grid.status'),
             field: 'isActive',
             filter: 'entityStatusFilter',
             floatingFilter: true,
@@ -97,14 +104,14 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
             sortable: true,
             minWidth: 100,
             cellRenderer: (params: ICellRendererParams<Product, boolean>) => {
-                if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>Silinmiş</span>;
-                return params.value ? <span style={{ color: '#16a34a', fontWeight: '600' }}>Aktif</span> : <span style={{ color: '#ca8a04', fontWeight: '600' }}>Pasif</span>;
+                if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>{t('common.deleted')}</span>;
+                return params.value ? <span style={{ color: '#16a34a', fontWeight: '600' }}>{t('common.active')}</span> : <span style={{ color: '#ca8a04', fontWeight: '600' }}>{t('common.passive')}</span>;
             },
         },
-        { headerName: 'Ürün Adı', field: 'name', filter: 'agTextColumnFilter', sortable: true, minWidth: 160 },
-        { headerName: 'Birim', field: 'unitName', filter: 'agTextColumnFilter', sortable: true, minWidth: 80 },
+        { headerName: t('products.grid.name'), field: 'name', filter: 'agTextColumnFilter', sortable: true, minWidth: 160 },
+        { headerName: t('products.grid.unit'), field: 'unitName', filter: 'agTextColumnFilter', sortable: true, minWidth: 80 },
         {
-            headerName: 'Fiyat (TL)',
+            headerName: t('products.grid.price'),
             field: 'priceAmount',
             filter: 'agNumberColumnFilter',
             sortable: true,
@@ -112,7 +119,7 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
             valueFormatter: (params) => params.value != null ? String(Number(params.value).toFixed(2)) + ' TL' : '',
         },
         {
-            headerName: 'Stok',
+            headerName: t('products.grid.stock'),
             field: 'stockQuantity',
             filter: 'agNumberColumnFilter',
             sortable: true,
@@ -123,15 +130,15 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
                 return { color: '#16a34a', fontWeight: '400' };
             },
         },
-        { headerName: 'Kategori', field: 'categoryName', filter: 'agTextColumnFilter', sortable: true, minWidth: 130 },
-        { headerName: 'Açıklama', field: 'description', filter: 'agTextColumnFilter', sortable: true, minWidth: 160 },
-        { headerName: 'Oluşturulma Tarihi', field: 'createdAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, minWidth: 180, valueFormatter: formatDateCell },
-        { headerName: 'Oluşturan', field: 'createdBy', sortable: true, filter: 'agTextColumnFilter', minWidth: 120 },
-        { headerName: 'Güncellenme Tarihi', field: 'updatedAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, minWidth: 180, valueFormatter: formatDateCell },
-        { headerName: 'Güncelleyen', field: 'updatedBy', sortable: true, filter: 'agTextColumnFilter', minWidth: 120 },
-        { headerName: 'Silinme Tarihi', field: 'deletedAt', sortable: true, filter: false, minWidth: 180, hide: true, valueFormatter: formatDateCell },
+        { headerName: t('products.grid.category'), field: 'categoryName', filter: 'agTextColumnFilter', sortable: true, minWidth: 130 },
+        { headerName: t('products.mobile.description'), field: 'description', filter: 'agTextColumnFilter', sortable: true, minWidth: 160 },
+        { headerName: t('products.grid.createdAt'), field: 'createdAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, minWidth: 180, valueFormatter: formatDateCell },
+        { headerName: t('products.grid.createdBy'), field: 'createdBy', sortable: true, filter: 'agTextColumnFilter', minWidth: 120 },
+        { headerName: t('common.updatedAt', 'Güncellenme Tarihi'), field: 'updatedAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, minWidth: 180, valueFormatter: formatDateCell },
+        { headerName: t('common.updatedBy', 'Güncelleyen'), field: 'updatedBy', sortable: true, filter: 'agTextColumnFilter', minWidth: 120 },
+        { headerName: t('common.deletedAt', 'Silinme Tarihi'), field: 'deletedAt', sortable: true, filter: false, minWidth: 180, hide: true, valueFormatter: formatDateCell },
         {
-            headerName: 'İşlemler',
+            headerName: t('products.grid.actions'),
             field: 'id',
             sortable: false,
             filter: false,
@@ -153,5 +160,6 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
                 );
             },
         },
-    ], [onEdit, onDelete, onRestore]);
+    ];
+    }, [onEdit, onDelete, onRestore, t, i18n.language]);
 }

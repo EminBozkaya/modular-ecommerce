@@ -1,9 +1,11 @@
 import { useAuthStore } from '@/store/authStore';
 import { User, Mail, Phone, ShieldCheck } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function ProfilePage() {
     const { user } = useAuthStore();
-    
+    const { t } = useTranslation('auth');
+
     // Split full name for the form if possible
     const nameParts = user?.fullName?.split(' ') || ['', ''];
     const firstName = nameParts[0];
@@ -17,8 +19,10 @@ export default function ProfilePage() {
                         <User className="h-8 w-8" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black text-gray-900 font-serif">Profil <span className="text-[var(--color-ebrar-green)]">Bilgilerim</span></h1>
-                        <p className="text-sm text-muted-foreground">Hesap bilgilerinizi buradan görüntüleyebilir ve güncelleyebilirsiniz.</p>
+                        <h1 className="text-3xl font-black text-gray-900 font-serif">
+                            {t('profile.title')} <span className="text-[var(--color-ebrar-green)]">{t('profile.titleHighlight')}</span>
+                        </h1>
+                        <p className="text-sm text-muted-foreground">{t('profile.subtitle')}</p>
                     </div>
                 </div>
 
@@ -27,7 +31,7 @@ export default function ProfilePage() {
                         <form className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">Ad</label>
+                                    <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">{t('profile.firstName')}</label>
                                     <div className="relative">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                             <User className="h-4 w-4 text-gray-400" />
@@ -40,7 +44,7 @@ export default function ProfilePage() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">Soyad</label>
+                                    <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">{t('profile.lastName')}</label>
                                     <div className="relative">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                             <User className="h-4 w-4 text-gray-400" />
@@ -55,7 +59,7 @@ export default function ProfilePage() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">E-posta Adresi</label>
+                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">{t('profile.email')}</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <Mail className="h-4 w-4 text-gray-400" />
@@ -67,11 +71,11 @@ export default function ProfilePage() {
                                         className="block w-full rounded-xl border-gray-100 bg-gray-50 pl-11 py-3 text-sm text-gray-500 cursor-not-allowed border"
                                     />
                                 </div>
-                                <p className="text-[10px] text-gray-400 ml-1">E-posta adresi güvenliğiniz için değiştirilemez.</p>
+                                <p className="text-[10px] text-gray-400 ml-1">{t('profile.emailNote')}</p>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">Telefon Numarası</label>
+                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 ml-1">{t('profile.phone')}</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <Phone className="h-4 w-4 text-gray-400" />
@@ -90,7 +94,7 @@ export default function ProfilePage() {
                                     className="w-full bg-[var(--color-ebrar-green)] text-white font-bold py-4 rounded-2xl shadow-lg shadow-green-900/10 hover:bg-[var(--color-ebrar-green-dark)] transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                                 >
                                     <ShieldCheck className="h-5 w-5" />
-                                    Bilgilerimi Güncelle
+                                    {t('profile.updateButton')}
                                 </button>
                             </div>
                         </form>

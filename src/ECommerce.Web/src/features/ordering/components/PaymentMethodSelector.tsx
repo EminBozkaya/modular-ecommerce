@@ -2,6 +2,7 @@ import { usePaymentProviders } from '../hooks/usePaymentProviders';
 import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
 import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import { EmptyState } from '../../../components/shared/EmptyState';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     selectedProvider: string | null;
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: Props) {
+    const { t } = useTranslation('checkout');
     const { data: providers, isLoading, error, refetch } = usePaymentProviders();
 
     if (isLoading) {
@@ -19,7 +21,7 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
                     <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-ebrar-green)] text-white text-xs font-bold shrink-0">
                         2
                     </div>
-                    <h2 className="text-base font-semibold text-gray-900">Odeme Yontemi</h2>
+                    <h2 className="text-base font-semibold text-gray-900">{t('payment.sectionTitle')}</h2>
                 </div>
                 <div className="flex items-center justify-center py-6">
                     <LoadingSpinner size="md" />
@@ -31,7 +33,7 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
     if (error) {
         return (
             <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <ErrorMessage message="Odeme yontemleri yuklenemedi." onRetry={() => refetch()} />
+                <ErrorMessage message={t('payment.loadError')} onRetry={() => refetch()} />
             </div>
         );
     }
@@ -40,8 +42,8 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
         return (
             <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
                 <EmptyState
-                    title="Odeme yontemi bulunamadi"
-                    description="Su anda aktif odeme yontemi bulunmuyor."
+                    title={t('payment.notFound')}
+                    description={t('payment.notFoundDesc')}
                 />
             </div>
         );
@@ -53,7 +55,7 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-ebrar-green)] text-white text-xs font-bold shrink-0">
                     2
                 </div>
-                <h2 className="text-base font-semibold text-gray-900">Odeme Yontemi</h2>
+                <h2 className="text-base font-semibold text-gray-900">{t('payment.sectionTitle')}</h2>
             </div>
 
             <div className="space-y-2">
@@ -118,7 +120,7 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
 
             {!selectedProvider && (
                 <p className="mt-3 text-xs text-gray-400">
-                    Devam etmek icin bir odeme yontemi secin.
+                    {t('payment.selectRequired')}
                 </p>
             )}
         </div>

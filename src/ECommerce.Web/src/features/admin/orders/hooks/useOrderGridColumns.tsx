@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { type ColDef, type ICellRendererParams, type ValueFormatterParams } from 'ag-grid-community';
 import { Edit2, Trash2, RotateCcw } from 'lucide-react';
 import type { Order, OrderStatus } from '../../../ordering/types/order';
+import { useTranslation } from 'react-i18next';
 
 export const localeTextTr = {
     filterOoo: 'Filtrele...',
@@ -103,9 +104,11 @@ export function useOrderGridColumns({
     onDelete,
     onRestore,
 }: UseOrderGridColumnsParams): ColDef<Order>[] {
+    const { t, i18n } = useTranslation('admin');
+
     return useMemo<ColDef<Order>[]>(() => [
         {
-            headerName: 'Durum',
+            headerName: t('orders.grid.status'),
             field: 'status',
             filter: 'orderStatusFilter',
             floatingFilter: true,
@@ -118,7 +121,7 @@ export function useOrderGridColumns({
                 if (params.data?.isDeleted) {
                     return (
                         <span style={{ color: '#dc2626', backgroundColor: '#fef2f2', padding: '2px 10px', borderRadius: '9999px', fontSize: '12px', fontWeight: 600 }}>
-                            Silinmiş
+                            {t('common.deleted')}
                         </span>
                     );
                 }
@@ -131,7 +134,7 @@ export function useOrderGridColumns({
             },
         },
         {
-            headerName: 'Sipariş No',
+            headerName: t('orders.grid.orderId'),
             field: 'id',
             filter: 'agTextColumnFilter',
             sortable: true,
@@ -146,14 +149,14 @@ export function useOrderGridColumns({
             },
         },
         {
-            headerName: 'Müşteri',
+            headerName: t('orders.grid.customer'),
             valueGetter: (params) => params.data?.shippingAddress.fullName ?? '',
             filter: 'agTextColumnFilter',
             sortable: true,
             minWidth: 160,
         },
         {
-            headerName: 'Ürün Sayısı',
+            headerName: t('orders.mobile.products'),
             valueGetter: (params) => {
                 if (!params.data) return 0;
                 return params.data.items.reduce((sum, item) => sum + item.quantity, 0);
@@ -163,7 +166,7 @@ export function useOrderGridColumns({
             minWidth: 110,
         },
         {
-            headerName: 'Tutar (TL)',
+            headerName: t('orders.grid.amount'),
             field: 'totalAmount',
             filter: 'agNumberColumnFilter',
             sortable: true,
@@ -172,14 +175,14 @@ export function useOrderGridColumns({
                 params.value != null ? `TL${Number(params.value).toFixed(2)}` : '',
         },
         {
-            headerName: 'Şehir',
+            headerName: t('orders.mobile.address'),
             valueGetter: (params) => params.data?.shippingAddress.city ?? '',
             filter: 'agTextColumnFilter',
             sortable: true,
             minWidth: 110,
         },
         {
-            headerName: 'Ürünler',
+            headerName: t('orders.mobile.products'),
             valueGetter: (params) => {
                 if (!params.data) return '';
                 return params.data.items.map(i => i.productName).join(', ');
@@ -189,7 +192,7 @@ export function useOrderGridColumns({
             minWidth: 200,
         },
         {
-            headerName: 'Sipariş Tarihi',
+            headerName: t('orders.grid.date'),
             field: 'createdAt',
             sortable: true,
             filter: 'agDateColumnFilter',
@@ -197,14 +200,14 @@ export function useOrderGridColumns({
             minWidth: 180,
             valueFormatter: (params: ValueFormatterParams<Order, string>) => {
                 if (!params.value) return '';
-                return new Intl.DateTimeFormat('tr-TR', {
+                return new Intl.DateTimeFormat(i18n.language === 'tr' ? 'tr-TR' : 'en-US', {
                     year: 'numeric', month: '2-digit', day: '2-digit',
                     hour: '2-digit', minute: '2-digit',
                 }).format(new Date(params.value));
             },
         },
         {
-            headerName: 'İşlemler',
+            headerName: t('orders.grid.actions'),
             field: 'id',
             sortable: false,
             filter: false,
@@ -247,5 +250,5 @@ export function useOrderGridColumns({
                 );
             },
         },
-    ], [onEdit, onDelete, onRestore]);
+    ], [onEdit, onDelete, onRestore, t, i18n.language]);
 }

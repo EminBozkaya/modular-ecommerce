@@ -1,0 +1,11 @@
+{
+  "required": "Dieses Feld ist erforderlich",
+  "email": "Geben Sie eine gültige E-Mail-Adresse ein",
+  "minLength": "Mindestens {{min}} Zeichen erforderlich",
+  "maxLength": "Höchstens {{max}} Zeichen erlaubt",
+  "passwordMismatch": "Passwörter stimmen nicht überein",
+  "passwordWeak": "Das Passwort muss mindestens 1 Großbuchstaben und 1 Zahl enthalten",
+  "positiveNumber": "Geben Sie eine positive Zahl ein",
+  "invalidPrice": "Geben Sie einen gültigen Preis ein",
+  "minValue": "Muss mindestens {{min}} betragen"
+}

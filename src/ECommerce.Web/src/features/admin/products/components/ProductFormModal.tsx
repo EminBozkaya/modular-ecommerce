@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Product, Category, Unit } from '../../../catalog/types/product';
 import { X } from 'lucide-react';
-import { productSchema, type ProductFormData } from '@/lib/validations/admin.schema';
+import { useProductSchema, type ProductFormData } from '@/lib/validations/admin.schema';
 
 interface ProductFormModalProps {
     open: boolean;
@@ -27,6 +27,7 @@ export default function ProductFormModal({
     units,
     loading,
 }: ProductFormModalProps) {
+    const productSchema = useProductSchema();
     const {
         register,
         handleSubmit,

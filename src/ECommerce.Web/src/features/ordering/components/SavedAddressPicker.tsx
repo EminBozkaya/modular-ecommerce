@@ -3,6 +3,7 @@ import { useAddresses } from '../../auth/hooks/useAddresses';
 import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
 import type { UserAddress } from '../../auth/types/address';
 import type { ShippingAddress } from '../types/order';
+import { useTranslation } from 'react-i18next';
 
 interface SavedAddressPickerProps {
     selectedId: string | null;
@@ -23,13 +24,14 @@ function toShippingAddress(addr: UserAddress): ShippingAddress {
 }
 
 export function SavedAddressPicker({ selectedId, onSelect, onUseNew, disabled }: SavedAddressPickerProps) {
+    const { t } = useTranslation('checkout');
     const { data: addresses, isLoading, isError } = useAddresses();
 
     if (isLoading) {
         return (
             <div className="flex items-center gap-2 py-3 text-sm text-gray-500">
                 <LoadingSpinner size="sm" />
-                <span>Kayıtlı adresler yükleniyor...</span>
+                <span>{t('shipping.loading')}</span>
             </div>
         );
     }
@@ -41,7 +43,7 @@ export function SavedAddressPicker({ selectedId, onSelect, onUseNew, disabled }:
     return (
         <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">
-                Kayıtlı Adreslerim
+                {t('shipping.savedAddresses')}
             </p>
 
             {addresses.map((addr) => {
@@ -72,7 +74,7 @@ export function SavedAddressPicker({ selectedId, onSelect, onUseNew, disabled }:
                                 </span>
                                 {addr.isDefault && (
                                     <span className="shrink-0 rounded-full bg-[var(--color-ebrar-green)]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--color-ebrar-green)]">
-                                        Varsayılan
+                                        {t('shipping.default')}
                                     </span>
                                 )}
                             </div>
@@ -106,7 +108,7 @@ export function SavedAddressPicker({ selectedId, onSelect, onUseNew, disabled }:
                 ].join(' ')}
             >
                 <Plus className="h-4 w-4" />
-                Farklı bir adres kullan
+                {t('shipping.useNew')}
             </button>
         </div>
     );

@@ -1,0 +1,56 @@
+{
+  "page": {
+    "title": "Complete Order",
+    "subtitle": "Fill in your details and select a payment method.",
+    "emptyBasket": "Your basket is empty",
+    "emptyBasketDesc": "Add products to your basket to proceed with payment.",
+    "continueShopping": "Continue Shopping",
+    "processing": "Processing...",
+    "proceed": "Proceed to Payment",
+    "terms": "By confirming your order you agree to our",
+    "termsLink": "terms of service",
+    "termsEnd": ".",
+    "creatingOrder": "Creating your order...",
+    "redirecting": "Redirecting to payment page..."
+  },
+  "shipping": {
+    "sectionTitle": "Delivery Address",
+    "savedAddresses": "My Saved Addresses",
+    "loading": "Loading saved addresses...",
+    "default": "Default",
+    "useNew": "Use a different address",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "John Doe",
+    "address1": "Address",
+    "address1Placeholder": "Street, Neighborhood, Door No",
+    "address2": "Address Line 2",
+    "address2Placeholder": "Floor, Appt (optional)",
+    "city": "City",
+    "cityPlaceholder": "New York",
+    "postalCode": "Postal Code",
+    "postalCodePlaceholder": "10001",
+    "country": "Country",
+    "countryPlaceholder": "United States"
+  },
+  "payment": {
+    "sectionTitle": "Payment Method",
+    "loading": "Loading payment methods...",
+    "loadError": "Could not load payment methods.",
+    "notFound": "No payment method found",
+    "notFoundDesc": "There are no active payment methods available at the moment.",
+    "selectRequired": "Select a payment method to continue."
+  },
+  "summary": {
+    "title": "Order Summary",
+    "total": "Total"
+  },
+  "waiting": {
+    "titleTimeout": "Processing your payment",
+    "descTimeout": "Payment confirmation might take a little longer. You can track it from your orders.",
+    "goToOrders": "Go to My Orders",
+    "titleError": "Status could not be retrieved",
+    "descError": "You can check payment status from your orders.",
+    "titleProcessing": "Verifying your payment...",
+    "descProcessing": "This process might take a few seconds."
+  }
+}

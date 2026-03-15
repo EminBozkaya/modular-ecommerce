@@ -11,12 +11,14 @@ import { useBasket } from '../../basket/hooks/useBasket';
 import { useRemoveFromBasket } from '../../basket/hooks/useRemoveFromBasket';
 import { useUpdateBasketItem } from '../../basket/hooks/useUpdateBasketItem';
 import { useWishlistProductIds, useToggleFavorite } from '../../favorites/hooks/useFavorites';
+import { useTranslation } from 'react-i18next';
 
 interface ProductCardProps {
     product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+    const { t } = useTranslation('catalog');
     const unitConfig = getUnitConfig(product.unitName);
     const [quantity, setQuantity] = useState<number>(Math.max(unitConfig.min, 1));
 
@@ -77,7 +79,7 @@ export function ProductCard({ product }: ProductCardProps) {
                             <svg className="h-12 w-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <span className="text-sm font-serif italic">Görsel bulunamadı</span>
+                            <span className="text-sm font-serif italic">{t('product.noImage')}</span>
                         </div>
                     )}
                 </Link>
@@ -89,7 +91,7 @@ export function ProductCard({ product }: ProductCardProps) {
                         ? 'bg-red-500 text-white'
                         : 'bg-white/90 text-gray-400 hover:text-red-500 hover:bg-white'
                         }`}
-                    title={isFavorited ? 'Favorilerden Kaldır' : 'Favorilere Ekle'}
+                    title={isFavorited ? t('product.removeFromFavorites') : t('product.addToFavorites')}
                 >
                     <Heart className={`h-5 w-5 transition-colors ${isFavorited ? 'fill-current' : ''}`} />
                 </button>
@@ -145,17 +147,17 @@ export function ProductCard({ product }: ProductCardProps) {
                         >
                             {isAnyActionPending ? (
                                 <span className="flex items-center justify-center gap-2">
-                                    <Loader2 className="h-4 w-4 animate-spin" /> Bekleyiniz...
+                                    <Loader2 className="h-4 w-4 animate-spin" /> {t('product.waiting')}
                                 </span>
                             ) : isInBasket ? (
                                 <span className="flex items-center justify-center gap-2">
-                                    <ShoppingCart className="h-4 w-4 fill-white/20" /> Sepetten Çıkar
+                                    <ShoppingCart className="h-4 w-4 fill-white/20" /> {t('product.removeFromBasket')}
                                 </span>
                             ) : isAddSuccess ? (
-                                'Eklendi ✓'
+                                t('product.added')
                             ) : (
                                 <span className="flex items-center justify-center gap-2">
-                                    <ShoppingCart className="h-4 w-4" /> Sepete Ekle
+                                    <ShoppingCart className="h-4 w-4" /> {t('product.addToBasket')}
                                 </span>
                             )}
                         </button>
@@ -167,7 +169,7 @@ export function ProductCard({ product }: ProductCardProps) {
                         disabled
                         className="w-full py-2 px-3 text-sm font-bold bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed border-b-2 border-gray-200"
                     >
-                        Stokta Yok
+                        {t('product.outOfStock')}
                     </button>
                 )}
             </div>

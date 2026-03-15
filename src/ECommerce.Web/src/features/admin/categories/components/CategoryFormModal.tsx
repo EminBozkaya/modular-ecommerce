@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X } from 'lucide-react';
 import type { Category } from '../../../catalog/types/product';
-import { categorySchema, type CategoryFormData } from '@/lib/validations/admin.schema';
+import { useCategorySchema, type CategoryFormData } from '@/lib/validations/admin.schema';
 
 interface CategoryFormModalProps {
     open: boolean;
@@ -25,6 +25,7 @@ export default function CategoryFormModal({
     categories,
     loading,
 }: CategoryFormModalProps) {
+    const categorySchema = useCategorySchema();
     const {
         register,
         handleSubmit,

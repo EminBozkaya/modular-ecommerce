@@ -1,0 +1,161 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "periods": {
+      "daily": "Täglich",
+      "weekly": "Wöchentlich",
+      "monthly": "Monatlich",
+      "yearly": "Jährlich"
+    },
+    "cards": {
+      "totalOrders": "Bestellungen gesamt",
+      "totalRevenue": "Gesamtumsatz",
+      "totalCustomers": "Kunden gesamt",
+      "lowStock": "Geringer Bestand",
+      "lowStockDesc": "Produkte mit 5 oder weniger Einheiten"
+    },
+    "recentOrders": "Letzte Bestellungen",
+    "noOrders": "Noch keine Bestellungen.",
+    "table": {
+      "customer": "Kunde",
+      "date": "Datum",
+      "amount": "Betrag",
+      "status": "Status"
+    },
+    "summaryError": "Zusammenfassungsdaten konnten nicht geladen werden.",
+    "revenueError": "Umsatzdiagramm konnte nicht geladen werden.",
+    "recentOrdersError": "Letzte Bestellungen konnten nicht geladen werden.",
+    "lowStockError": "Daten zum geringen Bestand konnten nicht geladen werden."
+  },
+  "products": {
+    "title": "Produkte",
+    "addTooltip": "Neues Produkt hinzufügen",
+    "excelTooltip": "Nach Excel exportieren",
+    "pdfTooltip": "Nach PDF exportieren",
+    "noProducts": "Keine Produkte gefunden.",
+    "loadingProducts": "Produkte werden geladen...",
+    "mobile": {
+      "price": "Preis",
+      "stock": "Bestand",
+      "category": "Kategorie",
+      "description": "Beschreibung",
+      "noDesc": "Keine",
+      "createdBy": "Erstellt von",
+      "date": "Datum",
+      "edit": "BEARBEITEN",
+      "delete": "LÖSCHEN",
+      "restore": "WIEDERHERSTELLEN"
+    },
+    "grid": {
+      "name": "Produktname",
+      "category": "Kategorie",
+      "price": "Preis",
+      "stock": "Bestand",
+      "unit": "Einheit",
+      "status": "Status",
+      "createdBy": "Erstellt von",
+      "createdAt": "Datum",
+      "actions": "Aktionen"
+    },
+    "status": {
+      "active": "Aktiv",
+      "passive": "Inaktiv",
+      "deleted": "Gelöscht"
+    }
+  },
+  "categories": {
+    "title": "Kategorien",
+    "addTooltip": "Neue Kategorie hinzufügen",
+    "excelTooltip": "Nach Excel exportieren",
+    "pdfTooltip": "Nach PDF exportieren",
+    "noCategories": "Keine Kategorien gefunden.",
+    "loadingCategories": "Kategorien werden geladen...",
+    "mobile": {
+      "parentCategory": "Übergeordnete Kategorie",
+      "mainCategory": "Hauptkategorie",
+      "createdBy": "Erstellt von",
+      "date": "Datum",
+      "edit": "BEARBEITEN",
+      "delete": "LÖSCHEN",
+      "restore": "WIEDERHERSTELLEN"
+    },
+    "grid": {
+      "name": "Kategoriename",
+      "parentCategory": "Übergeordnete Kategorie",
+      "status": "Status",
+      "createdBy": "Erstellt von",
+      "createdAt": "Datum",
+      "actions": "Aktionen"
+    },
+    "status": {
+      "active": "Aktiv",
+      "passive": "Inaktiv",
+      "deleted": "Gelöscht"
+    }
+  },
+  "orders": {
+    "title": "Bestellungen",
+    "excelTooltip": "Nach Excel exportieren",
+    "pdfTooltip": "Nach PDF exportieren",
+    "noOrders": "Keine Bestellungen gefunden.",
+    "loadingOrders": "Bestellungen werden geladen...",
+    "mobile": {
+      "customer": "Kunde",
+      "amount": "Betrag",
+      "products": "Produkte",
+      "address": "Adresse",
+      "date": "Datum",
+      "updateStatus": "STATUS AKTUALISIEREN",
+      "delete": "LÖSCHEN",
+      "restore": "WIEDERHERSTELLEN"
+    },
+    "grid": {
+      "orderId": "Bestell-ID",
+      "customer": "Kunde",
+      "amount": "Betrag",
+      "status": "Status",
+      "date": "Datum",
+      "actions": "Aktionen"
+    }
+  },
+  "users": {
+    "title": "Kunden",
+    "addTooltip": "Neuen Kunden hinzufügen",
+    "excelTooltip": "Nach Excel exportieren",
+    "pdfTooltip": "Nach PDF exportieren",
+    "noUsers": "Keine Kunden gefunden.",
+    "loadingUsers": "Kunden werden geladen...",
+    "mobile": {
+      "email": "E-Mail",
+      "role": "Rolle",
+      "emailConfirmed": "E-Mail-Bestätigung",
+      "confirmed": "✅ Bestätigt",
+      "notConfirmed": "❌ Nicht bestätigt",
+      "registrationDate": "Registrierungsdatum",
+      "roleAdmin": "Administrator",
+      "roleCustomer": "Kunde",
+      "edit": "BEARBEITEN",
+      "delete": "LÖSCHEN",
+      "restore": "WIEDERHERSTELLEN"
+    },
+    "grid": {
+      "fullName": "Vollständiger Name",
+      "email": "E-Mail",
+      "role": "Rolle",
+      "status": "Status",
+      "emailConfirmed": "E-Mail bestätigt",
+      "createdAt": "Registrierungsdatum",
+      "actions": "Aktionen"
+    }
+  },
+  "common": {
+    "excel": "Excel",
+    "pdf": "PDF",
+    "add": "HINZUFÜGEN",
+    "totalRecords": "Datensätze gesamt: {{count}}",
+    "showing": "Angezeigt: {{count}} Datensätze",
+    "deleted": "Gelöscht",
+    "active": "Aktiv",
+    "passive": "Inaktiv"
+  }
+}

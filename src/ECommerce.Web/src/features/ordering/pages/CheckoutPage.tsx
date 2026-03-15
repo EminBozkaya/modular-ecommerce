@@ -12,6 +12,7 @@ import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import { EmptyState } from '../../../components/shared/EmptyState';
 import { generateIdempotencyKey } from '../../../utils/idempotency';
 import type { ShippingAddress } from '../types/order';
+import { useTranslation } from 'react-i18next';
 
 const emptyAddress: ShippingAddress = {
     fullName: '',
@@ -23,6 +24,7 @@ const emptyAddress: ShippingAddress = {
 };
 
 export default function CheckoutPage() {
+    const { t } = useTranslation('checkout');
     const { data: basket, isLoading: isBasketLoading, error: basketError, refetch } = useBasket();
     const { data: savedAddresses } = useAddresses();
     const { submitCheckout, isLoading, error: checkoutError, step } = useCheckout();
@@ -100,14 +102,14 @@ export default function CheckoutPage() {
         return (
             <div className="container mx-auto px-4 py-16 text-center">
                 <EmptyState
-                    title="Sepetiniz bos"
-                    description="Odeme yapabilmek icin sepetinize urun ekleyin."
+                    title={t('page.emptyBasket')}
+                    description={t('page.emptyBasketDesc')}
                 />
                 <Link
                     to="/products"
                     className="mt-6 inline-block rounded-lg bg-[var(--color-ebrar-green)] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[var(--color-ebrar-green-dark)] transition-colors"
                 >
-                    Alisverise Devam Et
+                    {t('page.continueShopping')}
                 </Link>
             </div>
         );
@@ -115,8 +117,8 @@ export default function CheckoutPage() {
 
     const stepLabel =
         step === 'creating_order'
-            ? 'Siparissiniz olusturuluyor...'
-            : 'Odeme sayfasina yonlendiriliyor...';
+            ? t('page.creatingOrder')
+            : t('page.redirecting');
 
     const showManualForm = !hasSaved || useNewAddress;
 
@@ -125,9 +127,9 @@ export default function CheckoutPage() {
             <div className="container mx-auto max-w-5xl px-4 py-10">
                 {/* Page title */}
                 <div className="mb-8">
-                    <h1 className="text-2xl font-bold text-gray-900">Siparis Tamamla</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">{t('page.title')}</h1>
                     <p className="mt-1 text-sm text-gray-500">
-                        Bilgilerinizi doldurun ve odeme yontemini secin.
+                        {t('page.subtitle')}
                     </p>
                 </div>
 
@@ -160,7 +162,7 @@ export default function CheckoutPage() {
                                         1
                                     </div>
                                     <h2 className="text-base font-semibold text-gray-900">
-                                        Teslimat Adresi
+                                        {t('shipping.sectionTitle')}
                                     </h2>
                                 </div>
 
@@ -204,17 +206,17 @@ export default function CheckoutPage() {
                                 {isLoading ? (
                                     <span className="flex items-center justify-center gap-2">
                                         <LoadingSpinner size="sm" />
-                                        Isleniyor...
+                                        {t('page.processing')}
                                     </span>
                                 ) : (
-                                    'Odemeye Gec'
+                                    t('page.proceed')
                                 )}
                             </button>
 
                             <p className="text-center text-xs text-gray-400">
-                                Siparissinizi onayladiginizda{' '}
-                                <span className="font-medium text-gray-500">kullanim sartlarini</span>{' '}
-                                kabul etmis olursunuz.
+                                {t('page.terms')}{' '}
+                                <span className="font-medium text-gray-500">{t('page.termsLink')}</span>{' '}
+                                {t('page.termsEnd')}
                             </p>
                         </div>
                     </div>

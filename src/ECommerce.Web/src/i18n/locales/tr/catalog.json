@@ -1,0 +1,38 @@
+{
+  "list": {
+    "title": "Ürünlerimiz",
+    "loading": "Ürünler hazırlanıyor...",
+    "loadError": "Ürünler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.",
+    "empty": "Ürün bulunamadı",
+    "emptyDesc": "Arama kriterlerinize veya seçtiğiniz kategoriye uygun ürün bulunamadı."
+  },
+  "detail": {
+    "loading": "Ürün detayları yükleniyor...",
+    "backToProducts": "Ürünlere dön",
+    "loadError": "Ürün detayları yüklenemedi. Lütfen tekrar deneyin.",
+    "notFound": "Ürün bulunamadı",
+    "notFoundDesc": "Aradığınız ürün mevcut değil veya kaldırılmış olabilir.",
+    "salesUnit": "Satış birimi:",
+    "inStock": "Stokta Var",
+    "outOfStock": "Stokta Yok",
+    "stockAvailable": "{{count}} {{unit}} mevcut",
+    "selectQuantity": "Miktar seçin",
+    "selectedQuantity": "Seçilen miktar",
+    "unitPrice": "Birim fiyat",
+    "estimatedTotal": "Tahmini tutar",
+    "pricingNote": "* Kesin tutar sepette hesaplanır",
+    "freeShipping": "₺1500 üzeri siparişlerde kargo bedava",
+    "noImage": "Görsel bulunamadı"
+  },
+  "product": {
+    "addToBasket": "Sepete Ekle",
+    "removeFromBasket": "Sepetten Çıkar",
+    "added": "Eklendi ✓",
+    "basketAdded": "Sepete Eklendi ✓",
+    "waiting": "Bekleyiniz...",
+    "outOfStock": "Stokta Yok",
+    "addToFavorites": "Favorilere Ekle",
+    "removeFromFavorites": "Favorilerden Kaldır",
+    "noImage": "Görsel bulunamadı"
+  }
+}

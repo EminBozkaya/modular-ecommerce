@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Order } from '../types/order';
 import { OrderStatusBadge } from './OrderStatusBadge';
 import { formatPrice } from '../../../utils/formatters';
+import { useTranslation } from 'react-i18next';
 
 interface OrderCardProps {
     order: Order;
@@ -9,12 +10,16 @@ interface OrderCardProps {
 
 export function OrderCard({ order }: OrderCardProps) {
     const navigate = useNavigate();
+    const { i18n } = useTranslation();
 
-    const formattedDate = new Date(order.createdAt).toLocaleDateString('tr-TR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    });
+    const formattedDate = new Date(order.createdAt).toLocaleDateString(
+        i18n.language === 'tr' ? 'tr-TR' : 'en-US',
+        {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        }
+    );
 
     const truncatedId = order.id.length > 12 ? `${order.id.slice(0, 12)}...` : order.id;
 

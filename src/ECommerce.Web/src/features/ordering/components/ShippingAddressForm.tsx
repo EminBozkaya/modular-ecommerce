@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { shippingAddressSchema, type ShippingAddressFormData } from '@/lib/validations/checkout.schema';
+import { useShippingAddressSchema, type ShippingAddressFormData } from '@/lib/validations/checkout.schema';
 import type { ShippingAddress } from '../types/order';
+import { useTranslation } from 'react-i18next';
 
 interface ShippingAddressFormProps {
     value: ShippingAddress;
@@ -15,6 +16,8 @@ interface ShippingAddressFormProps {
 const errorClass = 'mt-1.5 text-xs font-semibold text-red-600 ml-0.5';
 
 export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: ShippingAddressFormProps) {
+    const { t } = useTranslation('checkout');
+    const shippingAddressSchema = useShippingAddressSchema();
     const {
         register,
         watch,
@@ -52,40 +55,40 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
         <div className="space-y-4">
             <div>
                 <label className={labelClass}>
-                    Ad Soyad <span className="text-red-400">*</span>
+                    {t('shipping.fullName')} <span className="text-red-400">*</span>
                 </label>
                 <input
                     type="text"
                     {...register('fullName')}
                     disabled={disabled}
                     className={inputClass(!!errors.fullName)}
-                    placeholder="Ali Yilmaz"
+                    placeholder={t('shipping.fullNamePlaceholder')}
                 />
                 {errors.fullName && <p className={errorClass} role="alert">{errors.fullName.message}</p>}
             </div>
 
             <div>
                 <label className={labelClass}>
-                    Adres <span className="text-red-400">*</span>
+                    {t('shipping.address1')} <span className="text-red-400">*</span>
                 </label>
                 <input
                     type="text"
                     {...register('addressLine1')}
                     disabled={disabled}
                     className={inputClass(!!errors.addressLine1)}
-                    placeholder="Sokak, Mahalle, Kapi No"
+                    placeholder={t('shipping.address1Placeholder')}
                 />
                 {errors.addressLine1 && <p className={errorClass} role="alert">{errors.addressLine1.message}</p>}
             </div>
 
             <div>
-                <label className={labelClass}>Adres Satiri 2</label>
+                <label className={labelClass}>{t('shipping.address2')}</label>
                 <input
                     type="text"
                     {...register('addressLine2')}
                     disabled={disabled}
                     className={inputClass(!!errors.addressLine2)}
-                    placeholder="Kat, Daire (istege bagli)"
+                    placeholder={t('shipping.address2Placeholder')}
                 />
                 {errors.addressLine2 && <p className={errorClass} role="alert">{errors.addressLine2.message}</p>}
             </div>
@@ -93,27 +96,27 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
             <div className="grid grid-cols-2 gap-3">
                 <div>
                     <label className={labelClass}>
-                        Sehir <span className="text-red-400">*</span>
+                        {t('shipping.city')} <span className="text-red-400">*</span>
                     </label>
                     <input
                         type="text"
                         {...register('city')}
                         disabled={disabled}
                         className={inputClass(!!errors.city)}
-                        placeholder="Istanbul"
+                        placeholder={t('shipping.cityPlaceholder')}
                     />
                     {errors.city && <p className={errorClass} role="alert">{errors.city.message}</p>}
                 </div>
                 <div>
                     <label className={labelClass}>
-                        Posta Kodu <span className="text-red-400">*</span>
+                        {t('shipping.postalCode')} <span className="text-red-400">*</span>
                     </label>
                     <input
                         type="text"
                         {...register('postalCode')}
                         disabled={disabled}
                         className={inputClass(!!errors.postalCode)}
-                        placeholder="34000"
+                        placeholder={t('shipping.postalCodePlaceholder')}
                     />
                     {errors.postalCode && <p className={errorClass} role="alert">{errors.postalCode.message}</p>}
                 </div>
@@ -121,14 +124,14 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
 
             <div>
                 <label className={labelClass}>
-                    Ulke <span className="text-red-400">*</span>
+                    {t('shipping.country')} <span className="text-red-400">*</span>
                 </label>
                 <input
                     type="text"
                     {...register('country')}
                     disabled={disabled}
                     className={inputClass(!!errors.country)}
-                    placeholder="Turkiye"
+                    placeholder={t('shipping.countryPlaceholder')}
                 />
                 {errors.country && <p className={errorClass} role="alert">{errors.country.message}</p>}
             </div>
@@ -145,7 +148,7 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-ebrar-green)] text-white text-xs font-bold shrink-0">
                     1
                 </div>
-                <h2 className="text-base font-semibold text-gray-900">Teslimat Adresi</h2>
+                <h2 className="text-base font-semibold text-gray-900">{t('shipping.sectionTitle')}</h2>
             </div>
             {fields}
         </div>

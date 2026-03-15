@@ -1,0 +1,67 @@
+{
+  "nav": {
+    "home": "Ana Sayfa",
+    "products": "Ürünler",
+    "basket": "Sepet",
+    "favorites": "Favorilerim",
+    "login": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "logout": "Çıkış Yap",
+    "profile": "Profilim",
+    "orders": "Siparişlerim",
+    "admin": "Yönetim Paneli"
+  },
+  "buttons": {
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "add": "Ekle",
+    "confirm": "Onayla",
+    "back": "Geri",
+    "loading": "Yükleniyor...",
+    "continue": "Devam Et",
+    "continueAsGuest": "Misafir Olarak Devam Et"
+  },
+  "status": {
+    "loading": "Yükleniyor...",
+    "error": "Bir hata oluştu",
+    "empty": "Sonuç bulunamadı",
+    "success": "İşlem başarılı"
+  },
+  "language": {
+    "tr": "Türkçe",
+    "en": "English",
+    "changeLanguage": "Dil değiştir"
+  },
+  "header": {
+    "login": "Giriş",
+    "basketTitle": "Sepetim",
+    "basketEmpty": "Sepet",
+    "openBasket": "Sepeti aç",
+    "favorites": "Favoriler",
+    "favoritesTitle": "Favorilerim"
+  },
+  "userMenu": {
+    "login": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "myAccount": "Hesabım",
+    "admin": "Yönetici",
+    "adminPanel": "Admin Paneli",
+    "profile": "Profil Bilgileri",
+    "orders": "Siparişlerim",
+    "addresses": "Adreslerim",
+    "settings": "Ayarlar",
+    "logout": "Güvenli Çıkış"
+  },
+  "pagination": {
+    "prev": "Geri",
+    "next": "İleri",
+    "page": "Sayfa {{page}}",
+    "showing": "Toplam <bold>{{total}}</bold> üründen <med>{{from}}</med> - <med>{{to}}</med> arası gösteriliyor"
+  },
+  "table": {
+    "total": "Toplam kayıt: {{count}}",
+    "showing": "Gösterilen: {{count}} kayıt"
+  }
+}

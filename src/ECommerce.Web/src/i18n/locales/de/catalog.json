@@ -1,0 +1,38 @@
+{
+  "list": {
+    "title": "Unsere Produkte",
+    "loading": "Produkte werden geladen...",
+    "loadError": "Beim Laden der Produkte ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+    "empty": "Keine Produkte gefunden",
+    "emptyDesc": "Keine Produkte passend zu Ihren Suchkriterien oder der gewählten Kategorie."
+  },
+  "detail": {
+    "loading": "Produktdetails werden geladen...",
+    "backToProducts": "Zurück zu Produkten",
+    "loadError": "Produktdetails konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+    "notFound": "Produkt nicht gefunden",
+    "notFoundDesc": "Das gesuchte Produkt existiert nicht oder wurde entfernt.",
+    "salesUnit": "Verkaufseinheit:",
+    "inStock": "Auf Lager",
+    "outOfStock": "Nicht auf Lager",
+    "stockAvailable": "{{count}} {{unit}} verfügbar",
+    "selectQuantity": "Menge auswählen",
+    "selectedQuantity": "Ausgewählte Menge",
+    "unitPrice": "Stückpreis",
+    "estimatedTotal": "Voraussichtlicher Gesamtpreis",
+    "pricingNote": "* Der endgültige Preis wird im Warenkorb berechnet",
+    "freeShipping": "Kostenloser Versand ab ₺1500",
+    "noImage": "Bild nicht gefunden"
+  },
+  "product": {
+    "addToBasket": "In den Warenkorb",
+    "removeFromBasket": "Aus dem Warenkorb entfernen",
+    "added": "Hinzugefügt ✓",
+    "basketAdded": "In den Warenkorb gelegt ✓",
+    "waiting": "Bitte warten...",
+    "outOfStock": "Nicht auf Lager",
+    "addToFavorites": "Zu Favoriten hinzufügen",
+    "removeFromFavorites": "Aus Favoriten entfernen",
+    "noImage": "Bild nicht gefunden"
+  }
+}

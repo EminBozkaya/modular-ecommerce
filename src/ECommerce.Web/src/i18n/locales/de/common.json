@@ -1,0 +1,68 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "products": "Produkte",
+    "basket": "Warenkorb",
+    "favorites": "Favoriten",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "logout": "Abmelden",
+    "profile": "Mein Profil",
+    "orders": "Meine Bestellungen",
+    "admin": "Adminbereich"
+  },
+  "buttons": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "confirm": "Bestätigen",
+    "back": "Zurück",
+    "loading": "Wird geladen...",
+    "continue": "Weiter",
+    "continueAsGuest": "Als Gast fortfahren"
+  },
+  "status": {
+    "loading": "Wird geladen...",
+    "error": "Ein Fehler ist aufgetreten",
+    "empty": "Keine Ergebnisse gefunden",
+    "success": "Vorgang erfolgreich"
+  },
+  "language": {
+    "tr": "Türkisch",
+    "en": "Englisch",
+    "de": "Deutsch",
+    "changeLanguage": "Sprache ändern"
+  },
+  "header": {
+    "login": "Anmelden",
+    "basketTitle": "Mein Warenkorb",
+    "basketEmpty": "Warenkorb",
+    "openBasket": "Warenkorb öffnen",
+    "favorites": "Favoriten",
+    "favoritesTitle": "Meine Favoriten"
+  },
+  "userMenu": {
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "myAccount": "Mein Konto",
+    "admin": "Administrator",
+    "adminPanel": "Adminbereich",
+    "profile": "Profil",
+    "orders": "Meine Bestellungen",
+    "addresses": "Meine Adressen",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
+  },
+  "pagination": {
+    "prev": "Zurück",
+    "next": "Weiter",
+    "page": "Seite {{page}}",
+    "showing": "Zeige <med>{{from}}</med> - <med>{{to}}</med> von <bold>{{total}}</bold> Produkten"
+  },
+  "table": {
+    "total": "Datensätze gesamt: {{count}}",
+    "showing": "Angezeigt: {{count}} Datensätze"
+  }
+}

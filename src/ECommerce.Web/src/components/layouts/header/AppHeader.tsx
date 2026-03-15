@@ -1,6 +1,5 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { UserCircle } from 'lucide-react';
 import logoImg from '@/assets/ebrar-logo.png';
@@ -9,13 +8,26 @@ import { FavoriteButton } from './FavoriteButton';
 import { BasketButton } from './BasketButton';
 import { UserMenu } from './UserMenu';
 import { useCategories } from '@/features/catalog/hooks/useCategories';
+import { LanguageToggle } from '@/components/shared/LanguageToggle';
+import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
+import { CategoryNavDropdownItem } from './CategoryNavDropdownItem';
+import { MobileCategoryDrawer } from './MobileCategoryDrawer';
 
 export function AppHeader() {
+    const { t } = useTranslation('common');
     const { isAuthenticated, isAuthLoading } = useAuthStore();
-    const { data: categories, isLoading: isCategoriesLoading } = useCategories({ onlyMain: true });
+
+    // Tüm kategorileri çek — ağaç kurmak için
+    const { data: allCategories, isLoading: isCategoriesLoading } = useCategories();
 
     const headerRef = useRef<HTMLElement>(null);
     const [isStuck, setIsStuck] = useState(false);
+
+    // Scroll ve Peek Effect State
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(true);
 
     // Watch header visibility — when it leaves the viewport, nav is "stuck"
     useEffect(() => {
@@ -30,6 +42,37 @@ export function AppHeader() {
         return () => observer.disconnect();
     }, []);
 
+    const checkScroll = () => {
+        requestAnimationFrame(() => {
+            if (!scrollRef.current) return;
+            const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+            // Eşik değerleri biraz daha esnek tutarak (ör: 5px) hassasiyeti artırıyoruz
+            setCanScrollLeft(scrollLeft > 5);
+            setCanScrollRight(Math.ceil(scrollLeft + clientWidth) < scrollWidth - 5);
+        });
+    };
+
+    // Kategori ağaç datası hazır olduktan ve DOM çizimi (paint) bittikten sonra kontrol et
+    useEffect(() => {
+        checkScroll();
+        window.addEventListener('resize', checkScroll);
+        return () => window.removeEventListener('resize', checkScroll);
+    }, [allCategories, isStuck]);
+
+    // Kategori ağacını kur: sonsuz derinlikte alt-kategori desteği
+    const categoryTree = useMemo(() => {
+        if (!allCategories) return [];
+        const buildTree = (parentId: string | null): any[] => {
+            return allCategories
+                .filter((c) => c.parentCategoryId === parentId && c.isActive && !c.isDeleted)
+                .map((c) => ({
+                    category: c,
+                    subCategories: buildTree(c.id),
+                }));
+        };
+        return buildTree(null);
+    }, [allCategories]);
+
     return (
         <>
             {/* ── Top Row — normal flow, scrolls away with the page ──────────── */}
@@ -37,21 +80,24 @@ export function AppHeader() {
                 ref={headerRef}
                 className="relative z-[51] bg-[#F5FFEA]"
             >
-                <div className="w-full px-4 sm:px-6 lg:px-10 pt-1 lg:pt-0 pb-1 lg:pb-0">
-                    <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-8 min-h-[70px] lg:min-h-[85px]">
+                <div className="w-full px-4 sm:px-6 md:px-10 pt-1 md:pt-0 pb-1 md:pb-0">
+                    {/* Grid yerine Flex kullanıldı; Sağdaki (dil/sepet/favoriler) kolon kendi genişliğine ('auto') göre arama çubuğunu sıkıştıracak, böylece üst üste binme (overflow) asla yaşanmayacak */}
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4 xl:gap-6 min-h-[70px] md:min-h-[85px]">
 
-                        {/* Logo + Mobile Actions */}
-                        <div className="flex items-center justify-between w-full lg:w-[320px] lg:pl-10 relative">
-                            <Link to="/" className="flex-shrink-0 group py-1 lg:py-0 lg:relative lg:z-[60] lg:-mb-12 transition-all">
+                        {/* Logo Column */}
+                        {/* Menü duvarımız (sol hizalama) buraya bağlı: md'de 220px, xl'de 320px. (Padding değil width ile) */}
+                        <div className="flex items-center justify-between w-full md:w-[220px] xl:w-[320px] flex-shrink-0 relative">
+                            <Link to="/" className="flex-shrink-0 group py-1 md:py-0 md:relative md:z-[60] md:-mb-10 xl:-mb-14 transition-all">
                                 <img
                                     src={logoImg}
                                     alt="Ebrar Kuruyemis"
-                                    className="h-20 sm:h-24 lg:h-36 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                                    className="h-14 sm:h-20 md:h-24 xl:h-40 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                                 />
                             </Link>
 
-                            {/* Mobile Actions */}
-                            <div className="flex lg:hidden items-center gap-3 sm:gap-5 flex-shrink-0">
+                            {/* Mobile Actions (Icons visible only on mobile) */}
+                            <div className="flex md:hidden items-center gap-3 sm:gap-5 flex-shrink-0">
+                                <LanguageToggle />
                                 <FavoriteButton />
                                 <BasketButton />
                                 {!isAuthLoading && (
@@ -66,7 +112,7 @@ export function AppHeader() {
                                                     <UserCircle className="h-6 w-6" />
                                                 </Link>
                                                 <span className="text-[11px] font-bold text-muted-foreground group-hover:text-[var(--color-ebrar-green)] mt-1 transition-colors">
-                                                    Giriş
+                                                    {t('header.login')}
                                                 </span>
                                             </div>
                                         )
@@ -74,17 +120,25 @@ export function AppHeader() {
                             </div>
                         </div>
 
-                        {/* Search */}
-                        <div className="flex-1 w-full lg:w-auto max-w-2xl mx-auto flex flex-col items-center justify-center mt-2 lg:mt-0">
-                            <HeaderSearchAutocomplete />
+                        {/* Search Column & Mobile Hamburger */}
+                        <div className="flex-1 w-full min-w-0 max-w-full sm:max-w-[500px] md:max-w-none mx-auto flex flex-row items-center justify-center gap-2 mt-2 md:mt-0 md:px-4 xl:px-6">
+                            {!isCategoriesLoading && (
+                                <div className="md:hidden flex-shrink-0">
+                                    <MobileCategoryDrawer tree={categoryTree} />
+                                </div>
+                            )}
+                            <div className="flex-1 w-full relative">
+                                <HeaderSearchAutocomplete />
+                            </div>
                         </div>
 
-                        {/* Desktop Actions */}
-                        <div className="hidden lg:flex justify-end items-center lg:w-[320px] pr-4">
-                            <div className="flex items-center gap-5 lg:gap-8 flex-shrink-0">
+                        {/* Desktop Actions Column */}
+                        <div className="hidden md:flex justify-end items-center flex-shrink-0">
+                            <div className="flex items-center gap-4 xl:gap-8 flex-shrink-0">
+                                <LanguageToggle />
                                 <FavoriteButton />
                                 <BasketButton />
-                                <div className="flex items-center ml-2 border-l border-border pl-5">
+                                <div className="flex items-center ml-1 xl:ml-2 border-l border-border pl-3 xl:pl-5">
                                     <UserMenu />
                                 </div>
                             </div>
@@ -93,36 +147,63 @@ export function AppHeader() {
                 </div>
             </header>
 
-            {/* ── Category Nav — sticky, stays pinned at viewport top ────────── */}
+            {/* ── Category Nav — sticky, stays pinned at viewport top (Masaüstü Özel) ────────── */}
             <nav
-                className={[
-                    'sticky top-0 z-50 w-full shadow-sm',
-                    'transition-all duration-300 ease-in-out',
-                    isStuck ? 'bg-[var(--color-ebrar-green)]' : 'bg-[#F5FFEA]',
-                ].join(' ')}
+                className={cn(
+                    'sticky top-0 z-50 w-full shadow-sm hidden md:block transition-all duration-300 ease-in-out',
+                    isStuck ? 'bg-[var(--color-ebrar-green)]' : 'bg-[#F5FFEA]'
+                )}
             >
-                <div className={[
-                    'w-full lg:w-fit lg:min-w-[672px] mx-auto',
-                    isStuck ? '' : 'border-t border-border',
-                ].join(' ')}>
-                    <ul className="flex items-center justify-start lg:justify-center gap-6 lg:gap-10 py-2 overflow-x-auto scrollbar-hide px-4 lg:px-2 min-h-[44px]">
-                        {!isCategoriesLoading && categories?.map((category) => (
-                            <li key={category.id} className="flex-shrink-0">
-                                <Link
-                                    to={`/products?categoryId=${category.id}`}
-                                    className={[
-                                        'flex items-center gap-1 text-sm font-medium font-serif transition-colors duration-300 whitespace-nowrap',
-                                        isStuck
-                                            ? 'text-white hover:text-white/80'
-                                            : 'text-foreground hover:text-[var(--color-ebrar-green)]',
-                                    ].join(' ')}
-                                >
-                                    {category.name}
-                                    <ChevronDown className="h-3 w-3" />
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
+                <div className={cn(
+                    'relative w-full mx-auto flex items-center',
+                    !isStuck && 'border-t border-border mt-1'
+                )}>
+                    {/* Sol Peek Gradient */}
+                    <div
+                        aria-hidden="true"
+                        className={cn(
+                            'absolute top-0 h-full w-12 md:w-20 pointer-events-none transition-opacity duration-300 z-10',
+                            !isStuck ? 'left-4 md:left-[236px] xl:left-[336px]' : 'left-0',
+                            'bg-gradient-to-r to-transparent',
+                            isStuck ? 'from-[var(--color-ebrar-green)]' : 'from-[#F5FFEA]',
+                            canScrollLeft ? 'opacity-100' : 'opacity-0'
+                        )}
+                    />
+
+                    {/* Menü Scroll Container */}
+                    {/* PL (Padding) yerine ML (Margin) kullanarak dışardan taşıp gitmesini/arkada görünmesini engelliyoruz */}
+                    <div 
+                        ref={scrollRef}
+                        onScroll={checkScroll}
+                        className={cn(
+                            'flex items-center min-h-[50px] overflow-x-auto scroll-smooth w-full',
+                            '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+                            !isStuck 
+                                ? 'px-4 md:px-0 md:ml-[236px] xl:ml-[336px] md:pr-10' 
+                                : 'px-4'
+                        )}
+                    >
+                        <ul className="flex items-center gap-6 xl:gap-10 flex-nowrap w-max pr-12 md:pr-24">
+                            {!isCategoriesLoading && categoryTree.map((node) => (
+                                <CategoryNavDropdownItem
+                                    key={node.category.id}
+                                    node={node}
+                                    isStuck={isStuck}
+                                />
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Sağ Peek Gradient */}
+                    <div
+                        aria-hidden="true"
+                        className={cn(
+                            'absolute right-0 top-0 h-full w-16 md:w-32 pointer-events-none transition-opacity duration-300 z-10',
+                            'bg-gradient-to-l to-transparent',
+                            isStuck ? 'from-[var(--color-ebrar-green)]' : 'from-[#F5FFEA]',
+                            canScrollRight ? 'opacity-100' : 'opacity-0'
+                        )}
+                    />
                 </div>
             </nav>
         </>

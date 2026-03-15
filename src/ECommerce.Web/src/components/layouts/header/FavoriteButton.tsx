@@ -1,16 +1,18 @@
 import { Link } from 'react-router-dom';
 import { useWishlistProductIds } from '@/features/favorites/hooks/useFavorites';
+import { useTranslation } from 'react-i18next';
 
 export function FavoriteButton() {
     const { data: wishlistIds } = useWishlistProductIds();
     const favoriteCount = wishlistIds?.length ?? 0;
+    const { t } = useTranslation('common');
 
     return (
         <div className="flex flex-col items-center group">
             <Link
                 to="/favoriler"
                 className="relative flex items-center justify-center w-11 h-11 rounded-full bg-gray-50 text-muted-foreground group-hover:text-[var(--color-ebrar-green)] group-hover:bg-green-50 transition-all duration-300 shadow-sm"
-                title="Favorilerim"
+                title={t('header.favoritesTitle')}
             >
                 <svg viewBox="0 0 24 24" className={`h-6 w-6 transition-transform duration-300 group-hover:scale-110 ${favoriteCount > 0 ? 'text-red-500' : 'text-gray-400'}`}>
                     <path
@@ -31,7 +33,7 @@ export function FavoriteButton() {
                 )}
             </Link>
             <span className="text-[11px] font-bold text-muted-foreground group-hover:text-[var(--color-ebrar-green)] mt-1 transition-colors">
-                Favoriler
+            {t('header.favorites')}
             </span>
         </div>
     );

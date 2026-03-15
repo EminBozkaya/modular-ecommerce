@@ -1,14 +1,16 @@
 import type { Basket } from '../../basket/types/basket';
 import { formatPrice } from '../../../utils/formatters';
+import { useTranslation } from 'react-i18next';
 
 interface OrderSummaryProps {
     basket: Basket;
 }
 
 export function OrderSummary({ basket }: OrderSummaryProps) {
+    const { t } = useTranslation('checkout');
     return (
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xl shadow-black/5">
-            <h3 className="text-lg font-bold mb-4 font-serif text-gray-900 border-b pb-2">Sipariş Özeti</h3>
+            <h3 className="text-lg font-bold mb-4 font-serif text-gray-900 border-b pb-2">{t('summary.title')}</h3>
 
             <div className="space-y-3">
                 {basket.items.map((item) => (
@@ -24,7 +26,7 @@ export function OrderSummary({ basket }: OrderSummaryProps) {
 
             <div className="border-t border-border mt-4 pt-4">
                 <div className="flex justify-between font-semibold text-base">
-                    <span>Toplam</span>
+                    <span>{t('summary.total')}</span>
                     <span>{formatPrice(basket.totalAmount, basket.currency)}</span>
                 </div>
             </div>

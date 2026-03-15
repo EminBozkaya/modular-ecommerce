@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X, Search } from 'lucide-react';
-import { addressSchema, type AddressFormData } from '@/lib/validations/admin.schema';
+import { useAddressSchema, type AddressFormData } from '@/lib/validations/admin.schema';
 import { getUsers, type AdminAddress, type AdminUser } from '../api/adminApi';
 
 interface AddressFormModalProps {
@@ -24,6 +24,7 @@ export default function AddressFormModal({
     const [usersLoading, setUsersLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
+    const addressSchema = useAddressSchema();
     const {
         register,
         handleSubmit,

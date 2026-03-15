@@ -2,12 +2,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
 import { useLogin } from '@/features/auth/hooks/useLogin';
-import { loginSchema, type LoginFormData } from '@/lib/validations/auth.schema';
+import { useLoginSchema, type LoginFormData } from '@/lib/validations/auth.schema';
 import { applyServerErrors } from '@/utils/formErrors';
 import logoImg from '@/assets/ebrar-logo.png';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginPage() {
     const { mutate: login, isPending } = useLogin();
+    const { t } = useTranslation('auth');
+
+    const loginSchema = useLoginSchema();
 
     const {
         register,
@@ -42,12 +46,12 @@ export default function LoginPage() {
 
                 <div className="relative z-10 text-center">
                     <h2 className="text-3xl font-black tracking-tight text-gray-900 font-serif lowercase">
-                        Giriş <span className="text-[var(--color-ebrar-green)]">Yap</span>
+                        {t('login.title')} <span className="text-[var(--color-ebrar-green)]">{t('login.titleHighlight')}</span>
                     </h2>
                     <p className="mt-3 text-sm text-gray-500 font-medium">
-                        Henüz hesabınız yok mu?{' '}
+                        {t('login.noAccount')}{' '}
                         <Link to="/register" className="font-bold text-[var(--color-ebrar-green)] hover:text-[var(--color-ebrar-green-dark)] transition-colors underline decoration-2 underline-offset-4">
-                            Hemen Kaydolun
+                            {t('login.registerLink')}
                         </Link>
                     </p>
                 </div>
@@ -77,7 +81,7 @@ export default function LoginPage() {
                             <div className="w-full border-t border-gray-200"></div>
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-white px-2 text-gray-500 font-bold tracking-widest leading-none">veya e-posta ile</span>
+                            <span className="bg-white px-2 text-gray-500 font-bold tracking-widest leading-none">{t('login.orWithEmail')}</span>
                         </div>
                     </div>
 
@@ -92,7 +96,7 @@ export default function LoginPage() {
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="login-email" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
-                                    E-posta Adresi
+                                    {t('login.email')}
                                 </label>
                                 <input
                                     id="login-email"
@@ -109,7 +113,7 @@ export default function LoginPage() {
 
                             <div>
                                 <label htmlFor="login-password" className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5 ml-1">
-                                    Şifre
+                                    {t('login.password')}
                                 </label>
                                 <input
                                     id="login-password"
@@ -131,14 +135,14 @@ export default function LoginPage() {
                                 disabled={isPending}
                                 className="flex w-full justify-center rounded-xl bg-[var(--color-ebrar-green)] px-4 py-3 text-sm font-black text-white shadow-xl shadow-green-900/10 hover:bg-[var(--color-ebrar-green-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-ebrar-green)] disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
                             >
-                                {isPending ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
+                                {isPending ? t('login.submitting') : t('login.submit')}
                             </button>
 
                             <Link
                                 to="/"
                                 className="flex w-full justify-center rounded-xl bg-gray-50 px-4 py-3 text-sm font-bold text-gray-600 border border-gray-100 hover:bg-gray-100 transition-all active:scale-[0.98] text-center"
                             >
-                                Misafir Olarak Devam Et
+                                {t('login.continueAsGuest')}
                             </Link>
                         </div>
                     </form>

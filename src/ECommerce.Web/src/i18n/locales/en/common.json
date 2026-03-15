@@ -1,0 +1,67 @@
+{
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "basket": "Basket",
+    "favorites": "Favorites",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "profile": "My Profile",
+    "orders": "My Orders",
+    "admin": "Admin Panel"
+  },
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "confirm": "Confirm",
+    "back": "Back",
+    "loading": "Loading...",
+    "continue": "Continue",
+    "continueAsGuest": "Continue as Guest"
+  },
+  "status": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "empty": "No results found",
+    "success": "Operation successful"
+  },
+  "language": {
+    "tr": "Türkçe",
+    "en": "English",
+    "changeLanguage": "Change language"
+  },
+  "header": {
+    "login": "Login",
+    "basketTitle": "My Basket",
+    "basketEmpty": "Basket",
+    "openBasket": "Open basket",
+    "favorites": "Favorites",
+    "favoritesTitle": "My Favorites"
+  },
+  "userMenu": {
+    "login": "Login",
+    "register": "Register",
+    "myAccount": "My Account",
+    "admin": "Administrator",
+    "adminPanel": "Admin Panel",
+    "profile": "Profile",
+    "orders": "My Orders",
+    "addresses": "My Addresses",
+    "settings": "Settings",
+    "logout": "Sign Out"
+  },
+  "pagination": {
+    "prev": "Back",
+    "next": "Next",
+    "page": "Page {{page}}",
+    "showing": "Showing <med>{{from}}</med> - <med>{{to}}</med> of <bold>{{total}}</bold> products"
+  },
+  "table": {
+    "total": "Total records: {{count}}",
+    "showing": "Showing: {{count}} records"
+  }
+}

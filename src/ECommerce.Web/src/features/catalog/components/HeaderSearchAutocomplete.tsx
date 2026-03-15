@@ -62,7 +62,7 @@ export function HeaderSearchAutocomplete() {
     };
 
     return (
-        <div className="relative w-full max-w-xl mb-3" ref={dropdownRef}>
+        <div className="relative w-full" ref={dropdownRef}>
             <form onSubmit={handleSearchSubmit} className="w-full">
                 <div className="flex items-center border border-border rounded-md overflow-hidden bg-white shadow-sm relative z-10 transition-colors focus-within:ring-2 focus-within:ring-[var(--color-ebrar-green)] focus-within:border-[var(--color-ebrar-green)]">
                     <input
@@ -73,11 +73,11 @@ export function HeaderSearchAutocomplete() {
                         onFocus={() => {
                             if (searchQuery.trim().length > 0) setIsDropdownOpen(true);
                         }}
-                        className="flex-1 px-4 h-10 text-sm outline-none bg-transparent text-foreground placeholder:text-muted-foreground"
+                        className="flex-1 min-w-0 px-4 h-10 text-sm outline-none bg-transparent text-foreground placeholder:text-muted-foreground"
                     />
                     <button
                         type="submit"
-                        className="h-10 w-10 flex items-center justify-center bg-[var(--color-ebrar-green)] hover:bg-[var(--color-ebrar-green-dark)] text-white transition-colors"
+                        className="flex-shrink-0 h-10 w-10 flex items-center justify-center bg-[var(--color-ebrar-green)] hover:bg-[var(--color-ebrar-green-dark)] text-white transition-colors"
                     >
                         {isLoading && debouncedQuery !== searchQuery ? (
                             <Loader2 className="h-4 w-4 animate-spin" />

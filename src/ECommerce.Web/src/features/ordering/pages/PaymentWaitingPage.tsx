@@ -3,11 +3,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getPaymentReturnStatus } from '../api/paymentApi';
 import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const POLL_INTERVAL_MS = 3000;
 const MAX_ATTEMPTS = 5;
 
 export default function PaymentWaitingPage() {
+    const { t } = useTranslation('checkout');
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const orderId = searchParams.get('orderId');
@@ -70,16 +72,16 @@ export default function PaymentWaitingPage() {
             <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
                 <div className="max-w-md space-y-4">
                     <p className="text-lg font-semibold text-gray-800">
-                        Ödemeniz işleniyor
+                        {t('waiting.titleTimeout')}
                     </p>
                     <p className="text-sm text-gray-500">
-                        Ödeme onayı biraz daha sürebilir. Siparişlerinizden takip edebilirsiniz.
+                        {t('waiting.descTimeout')}
                     </p>
                     <Link
                         to="/orders"
                         className="inline-block rounded-md bg-[var(--color-ebrar-green)] px-6 py-2 text-sm font-semibold text-white hover:bg-[var(--color-ebrar-green-dark)] transition-colors"
                     >
-                        Siparişlerime Git
+                        {t('waiting.goToOrders')}
                     </Link>
                 </div>
             </div>
@@ -91,16 +93,16 @@ export default function PaymentWaitingPage() {
             <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
                 <div className="max-w-md space-y-4">
                     <p className="text-lg font-semibold text-gray-800">
-                        Durum sorgulanamadı
+                        {t('waiting.titleError')}
                     </p>
                     <p className="text-sm text-gray-500">
-                        Siparişlerinizden ödeme durumunu kontrol edebilirsiniz.
+                        {t('waiting.descError')}
                     </p>
                     <Link
                         to="/orders"
                         className="inline-block rounded-md bg-[var(--color-ebrar-green)] px-6 py-2 text-sm font-semibold text-white hover:bg-[var(--color-ebrar-green-dark)] transition-colors"
                     >
-                        Siparişlerime Git
+                        {t('waiting.goToOrders')}
                     </Link>
                 </div>
             </div>
@@ -111,8 +113,8 @@ export default function PaymentWaitingPage() {
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
             <div className="space-y-4">
                 <LoadingSpinner size="lg" />
-                <p className="text-lg font-semibold text-gray-800">Ödemeniz doğrulanıyor...</p>
-                <p className="text-sm text-gray-500">Bu işlem birkaç saniye sürebilir.</p>
+                <p className="text-lg font-semibold text-gray-800">{t('waiting.titleProcessing')}</p>
+                <p className="text-sm text-gray-500">{t('waiting.descProcessing')}</p>
             </div>
         </div>
     );

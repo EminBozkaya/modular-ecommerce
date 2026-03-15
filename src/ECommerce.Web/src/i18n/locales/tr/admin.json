@@ -1,0 +1,161 @@
+{
+  "dashboard": {
+    "title": "Kontrol Paneli",
+    "periods": {
+      "daily": "Günlük",
+      "weekly": "Haftalık",
+      "monthly": "Aylık",
+      "yearly": "Yıllık"
+    },
+    "cards": {
+      "totalOrders": "Toplam Sipariş",
+      "totalRevenue": "Toplam Gelir",
+      "totalCustomers": "Toplam Müşteri",
+      "lowStock": "Düşük Stok",
+      "lowStockDesc": "5 ve altı stoklu ürünler"
+    },
+    "recentOrders": "Son Siparişler",
+    "noOrders": "Henüz sipariş bulunmuyor.",
+    "table": {
+      "customer": "Müşteri",
+      "date": "Tarih",
+      "amount": "Tutar",
+      "status": "Durum"
+    },
+    "summaryError": "Özet veriler yüklenemedi.",
+    "revenueError": "Gelir grafiği yüklenemedi.",
+    "recentOrdersError": "Son siparişler yüklenemedi.",
+    "lowStockError": "Düşük stok verileri yüklenemedi."
+  },
+  "products": {
+    "title": "Ürünler",
+    "addTooltip": "Yeni Ürün Ekle",
+    "excelTooltip": "Excel'e Aktar",
+    "pdfTooltip": "PDF'e Aktar",
+    "noProducts": "Henüz ürün bulunamadı.",
+    "loadingProducts": "Ürünler yükleniyor...",
+    "mobile": {
+      "price": "Fiyat",
+      "stock": "Stok",
+      "category": "Kategori",
+      "description": "Açıklama",
+      "noDesc": "Yok",
+      "createdBy": "Oluşturan",
+      "date": "Tarih",
+      "edit": "DÜZENLE",
+      "delete": "SİL",
+      "restore": "GERİ YÜKLE"
+    },
+    "grid": {
+      "name": "Ürün Adı",
+      "category": "Kategori",
+      "price": "Fiyat",
+      "stock": "Stok",
+      "unit": "Birim",
+      "status": "Durum",
+      "createdBy": "Oluşturan",
+      "createdAt": "Tarih",
+      "actions": "İşlemler"
+    },
+    "status": {
+      "active": "Aktif",
+      "passive": "Pasif",
+      "deleted": "Silinmiş"
+    }
+  },
+  "categories": {
+    "title": "Kategoriler",
+    "addTooltip": "Yeni Kategori Ekle",
+    "excelTooltip": "Excel'e Aktar",
+    "pdfTooltip": "PDF'e Aktar",
+    "noCategories": "Henüz kategori bulunamadı.",
+    "loadingCategories": "Kategoriler yükleniyor...",
+    "mobile": {
+      "parentCategory": "Üst Kategori",
+      "mainCategory": "Ana Kategori",
+      "createdBy": "Oluşturan",
+      "date": "Tarih",
+      "edit": "DÜZENLE",
+      "delete": "SİL",
+      "restore": "GERİ YÜKLE"
+    },
+    "grid": {
+      "name": "Kategori Adı",
+      "parentCategory": "Üst Kategori",
+      "status": "Durum",
+      "createdBy": "Oluşturan",
+      "createdAt": "Tarih",
+      "actions": "İşlemler"
+    },
+    "status": {
+      "active": "Aktif",
+      "passive": "Pasif",
+      "deleted": "Silinmiş"
+    }
+  },
+  "orders": {
+    "title": "Siparişler",
+    "excelTooltip": "Excel'e Aktar",
+    "pdfTooltip": "PDF'e Aktar",
+    "noOrders": "Henüz sipariş bulunamadı.",
+    "loadingOrders": "Siparişler yükleniyor...",
+    "mobile": {
+      "customer": "Müşteri",
+      "amount": "Tutar",
+      "products": "Ürünler",
+      "address": "Adres",
+      "date": "Tarih",
+      "updateStatus": "DURUM GÜNCELLE",
+      "delete": "SİL",
+      "restore": "GERİ YÜKLE"
+    },
+    "grid": {
+      "orderId": "Sipariş ID",
+      "customer": "Müşteri",
+      "amount": "Tutar",
+      "status": "Durum",
+      "date": "Tarih",
+      "actions": "İşlemler"
+    }
+  },
+  "users": {
+    "title": "Müşteriler",
+    "addTooltip": "Yeni Müşteri Ekle",
+    "excelTooltip": "Excel'e Aktar",
+    "pdfTooltip": "PDF'e Aktar",
+    "noUsers": "Henüz müşteri bulunamadı.",
+    "loadingUsers": "Müşteriler yükleniyor...",
+    "mobile": {
+      "email": "E-posta",
+      "role": "Rol",
+      "emailConfirmed": "E-posta Onayı",
+      "confirmed": "✅ Onaylı",
+      "notConfirmed": "❌ Onaysız",
+      "registrationDate": "Kayıt Tarihi",
+      "roleAdmin": "Yönetici",
+      "roleCustomer": "Müşteri",
+      "edit": "DÜZENLE",
+      "delete": "SİL",
+      "restore": "GERİ YÜKLE"
+    },
+    "grid": {
+      "fullName": "Ad Soyad",
+      "email": "E-posta",
+      "role": "Rol",
+      "status": "Durum",
+      "emailConfirmed": "E-posta Onayı",
+      "createdAt": "Kayıt Tarihi",
+      "actions": "İşlemler"
+    }
+  },
+  "common": {
+    "excel": "Excel",
+    "pdf": "PDF",
+    "add": "EKLE",
+    "totalRecords": "Toplam kayıt: {{count}}",
+    "showing": "Gösterilen: {{count}} kayıt",
+    "deleted": "Silinmiş",
+    "active": "Aktif",
+    "passive": "Pasif"
+  }
+}

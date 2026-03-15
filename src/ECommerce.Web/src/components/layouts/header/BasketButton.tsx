@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useBasket } from '@/features/basket/hooks/useBasket';
+import { useTranslation } from 'react-i18next';
 
 export function BasketButton() {
     const { data: basket, isLoading: isBasketLoading } = useBasket();
     const navigate = useNavigate();
+    const { t } = useTranslation('common');
     const itemCount = basket?.items?.length || 0;
     const totalAmount = basket?.totalAmount || 0;
     const currencySymbol = basket?.currency === 'TRY' ? '₺' : (basket?.currency === 'USD' ? '$' : (basket?.currency || '₺'));
@@ -13,8 +15,8 @@ export function BasketButton() {
             <button
                 onClick={() => navigate('/basket')}
                 className="relative flex items-center justify-center w-11 h-11 rounded-full bg-gray-50 text-muted-foreground group-hover:text-[var(--color-ebrar-green)] group-hover:bg-green-50 transition-all duration-300 shadow-sm"
-                aria-label="Sepeti ac"
-                title="Sepetim"
+                aria-label={t('header.openBasket')}
+                title={t('header.basketTitle')}
             >
                 <svg viewBox="0 0 24 24" className="h-6 w-6 transition-transform duration-300 group-hover:scale-110 text-[var(--color-ebrar-green)]">
                     <path
@@ -43,7 +45,7 @@ export function BasketButton() {
                         </span>
                     ) : (
                         <span className="text-muted-foreground group-hover:text-[var(--color-ebrar-green)]">
-                            Sepet
+                            {t('header.basketEmpty')}
                         </span>
                     )}
                 </span>
