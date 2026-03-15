@@ -12,15 +12,15 @@ public record UserAddressDto(
     string PostalCode,
     string Country,
     bool IsDefault,
-    int? CountryId = null,
-    int? CityId = null,
-    int? DistrictId = null),
     bool IsActive,
     bool IsDeleted,
     DateTime CreatedAt,
     string? CreatedBy,
     DateTime? UpdatedAt,
     string? UpdatedBy,
+    int? CountryId = null,
+    int? CityId = null,
+    int? DistrictId = null,
     string? UserFullName = null);
 
 public record GetUserAddressesQuery(Guid UserId) : IRequest<IReadOnlyList<UserAddressDto>>;

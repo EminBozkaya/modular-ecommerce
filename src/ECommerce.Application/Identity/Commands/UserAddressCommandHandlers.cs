@@ -125,7 +125,7 @@ public class AdminUpdateAddressHandler : IRequestHandler<AdminUpdateAddressComma
             ?? throw new KeyNotFoundException($"Address {cmd.Id} not found.");
 
         address.Update(cmd.Title, cmd.FullName, cmd.AddressLine1, cmd.AddressLine2,
-            cmd.City, cmd.PostalCode, cmd.Country, cmd.IsActive);
+            cmd.City, cmd.PostalCode, cmd.Country, isActive: cmd.IsActive);
 
         await _repo.SaveChangesAsync(ct);
     }

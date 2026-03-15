@@ -82,6 +82,7 @@ public class UserAddress : BaseAuditableEntity
         string city,
         string postalCode,
         string country,
+        int? countryId = null,
         int? cityId = null,
         int? districtId = null,
         bool? isActive = null)
