@@ -32,6 +32,9 @@ public class ApplicationDbContext : DbContext
     // Identity
     public DbSet<AppUser> Users => Set<AppUser>();
     public DbSet<UserAddress> UserAddresses => Set<UserAddress>();
+    public DbSet<Country> Countries => Set<Country>();
+    public DbSet<City> Cities => Set<City>();
+    public DbSet<District> Districts => Set<District>();
 
     // Wishlist
     public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();

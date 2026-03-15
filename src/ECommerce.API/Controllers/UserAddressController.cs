@@ -36,7 +36,10 @@ public class UserAddressController : ControllerBase
             request.City,
             request.PostalCode,
             request.Country,
-            request.IsDefault), ct);
+            request.IsDefault,
+            request.CountryId,
+            request.CityId,
+            request.DistrictId), ct);
         return CreatedAtAction(nameof(GetAll), new { id }, new { id });
     }
 
@@ -52,7 +55,10 @@ public class UserAddressController : ControllerBase
             request.AddressLine2,
             request.City,
             request.PostalCode,
-            request.Country), ct);
+            request.Country,
+            request.CountryId,
+            request.CityId,
+            request.DistrictId), ct);
         return NoContent();
     }
 
@@ -90,7 +96,10 @@ public record AddUserAddressRequest(
     string City,
     string PostalCode,
     string Country,
-    bool IsDefault = false);
+    bool IsDefault = false,
+    int? CountryId = null,
+    int? CityId = null,
+    int? DistrictId = null);
 
 public record UpdateUserAddressRequest(
     string Title,
@@ -99,4 +108,7 @@ public record UpdateUserAddressRequest(
     string? AddressLine2,
     string City,
     string PostalCode,
-    string Country);
+    string Country,
+    int? CountryId = null,
+    int? CityId = null,
+    int? DistrictId = null);

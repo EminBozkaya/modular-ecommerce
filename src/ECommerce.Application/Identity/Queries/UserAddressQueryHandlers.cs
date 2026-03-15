@@ -17,7 +17,7 @@ public class GetUserAddressesHandler : IRequestHandler<GetUserAddressesQuery, IR
             a.Id, a.Title, a.FullName,
             a.AddressLine1, a.AddressLine2,
             a.City, a.PostalCode, a.Country,
-            a.IsDefault, a.IsActive, a.IsDeleted,
+            a.IsDefault, a.CountryId, a.CityId, a.DistrictId, a.IsActive, a.IsDeleted,
             a.CreatedAt, a.CreatedBy, a.UpdatedAt, a.UpdatedBy, null)).ToList();
     }
 }
