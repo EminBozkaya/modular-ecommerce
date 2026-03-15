@@ -24,12 +24,15 @@ function FlyoutSubMenu({ node, level, closeAll }: { node: CategoryTreeNode; leve
     const handleMouseEnter = () => {
         if (typeof window !== 'undefined' && window.innerWidth < 1024) return; // Yalnızca masaüstünde hover
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        setIsOpen(true);
+        // Çapraz (diagonal) geçişlerde yanlışlıkla alt kategorilerin açılmasını (açılıp ana menüyü ezmesini) engellemek için açılma gecikmesi eklendi
+        timeoutRef.current = setTimeout(() => setIsOpen(true), 200);
     };
 
     const handleMouseLeave = () => {
         if (typeof window !== 'undefined' && window.innerWidth < 1024) return; // Yalnızca masaüstünde hover
-        timeoutRef.current = setTimeout(() => setIsOpen(false), 150);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        // Fare menüden çıkarken/çapraz geçerken hemen kapanmasını engellemek için kapanma toleransı. (Açılma gecikmesi ile senkronize edildi)
+        timeoutRef.current = setTimeout(() => setIsOpen(false), 500);
     };
 
     if (!hasChildren) {
@@ -99,15 +102,20 @@ export function CategoryNavDropdownItem({ node, isStuck }: Props) {
     const handleMouseEnter = () => {
         if (typeof window !== 'undefined' && window.innerWidth < 1024) return; // Yalnızca masaüstünde hover
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        if (!open) updateRect();
-        setOpen(true);
+        
+        timeoutRef.current = setTimeout(() => {
+            if (!open) updateRect();
+            setOpen(true);
+        }, 150); // Ana/kök menüde açılma gecikmesi (hızlı geçişlerde kazara açılmaları önler)
     };
 
     const handleMouseLeave = () => {
         if (typeof window !== 'undefined' && window.innerWidth < 1024) return; // Yalnızca masaüstünde hover
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        
         timeoutRef.current = setTimeout(() => {
             setOpen(false);
-        }, 150);
+        }, 500);
     };
 
     const toggleOpen = (e?: React.MouseEvent) => {
