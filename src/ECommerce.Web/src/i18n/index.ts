@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import { SUPPORTED_LANGUAGES } from './languages';
 
 // TR
 import trCommon from './locales/tr/common.json';
@@ -68,8 +69,8 @@ i18n
                 validation: deValidation,
             },
         },
-        lng: localStorage.getItem('language') ?? 'tr',
-        fallbackLng: 'tr',
+        lng: localStorage.getItem('language') ?? SUPPORTED_LANGUAGES[0].code,
+        fallbackLng: SUPPORTED_LANGUAGES[0].code,
         defaultNS: 'common',
         interpolation: {
             escapeValue: false, // React XSS koruması zaten var

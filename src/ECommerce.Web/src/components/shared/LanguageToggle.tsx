@@ -8,18 +8,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
-
-const LANGUAGES = [
-    { code: 'tr', label: 'TR', flag: '🇹🇷', name: 'Türkçe' },
-    { code: 'en', label: 'EN', flag: '🇺🇸', name: 'English' },
-    { code: 'de', label: 'DE', flag: '🇩🇪', name: 'Deutsch' },
-];
+import { SUPPORTED_LANGUAGES, type LanguageCode } from '@/i18n/languages';
 
 export function LanguageToggle() {
     const { currentLanguage, changeLanguage } = useLanguage();
     const { t } = useTranslation('common');
 
-    const activeLanguage = LANGUAGES.find((l) => l.code === currentLanguage) || LANGUAGES[0];
+    const activeLanguage = SUPPORTED_LANGUAGES.find((l) => l.code === currentLanguage) ?? SUPPORTED_LANGUAGES[0];
 
     return (
         <div className="flex flex-col items-center group relative">
@@ -43,24 +38,24 @@ export function LanguageToggle() {
                     </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-40 bg-white p-1 z-[100] shadow-xl border-gray-100">
-                    {LANGUAGES.map((lang) => (
+                    {SUPPORTED_LANGUAGES.map((lang) => (
                         <DropdownMenuItem
                             key={lang.code}
-                            onSelect={() => changeLanguage(lang.code as 'tr' | 'en' | 'de')}
+                            onSelect={() => changeLanguage(lang.code as LanguageCode)}
                             className={cn(
                                 "flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-xs font-medium transition-colors hover:bg-gray-100",
                                 currentLanguage === lang.code && "bg-green-50 font-bold text-[var(--color-ebrar-green)]"
                             )}
                         >
                             <span className="text-lg leading-none">{lang.flag}</span>
-                            <span className="flex-1 uppercase">{lang.label}</span>
-                            <span className="text-[10px] text-gray-400 font-normal">{lang.name}</span>
+                            <span className="flex-1 uppercase">{lang.code}</span>
+                            <span className="text-[10px] text-gray-400 font-normal">{lang.label}</span>
                         </DropdownMenuItem>
                     ))}
                 </DropdownMenuContent>
             </DropdownMenu>
             <span className="text-[11px] font-bold text-muted-foreground group-hover:text-[var(--color-ebrar-green)] mt-1 transition-colors uppercase">
-                {activeLanguage.label}
+                {activeLanguage.code}
             </span>
         </div>
     );
