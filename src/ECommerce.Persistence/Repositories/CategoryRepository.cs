@@ -15,11 +15,15 @@ public class CategoryRepository : ICategoryRepository
         => await _ctx.Categories
             .IgnoreQueryFilters()
             .Include(c => c.SubCategories)
+            .Include(c => c.Translations)
             .FirstOrDefaultAsync(c => c.Id == id, ct);
 
     public async Task<IReadOnlyList<Category>> GetAllAsync(bool includeDeleted = false, bool onlyMain = false, CancellationToken ct = default)
     {
-        var query = _ctx.Categories.Include(c => c.ParentCategory).AsNoTracking();
+        var query = _ctx.Categories
+            .Include(c => c.ParentCategory)
+            .Include(c => c.Translations)
+            .AsNoTracking();
         if (includeDeleted) query = query.IgnoreQueryFilters();
         if (onlyMain) query = query.Where(c => c.ParentCategoryId == null);
         return await query.ToListAsync(ct);

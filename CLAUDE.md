@@ -27,11 +27,19 @@ ECommerce/
 ## Current Milestone Status
 - [x] M1 — Project scaffold
 - [x] M2 — Catalog (listing, detail, category filter, search, pagination)
+- [x] M2.5 — Multi-language support (TR/EN/DE): translation tables, Accept-Language pipeline, React Query cache keyed by language, i18n UI, cross-language search
 - [x] M3 — Auth (login, register, session restore, route guard)
 - [x] M4 — Basket (guest+member, optimistic update, price snapshot)
-- [ ] M5 — Order & Checkout (in progress)
-- [ ] M6 — Admin Panel
+- [ ] M5 — Order & Checkout
+- [ ] M6 — Admin Panel (product/category CRUD scaffolded; translation UI pending architecture refactor)
 - [ ] M7 — Azure DevOps + CI/CD
+
+## Active Work: Translation Architecture Refactor
+**Status:** Decision made, implementation pending.
+**Why:** Current hybrid model (entity.Name = TR, translations table = EN/DE) is architecturally wrong for a global white-label product. A British admin deploying the platform would write English names into a "Turkish field". No TR translation can ever be added post-hoc because TR is treated as the base, not as one peer language.
+**Target:** Language-agnostic model — ALL languages (including TR) live in translation tables. `DefaultLanguage` is configurable in `appsettings.json`.
+**Blocked by this:** M6 admin panel translation UI.
+**Next session:** Start with translation architecture refactor, then continue M6 admin panel.
 
 ## Commands
 ```bash

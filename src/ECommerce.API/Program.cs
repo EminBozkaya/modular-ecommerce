@@ -3,6 +3,9 @@ using ECommerce.Infrastructure;
 using ECommerce.Persistence;
 using ECommerce.API.Middlewares;
 using ECommerce.API.Extensions;
+using ECommerce.API.Services;
+using ECommerce.Application.Common.Interfaces;
+using ECommerce.Application.Common.Settings;
 using Serilog;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +16,12 @@ builder.Host.UseSerilog((ctx, cfg) => cfg
     .ReadFrom.Configuration(ctx.Configuration)
     .Enrich.FromLogContext()
     .WriteTo.Console());
+
+// ── Localization config ──
+builder.Services.Configure<LocalizationOptions>(
+    builder.Configuration.GetSection(LocalizationOptions.SectionName));
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ILanguageContext, HttpLanguageContext>();
 
 // ── Layer DI registrations ──
 // Production note: ConnectionStrings__DefaultConnection environment variable

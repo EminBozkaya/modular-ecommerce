@@ -7,15 +7,19 @@ namespace ECommerce.Application.Catalog.Specifications;
 
 public class ProductsWithFiltersSpecification : BaseSpecification<Product>
 {
-    public ProductsWithFiltersSpecification(string? searchTerm, decimal? minPrice, decimal? maxPrice, Guid? categoryId, string? sortBy, bool descending, int pageNumber, int pageSize, bool includeInactive = false, bool includeDeleted = false)
+    public ProductsWithFiltersSpecification(string? searchTerm, decimal? minPrice, decimal? maxPrice, Guid? categoryId, string? sortBy, bool descending, int pageNumber, int pageSize, bool includeInactive = false, bool includeDeleted = false, string language = "tr")
         : base(x =>
-            (string.IsNullOrEmpty(searchTerm) || 
-             EF.Functions.ILike(x.Name, $"%{searchTerm}%") || 
+            (string.IsNullOrEmpty(searchTerm) ||
+             EF.Functions.ILike(x.Name, $"%{searchTerm}%") ||
              EF.Functions.ILike(x.Name, $"%{searchTerm.Replace('ı', 'i').Replace('İ', 'i').Replace('I', 'i')}%") ||
              (x.Description != null && (
-                EF.Functions.ILike(x.Description, $"%{searchTerm}%") || 
+                EF.Functions.ILike(x.Description, $"%{searchTerm}%") ||
                 EF.Functions.ILike(x.Description, $"%{searchTerm.Replace('ı', 'i').Replace('İ', 'i').Replace('I', 'i')}%")
-             ))) &&
+             )) ||
+             x.Translations.Any(t =>
+                t.LanguageCode == language &&
+                (EF.Functions.ILike(t.Name, $"%{searchTerm}%") ||
+                 (t.Description != null && EF.Functions.ILike(t.Description, $"%{searchTerm}%"))))) &&
             (!minPrice.HasValue || x.Price.Amount >= minPrice.Value) &&
             (!maxPrice.HasValue || x.Price.Amount <= maxPrice.Value) &&
             (!categoryId.HasValue || x.CategoryId == categoryId.Value) &&
@@ -25,6 +29,7 @@ public class ProductsWithFiltersSpecification : BaseSpecification<Product>
         if (includeDeleted) ApplyIgnoreQueryFilters();
         AddInclude(x => x.Category!);
         AddInclude(x => x.Unit!);
+        AddInclude(x => x.Translations);
 
         if (!string.IsNullOrEmpty(sortBy))
         {

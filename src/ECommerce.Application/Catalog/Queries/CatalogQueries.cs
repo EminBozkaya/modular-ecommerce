@@ -35,17 +35,22 @@ public record GetProductsQuery(
     string? SortBy = null,
     bool Descending = false,
     bool IncludeInactive = false,
-    bool IncludeDeleted = false) : IRequest<PagedResult<ProductDto>>, ICacheableQuery
+    bool IncludeDeleted = false,
+    string Language = "tr") : IRequest<PagedResult<ProductDto>>, ICacheableQuery
 {
-    public string CacheKey => $"catalog:products:page:{Page}:size:{PageSize}:cat:{CategoryId}:search:{Search}:active:{!IncludeInactive}:deleted:{IncludeDeleted}";
+    public string CacheKey => $"catalog:products:lang:{Language}:page:{Page}:size:{PageSize}:cat:{CategoryId}:search:{Search}:active:{!IncludeInactive}:deleted:{IncludeDeleted}";
     public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
 }
-public record GetProductByIdQuery(Guid Id) : IRequest<ProductDto?>;
-public record GetCategoriesQuery(bool OnlyMain = false, bool IncludeDeleted = false) : IRequest<IReadOnlyList<CategoryDto>>, ICacheableQuery
+public record GetProductByIdQuery(Guid Id, string Language = "tr") : IRequest<ProductDto?>;
+public record GetCategoriesQuery(bool OnlyMain = false, bool IncludeDeleted = false, string Language = "tr") : IRequest<IReadOnlyList<CategoryDto>>, ICacheableQuery
 {
-    public string CacheKey => $"catalog:categories:main:{OnlyMain}:deleted:{IncludeDeleted}";
+    public string CacheKey => $"catalog:categories:lang:{Language}:main:{OnlyMain}:deleted:{IncludeDeleted}";
     public TimeSpan? Expiration => TimeSpan.FromHours(1);
 }
+public record TranslationDto(string LanguageCode, string Name, string? Description);
+public record GetProductTranslationsQuery(Guid ProductId) : IRequest<IReadOnlyList<TranslationDto>>;
+public record GetCategoryTranslationsQuery(Guid CategoryId) : IRequest<IReadOnlyList<TranslationDto>>;
+
 public record GetUnitsQuery() : IRequest<IReadOnlyList<UnitDto>>, ICacheableQuery
 {
     public string CacheKey => "catalog:units";

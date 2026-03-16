@@ -4,7 +4,6 @@ using ECommerce.Domain.Catalog;
 using ECommerce.Domain.Catalog.Entities;
 using ECommerce.Domain.Identity;
 using MediatR;
-using System.Linq;
 
 namespace ECommerce.Application.Catalog.Queries;
 
@@ -22,24 +21,31 @@ public class GetProductsHandler : IRequestHandler<GetProductsQuery, PagedResult<
     public async Task<PagedResult<ProductDto>> Handle(GetProductsQuery q, CancellationToken ct)
     {
         var spec = new ProductsWithFiltersSpecification(
-            q.Search, q.MinPrice, q.MaxPrice, q.CategoryId, q.SortBy, q.Descending, q.Page, q.PageSize, q.IncludeInactive, q.IncludeDeleted);
-            
+            q.Search, q.MinPrice, q.MaxPrice, q.CategoryId, q.SortBy, q.Descending, q.Page, q.PageSize, q.IncludeInactive, q.IncludeDeleted, q.Language);
+
         var count = await _products.CountAsync(spec, ct);
         var products = await _products.ListAsync(spec, ct);
 
-        // Map User IDs to Names
         var users = await _users.GetAllWithDeletedAsync(ct);
         var userMap = users.ToDictionary(u => u.Id.ToString(), u => u.FullName, StringComparer.OrdinalIgnoreCase);
 
-        var items = products.Select(p => new ProductDto(
-            p.Id, p.Name, p.Description, p.ImageUrl,
-            p.Price.Amount, p.Price.Currency.ToString(), p.Stock.Value, p.IsActive,
-            p.CategoryId, p.Category?.Name,
-            p.UnitId, p.Unit?.Name,
-            p.CreatedAt, !string.IsNullOrEmpty(p.CreatedBy) && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
-            p.UpdatedAt, !string.IsNullOrEmpty(p.UpdatedBy) && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
-            p.DeletedAt, p.IsDeleted)).ToList();
-            
+        var items = products.Select(p =>
+        {
+            var t = p.Translations.FirstOrDefault(x => x.LanguageCode == q.Language);
+            var catT = p.Category?.Translations.FirstOrDefault(x => x.LanguageCode == q.Language);
+            return new ProductDto(
+                p.Id,
+                t?.Name ?? p.Name,
+                t?.Description ?? p.Description,
+                p.ImageUrl,
+                p.Price.Amount, p.Price.Currency.ToString(), p.Stock.Value, p.IsActive,
+                p.CategoryId, catT?.Name ?? p.Category?.Name,
+                p.UnitId, p.Unit?.Name,
+                p.CreatedAt, !string.IsNullOrEmpty(p.CreatedBy) && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
+                p.UpdatedAt, !string.IsNullOrEmpty(p.UpdatedBy) && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
+                p.DeletedAt, p.IsDeleted);
+        }).ToList();
+
         return new PagedResult<ProductDto>(items, count, q.Page, q.PageSize);
     }
 }
@@ -61,10 +67,16 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, Produc
         if (p is null) return null;
 
         var userMap = (await _users.GetAllWithDeletedAsync(ct)).ToDictionary(u => u.Id.ToString(), u => u.FullName, StringComparer.OrdinalIgnoreCase);
+        var t = p.Translations.FirstOrDefault(x => x.LanguageCode == q.Language);
+        var catT = p.Category?.Translations.FirstOrDefault(x => x.LanguageCode == q.Language);
 
-        return new ProductDto(p.Id, p.Name, p.Description, p.ImageUrl,
+        return new ProductDto(
+            p.Id,
+            t?.Name ?? p.Name,
+            t?.Description ?? p.Description,
+            p.ImageUrl,
             p.Price.Amount, p.Price.Currency.ToString(), p.Stock.Value, p.IsActive,
-            p.CategoryId, p.Category?.Name,
+            p.CategoryId, catT?.Name ?? p.Category?.Name,
             p.UnitId, p.Unit?.Name,
             p.CreatedAt, !string.IsNullOrEmpty(p.CreatedBy) && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
             p.UpdatedAt, !string.IsNullOrEmpty(p.UpdatedBy) && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
@@ -88,11 +100,20 @@ public class GetCategoriesHandler : IRequestHandler<GetCategoriesQuery, IReadOnl
         var categories = await _categories.GetAllAsync(q.IncludeDeleted, q.OnlyMain, ct);
         var userMap = (await _users.GetAllWithDeletedAsync(ct)).ToDictionary(u => u.Id.ToString(), u => u.FullName, StringComparer.OrdinalIgnoreCase);
 
-        return categories.Select(c => new CategoryDto(
-            c.Id, c.Name, c.Description, c.ImageUrl, c.IsActive, c.ParentCategoryId, c.ParentCategory?.Name,
-            c.CreatedAt, !string.IsNullOrEmpty(c.CreatedBy) && userMap.TryGetValue(c.CreatedBy, out var cb) ? cb : c.CreatedBy,
-            c.UpdatedAt, !string.IsNullOrEmpty(c.UpdatedBy) && userMap.TryGetValue(c.UpdatedBy, out var ub) ? ub : c.UpdatedBy,
-            c.DeletedAt, c.IsDeleted)).ToList();
+        return categories.Select(c =>
+        {
+            var t = c.Translations.FirstOrDefault(x => x.LanguageCode == q.Language);
+            var parentT = c.ParentCategory?.Translations.FirstOrDefault(x => x.LanguageCode == q.Language);
+            return new CategoryDto(
+                c.Id,
+                t?.Name ?? c.Name,
+                t?.Description ?? c.Description,
+                c.ImageUrl, c.IsActive, c.ParentCategoryId,
+                parentT?.Name ?? c.ParentCategory?.Name,
+                c.CreatedAt, !string.IsNullOrEmpty(c.CreatedBy) && userMap.TryGetValue(c.CreatedBy, out var cb) ? cb : c.CreatedBy,
+                c.UpdatedAt, !string.IsNullOrEmpty(c.UpdatedBy) && userMap.TryGetValue(c.UpdatedBy, out var ub) ? ub : c.UpdatedBy,
+                c.DeletedAt, c.IsDeleted);
+        }).ToList();
     }
 }
 
@@ -109,5 +130,43 @@ public class GetUnitsHandler : IRequestHandler<GetUnitsQuery, IReadOnlyList<Unit
     {
         var units = await _units.GetAllAsync(ct);
         return units.Select(u => new UnitDto(u.Id, u.Name, u.Code)).ToList();
+    }
+}
+
+public class GetProductTranslationsHandler : IRequestHandler<GetProductTranslationsQuery, IReadOnlyList<TranslationDto>>
+{
+    private readonly IProductRepository _products;
+
+    public GetProductTranslationsHandler(IProductRepository products)
+    {
+        _products = products;
+    }
+
+    public async Task<IReadOnlyList<TranslationDto>> Handle(GetProductTranslationsQuery q, CancellationToken ct)
+    {
+        var product = await _products.GetByIdAsync(q.ProductId, ct)
+            ?? throw new KeyNotFoundException($"Product {q.ProductId} not found.");
+        return product.Translations
+            .Select(t => new TranslationDto(t.LanguageCode, t.Name, t.Description))
+            .ToList();
+    }
+}
+
+public class GetCategoryTranslationsHandler : IRequestHandler<GetCategoryTranslationsQuery, IReadOnlyList<TranslationDto>>
+{
+    private readonly ICategoryRepository _categories;
+
+    public GetCategoryTranslationsHandler(ICategoryRepository categories)
+    {
+        _categories = categories;
+    }
+
+    public async Task<IReadOnlyList<TranslationDto>> Handle(GetCategoryTranslationsQuery q, CancellationToken ct)
+    {
+        var category = await _categories.GetByIdAsync(q.CategoryId, ct)
+            ?? throw new KeyNotFoundException($"Category {q.CategoryId} not found.");
+        return category.Translations
+            .Select(t => new TranslationDto(t.LanguageCode, t.Name, t.Description))
+            .ToList();
     }
 }

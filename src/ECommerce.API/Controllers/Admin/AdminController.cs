@@ -82,6 +82,31 @@ public class AdminController : ControllerBase
         return NoContent();
     }
 
+
+    // ── Translations ──
+
+    [HttpGet("products/{id:guid}/translations")]
+    public async Task<IActionResult> GetProductTranslations(Guid id, CancellationToken ct)
+        => Ok(await _mediator.Send(new GetProductTranslationsQuery(id), ct));
+
+    [HttpPut("products/{id:guid}/translations/{lang}")]
+    public async Task<IActionResult> UpsertProductTranslation(Guid id, string lang, [FromBody] UpsertTranslationRequest req, CancellationToken ct)
+    {
+        await _mediator.Send(new UpsertProductTranslationCommand(id, lang, req.Name, req.Description), ct);
+        return NoContent();
+    }
+
+    [HttpGet("categories/{id:guid}/translations")]
+    public async Task<IActionResult> GetCategoryTranslations(Guid id, CancellationToken ct)
+        => Ok(await _mediator.Send(new GetCategoryTranslationsQuery(id), ct));
+
+    [HttpPut("categories/{id:guid}/translations/{lang}")]
+    public async Task<IActionResult> UpsertCategoryTranslation(Guid id, string lang, [FromBody] UpsertTranslationRequest req, CancellationToken ct)
+    {
+        await _mediator.Send(new UpsertCategoryTranslationCommand(id, lang, req.Name, req.Description), ct);
+        return NoContent();
+    }
+
     // ── Customer Management ──
 
     [HttpGet("users")]
@@ -176,3 +201,4 @@ public class AdminController : ControllerBase
 }
 
 public record UpdateOrderStatusRequest(string NewStatus);
+public record UpsertTranslationRequest(string Name, string? Description);

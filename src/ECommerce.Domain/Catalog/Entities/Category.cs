@@ -18,6 +18,9 @@ public class Category : BaseAuditableEntity
     private readonly List<Product> _products = [];
     public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
 
+    private readonly List<CategoryTranslation> _translations = [];
+    public IReadOnlyCollection<CategoryTranslation> Translations => _translations.AsReadOnly();
+
     private Category() { }
 
     public static Category Create(string name, string? description = null, string? imageUrl = null, bool isActive = true, Guid? parentCategoryId = null)
@@ -42,6 +45,19 @@ public class Category : BaseAuditableEntity
         ImageUrl = imageUrl;
         IsActive = isActive;
         ParentCategoryId = parentCategoryId;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void UpsertTranslation(string languageCode, string name, string? description)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(languageCode);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        var lang = languageCode.ToLowerInvariant();
+        var existing = _translations.FirstOrDefault(t => t.LanguageCode == lang);
+        if (existing is not null)
+            existing.Update(name, description);
+        else
+            _translations.Add(CategoryTranslation.Create(Id, lang, name, description));
         UpdatedAt = DateTime.UtcNow;
     }
 

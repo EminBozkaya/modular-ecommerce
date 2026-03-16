@@ -249,3 +249,29 @@ export async function deleteAddress(id: string): Promise<void> {
 export async function restoreAddress(id: string): Promise<void> {
     await apiClient.post(`/api/admin/addresses/restore/${id}`);
 }
+
+// ── Translations ──
+
+export interface TranslationData {
+    languageCode: string;
+    name: string;
+    description?: string;
+}
+
+export async function getProductTranslations(productId: string): Promise<TranslationData[]> {
+    const response = await apiClient.get<TranslationData[]>(`/api/admin/products/${productId}/translations`);
+    return response.data;
+}
+
+export async function upsertProductTranslation(productId: string, languageCode: string, data: { name: string; description?: string }): Promise<void> {
+    await apiClient.put(`/api/admin/products/${productId}/translations/${languageCode}`, data);
+}
+
+export async function getCategoryTranslations(categoryId: string): Promise<TranslationData[]> {
+    const response = await apiClient.get<TranslationData[]>(`/api/admin/categories/${categoryId}/translations`);
+    return response.data;
+}
+
+export async function upsertCategoryTranslation(categoryId: string, languageCode: string, data: { name: string; description?: string }): Promise<void> {
+    await apiClient.put(`/api/admin/categories/${categoryId}/translations/${languageCode}`, data);
+}

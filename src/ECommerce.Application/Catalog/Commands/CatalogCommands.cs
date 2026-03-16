@@ -58,3 +58,9 @@ public record DeleteCategoryCommand(Guid Id) : IRequest;
 
 // --- RestoreCategory ---
 public record RestoreCategoryCommand(Guid Id) : IRequest;
+
+// --- UpsertProductTranslation ---
+public record UpsertProductTranslationCommand(Guid ProductId, string LanguageCode, string Name, string? Description) : IRequest;
+
+// --- UpsertCategoryTranslation ---
+public record UpsertCategoryTranslationCommand(Guid CategoryId, string LanguageCode, string Name, string? Description) : IRequest;

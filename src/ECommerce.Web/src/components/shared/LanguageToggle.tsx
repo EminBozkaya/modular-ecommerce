@@ -1,4 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
+import { useLanguageConfig } from '@/hooks/useLanguageConfig';
 import { useTranslation } from 'react-i18next';
 import {
     DropdownMenu,
@@ -12,9 +13,13 @@ import { SUPPORTED_LANGUAGES, type LanguageCode } from '@/i18n/languages';
 
 export function LanguageToggle() {
     const { currentLanguage, changeLanguage } = useLanguage();
+    const { languages } = useLanguageConfig();
     const { t } = useTranslation('common');
 
-    const activeLanguage = SUPPORTED_LANGUAGES.find((l) => l.code === currentLanguage) ?? SUPPORTED_LANGUAGES[0];
+    const activeLanguage =
+        languages.find((l) => l.code === currentLanguage) ??
+        SUPPORTED_LANGUAGES.find((l) => l.code === currentLanguage) ??
+        languages[0];
 
     return (
         <div className="flex flex-col items-center group relative">
@@ -38,7 +43,7 @@ export function LanguageToggle() {
                     </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-40 bg-white p-1 z-[100] shadow-xl border-gray-100">
-                    {SUPPORTED_LANGUAGES.map((lang) => (
+                    {languages.map((lang) => (
                         <DropdownMenuItem
                             key={lang.code}
                             onSelect={() => changeLanguage(lang.code as LanguageCode)}

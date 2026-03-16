@@ -1,6 +1,5 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
 import { SUPPORTED_LANGUAGES } from './languages';
 
 // TR
@@ -33,8 +32,10 @@ import deOrders from './locales/de/orders.json';
 import deAdmin from './locales/de/admin.json';
 import deValidation from './locales/de/validation.json';
 
+// Read persisted language; never fall back to browser locale
+const savedLang = localStorage.getItem('language') ?? SUPPORTED_LANGUAGES[0].code;
+
 i18n
-    .use(LanguageDetector)
     .use(initReactI18next)
     .init({
         resources: {
@@ -69,16 +70,11 @@ i18n
                 validation: deValidation,
             },
         },
-        lng: localStorage.getItem('language') ?? SUPPORTED_LANGUAGES[0].code,
+        lng: savedLang,
         fallbackLng: SUPPORTED_LANGUAGES[0].code,
         defaultNS: 'common',
         interpolation: {
             escapeValue: false, // React XSS koruması zaten var
-        },
-        detection: {
-            order: ['localStorage'],
-            caches: ['localStorage'],
-            lookupLocalStorage: 'language',
         },
     });
 

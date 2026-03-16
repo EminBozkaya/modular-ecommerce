@@ -28,6 +28,9 @@ export const queryKeys = {
         providers: ['payment', 'providers'] as const,
         returnStatus: (orderId: string) => ['payment', 'returnStatus', orderId] as const,
     },
+    config: {
+        languages: ['config', 'languages'] as const,
+    },
     admin: {
         dashboard: {
             summary: (period: string) => ['admin', 'dashboard', 'summary', period] as const,

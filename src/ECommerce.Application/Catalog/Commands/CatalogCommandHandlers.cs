@@ -293,3 +293,46 @@ public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand>
         await _cacheService.RemoveByPrefixAsync("catalog", ct);
     }
 }
+
+public class UpsertProductTranslationHandler : IRequestHandler<UpsertProductTranslationCommand>
+{
+    private readonly IProductRepository _products;
+    private readonly ICacheService _cacheService;
+
+    public UpsertProductTranslationHandler(IProductRepository products, ICacheService cacheService)
+    {
+        _products = products;
+        _cacheService = cacheService;
+    }
+
+    public async Task Handle(UpsertProductTranslationCommand cmd, CancellationToken ct)
+    {
+        var product = await _products.GetByIdAsync(cmd.ProductId, ct)
+            ?? throw new KeyNotFoundException($"Product {cmd.ProductId} not found.");
+        product.UpsertTranslation(cmd.LanguageCode, cmd.Name, cmd.Description);
+        await _products.SaveChangesAsync(ct);
+        await _cacheService.RemoveByPrefixAsync("catalog", ct);
+    }
+}
+
+public class UpsertCategoryTranslationHandler : IRequestHandler<UpsertCategoryTranslationCommand>
+{
+    private readonly ICategoryRepository _categories;
+    private readonly ICacheService _cacheService;
+
+    public UpsertCategoryTranslationHandler(ICategoryRepository categories, ICacheService cacheService)
+    {
+        _categories = categories;
+        _cacheService = cacheService;
+    }
+
+    public async Task Handle(UpsertCategoryTranslationCommand cmd, CancellationToken ct)
+    {
+        var category = await _categories.GetByIdAsync(cmd.CategoryId, ct)
+            ?? throw new KeyNotFoundException($"Category {cmd.CategoryId} not found.");
+        category.UpsertTranslation(cmd.LanguageCode, cmd.Name, cmd.Description);
+        _categories.Update(category);
+        await _categories.SaveChangesAsync(ct);
+        await _cacheService.RemoveByPrefixAsync("catalog", ct);
+    }
+}

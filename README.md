@@ -36,6 +36,7 @@
 ### Storefront (React SPA)
 - **Product catalog** &mdash; search, category filter, pagination, sorting
 - **Homepage** &mdash; featured products, autocomplete search
+- **Multi-language** &mdash; TR / EN / DE with per-language search; language-agnostic architecture (any deployment configures its own default language)
 - **Guest + member basket** &mdash; persistent cart with price snapshots, unit-aware quantities (kg, adet, litre)
 - **Checkout flow** &mdash; shipping address &rarr; payment (2-step orchestration)
 - **Order history** &mdash; status tracking, order detail view
@@ -50,6 +51,7 @@
 - **Dashboard** &mdash; summary cards, revenue chart, recent orders, low stock alerts
 - **Product management** &mdash; CRUD, stock control, soft delete & restore
 - **Category management** &mdash; CRUD, parent-child hierarchy, soft delete & restore
+- **Translation editor** &mdash; tab-based UI to manage product & category names per language (EN, DE, etc.)
 - **Order management** &mdash; list with status filter, detail view, status transitions with confirmation
 - **User management** &mdash; customer list, search by name/email
 - **Data export** &mdash; CSV/Excel export for products, categories, orders, users
@@ -64,6 +66,14 @@
 ## Architecture
 
 Modular Monolith with strict Clean Architecture layer separation, CQRS via MediatR, and Domain-Driven Design. Layer dependency rules are enforced at build time via `NetArchTest.Rules`.
+
+### Language-Agnostic Multi-Language Design
+
+All product and category display names are stored in dedicated translation tables (`ProductTranslations`, `CategoryTranslations`), keyed by `(EntityId, LanguageCode)`. No language is hardcoded as the "base" language — every supported language is a peer.
+
+The `DefaultLanguage` value in `appsettings.json` determines which language acts as fallback when no translation exists for the requested language. A deployment in Germany sets `DefaultLanguage: "de"` and admins enter German content first; Turkish or English can be added later through the translation editor.
+
+This design makes the platform genuinely white-label and globally deployable without any code changes between deployments.
 
 ```
 +--------------------------------------------------------------+
@@ -219,15 +229,19 @@ cd EbrarKuruyemis
 # 2. Update connection string
 #    src/ECommerce.API/appsettings.Development.json
 
-# 3. Apply migrations
+# 3. (Optional) Set default language for this deployment
+#    src/ECommerce.API/appsettings.json:
+#    "DefaultLanguage": "tr"   <-- change to "en", "de", etc. for other locales
+
+# 4. Apply migrations
 dotnet ef database update \
   --project src/ECommerce.Persistence \
   --startup-project src/ECommerce.API
 
-# 4. Run the API
+# 5. Run the API
 dotnet run --project src/ECommerce.API
 
-# 5. Run tests
+# 6. Run tests
 dotnet test ECommerce.sln
 
 # Swagger UI: https://localhost:5001/swagger
@@ -439,14 +453,21 @@ docker run -d \
 - [x] Admin order management (status transitions, detail view)
 - [x] Admin user management (customer list, search)
 - [x] Mock/real API toggle (zero-code switch via env var)
+- [x] Multi-language support (TR/EN/DE) with Accept-Language header pipeline, Redis cache keyed by language, cross-language full-text search
+
+### In Progress
+
+- [ ] **Translation architecture refactor** — migrating from TR-default hybrid model to fully language-agnostic all-in-translations-table model (prerequisite for global white-label deployments)
+- [ ] **Admin translation UI** — tab-based translation editor for products & categories
 
 ### Upcoming
 
+- [ ] Order & Checkout flow (M5)
 - [ ] Real payment provider integration (Iyzico / Stripe)
 - [ ] Email confirmation flow
 - [ ] Integration tests
 - [ ] Docker Compose for full-stack local development
-- [ ] CI/CD pipeline (GitHub Actions)
+- [ ] CI/CD pipeline — Azure DevOps (M7)
 - [ ] Azure Container Apps deployment
 - [ ] Azure Key Vault for secrets management
 

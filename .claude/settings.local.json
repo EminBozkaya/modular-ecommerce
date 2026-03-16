@@ -7,7 +7,16 @@
       "Bash(dotnet test ECommerce.sln --no-build)",
       "Bash(dotnet build ECommerce.sln)",
       "Bash(dotnet build ECommerce.sln --no-restore)",
-      "Bash(dotnet run --project src/ECommerce.API)"
+      "Bash(dotnet run --project src/ECommerce.API)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(PGPASSWORD=postgres psql -h localhost -p 5433 -U postgres -d EbrarKuruyemisDb -c \"SELECT COUNT\\(*\\) FROM \"\"ProductTranslations\"\"; SELECT COUNT\\(*\\) FROM \"\"CategoryTranslations\"\";\")",
+      "Bash(docker ps:*)",
+      "Bash(docker exec:*)",
+      "Bash(/dev/null echo:*)",
+      "Bash(mv /Users/wingman/.claire/projects/-Users-wingman-Projects-EbrarKuruyemis/memory/project_milestone_status.md /Users/wingman/.claude/projects/-Users-wingman-Projects-EbrarKuruyemis/memory/project_milestone_status.md)",
+      "Bash(rmdir /Users/wingman/.claire/projects/-Users-wingman-Projects-EbrarKuruyemis)",
+      "Bash(rmdir /Users/wingman/.claire/projects)",
+      "Bash(rmdir /Users/wingman/.claire)"
     ]
   }
 }

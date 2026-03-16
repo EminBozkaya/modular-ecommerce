@@ -18,6 +18,9 @@ public class Product : BaseAuditableEntity
     public Guid UnitId { get; private set; }
     public Unit? Unit { get; private set; }
 
+    private readonly List<ProductTranslation> _translations = [];
+    public IReadOnlyCollection<ProductTranslation> Translations => _translations.AsReadOnly();
+
     private Product() { }
 
     public static Product Create(string name, string? description, string? imageUrl, Money price, StockQuantity stock, Guid categoryId, Guid unitId, bool isActive = true)
@@ -59,6 +62,19 @@ public class Product : BaseAuditableEntity
     public void DecreaseStock(decimal amount)
     {
         Stock = Stock.Decrease(amount);
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void UpsertTranslation(string languageCode, string name, string? description)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(languageCode);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        var lang = languageCode.ToLowerInvariant();
+        var existing = _translations.FirstOrDefault(t => t.LanguageCode == lang);
+        if (existing is not null)
+            existing.Update(name, description);
+        else
+            _translations.Add(ProductTranslation.Create(Id, lang, name, description));
         UpdatedAt = DateTime.UtcNow;
     }
 

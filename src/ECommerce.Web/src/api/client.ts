@@ -5,6 +5,14 @@ export const apiClient = axios.create({
     withCredentials: true,
 });
 
+// Send the user's selected language with every request so the backend
+// returns translated product/category names via Accept-Language.
+apiClient.interceptors.request.use((config) => {
+    const lang = localStorage.getItem('language') ?? 'tr';
+    config.headers['Accept-Language'] = lang;
+    return config;
+});
+
 apiClient.interceptors.response.use(
     (response) => response,
     async (error) => {
