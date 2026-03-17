@@ -18,13 +18,17 @@ import {
     Palette,
     SlidersHorizontal,
     Navigation,
-    Flag,
+    PanelBottom,
+    LayoutGrid,
     MonitorCog,
     Store,
     Search,
+    Layers,
+    Megaphone,
 } from 'lucide-react';
 import React, { useState, useEffect, useMemo } from 'react';
 import { LanguageToggle } from '@/components/shared/LanguageToggle';
+import { ThemeToggle } from '@/components/shared/ThemeToggle';
 import { UserMenu } from '@/components/layouts/header/UserMenu';
 import { useStoreSettings } from '@/context/StoreSettingsContext';
 
@@ -65,10 +69,13 @@ const settingsItems: SettingsItem[] = [
         icon: Paintbrush,
         items: [
             { to: '/admin/settings/design/logo', label: 'Marka & Logo', icon: Image },
-            { to: '/admin/settings/design/colors', label: 'Renk Paleti', icon: Palette },
+            { to: '/admin/settings/design/background', label: 'Arka Plan', icon: Layers },
+            { to: '/admin/settings/design/banner', label: 'Kayan Yazı', icon: Megaphone },
+            { to: '/admin/settings/design/colors', label: 'Renk & Font', icon: Palette },
             { to: '/admin/settings/design/hero', label: 'Hero Carousel', icon: SlidersHorizontal },
             { to: '/admin/settings/design/nav', label: 'Navigasyon', icon: Navigation },
-            { to: '/admin/settings/design/banners', label: 'Bannerlar', icon: Flag },
+            { to: '/admin/settings/design/banners', label: 'Vitrin Yönetimi', icon: LayoutGrid },
+            { to: '/admin/settings/design/footer', label: 'Altbilgi', icon: PanelBottom },
         ],
     },
 ];
@@ -191,7 +198,7 @@ function SidebarSubAccordion({
             {/* Açılır panel */}
             <div
                 className="overflow-hidden transition-all duration-200"
-                style={{ maxHeight: open ? `${item.items.length * 44}px` : '0px' }}
+                style={{ maxHeight: open ? `${item.items.length * 46}px` : '0px' }}
             >
                 <div className="mt-0.5 flex flex-col gap-0.5">
                     {item.items.map((child) => (
@@ -343,7 +350,7 @@ export function AdminLayout() {
     }, [searchQuery]);
 
     return (
-        <div className="h-screen flex overflow-hidden" style={{ background: '#f4f6f8' }}>
+        <div className="h-screen flex overflow-hidden bg-background">
             {/* ── Sidebar ── */}
             <aside
                 className={`${isCollapsed ? 'w-20' : 'w-64'} flex-shrink-0 flex flex-col shadow-xl transition-all duration-300 ease-in-out relative`}
@@ -352,7 +359,7 @@ export function AdminLayout() {
                 {/* Toggle Button */}
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="absolute -right-3 top-20 bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors z-50"
+                    className="absolute -right-3 top-20 bg-card rounded-full p-1 shadow-md hover:bg-accent transition-colors z-50"
                     style={{ color: settings.primaryColor, border: '1px solid #e5e7eb' }}
                 >
                     {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
@@ -483,8 +490,8 @@ export function AdminLayout() {
             {/* ── Main Content ── */}
             <main className="flex-1 flex flex-col overflow-hidden">
                 <header
-                    className="h-16 bg-white px-6 flex items-center justify-between flex-shrink-0"
-                    style={{ borderBottom: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
+                    className="h-16 bg-card px-6 flex items-center justify-between flex-shrink-0 border-b border-border"
+                    style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
                 >
                     <div className="text-base sm:text-lg font-semibold" style={{ color: settings.primaryColor }}>
                         Yönetim
@@ -498,7 +505,7 @@ export function AdminLayout() {
                         >
                             <Link
                                 to="/"
-                                className="flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gray-50 text-muted-foreground transition-all duration-300 shadow-sm border border-transparent outline-none group-hover:text-[var(--primary)] group-hover:bg-slate-100 group-hover:border-slate-200"
+                                className="flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-accent text-muted-foreground transition-all duration-300 shadow-sm border border-transparent outline-none group-hover:text-[var(--primary)] group-hover:bg-accent group-hover:border-border"
                                 title="Mağazaya Dön"
                             >
                                 <Store className="w-[18px] h-[18px] sm:w-[22px] sm:h-[22px] transition-transform duration-300 group-hover:scale-110" />
@@ -508,11 +515,15 @@ export function AdminLayout() {
                             </span>
                         </div>
                         
-                        <div className="w-px h-6 bg-gray-200 hidden sm:block"></div>
-                        
+                        <div className="w-px h-6 bg-border hidden sm:block"></div>
+
+                        <ThemeToggle />
+
+                        <div className="w-px h-6 bg-border hidden sm:block"></div>
+
                         <LanguageToggle />
                         
-                        <div className="border-l border-gray-200 pl-3 sm:pl-4 flex items-center">
+                        <div className="border-l border-border pl-3 sm:pl-4 flex items-center">
                             <UserMenu />
                         </div>
                     </div>

@@ -32,11 +32,11 @@ export const BasketItemRow = ({ item }: BasketItemRowProps) => {
     return (
         <div className="flex items-center gap-4 py-4 px-4 border-b last:border-b-0">
             {/* Image */}
-            <div className="h-16 w-16 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
+            <div className="h-16 w-16 flex-shrink-0 bg-accent rounded-md overflow-hidden">
                 {item.imageUrl ? (
                     <img src={item.imageUrl} alt={item.productName} className="h-full w-full object-cover" />
                 ) : (
-                    <div className="h-full w-full flex items-center justify-center text-gray-400 text-xs text-center">
+                    <div className="h-full w-full flex items-center justify-center text-muted-foreground text-xs text-center">
                         {t('item.noImage')}
                     </div>
                 )}
@@ -44,8 +44,8 @@ export const BasketItemRow = ({ item }: BasketItemRowProps) => {
 
             {/* Name + unit label + quantity selector */}
             <div className="flex-1 min-w-0 space-y-1.5">
-                <h4 className="text-sm font-medium text-gray-900 truncate">{item.productName}</h4>
-                <span className="inline-block text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                <h4 className="text-sm font-medium text-foreground truncate">{item.productName}</h4>
+                <span className="inline-block text-xs text-muted-foreground bg-accent px-2 py-0.5 rounded-full">
                     {item.unitName === 'adet' ? t('..common.unit.adet', { defaultValue: 'adet' }) : unitConfig.displayName}
                 </span>
                 <div>
@@ -70,10 +70,10 @@ export const BasketItemRow = ({ item }: BasketItemRowProps) => {
 
             {/* Price column */}
             <div className="text-right flex-shrink-0 space-y-1">
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-muted-foreground">
                     {formatPrice(item.unitPriceSnapshot, item.currency)} / {unitName}
                 </p>
-                <p className="text-sm font-bold text-gray-900">
+                <p className="text-sm font-bold text-foreground">
                     {formatPrice(item.unitPriceSnapshot * item.quantity, item.currency)}
                 </p>
             </div>

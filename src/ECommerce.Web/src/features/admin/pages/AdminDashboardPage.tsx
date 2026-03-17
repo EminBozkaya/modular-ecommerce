@@ -35,7 +35,7 @@ export default function AdminDashboardPage() {
                 <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>Kontrol Paneli</h1>
 
                 {/* Period Selector */}
-                <div className="grid grid-cols-2 gap-1 p-1 bg-gray-100/80 rounded-xl w-full sm:w-fit sm:flex sm:items-center border border-gray-200/50 shadow-inner">
+                <div className="grid grid-cols-2 gap-1 p-1 bg-accent rounded-xl w-full sm:w-fit sm:flex sm:items-center border border-border shadow-inner">
                     {periodOptions.map((opt) => {
                         const isActive = period === opt.value;
                         return (
@@ -45,8 +45,8 @@ export default function AdminDashboardPage() {
                                 className={`
                                     relative px-3 sm:px-5 py-2 text-sm font-medium rounded-lg transition-all duration-300 w-full sm:w-auto
                                     ${isActive
-                                        ? 'bg-white text-[var(--brand-primary)] shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-                                        : 'text-gray-500 hover:text-gray-800 hover:bg-gray-200/50'}
+                                        ? 'bg-background text-[var(--brand-primary)] shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+                                        : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'}
                                 `}
                             >
                                 {opt.label}
@@ -92,11 +92,11 @@ export default function AdminDashboardPage() {
             {/* Revenue Chart */}
             <section className="mb-8">
                 {revenue.isLoading ? (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex justify-center py-12">
+                    <div className="bg-card rounded-xl shadow-sm border border-border p-5 flex justify-center py-12">
                         <LoadingSpinner />
                     </div>
                 ) : revenue.isError ? (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                    <div className="bg-card rounded-xl shadow-sm border border-border p-5">
                         <p className="text-red-600 text-sm">Gelir grafiği yüklenemedi.</p>
                     </div>
                 ) : revenue.data ? (
@@ -107,8 +107,8 @@ export default function AdminDashboardPage() {
             {/* Recent Orders + Low Stock */}
             <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Recent Orders */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-                    <h3 className="text-base font-semibold text-gray-900 mb-4">Son Siparişler</h3>
+                <div className="bg-card rounded-xl shadow-sm border border-border p-5">
+                    <h3 className="text-base font-semibold text-foreground mb-4">Son Siparişler</h3>
                     {recentOrders.isLoading ? (
                         <div className="flex justify-center py-8"><LoadingSpinner /></div>
                     ) : recentOrders.isError ? (
@@ -117,26 +117,26 @@ export default function AdminDashboardPage() {
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
-                                    <tr className="border-b border-gray-100">
-                                        <th className="text-left py-2 px-2 text-gray-500 font-medium">Müşteri</th>
-                                        <th className="text-left py-2 px-2 text-gray-500 font-medium">Tarih</th>
-                                        <th className="text-right py-2 px-2 text-gray-500 font-medium">Tutar</th>
-                                        <th className="text-center py-2 px-2 text-gray-500 font-medium">Durum</th>
+                                    <tr className="border-b border-border">
+                                        <th className="text-left py-2 px-2 text-muted-foreground font-medium">Müşteri</th>
+                                        <th className="text-left py-2 px-2 text-muted-foreground font-medium">Tarih</th>
+                                        <th className="text-right py-2 px-2 text-muted-foreground font-medium">Tutar</th>
+                                        <th className="text-center py-2 px-2 text-muted-foreground font-medium">Durum</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {recentOrders.data.map((order) => (
                                         <tr
                                             key={order.id}
-                                            className="border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors"
+                                            className="border-b border-border hover:bg-accent cursor-pointer transition-colors"
                                             onClick={() => {
                                                 if (!window.getSelection()?.toString()) {
                                                     navigate(`/admin/orders/${order.id}`);
                                                 }
                                             }}
                                         >
-                                            <td className="py-2 px-2 text-gray-900">{order.shippingAddress.fullName}</td>
-                                            <td className="py-2 px-2 text-gray-600">{formatDate(order.createdAt)}</td>
+                                            <td className="py-2 px-2 text-foreground">{order.shippingAddress.fullName}</td>
+                                            <td className="py-2 px-2 text-muted-foreground">{formatDate(order.createdAt)}</td>
                                             <td className="py-2 px-2 text-right font-medium">{formatPrice(order.totalAmount, order.currency)}</td>
                                             <td className="py-2 px-2 text-center"><OrderStatusBadge status={order.status} /></td>
                                         </tr>
@@ -145,17 +145,17 @@ export default function AdminDashboardPage() {
                             </table>
                         </div>
                     ) : (
-                        <p className="text-sm text-gray-500">Henüz sipariş bulunmuyor.</p>
+                        <p className="text-sm text-muted-foreground">Henüz sipariş bulunmuyor.</p>
                     )}
                 </div>
 
                 {/* Low Stock */}
                 {lowStock.isLoading ? (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex justify-center py-12">
+                    <div className="bg-card rounded-xl shadow-sm border border-border p-5 flex justify-center py-12">
                         <LoadingSpinner />
                     </div>
                 ) : lowStock.isError ? (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                    <div className="bg-card rounded-xl shadow-sm border border-border p-5">
                         <p className="text-red-600 text-sm">Düşük stok verileri yüklenemedi.</p>
                     </div>
                 ) : lowStock.data ? (

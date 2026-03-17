@@ -13,10 +13,12 @@ import { useAddressActions, defaultAddressModalSettings, type AddressModalSettin
 import { exportAddressesToExcel, exportAddressesToPDF } from '../utils/addressExport';
 import excelIcon from '../../../assets/excel_download_icon.png';
 import pdfIcon from '../../../assets/pdf_download_icon.png';
+import { useThemeStore } from '@/store/themeStore';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 export default function AdminAddressesPage() {
+    const { resolved: theme } = useThemeStore();
     const gridRef = useRef<AgGridReact>(null);
     const [addresses, setAddresses] = useState<AdminAddress[]>([]);
     const [loading, setLoading] = useState(true);
@@ -98,7 +100,7 @@ export default function AdminAddressesPage() {
                             params.api.redrawRows({ rowNodes: [params.node] });
                         }, 0);
                     }}>
-                        {isExpanded ? <ChevronDown size={20} className="text-[var(--brand-primary)]" /> : <ChevronRight size={20} className="text-gray-400" />}
+                        {isExpanded ? <ChevronDown size={20} className="text-[var(--brand-primary)]" /> : <ChevronRight size={20} className="text-muted-foreground" />}
                     </div>
                 );
             }
@@ -135,7 +137,7 @@ export default function AdminAddressesPage() {
                     params.api.redrawRows({ rowNodes: [params.node] });
                 }, 0);
             }}>
-                <div className="flex justify-between items-start border-b border-gray-100 pb-2 mb-2">
+                <div className="flex justify-between items-start border-b border-border pb-2 mb-2">
                    <div className="font-bold text-[var(--brand-primary)] text-lg">{a.title}</div>
                    <div style={{ color: statusColor, fontWeight: '700', fontSize: '12px' }}>{status}</div>
                 </div>
@@ -159,7 +161,7 @@ export default function AdminAddressesPage() {
                     </div>
                 </div>
 
-                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+                <div className="flex gap-2 mt-3 pt-3 border-t border-border">
                     {!a.isDeleted ? (
                         <>
                             <button onClick={(e) => { e.stopPropagation(); handleEdit(a); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">DÜZENLE</button>
@@ -186,7 +188,7 @@ export default function AdminAddressesPage() {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>Adres Yönetimi</h1>
-                        <p className="text-gray-500 text-sm">Tüm kullanıcı adreslerini buradan yönetebilirsiniz.</p>
+                        <p className="text-muted-foreground text-sm">Tüm kullanıcı adreslerini buradan yönetebilirsiniz.</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-4 self-end sm:self-auto">
@@ -198,7 +200,7 @@ export default function AdminAddressesPage() {
                         <div className="w-14 h-14 flex items-center justify-center">
                             <img src={excelIcon} alt="Excel" className="h-full w-full object-contain" />
                         </div>
-                        <span className="hidden xs:inline text-[10px] font-bold text-gray-500 uppercase tracking-wider">Excel</span>
+                        <span className="hidden xs:inline text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Excel</span>
                     </button>
                     <button
                         onClick={() => exportAddressesToPDF(addresses).catch(() => alert('PDF hatası.'))}
@@ -208,7 +210,7 @@ export default function AdminAddressesPage() {
                         <div className="w-14 h-14 flex items-center justify-center">
                             <img src={pdfIcon} alt="PDF" className="h-10 w-10 object-contain" />
                         </div>
-                        <span className="hidden xs:inline text-[10px] font-bold text-gray-500 uppercase tracking-wider">PDF</span>
+                        <span className="hidden xs:inline text-[10px] font-bold text-muted-foreground uppercase tracking-wider">PDF</span>
                     </button>
                     <button
                         onClick={() => {
@@ -222,7 +224,7 @@ export default function AdminAddressesPage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm overflow-x-auto" style={{ border: '1px solid #e5e7eb' }}>
+            <div className="bg-card rounded-xl shadow-sm overflow-x-auto border border-border">
                 <div style={{ minWidth: 'fit-content' }}>
                     <AgGridReact<AdminAddress>
                         suppressHorizontalScroll={false}
@@ -271,8 +273,9 @@ export default function AdminAddressesPage() {
                         animateRows={true}
                         localeText={localeTextTr}
                         getRowStyle={(params) => {
-                            if (params.data?.isDeleted) return { backgroundColor: '#fef2f2' };
-                            if (params.data?.isActive === false) return { backgroundColor: '#f1f5f9' };
+                            const isDark = theme === 'dark';
+                            if (params.data?.isDeleted) return { backgroundColor: isDark ? 'rgba(239,68,68,0.15)' : '#fef2f2' };
+                            if (params.data?.isActive === false) return { backgroundColor: isDark ? 'rgba(100,116,139,0.15)' : '#f1f5f9' };
                             return undefined;
                         }}
                         defaultColDef={{
@@ -292,7 +295,7 @@ export default function AdminAddressesPage() {
                 </div>
             </div>
 
-            <div className="flex items-center justify-between mt-3 px-1 text-xs text-gray-500">
+            <div className="flex items-center justify-between mt-3 px-1 text-xs text-muted-foreground">
                 <span>Toplam kayıt: {addresses.length}</span>
                 <span>Gösterilen: {gridApi?.getDisplayedRowCount() ?? addresses.length} kayıt</span>
             </div>

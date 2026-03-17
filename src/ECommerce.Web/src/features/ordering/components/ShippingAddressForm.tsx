@@ -43,13 +43,13 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
     }, [watch, onChange]);
 
     const inputClass = (hasError: boolean) =>
-        `w-full rounded-lg border px-4 py-2.5 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-white focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+        `w-full rounded-xl border px-4 py-2.5 text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground focus:bg-card focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${
             hasError
-                ? 'border-red-400 bg-red-50/30 focus:border-red-500 focus:ring-red-500/20'
-                : 'border-gray-200 bg-gray-50 focus:border-[var(--color-ebrar-green)] focus:ring-[var(--color-ebrar-green)]/20'
+                ? 'border-red-400 bg-red-50/30 dark:bg-red-900/10 focus:border-red-500 focus:ring-red-500/20'
+                : 'border-border bg-gray-50/50 dark:bg-white/10 focus:border-[var(--brand-primary)] focus:ring-[var(--brand-primary)]/10'
         }`;
 
-    const labelClass = 'block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1.5';
+    const labelClass = 'block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5 ml-1';
 
     const fields = (
         <div className="space-y-4">
@@ -143,12 +143,12 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
     }
 
     return (
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-3 mb-5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-ebrar-green)] text-white text-xs font-bold shrink-0">
+        <div className="rounded-3xl border border-border bg-card p-6 shadow-xl shadow-black/5">
+            <div className="flex items-center gap-3 mb-6">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shrink-0 shadow-lg shadow-black/5">
                     1
                 </div>
-                <h2 className="text-base font-semibold text-gray-900">{t('shipping.sectionTitle')}</h2>
+                <h2 className="text-base font-semibold text-foreground">{t('shipping.sectionTitle')}</h2>
             </div>
             {fields}
         </div>

@@ -73,8 +73,23 @@ public static class DependencyInjection
 
         services.AddScoped<PaymentProviderResolver>();
 
+        // Social Auth — IEnumerable<ISocialAuthProvider> pattern (same as payment providers)
+        services.AddHttpClient("GoogleSocialAuth").ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(30));
+        services.AddHttpClient("FacebookSocialAuth").ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(30));
+        services.AddHttpClient("XSocialAuth").ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(30));
+        // services.AddHttpClient("AppleSocialAuth").ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(30));
+        // services.AddHttpClient("InstagramSocialAuth").ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(30));
+
+        services.AddScoped<ECommerce.Domain.Identity.ISocialAuthProvider, ECommerce.Infrastructure.Identity.SocialAuth.Providers.GoogleSocialAuthProvider>();
+        services.AddScoped<ECommerce.Domain.Identity.ISocialAuthProvider, ECommerce.Infrastructure.Identity.SocialAuth.Providers.FacebookSocialAuthProvider>();
+        services.AddScoped<ECommerce.Domain.Identity.ISocialAuthProvider, ECommerce.Infrastructure.Identity.SocialAuth.Providers.XSocialAuthProvider>();
+        // services.AddScoped<ECommerce.Domain.Identity.ISocialAuthProvider, ECommerce.Infrastructure.Identity.SocialAuth.Providers.AppleSocialAuthProvider>();
+        // services.AddScoped<ECommerce.Domain.Identity.ISocialAuthProvider, ECommerce.Infrastructure.Identity.SocialAuth.Providers.InstagramSocialAuthProvider>();
+        services.AddScoped<ECommerce.Infrastructure.Identity.SocialAuth.SocialAuthProviderResolver>();
+
         // Background jobs
         services.AddHostedService<PaymentStartupValidator>();
+        services.AddHostedService<ECommerce.Infrastructure.Identity.SocialAuth.SocialAuthStartupValidator>();
         services.AddHostedService<PaymentExpirationJob>();
 
         return services;

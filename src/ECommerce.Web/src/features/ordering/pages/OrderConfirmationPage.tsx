@@ -49,7 +49,7 @@ export default function OrderConfirmationPage() {
             </div>
 
             {/* Order Details */}
-            <div className="rounded-lg border border-border bg-white p-6 space-y-6">
+            <div className="rounded-lg border border-border bg-card p-6 space-y-6">
                 <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold">{t('confirmation.detailTitle')}</h2>
                     <OrderStatusBadge status={order.status} />
@@ -92,13 +92,13 @@ export default function OrderConfirmationPage() {
             <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center">
                 <Link
                     to="/products"
-                    className="inline-flex items-center justify-center rounded-md border border-border px-6 py-2.5 text-sm font-medium text-foreground hover:bg-gray-50 transition-colors"
+                    className="inline-flex items-center justify-center rounded-2xl border border-border px-6 py-3.5 text-sm font-bold text-foreground hover:bg-accent transition-all active:scale-95"
                 >
                     {t('confirmation.continueShopping')}
                 </Link>
                 <Link
                     to="/orders"
-                    className="inline-flex items-center justify-center rounded-md bg-[var(--color-ebrar-green)] px-6 py-2.5 text-sm font-medium text-white hover:bg-[var(--color-ebrar-green-dark)] transition-colors"
+                    className="inline-flex items-center justify-center rounded-2xl bg-[var(--brand-primary)] px-6 py-3.5 text-sm font-bold text-white hover:bg-[var(--brand-primary-dark)] transition-all shadow-lg shadow-black/5 active:scale-95"
                 >
                     {t('confirmation.myOrders')}
                 </Link>

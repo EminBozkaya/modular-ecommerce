@@ -19,36 +19,36 @@ export function AdminUsersTable({ users, searchQuery }: AdminUsersTableProps) {
         : users;
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                     <thead>
-                        <tr className="bg-gray-50 border-b border-gray-100">
-                            <th className="text-left py-3 px-4 text-gray-500 font-medium">Ad Soyad</th>
-                            <th className="text-left py-3 px-4 text-gray-500 font-medium">E-posta</th>
-                            <th className="text-left py-3 px-4 text-gray-500 font-medium">Kayıt Tarihi</th>
-                            <th className="text-center py-3 px-4 text-gray-500 font-medium">E-posta Onayı</th>
+                        <tr className="bg-gray-50 dark:bg-white/5 border-b border-border">
+                            <th className="text-left py-3 px-4 text-muted-foreground font-medium">Ad Soyad</th>
+                            <th className="text-left py-3 px-4 text-muted-foreground font-medium">E-posta</th>
+                            <th className="text-left py-3 px-4 text-muted-foreground font-medium">Kayıt Tarihi</th>
+                            <th className="text-center py-3 px-4 text-muted-foreground font-medium">E-posta Onayı</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filtered.length === 0 ? (
                             <tr>
-                                <td colSpan={4} className="text-center py-8 text-gray-500">
+                                <td colSpan={4} className="text-center py-8 text-muted-foreground">
                                     {searchQuery.trim() ? 'Aramanızla eşleşen kullanıcı bulunamadı.' : 'Henüz müşteri bulunmuyor.'}
                                 </td>
                             </tr>
                         ) : (
                             filtered.map((user) => (
-                                <tr key={user.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                                    <td className="py-3 px-4 font-medium text-gray-900">{user.fullName}</td>
-                                    <td className="py-3 px-4 text-gray-600">{user.email}</td>
-                                    <td className="py-3 px-4 text-gray-600">{formatDate(user.createdAt)}</td>
+                                <tr key={user.id} className="border-b border-border hover:bg-accent transition-colors">
+                                    <td className="py-3 px-4 font-medium text-foreground">{user.fullName}</td>
+                                    <td className="py-3 px-4 text-muted-foreground">{user.email}</td>
+                                    <td className="py-3 px-4 text-muted-foreground">{formatDate(user.createdAt)}</td>
                                     <td className="py-3 px-4 text-center">
                                         <span
                                             className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
                                                 user.isEmailConfirmed
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-gray-100 text-gray-500'
+                                                    ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                                                    : 'bg-accent text-muted-foreground'
                                             }`}
                                         >
                                             {user.isEmailConfirmed ? 'Onaylı' : 'Onaysız'}
@@ -60,8 +60,8 @@ export function AdminUsersTable({ users, searchQuery }: AdminUsersTableProps) {
                     </tbody>
                 </table>
             </div>
-            <div className="px-4 py-3 border-t border-gray-100">
-                <span className="text-sm text-gray-500">
+            <div className="px-4 py-3 border-t border-border">
+                <span className="text-sm text-muted-foreground">
                     {filtered.length} müşteri gösteriliyor
                 </span>
             </div>

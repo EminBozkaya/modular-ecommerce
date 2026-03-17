@@ -1,0 +1,18 @@
+{
+  "drawer": {
+    "title": "Mon Panier",
+    "loadError": "Impossible de charger le panier.",
+    "empty": "Votre panier est vide",
+    "emptyDesc": "Vous n'avez pas encore ajouté de produits.",
+    "checkout": "Passer à la caisse"
+  },
+  "item": {
+    "noImage": "Pas d'image",
+    "removeAriaLabel": "Retirer du panier",
+    "remove": "Retirer"
+  },
+  "summary": {
+    "products": "Produits ({{count}})",
+    "total": "Total"
+  }
+}

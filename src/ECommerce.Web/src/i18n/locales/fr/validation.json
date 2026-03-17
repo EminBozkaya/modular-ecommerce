@@ -1,0 +1,11 @@
+{
+  "required": "Ce champ est obligatoire",
+  "email": "Saisissez un e-mail valide",
+  "minLength": "Minimum {{min}} caractères requis",
+  "maxLength": "Maximum {{max}} caractères autorisés",
+  "passwordMismatch": "Les mots de passe ne correspondent pas",
+  "passwordWeak": "Le mot de passe doit contenir au moins 1 majuscule et 1 chiffre",
+  "positiveNumber": "Saisissez un nombre positif",
+  "invalidPrice": "Saisissez un prix valide",
+  "minValue": "La valeur minimale est {{min}}"
+}

@@ -19,8 +19,8 @@ export function RevenueChart({ data }: RevenueChartProps) {
     const { primaryColor } = useStoreSettings();
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-            <h3 className="text-base font-semibold text-gray-900 mb-4">Gelir Grafiği (Son 30 Gün)</h3>
+        <div className="bg-card rounded-xl shadow-sm border border-border p-5">
+            <h3 className="text-base font-semibold text-foreground mb-4">Gelir Grafiği (Son 30 Gün)</h3>
             <div style={{ width: '100%', height: 300 }}>
                 <ResponsiveContainer>
                     <AreaChart data={data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>

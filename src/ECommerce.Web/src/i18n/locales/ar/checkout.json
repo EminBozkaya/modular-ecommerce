@@ -1,0 +1,56 @@
+{
+  "page": {
+    "title": "إتمام الطلب",
+    "subtitle": "أدخل بياناتك واختر طريقة الدفع.",
+    "emptyBasket": "السلة فارغة",
+    "emptyBasketDesc": "أضف منتجات إلى سلتك لإتمام الدفع.",
+    "continueShopping": "مواصلة التسوق",
+    "processing": "جارٍ المعالجة...",
+    "proceed": "المتابعة للدفع",
+    "terms": "بتأكيد طلبك فأنت توافق على",
+    "termsLink": "شروط الخدمة",
+    "termsEnd": ".",
+    "creatingOrder": "جارٍ إنشاء طلبك...",
+    "redirecting": "جارٍ التوجيه لصفحة الدفع..."
+  },
+  "shipping": {
+    "sectionTitle": "عنوان التوصيل",
+    "savedAddresses": "عناويني المحفوظة",
+    "loading": "جارٍ تحميل العناوين...",
+    "default": "الافتراضي",
+    "useNew": "استخدام عنوان آخر",
+    "fullName": "الاسم الكامل",
+    "fullNamePlaceholder": "محمد أحمد",
+    "address1": "العنوان",
+    "address1Placeholder": "الشارع، الحي، رقم المبنى",
+    "address2": "تفاصيل إضافية",
+    "address2Placeholder": "الطابق، الشقة (اختياري)",
+    "city": "المدينة",
+    "cityPlaceholder": "الرياض",
+    "postalCode": "الرمز البريدي",
+    "postalCodePlaceholder": "12345",
+    "country": "البلد",
+    "countryPlaceholder": "المملكة العربية السعودية"
+  },
+  "payment": {
+    "sectionTitle": "طريقة الدفع",
+    "loading": "جارٍ التحميل...",
+    "loadError": "تعذّر تحميل طرق الدفع.",
+    "notFound": "لا توجد طرق دفع",
+    "notFoundDesc": "لا توجد طرق دفع نشطة متاحة حالياً.",
+    "selectRequired": "اختر طريقة دفع للمتابعة."
+  },
+  "summary": {
+    "title": "ملخص الطلب",
+    "total": "الإجمالي"
+  },
+  "waiting": {
+    "titleTimeout": "جارٍ معالجة دفعتك",
+    "descTimeout": "قد يستغرق التأكيد وقتاً أطول. يمكنك المتابعة من طلباتك.",
+    "goToOrders": "الذهاب لطلباتي",
+    "titleError": "تعذّر الحصول على الحالة",
+    "descError": "تحقق من الحالة في طلباتك.",
+    "titleProcessing": "جارٍ التحقق من دفعتك...",
+    "descProcessing": "قد تستغرق هذه العملية بضع ثوانٍ."
+  }
+}

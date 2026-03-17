@@ -54,20 +54,272 @@ public class GetStoreSettingsHandler : IRequestHandler<GetStoreSettingsQuery, St
         ]
     );
 
+    private static readonly List<HomepageSectionDto> _defaultSections =
+        [
+            new HomepageSectionDto(
+                Id: "default-categories",
+                Title: "Ana Kategoriler",
+                ShowTitle: false,
+                Layout: "grid",
+                Columns: 3,
+                BackgroundColor: "transparent",
+                PaddingY: 48,
+                Order: 0,
+                Enabled: true,
+                Cards:
+                [
+                    new SectionCardDto(Id: "cat-1", ImageBase64: null, ImageUrl: "https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?w=400&h=300&fit=crop",
+                        Title: "KURU MEYVE", Subtitle: "", Description: "", TextPosition: "bottom-left", TextColor: "#FFFFFF",
+                        OverlayColor: "#000000", OverlayOpacity: 30, BadgeText: null, BadgeColor: null, BadgePosition: "top-left",
+                        LinkType: "url", LinkTarget: "/products?categoryId=4", ButtonText: null, ButtonVisible: false,
+                        AspectRatio: "landscape", ColSpan: 1, RowSpan: 1),
+                    new SectionCardDto(Id: "cat-2", ImageBase64: null, ImageUrl: "https://images.unsplash.com/photo-1608797178974-15b35a64ede9?w=400&h=300&fit=crop",
+                        Title: "KURUYEMİŞ", Subtitle: "", Description: "", TextPosition: "bottom-left", TextColor: "#FFFFFF",
+                        OverlayColor: "#000000", OverlayOpacity: 30, BadgeText: null, BadgeColor: null, BadgePosition: "top-left",
+                        LinkType: "url", LinkTarget: "/products?categoryId=1", ButtonText: null, ButtonVisible: false,
+                        AspectRatio: "landscape", ColSpan: 1, RowSpan: 1),
+                    new SectionCardDto(Id: "cat-3", ImageBase64: null, ImageUrl: "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=400&h=300&fit=crop",
+                        Title: "ATIŞTIYRMALIK & MİX", Subtitle: "", Description: "", TextPosition: "bottom-left", TextColor: "#FFFFFF",
+                        OverlayColor: "#000000", OverlayOpacity: 30, BadgeText: null, BadgeColor: null, BadgePosition: "top-left",
+                        LinkType: "url", LinkTarget: "/products?categoryId=5", ButtonText: null, ButtonVisible: false,
+                        AspectRatio: "landscape", ColSpan: 1, RowSpan: 1),
+                ]
+            ),
+            new HomepageSectionDto(
+                Id: "default-featured",
+                Title: "Öne Çıkan Ürünler",
+                ShowTitle: false,
+                Layout: "featured",
+                Columns: 3,
+                BackgroundColor: "transparent",
+                PaddingY: 32,
+                Order: 1,
+                Enabled: true,
+                Cards:
+                [
+                    new SectionCardDto(Id: "feat-1", ImageBase64: null, ImageUrl: "https://images.unsplash.com/photo-1590005354167-6da97870c757?w=400&h=500&fit=crop",
+                        Title: "HAFTANIN FIRSATI", Subtitle: "Türk Kayısısı & Çekirdekli Hurma", Description: "", TextPosition: "bottom-left", TextColor: "#FFFFFF",
+                        OverlayColor: "#000000", OverlayOpacity: 40, BadgeText: "İndirimli", BadgeColor: "#D4A853", BadgePosition: "top-left",
+                        LinkType: "url", LinkTarget: "/products", ButtonText: "ALIŞVERİŞ YAP", ButtonVisible: true,
+                        AspectRatio: "auto", ColSpan: 1, RowSpan: 1),
+                    new SectionCardDto(Id: "feat-2", ImageBase64: null, ImageUrl: "https://images.unsplash.com/photo-1574570173583-a65fc27484be?w=400&h=300&fit=crop",
+                        Title: "ÜYELİK KULÜBÜ", Subtitle: "Her ay kapınıza özel seçilmiş kuruyemiş paketi.", Description: "", TextPosition: "center", TextColor: "#FFFFFF",
+                        OverlayColor: "#000000", OverlayOpacity: 40, BadgeText: null, BadgeColor: null, BadgePosition: "top-left",
+                        LinkType: "url", LinkTarget: "/products", ButtonText: "KATIL", ButtonVisible: true,
+                        AspectRatio: "landscape", ColSpan: 1, RowSpan: 1),
+                    new SectionCardDto(Id: "feat-3", ImageBase64: null, ImageUrl: "https://images.unsplash.com/photo-1606567595334-d39972c85dfd?w=400&h=200&fit=crop",
+                        Title: "TOHUMLAR", Subtitle: "Çeşit Çeşit Tohumlar", Description: "", TextPosition: "top-left", TextColor: "#FFFFFF",
+                        OverlayColor: "#000000", OverlayOpacity: 35, BadgeText: null, BadgeColor: null, BadgePosition: "top-left",
+                        LinkType: "url", LinkTarget: "/products", ButtonText: "ALIŞVERİŞ YAP", ButtonVisible: true,
+                        AspectRatio: "landscape", ColSpan: 1, RowSpan: 1),
+                    new SectionCardDto(Id: "feat-4", ImageBase64: null, ImageUrl: "https://images.unsplash.com/photo-1513135065346-a098a63a71ee?w=400&h=200&fit=crop",
+                        Title: "HEDİYELER", Subtitle: "Hediye için ihtiyacınız olan her şey!", Description: "", TextPosition: "top-left", TextColor: "#FFFFFF",
+                        OverlayColor: "#000000", OverlayOpacity: 35, BadgeText: null, BadgeColor: null, BadgePosition: "top-left",
+                        LinkType: "url", LinkTarget: "/products", ButtonText: "ALIŞVERİŞ YAP", ButtonVisible: true,
+                        AspectRatio: "landscape", ColSpan: 1, RowSpan: 1),
+                ]
+            ),
+            new HomepageSectionDto(
+                Id: "default-satisfaction",
+                Title: "%100 MEMNUNİYET GARANTİSİ",
+                ShowTitle: true,
+                Layout: "banner",
+                Columns: 1,
+                BackgroundColor: "transparent",
+                PaddingY: 80,
+                Order: 2,
+                Enabled: true,
+                Cards:
+                [
+                    new SectionCardDto(Id: "banner-1", ImageBase64: null, ImageUrl: "https://images.unsplash.com/photo-1608797178974-15b35a64ede9?w=1920&h=600&fit=crop",
+                        Title: "%100 MEMNUNİYET GARANTİSİ", Subtitle: "", Description: "Müşterilerimize Badem, Ceviz, Fıstık ve Fındık dahil en taze toptan kuruyemişleri sunuyoruz. Kabuklu ya da kabuksuz, en kaliteli ürünler burada.",
+                        TextPosition: "center", TextColor: "#FFFFFF",
+                        OverlayColor: "#2C3E50", OverlayOpacity: 85, BadgeText: null, BadgeColor: null, BadgePosition: "top-left",
+                        LinkType: "url", LinkTarget: "/products", ButtonText: "DAHA FAZLA BİLGİ", ButtonVisible: true,
+                        AspectRatio: "auto", ColSpan: 1, RowSpan: 1),
+                ]
+            ),
+            new HomepageSectionDto(
+                Id: "default-news",
+                Title: "HABERLER & İPUÇLARI",
+                ShowTitle: true,
+                Layout: "grid",
+                Columns: 2,
+                BackgroundColor: "transparent",
+                PaddingY: 64,
+                Order: 3,
+                Enabled: true,
+                Cards:
+                [
+                    new SectionCardDto(Id: "news-1", ImageBase64: null, ImageUrl: "https://images.unsplash.com/photo-1590005354167-6da97870c757?w=200&h=200&fit=crop",
+                        Title: "ŞİMDİ İNDİRİMDE!", Subtitle: "", Description: "Kuru Kayısı & Çekirdekli Hurma'da özel indirim – Sınırlı süre! Premium kalite ürünlerimizi kaçırmayın...",
+                        TextPosition: "center", TextColor: "#333333",
+                        OverlayColor: "#000000", OverlayOpacity: 0, BadgeText: null, BadgeColor: null, BadgePosition: "top-left",
+                        LinkType: "none", LinkTarget: null, ButtonText: "DEVAMINI OKU", ButtonVisible: true,
+                        AspectRatio: "square", ColSpan: 1, RowSpan: 1),
+                    new SectionCardDto(Id: "news-2", ImageBase64: null, ImageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop",
+                        Title: "YENİ ŞUBE", Subtitle: "", Description: "Yeni şubemizi ziyaret edin! Daha geniş ürün yelpazesi ve kolay erişim ile hizmetinizdeyiz...",
+                        TextPosition: "center", TextColor: "#333333",
+                        OverlayColor: "#000000", OverlayOpacity: 0, BadgeText: null, BadgeColor: null, BadgePosition: "top-left",
+                        LinkType: "none", LinkTarget: null, ButtonText: "DEVAMINI OKU", ButtonVisible: true,
+                        AspectRatio: "square", ColSpan: 1, RowSpan: 1),
+                ]
+            ),
+            new HomepageSectionDto(
+                Id: "default-testimonials",
+                Title: "MÜŞTERİLERİMİZ NE DİYOR?",
+                ShowTitle: true,
+                Layout: "grid",
+                Columns: 3,
+                BackgroundColor: "transparent",
+                PaddingY: 64,
+                Order: 4,
+                Enabled: true,
+                Cards:
+                [
+                    new SectionCardDto(Id: "test-1", ImageBase64: null, ImageUrl: null,
+                        Title: "Ayşe Y.", Subtitle: "İstanbul", Description: "Harika ürünler. Zamanında teslim edildi. Hediye kutusunu çok beğendik! Teşekkürler!",
+                        TextPosition: "center", TextColor: "#333333",
+                        OverlayColor: "#000000", OverlayOpacity: 0, BadgeText: null, BadgeColor: null, BadgePosition: "top-left",
+                        LinkType: "none", LinkTarget: null, ButtonText: null, ButtonVisible: false,
+                        AspectRatio: "auto", ColSpan: 1, RowSpan: 1),
+                    new SectionCardDto(Id: "test-2", ImageBase64: null, ImageUrl: null,
+                        Title: "Mehmet K.", Subtitle: "Ankara", Description: "İlk kez sipariş verdim ve artık sürekli müşteriyim! Mango dilimleri muhteşem.",
+                        TextPosition: "center", TextColor: "#333333",
+                        OverlayColor: "#000000", OverlayOpacity: 0, BadgeText: null, BadgeColor: null, BadgePosition: "top-left",
+                        LinkType: "none", LinkTarget: null, ButtonText: null, ButtonVisible: false,
+                        AspectRatio: "auto", ColSpan: 1, RowSpan: 1),
+                    new SectionCardDto(Id: "test-3", ImageBase64: null, ImageUrl: null,
+                        Title: "Fatma C.", Subtitle: "İzmir", Description: "Yıl boyunca kabuklu kuruyemiş bulabilmek harika. Kuruyemişlerinizi çok seviyorum, TEŞEKKÜRLER!",
+                        TextPosition: "center", TextColor: "#333333",
+                        OverlayColor: "#000000", OverlayOpacity: 0, BadgeText: null, BadgeColor: null, BadgePosition: "top-left",
+                        LinkType: "none", LinkTarget: null, ButtonText: null, ButtonVisible: false,
+                        AspectRatio: "auto", ColSpan: 1, RowSpan: 1),
+                ]
+            ),
+        ];
+
+    private static readonly FooterSettingsDto _defaultFooter = new(
+        Columns:
+        [
+            new FooterColumnDto(
+                Id: "footer-col-1", Type: "links", Title: "HAKKIMIZDA",
+                Order: 0, Enabled: true,
+                Links:
+                [
+                    new FooterLinkDto("fl-1", "Referanslar", "#", 0),
+                    new FooterLinkDto("fl-2", "SSS", "#", 1),
+                    new FooterLinkDto("fl-3", "Müşteri Hizmetleri", "#", 2),
+                ],
+                Address: null, Phone: null, Email: null,
+                SocialLinks: null, FollowText: null,
+                ShowLogo: null, Description: null
+            ),
+            new FooterColumnDto(
+                Id: "footer-col-2", Type: "links", Title: "HABERLER & İPUÇLARI",
+                Order: 1, Enabled: true,
+                Links:
+                [
+                    new FooterLinkDto("fl-4", "Kuruyemiş Haberleri", "#", 0),
+                    new FooterLinkDto("fl-5", "Bilgi Köşesi", "#", 1),
+                    new FooterLinkDto("fl-6", "Tarifler", "#", 2),
+                ],
+                Address: null, Phone: null, Email: null,
+                SocialLinks: null, FollowText: null,
+                ShowLogo: null, Description: null
+            ),
+            new FooterColumnDto(
+                Id: "footer-col-3", Type: "contact", Title: "İLETİŞİM",
+                Order: 2, Enabled: true,
+                Links: null,
+                Address: "Atatürk Caddesi No: 42\nİstanbul, Türkiye",
+                Phone: "0212 555 00 00",
+                Email: null,
+                SocialLinks: null, FollowText: null,
+                ShowLogo: null, Description: null
+            ),
+            new FooterColumnDto(
+                Id: "footer-col-4", Type: "social", Title: "SOSYAL MEDYA",
+                Order: 3, Enabled: true,
+                Links: null,
+                Address: null, Phone: null, Email: null,
+                SocialLinks:
+                [
+                    new FooterSocialLinkDto("fsl-1", "facebook", "#"),
+                    new FooterSocialLinkDto("fsl-2", "twitter", "#"),
+                    new FooterSocialLinkDto("fsl-3", "instagram", "#"),
+                ],
+                FollowText: "Bizi takip edin:",
+                ShowLogo: null, Description: null
+            ),
+        ],
+        BackgroundColor: null,
+        TextColor: null,
+        CopyrightText: "Tüm hakları saklıdır.",
+        BottomBarAlignment: "between",
+        BottomLinks:
+        [
+            new FooterBottomLinkDto("fbl-1", "Kullanım Şartları", "#", 0),
+            new FooterBottomLinkDto("fbl-2", "Gizlilik Politikası", "#", 1),
+            new FooterBottomLinkDto("fbl-3", "Yasal Uyarı", "#", 2),
+        ]
+    );
+
     private static readonly StoreSettingsDto _defaults = new(
         ImageBase64: null,
         StoreName: "Mağazam",
         ShowStoreNameInHeader: true,
+        // area bg colors
         PrimaryColor: "#2C3E50",
-        NavbarActiveColor: "#ECF0F1",
+        HeaderBackgroundColor: "#2C3E50",
+        BannerBackgroundColor: "#243342",
+        BackgroundColor: "#F5F6F7",
+        AdminSidebarBackgroundColor: "#2C3E50",
+        AdminPageBackgroundColor: "#F4F6F8",
+        // banner
         FreeShippingBannerText: "Hızlı ve güvenli teslimat garantisiyle alışveriş yapın!",
         FreeShippingBannerVisible: false,
         FreeShippingBannerMarquee: false,
         FreeShippingBannerMarqueeSpeed: 5,
+        // pattern
         BackgroundPatternBase64: null,
         BackgroundPatternOpacity: 20,
-        BackgroundColor: "#F5F6F7",
-        HeroCarousel: _defaultCarousel
+        // text colors
+        NavbarActiveColor: "#ECF0F1",
+        NavbarMenuTextColor: "#ECF0F1",
+        StoreNameColor: "#FFFFFF",
+        AvatarTextColor: "#FFFFFF",
+        HeaderIconTextColor: "#ECF0F1",
+        BannerTextColor: "#FFFFFF",
+        PageTitleColor: "#1F2937",
+        ProductCardCategoryColor: "#6B7280",
+        ProductCardNameColor: "#111827",
+        ProductCardQuantityColor: "#6B7280",
+        ProductCardTotalColor: "#374151",
+        ProductCardPriceColor: "#2C3E50",
+        ProductCardButtonColor: "#2C3E50",
+        AdminSidebarTextColor: "#ECF0F1",
+        AdminPageTitleColor: "#2C3E50",
+        FooterTextColor: "#D1D5DB",
+        // fonts
+        StoreNameFont: "Arial, Helvetica, sans-serif",
+        AvatarTextFont: "Arial, Helvetica, sans-serif",
+        HeaderIconTextFont: "Arial, Helvetica, sans-serif",
+        NavbarMenuTextFont: "Arial, Helvetica, sans-serif",
+        BannerTextFont: "Arial, Helvetica, sans-serif",
+        PageTitleFont: "Arial, Helvetica, sans-serif",
+        ProductCardCategoryFont: "Arial, Helvetica, sans-serif",
+        ProductCardNameFont: "Arial, Helvetica, sans-serif",
+        ProductCardQuantityFont: "Arial, Helvetica, sans-serif",
+        ProductCardTotalFont: "Arial, Helvetica, sans-serif",
+        ProductCardPriceFont: "Arial, Helvetica, sans-serif",
+        ProductCardButtonFont: "Arial, Helvetica, sans-serif",
+        AdminSidebarTextFont: "Arial, Helvetica, sans-serif",
+        AdminPageTitleFont: "Arial, Helvetica, sans-serif",
+        FooterTextFont: "Arial, Helvetica, sans-serif",
+        HeroCarousel: _defaultCarousel,
+        HomepageSections: _defaultSections,
+        Footer: _defaultFooter
     );
 
     private readonly IStoreSettingsRepository _repo;
@@ -84,16 +336,57 @@ public class GetStoreSettingsHandler : IRequestHandler<GetStoreSettingsQuery, St
             ImageBase64: entity.ImageBase64,
             StoreName: data?.StoreName ?? _defaults.StoreName,
             ShowStoreNameInHeader: data?.ShowStoreNameInHeader ?? _defaults.ShowStoreNameInHeader,
+            // area bg colors
             PrimaryColor: data?.PrimaryColor ?? _defaults.PrimaryColor,
-            NavbarActiveColor: data?.NavbarActiveColor ?? _defaults.NavbarActiveColor,
+            HeaderBackgroundColor: data?.HeaderBackgroundColor ?? _defaults.HeaderBackgroundColor,
+            BannerBackgroundColor: data?.BannerBackgroundColor ?? _defaults.BannerBackgroundColor,
+            BackgroundColor: data?.BackgroundColor ?? _defaults.BackgroundColor,
+            AdminSidebarBackgroundColor: data?.AdminSidebarBackgroundColor ?? _defaults.AdminSidebarBackgroundColor,
+            AdminPageBackgroundColor: data?.AdminPageBackgroundColor ?? _defaults.AdminPageBackgroundColor,
+            // banner
             FreeShippingBannerText: data?.FreeShippingBannerText ?? _defaults.FreeShippingBannerText,
             FreeShippingBannerVisible: data?.FreeShippingBannerVisible ?? _defaults.FreeShippingBannerVisible,
             FreeShippingBannerMarquee: data?.FreeShippingBannerMarquee ?? _defaults.FreeShippingBannerMarquee,
             FreeShippingBannerMarqueeSpeed: data?.FreeShippingBannerMarqueeSpeed ?? _defaults.FreeShippingBannerMarqueeSpeed,
+            // pattern
             BackgroundPatternBase64: data?.BackgroundPatternBase64,
             BackgroundPatternOpacity: data?.BackgroundPatternOpacity ?? _defaults.BackgroundPatternOpacity,
-            BackgroundColor: data?.BackgroundColor ?? _defaults.BackgroundColor,
-            HeroCarousel: MapCarousel(data?.HeroCarousel)
+            // text colors
+            NavbarActiveColor: data?.NavbarActiveColor ?? _defaults.NavbarActiveColor,
+            NavbarMenuTextColor: data?.NavbarMenuTextColor ?? _defaults.NavbarMenuTextColor,
+            StoreNameColor: data?.StoreNameColor ?? _defaults.StoreNameColor,
+            AvatarTextColor: data?.AvatarTextColor ?? _defaults.AvatarTextColor,
+            HeaderIconTextColor: data?.HeaderIconTextColor ?? _defaults.HeaderIconTextColor,
+            BannerTextColor: data?.BannerTextColor ?? _defaults.BannerTextColor,
+            PageTitleColor: data?.PageTitleColor ?? _defaults.PageTitleColor,
+            ProductCardCategoryColor: data?.ProductCardCategoryColor ?? _defaults.ProductCardCategoryColor,
+            ProductCardNameColor: data?.ProductCardNameColor ?? _defaults.ProductCardNameColor,
+            ProductCardQuantityColor: data?.ProductCardQuantityColor ?? _defaults.ProductCardQuantityColor,
+            ProductCardTotalColor: data?.ProductCardTotalColor ?? _defaults.ProductCardTotalColor,
+            ProductCardPriceColor: data?.ProductCardPriceColor ?? _defaults.ProductCardPriceColor,
+            ProductCardButtonColor: data?.ProductCardButtonColor ?? _defaults.ProductCardButtonColor,
+            AdminSidebarTextColor: data?.AdminSidebarTextColor ?? _defaults.AdminSidebarTextColor,
+            AdminPageTitleColor: data?.AdminPageTitleColor ?? _defaults.AdminPageTitleColor,
+            FooterTextColor: data?.FooterTextColor ?? _defaults.FooterTextColor,
+            // fonts
+            StoreNameFont: data?.StoreNameFont ?? _defaults.StoreNameFont,
+            AvatarTextFont: data?.AvatarTextFont ?? _defaults.AvatarTextFont,
+            HeaderIconTextFont: data?.HeaderIconTextFont ?? _defaults.HeaderIconTextFont,
+            NavbarMenuTextFont: data?.NavbarMenuTextFont ?? _defaults.NavbarMenuTextFont,
+            BannerTextFont: data?.BannerTextFont ?? _defaults.BannerTextFont,
+            PageTitleFont: data?.PageTitleFont ?? _defaults.PageTitleFont,
+            ProductCardCategoryFont: data?.ProductCardCategoryFont ?? _defaults.ProductCardCategoryFont,
+            ProductCardNameFont: data?.ProductCardNameFont ?? _defaults.ProductCardNameFont,
+            ProductCardQuantityFont: data?.ProductCardQuantityFont ?? _defaults.ProductCardQuantityFont,
+            ProductCardTotalFont: data?.ProductCardTotalFont ?? _defaults.ProductCardTotalFont,
+            ProductCardPriceFont: data?.ProductCardPriceFont ?? _defaults.ProductCardPriceFont,
+            ProductCardButtonFont: data?.ProductCardButtonFont ?? _defaults.ProductCardButtonFont,
+            AdminSidebarTextFont: data?.AdminSidebarTextFont ?? _defaults.AdminSidebarTextFont,
+            AdminPageTitleFont: data?.AdminPageTitleFont ?? _defaults.AdminPageTitleFont,
+            FooterTextFont: data?.FooterTextFont ?? _defaults.FooterTextFont,
+            HeroCarousel: MapCarousel(data?.HeroCarousel),
+            HomepageSections: MapSections(data?.HomepageSections),
+            Footer: MapFooter(data?.Footer)
         );
     }
 
@@ -127,6 +420,89 @@ public class GetStoreSettingsHandler : IRequestHandler<GetStoreSettingsQuery, St
         );
     }
 
+    private List<HomepageSectionDto> MapSections(List<SectionData>? sections)
+    {
+        if (sections is null) return _defaultSections;
+
+        var mapped = sections.Select(sec => new HomepageSectionDto(
+            Id: sec.Id ?? Guid.NewGuid().ToString(),
+            Title: sec.Title ?? string.Empty,
+            ShowTitle: sec.ShowTitle ?? false,
+            Layout: sec.Layout ?? "grid",
+            Columns: sec.Columns ?? 3,
+            BackgroundColor: sec.BackgroundColor ?? "transparent",
+            PaddingY: sec.PaddingY ?? 48,
+            Order: sec.Order ?? 0,
+            Enabled: sec.Enabled ?? true,
+            Cards: sec.Cards?.Select(c => new SectionCardDto(
+                Id: c.Id ?? Guid.NewGuid().ToString(),
+                ImageBase64: c.ImageBase64,
+                ImageUrl: c.ImageUrl,
+                Title: c.Title ?? string.Empty,
+                Subtitle: c.Subtitle ?? string.Empty,
+                Description: c.Description ?? string.Empty,
+                TextPosition: c.TextPosition ?? "center",
+                TextColor: c.TextColor ?? "#FFFFFF",
+                OverlayColor: c.OverlayColor ?? "#000000",
+                OverlayOpacity: c.OverlayOpacity ?? 0,
+                BadgeText: c.BadgeText,
+                BadgeColor: c.BadgeColor,
+                BadgePosition: c.BadgePosition ?? "top-left",
+                LinkType: c.LinkType ?? "none",
+                LinkTarget: c.LinkTarget,
+                ButtonText: c.ButtonText,
+                ButtonVisible: c.ButtonVisible ?? false,
+                AspectRatio: c.AspectRatio ?? "landscape",
+                ColSpan: c.ColSpan ?? 1,
+                RowSpan: c.RowSpan ?? 1
+            )).ToList() ?? []
+        )).ToList() ?? _defaultSections;
+
+        return mapped;
+    }
+
+    private FooterSettingsDto MapFooter(FooterData? f)
+    {
+        if (f is null) return _defaultFooter;
+
+        return new FooterSettingsDto(
+            Columns: f.Columns?.Select(col => new FooterColumnDto(
+                Id: col.Id ?? Guid.NewGuid().ToString(),
+                Type: col.Type ?? "links",
+                Title: col.Title ?? string.Empty,
+                Order: col.Order ?? 0,
+                Enabled: col.Enabled ?? true,
+                Links: col.Links?.Select(l => new FooterLinkDto(
+                    Id: l.Id ?? Guid.NewGuid().ToString(),
+                    Label: l.Label ?? string.Empty,
+                    Url: l.Url ?? "#",
+                    Order: l.Order ?? 0
+                )).ToList(),
+                Address: col.Address,
+                Phone: col.Phone,
+                Email: col.Email,
+                SocialLinks: col.SocialLinks?.Select(sl => new FooterSocialLinkDto(
+                    Id: sl.Id ?? Guid.NewGuid().ToString(),
+                    Platform: sl.Platform ?? "instagram",
+                    Url: sl.Url ?? "#"
+                )).ToList(),
+                FollowText: col.FollowText,
+                ShowLogo: col.ShowLogo,
+                Description: col.Description
+            )).ToList() ?? _defaultFooter.Columns,
+            BackgroundColor: f.BackgroundColor,
+            TextColor: f.TextColor,
+            CopyrightText: f.CopyrightText ?? _defaultFooter.CopyrightText,
+            BottomBarAlignment: f.BottomBarAlignment ?? _defaultFooter.BottomBarAlignment,
+            BottomLinks: f.BottomLinks?.Select(bl => new FooterBottomLinkDto(
+                Id: bl.Id ?? Guid.NewGuid().ToString(),
+                Label: bl.Label ?? string.Empty,
+                Url: bl.Url ?? "#",
+                Order: bl.Order ?? 0
+            )).ToList() ?? _defaultFooter.BottomLinks
+        );
+    }
+
     private static SettingsData? TryDeserialize(string json)
     {
         try { return JsonSerializer.Deserialize<SettingsData>(json, _jsonOptions); }
@@ -138,16 +514,58 @@ public class GetStoreSettingsHandler : IRequestHandler<GetStoreSettingsQuery, St
     private record SettingsData(
         string? StoreName,
         bool? ShowStoreNameInHeader,
+        // area bg colors
         string? PrimaryColor,
-        string? NavbarActiveColor,
+        string? HeaderBackgroundColor,
+        string? BannerBackgroundColor,
+        string? BackgroundColor,
+        string? AdminSidebarBackgroundColor,
+        string? AdminPageBackgroundColor,
+        // banner
         string? FreeShippingBannerText,
         bool? FreeShippingBannerVisible,
         bool? FreeShippingBannerMarquee,
         int? FreeShippingBannerMarqueeSpeed,
+        // pattern
         string? BackgroundPatternBase64,
         int? BackgroundPatternOpacity,
-        string? BackgroundColor,
-        CarouselData? HeroCarousel
+        // text colors
+        string? NavbarActiveColor,
+        string? NavbarMenuTextColor,
+        string? StoreNameColor,
+        string? AvatarTextColor,
+        string? HeaderIconTextColor,
+        string? BannerTextColor,
+        string? PageTitleColor,
+        string? ProductCardCategoryColor,
+        string? ProductCardNameColor,
+        string? ProductCardQuantityColor,
+        string? ProductCardTotalColor,
+        string? ProductCardPriceColor,
+        string? ProductCardButtonColor,
+        string? AdminSidebarTextColor,
+        string? AdminPageTitleColor,
+        string? FooterTextColor,
+        // fonts
+        string? StoreNameFont,
+        string? AvatarTextFont,
+        string? HeaderIconTextFont,
+        string? NavbarMenuTextFont,
+        string? BannerTextFont,
+        string? PageTitleFont,
+        string? ProductCardCategoryFont,
+        string? ProductCardNameFont,
+        string? ProductCardQuantityFont,
+        string? ProductCardTotalFont,
+        string? ProductCardPriceFont,
+        string? ProductCardButtonFont,
+        string? AdminSidebarTextFont,
+        string? AdminPageTitleFont,
+        string? FooterTextFont,
+        // rich content
+        CarouselData? HeroCarousel,
+        List<SectionData>? HomepageSections,
+        FooterData? Footer
     );
 
     private record CarouselData(
@@ -175,5 +593,86 @@ public class GetStoreSettingsHandler : IRequestHandler<GetStoreSettingsQuery, St
         string? ButtonText,
         string? ButtonLink,
         bool? ButtonVisible
+    );
+
+    private record SectionData(
+        string? Id,
+        string? Title,
+        bool? ShowTitle,
+        string? Layout,
+        int? Columns,
+        string? BackgroundColor,
+        int? PaddingY,
+        int? Order,
+        bool? Enabled,
+        List<CardData>? Cards
+    );
+
+    private record CardData(
+        string? Id,
+        string? ImageBase64,
+        string? ImageUrl,
+        string? Title,
+        string? Subtitle,
+        string? Description,
+        string? TextPosition,
+        string? TextColor,
+        string? OverlayColor,
+        int? OverlayOpacity,
+        string? BadgeText,
+        string? BadgeColor,
+        string? BadgePosition,
+        string? LinkType,
+        string? LinkTarget,
+        string? ButtonText,
+        bool? ButtonVisible,
+        string? AspectRatio,
+        int? ColSpan,
+        int? RowSpan
+    );
+
+    private record FooterData(
+        List<FooterColumnData>? Columns,
+        string? BackgroundColor,
+        string? TextColor,
+        string? CopyrightText,
+        string? BottomBarAlignment,
+        List<FooterBottomLinkData>? BottomLinks
+    );
+
+    private record FooterColumnData(
+        string? Id,
+        string? Type,
+        string? Title,
+        int? Order,
+        bool? Enabled,
+        List<FooterLinkData>? Links,
+        string? Address,
+        string? Phone,
+        string? Email,
+        List<FooterSocialLinkData>? SocialLinks,
+        string? FollowText,
+        bool? ShowLogo,
+        string? Description
+    );
+
+    private record FooterLinkData(
+        string? Id,
+        string? Label,
+        string? Url,
+        int? Order
+    );
+
+    private record FooterSocialLinkData(
+        string? Id,
+        string? Platform,
+        string? Url
+    );
+
+    private record FooterBottomLinkData(
+        string? Id,
+        string? Label,
+        string? Url,
+        int? Order
     );
 }

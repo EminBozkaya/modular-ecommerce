@@ -1,19 +1,14 @@
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import {
-    Phone,
-    Clock,
-    MapPin,
-    Facebook,
-    Twitter,
-    Instagram,
-} from 'lucide-react';
+import { Outlet, useLocation } from 'react-router-dom';
 import { AppHeader } from './header/AppHeader';
 import { useStoreSettings } from '@/context/StoreSettingsContext';
+import { Footer } from '@/features/catalog/components/Footer';
+import { useThemeStore } from '@/store/themeStore';
 
 export function MainLayout() {
     const location = useLocation();
     const isAuthPage = ['/login', '/register'].includes(location.pathname);
     const settings = useStoreSettings();
+    const { resolved } = useThemeStore();
 
     const bgPatternStyle = settings.backgroundPatternBase64
         ? {
@@ -22,10 +17,13 @@ export function MainLayout() {
           }
         : undefined;
 
+    // In dark mode, let CSS variables handle the background (don't override with light admin color)
+    const bgStyle = resolved === 'dark' ? undefined : { backgroundColor: settings.backgroundColor };
+
     return (
         <div
-            className="relative min-h-screen flex flex-col"
-            style={{ backgroundColor: settings.backgroundColor }}
+            className="relative min-h-screen flex flex-col bg-background"
+            style={bgStyle}
         >
             {/* Background pattern layer — opacity only affects the image */}
             {bgPatternStyle && (
@@ -64,84 +62,7 @@ export function MainLayout() {
             </main>
 
             {/* Footer */}
-            {!isAuthPage && (
-                <footer
-                    className="relative z-10 text-white"
-                    style={{ backgroundColor: settings.primaryColor }}
-                >
-                    <div className="container mx-auto px-4 py-12">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 max-w-5xl mx-auto text-center lg:text-left">
-                            <div>
-                                <h3 className="font-semibold mb-4 text-white">HAKKIMIZDA</h3>
-                                <ul className="space-y-2 text-sm text-white/80">
-                                    <li><a href="#" className="hover:text-white transition-colors">Referanslar</a></li>
-                                    <li><a href="#" className="hover:text-white transition-colors">SSS</a></li>
-                                    <li><a href="#" className="hover:text-white transition-colors">Musteri Hizmetleri</a></li>
-                                </ul>
-                            </div>
-
-                            <div>
-                                <h3 className="font-semibold mb-4 text-white">HABERLER &amp; IPUCLARI</h3>
-                                <ul className="space-y-2 text-sm text-white/80">
-                                    <li><a href="#" className="hover:text-white transition-colors">Kuruyemis Haberleri</a></li>
-                                    <li><a href="#" className="hover:text-white transition-colors">Bilgi Kosesi</a></li>
-                                    <li><a href="#" className="hover:text-white transition-colors">Tarifler</a></li>
-                                </ul>
-                            </div>
-
-                            <div>
-                                <h3 className="font-semibold mb-4 text-white">ILETISIM</h3>
-                                <ul className="space-y-2 text-sm text-white/80">
-                                    <li><a href="#" className="hover:text-white transition-colors">Siparislerim</a></li>
-                                    <li>
-                                        <Link to="/products" className="hover:text-white transition-colors">
-                                            Tum Urunler
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div>
-                                <ul className="space-y-3 text-sm text-white/80">
-                                    <li className="flex items-center gap-2 justify-center lg:justify-start">
-                                        <Phone className="h-4 w-4" />
-                                        <span>0212 555 00 00</span>
-                                    </li>
-                                    <li className="flex items-center gap-2 justify-center lg:justify-start">
-                                        <Clock className="h-4 w-4" />
-                                        <span>09:00 - 18:00 Pts - Cum</span>
-                                    </li>
-                                    <li className="flex items-start gap-2 justify-center lg:justify-start">
-                                        <MapPin className="h-4 w-4 mt-0.5" />
-                                        <span>Ataturk Caddesi No: 42<br />Istanbul, Turkiye</span>
-                                    </li>
-                                </ul>
-                                <div className="flex items-center gap-3 mt-4 justify-center lg:justify-start">
-                                    <span className="text-sm text-white/80">Bizi takip edin:</span>
-                                    <a href="#" className="hover:text-white/80 transition-colors"><Facebook className="h-5 w-5" /></a>
-                                    <a href="#" className="hover:text-white/80 transition-colors"><Twitter className="h-5 w-5" /></a>
-                                    <a href="#" className="hover:text-white/80 transition-colors"><Instagram className="h-5 w-5" /></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="border-t border-white/20">
-                        <div className="container mx-auto px-4 py-4">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/70">
-                                <p>&copy; 2026 {settings.storeName}. Tum haklari saklidir.</p>
-                                <div className="flex items-center gap-4">
-                                    <a href="#" className="hover:text-white transition-colors">Kullanim Sartlari</a>
-                                    <span>|</span>
-                                    <a href="#" className="hover:text-white transition-colors">Gizlilik Politikasi</a>
-                                    <span>|</span>
-                                    <a href="#" className="hover:text-white transition-colors">Yasal Uyari</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
-            )}
+            {!isAuthPage && <Footer />}
 
         </div>
     );

@@ -14,7 +14,7 @@ export function CategoryFilter({ selectedCategoryId, onSelect }: CategoryFilterP
         return (
             <div className="flex items-center py-2 mb-6">
                 <LoadingSpinner size="sm" />
-                <span className="ml-2 text-sm text-gray-500 font-medium font-serif">Kategoriler yükleniyor...</span>
+                <span className="ml-2 text-sm text-muted-foreground font-medium font-serif">Kategoriler yükleniyor...</span>
             </div>
         );
     }
@@ -37,8 +37,8 @@ export function CategoryFilter({ selectedCategoryId, onSelect }: CategoryFilterP
                 aria-selected={selectedCategoryId === undefined}
                 onClick={() => onSelect(undefined)}
                 className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 shadow-sm border ${selectedCategoryId === undefined
-                    ? 'bg-[var(--color-ebrar-green)] text-white border-[var(--color-ebrar-green-dark)]'
-                    : 'bg-white text-gray-700 border-gray-200 hover:border-[var(--color-ebrar-green)] hover:text-[var(--color-ebrar-green)]'
+                    ? 'bg-[var(--brand-primary)] text-white border-[var(--brand-primary-dark)]'
+                    : 'bg-card text-foreground border-border hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)]'
                     }`}
             >
                 Tümü
@@ -50,8 +50,8 @@ export function CategoryFilter({ selectedCategoryId, onSelect }: CategoryFilterP
                     aria-selected={selectedCategoryId === category.id}
                     onClick={() => onSelect(category.id)}
                     className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 shadow-sm border ${selectedCategoryId === category.id
-                        ? 'bg-[var(--color-ebrar-green)] text-white border-[var(--color-ebrar-green-dark)]'
-                        : 'bg-white text-gray-700 border-gray-200 hover:border-[var(--color-ebrar-green)] hover:text-[var(--color-ebrar-green)]'
+                        ? 'bg-[var(--brand-primary)] text-white border-[var(--brand-primary-dark)]'
+                        : 'bg-card text-foreground border-border hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)]'
                         }`}
                 >
                     {category.name}

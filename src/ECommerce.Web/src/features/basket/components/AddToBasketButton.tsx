@@ -13,7 +13,7 @@ export const AddToBasketButton = ({ productId, disabled }: AddToBasketButtonProp
         return (
             <button
                 disabled
-                className="w-full py-2.5 px-4 text-sm font-bold bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed border-b-2 border-gray-200"
+                className="w-full py-2.5 px-4 text-sm font-bold bg-accent text-muted-foreground rounded-lg cursor-not-allowed border-b-2 border-border"
             >
                 Stokta Yok
             </button>

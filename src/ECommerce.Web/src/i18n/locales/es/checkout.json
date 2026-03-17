@@ -1,0 +1,56 @@
+{
+  "page": {
+    "title": "Finalizar Pedido",
+    "subtitle": "Completa tus datos y selecciona un método de pago.",
+    "emptyBasket": "Tu cesta está vacía",
+    "emptyBasketDesc": "Añade productos a tu cesta para proceder al pago.",
+    "continueShopping": "Seguir comprando",
+    "processing": "Procesando...",
+    "proceed": "Proceder al pago",
+    "terms": "Al confirmar tu pedido aceptas nuestros",
+    "termsLink": "términos de servicio",
+    "termsEnd": ".",
+    "creatingOrder": "Creando tu pedido...",
+    "redirecting": "Redirigiendo a la página de pago..."
+  },
+  "shipping": {
+    "sectionTitle": "Dirección de entrega",
+    "savedAddresses": "Mis direcciones guardadas",
+    "loading": "Cargando direcciones...",
+    "default": "Predeterminada",
+    "useNew": "Usar otra dirección",
+    "fullName": "Nombre completo",
+    "fullNamePlaceholder": "Juan García",
+    "address1": "Dirección",
+    "address1Placeholder": "Calle, barrio, número",
+    "address2": "Complemento",
+    "address2Placeholder": "Piso, apartamento (opcional)",
+    "city": "Ciudad",
+    "cityPlaceholder": "Madrid",
+    "postalCode": "Código postal",
+    "postalCodePlaceholder": "28001",
+    "country": "País",
+    "countryPlaceholder": "España"
+  },
+  "payment": {
+    "sectionTitle": "Método de pago",
+    "loading": "Cargando métodos de pago...",
+    "loadError": "No se pudieron cargar los métodos de pago.",
+    "notFound": "Sin método de pago",
+    "notFoundDesc": "No hay métodos de pago activos disponibles.",
+    "selectRequired": "Selecciona un método de pago para continuar."
+  },
+  "summary": {
+    "title": "Resumen del pedido",
+    "total": "Total"
+  },
+  "waiting": {
+    "titleTimeout": "Procesando tu pago",
+    "descTimeout": "La confirmación puede tardar un poco más. Puedes rastrearlo desde tus pedidos.",
+    "goToOrders": "Ir a mis pedidos",
+    "titleError": "Estado no disponible",
+    "descError": "Comprueba el estado desde tus pedidos.",
+    "titleProcessing": "Verificando tu pago...",
+    "descProcessing": "Este proceso puede tardar unos segundos."
+  }
+}

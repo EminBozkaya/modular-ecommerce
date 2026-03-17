@@ -32,6 +32,46 @@ import deOrders from './locales/de/orders.json';
 import deAdmin from './locales/de/admin.json';
 import deValidation from './locales/de/validation.json';
 
+// FR
+import frCommon from './locales/fr/common.json';
+import frAuth from './locales/fr/auth.json';
+import frCatalog from './locales/fr/catalog.json';
+import frBasket from './locales/fr/basket.json';
+import frCheckout from './locales/fr/checkout.json';
+import frOrders from './locales/fr/orders.json';
+import frAdmin from './locales/fr/admin.json';
+import frValidation from './locales/fr/validation.json';
+
+// ES
+import esCommon from './locales/es/common.json';
+import esAuth from './locales/es/auth.json';
+import esCatalog from './locales/es/catalog.json';
+import esBasket from './locales/es/basket.json';
+import esCheckout from './locales/es/checkout.json';
+import esOrders from './locales/es/orders.json';
+import esAdmin from './locales/es/admin.json';
+import esValidation from './locales/es/validation.json';
+
+// RU
+import ruCommon from './locales/ru/common.json';
+import ruAuth from './locales/ru/auth.json';
+import ruCatalog from './locales/ru/catalog.json';
+import ruBasket from './locales/ru/basket.json';
+import ruCheckout from './locales/ru/checkout.json';
+import ruOrders from './locales/ru/orders.json';
+import ruAdmin from './locales/ru/admin.json';
+import ruValidation from './locales/ru/validation.json';
+
+// AR
+import arCommon from './locales/ar/common.json';
+import arAuth from './locales/ar/auth.json';
+import arCatalog from './locales/ar/catalog.json';
+import arBasket from './locales/ar/basket.json';
+import arCheckout from './locales/ar/checkout.json';
+import arOrders from './locales/ar/orders.json';
+import arAdmin from './locales/ar/admin.json';
+import arValidation from './locales/ar/validation.json';
+
 // Read persisted language; never fall back to browser locale
 const savedLang = localStorage.getItem('language') ?? SUPPORTED_LANGUAGES[0].code;
 
@@ -68,6 +108,46 @@ i18n
                 orders: deOrders,
                 admin: deAdmin,
                 validation: deValidation,
+            },
+            fr: {
+                common: frCommon,
+                auth: frAuth,
+                catalog: frCatalog,
+                basket: frBasket,
+                checkout: frCheckout,
+                orders: frOrders,
+                admin: frAdmin,
+                validation: frValidation,
+            },
+            es: {
+                common: esCommon,
+                auth: esAuth,
+                catalog: esCatalog,
+                basket: esBasket,
+                checkout: esCheckout,
+                orders: esOrders,
+                admin: esAdmin,
+                validation: esValidation,
+            },
+            ru: {
+                common: ruCommon,
+                auth: ruAuth,
+                catalog: ruCatalog,
+                basket: ruBasket,
+                checkout: ruCheckout,
+                orders: ruOrders,
+                admin: ruAdmin,
+                validation: ruValidation,
+            },
+            ar: {
+                common: arCommon,
+                auth: arAuth,
+                catalog: arCatalog,
+                basket: arBasket,
+                checkout: arCheckout,
+                orders: arOrders,
+                admin: arAdmin,
+                validation: arValidation,
             },
         },
         lng: savedLang,

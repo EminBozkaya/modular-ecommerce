@@ -14,11 +14,11 @@ export function BasketButton() {
         <div className="flex flex-col items-center group">
             <button
                 onClick={() => navigate('/basket')}
-                className="relative flex items-center justify-center w-11 h-11 rounded-full bg-gray-50 text-muted-foreground group-hover:text-[var(--color-ebrar-green)] group-hover:bg-green-50 transition-all duration-300 shadow-sm"
+                className="relative flex items-center justify-center w-11 h-11 rounded-full bg-gray-50 dark:bg-white/10 text-muted-foreground group-hover:text-[var(--brand-primary)] group-hover:bg-[var(--brand-primary-subtle)] transition-all duration-300 shadow-sm"
                 aria-label={t('header.openBasket')}
                 title={t('header.basketTitle')}
             >
-                <svg viewBox="0 0 24 24" className="h-6 w-6 transition-transform duration-300 group-hover:scale-110 text-[var(--color-ebrar-green)]">
+                <svg viewBox="0 0 24 24" className="h-6 w-6 transition-transform duration-300 group-hover:scale-110 text-[var(--brand-primary)]">
                     <path
                         fill="currentColor"
                         d="M17 18a2 2 0 110 4 2 2 0 010-4zM7 18a2 2 0 110 4 2 2 0 010-4z"
@@ -32,7 +32,7 @@ export function BasketButton() {
                     <rect x="7" y="8" width="12" height="7" fill="currentColor" fillOpacity="0.15" />
                 </svg>
                 {!isBasketLoading && itemCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-600 rounded-full border-2 border-white">
+                    <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-600 rounded-full border-2 border-background">
                         {itemCount}
                     </span>
                 )}
@@ -40,11 +40,11 @@ export function BasketButton() {
             {!isBasketLoading && (
                 <span className="text-[11px] font-bold mt-1 whitespace-nowrap transition-colors">
                     {itemCount > 0 ? (
-                        <span className="text-[var(--color-ebrar-green)]">
+                        <span className="text-[var(--brand-primary)]">
                             {totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} {currencySymbol}
                         </span>
                     ) : (
-                        <span className="text-muted-foreground group-hover:text-[var(--color-ebrar-green)]">
+                        <span className="text-muted-foreground group-hover:text-[var(--brand-primary)]">
                             {t('header.basketEmpty')}
                         </span>
                     )}

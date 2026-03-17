@@ -136,7 +136,50 @@ public class AuthController : ControllerBase
         {
             isDev = _env.IsDevelopment(),
             isHttps = Request.IsHttps,
-            env = _env.EnvironmentName
         });
+    }
+
+    [HttpGet("social/providers")]
+    public async Task<IActionResult> GetSocialProviders(CancellationToken ct)
+    {
+        var providers = await _mediator.Send(new GetSocialProvidersQuery(), ct);
+        return Ok(providers);
+    }
+
+    [HttpGet("social/{provider}/url")]
+    public async Task<IActionResult> GetSocialAuthUrl(string provider, [FromQuery] string redirectUri, CancellationToken ct)
+    {
+        var result = await _mediator.Send(new GetSocialAuthUrlQuery(provider, redirectUri), ct);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.ErrorMessage });
+
+        return Ok(result);
+    }
+
+    public record SocialLoginRequest(string Code, string RedirectUri);
+
+    [HttpPost("social/login/{provider}")]
+    public async Task<IActionResult> SocialLogin(string provider, [FromBody] SocialLoginRequest req, CancellationToken ct)
+    {
+        try
+        {
+            var result = await _mediator.Send(new SocialLoginCommand(provider, req.Code, req.RedirectUri), ct);
+            SetAuthCookies(result);
+
+            return Ok(new
+            {
+                user = new
+                {
+                    id = result.UserId,
+                    email = result.Email,
+                    fullName = result.FullName,
+                    role = result.Role
+                }
+            });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { error = ex.Message });
+        }
     }
 }

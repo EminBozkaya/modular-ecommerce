@@ -107,7 +107,7 @@ export default function CheckoutPage() {
                 />
                 <Link
                     to="/products"
-                    className="mt-6 inline-block rounded-lg bg-[var(--color-ebrar-green)] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[var(--color-ebrar-green-dark)] transition-colors"
+                    className="mt-6 inline-block rounded-2xl bg-[var(--brand-primary)] px-8 py-3.5 text-sm font-bold text-white hover:bg-[var(--brand-primary-dark)] transition-all shadow-lg shadow-black/5 active:scale-95"
                 >
                     {t('page.continueShopping')}
                 </Link>
@@ -123,12 +123,12 @@ export default function CheckoutPage() {
     const showManualForm = !hasSaved || useNewAddress;
 
     return (
-        <div className="min-h-screen bg-gray-50/60">
+        <div className="min-h-screen bg-gray-50/60 dark:bg-background">
             <div className="container mx-auto max-w-5xl px-4 py-10">
                 {/* Page title */}
                 <div className="mb-8">
-                    <h1 className="text-2xl font-bold text-gray-900">{t('page.title')}</h1>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <h1 className="text-2xl font-bold text-foreground">{t('page.title')}</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">
                         {t('page.subtitle')}
                     </p>
                 </div>
@@ -145,7 +145,7 @@ export default function CheckoutPage() {
 
                 {/* Loading banner */}
                 {isLoading && (
-                    <div className="mb-6 flex items-center gap-3 rounded-xl border border-blue-100 bg-blue-50 px-5 py-3.5 text-sm font-medium text-blue-700">
+                    <div className="mb-6 flex items-center gap-3 rounded-xl border border-blue-100 dark:border-blue-900/30 bg-blue-50 dark:bg-blue-900/20 px-5 py-3.5 text-sm font-medium text-blue-700 dark:text-blue-400">
                         <LoadingSpinner size="sm" />
                         <span>{stepLabel}</span>
                     </div>
@@ -156,12 +156,12 @@ export default function CheckoutPage() {
                         {/* Left: forms */}
                         <div className="space-y-4 lg:col-span-2">
                             {/* Shipping address card */}
-                            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                                <div className="flex items-center gap-3 mb-5">
-                                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-ebrar-green)] text-white text-xs font-bold shrink-0">
+                            <div className="rounded-3xl border border-border bg-card p-6 shadow-xl shadow-black/5">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shrink-0 shadow-lg shadow-black/5">
                                         1
                                     </div>
-                                    <h2 className="text-base font-semibold text-gray-900">
+                                    <h2 className="text-base font-bold text-foreground">
                                         {t('shipping.sectionTitle')}
                                     </h2>
                                 </div>
@@ -176,7 +176,7 @@ export default function CheckoutPage() {
                                 )}
 
                                 {showManualForm && (
-                                    <div className={hasSaved ? 'mt-4 pt-4 border-t border-gray-100' : ''}>
+                                    <div className={hasSaved ? 'mt-4 pt-4 border-t border-border' : ''}>
                                         <ShippingAddressForm
                                             value={shippingAddress}
                                             onChange={setShippingAddress}
@@ -201,7 +201,7 @@ export default function CheckoutPage() {
                             <button
                                 type="submit"
                                 disabled={isLoading || !selectedProvider}
-                                className="w-full rounded-2xl bg-[var(--color-ebrar-green)] px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[var(--color-ebrar-green-dark)] disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
+                                className="w-full rounded-2xl bg-[var(--brand-primary)] px-6 py-4 text-sm font-bold text-white shadow-lg shadow-black/5 transition-all hover:bg-[var(--brand-primary-dark)] disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
                             >
                                 {isLoading ? (
                                     <span className="flex items-center justify-center gap-2">
@@ -213,9 +213,9 @@ export default function CheckoutPage() {
                                 )}
                             </button>
 
-                            <p className="text-center text-xs text-gray-400">
+                            <p className="text-center text-xs text-muted-foreground">
                                 {t('page.terms')}{' '}
-                                <span className="font-medium text-gray-500">{t('page.termsLink')}</span>{' '}
+                                <span className="font-medium text-muted-foreground">{t('page.termsLink')}</span>{' '}
                                 {t('page.termsEnd')}
                             </p>
                         </div>

@@ -1,0 +1,38 @@
+{
+  "history": {
+    "title": "Мои заказы",
+    "empty": "Заказов нет",
+    "emptyDesc": "Просмотрите товары, чтобы сделать первый заказ."
+  },
+  "detail": {
+    "backToOrders": "К заказам",
+    "orderTitle": "Заказ #{{id}}...",
+    "products": "Товары",
+    "product": "Товар",
+    "quantity": "Количество",
+    "unitPrice": "Цена за ед.",
+    "total": "Итого",
+    "grandTotal": "Общий итог",
+    "shippingAddress": "Адрес доставки",
+    "notFound": "Заказ не найден"
+  },
+  "confirmation": {
+    "success": "Ваш заказ принят!",
+    "orderNumber": "Номер заказа:",
+    "detailTitle": "Детали заказа",
+    "total": "Итого",
+    "shippingAddress": "Адрес доставки",
+    "continueShopping": "Продолжить покупки",
+    "myOrders": "Мои заказы",
+    "notFound": "Заказ не найден"
+  },
+  "status": {
+    "Pending": "Ожидает",
+    "Processing": "Обрабатывается",
+    "Paid": "Оплачен",
+    "Shipped": "Отправлен",
+    "Delivered": "Доставлен",
+    "Cancelled": "Отменён",
+    "Refunded": "Возврат"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "products": "المنتجات",
+    "basket": "السلة",
+    "favorites": "المفضلة",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "profile": "ملفي الشخصي",
+    "orders": "طلباتي",
+    "admin": "لوحة الإدارة"
+  },
+  "buttons": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "add": "إضافة",
+    "confirm": "تأكيد",
+    "back": "رجوع",
+    "loading": "جارٍ التحميل...",
+    "continue": "متابعة",
+    "continueAsGuest": "متابعة كضيف"
+  },
+  "status": {
+    "loading": "جارٍ التحميل...",
+    "error": "حدث خطأ",
+    "empty": "لا توجد نتائج",
+    "success": "تمت العملية بنجاح"
+  },
+  "language": {
+    "tr": "التركية",
+    "en": "الإنجليزية",
+    "de": "الألمانية",
+    "fr": "الفرنسية",
+    "es": "الإسبانية",
+    "ru": "الروسية",
+    "ar": "العربية",
+    "changeLanguage": "تغيير اللغة"
+  },
+  "header": {
+    "login": "تسجيل الدخول",
+    "basketTitle": "سلتي",
+    "basketEmpty": "السلة",
+    "openBasket": "فتح السلة",
+    "favorites": "المفضلة",
+    "favoritesTitle": "مفضلتي"
+  },
+  "userMenu": {
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "myAccount": "حسابي",
+    "admin": "مدير",
+    "adminPanel": "لوحة الإدارة",
+    "profile": "الملف الشخصي",
+    "orders": "طلباتي",
+    "addresses": "عناويني",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج"
+  },
+  "pagination": {
+    "prev": "السابق",
+    "next": "التالي",
+    "page": "الصفحة {{page}}",
+    "showing": "عرض <med>{{from}}</med> - <med>{{to}}</med> من أصل <bold>{{total}}</bold> منتج"
+  },
+  "table": {
+    "total": "الإجمالي: {{count}}",
+    "showing": "معروض: {{count}}"
+  }
+}

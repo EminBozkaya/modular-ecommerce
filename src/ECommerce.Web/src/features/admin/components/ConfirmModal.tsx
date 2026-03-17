@@ -29,20 +29,20 @@ export default function ConfirmModal({
 
     const variantStyles = {
         danger: {
-            iconBg: 'bg-red-100',
-            iconColor: 'text-red-600',
+            iconBg: 'bg-red-100 dark:bg-red-900/20',
+            iconColor: 'text-red-600 dark:text-red-400',
             buttonBg: 'bg-red-600',
             buttonHover: 'hover:bg-red-700',
         },
         warning: {
-            iconBg: 'bg-yellow-100',
-            iconColor: 'text-yellow-600',
+            iconBg: 'bg-yellow-100 dark:bg-yellow-900/20',
+            iconColor: 'text-yellow-600 dark:text-yellow-400',
             buttonBg: 'bg-yellow-600',
             buttonHover: 'hover:bg-yellow-700',
         },
         info: {
-            iconBg: 'bg-blue-100',
-            iconColor: 'text-blue-600',
+            iconBg: 'bg-blue-100 dark:bg-blue-900/20',
+            iconColor: 'text-blue-600 dark:text-blue-400',
             buttonBg: 'bg-blue-600',
             buttonHover: 'hover:bg-blue-700',
         }
@@ -50,7 +50,7 @@ export default function ConfirmModal({
 
     return (
         <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto pt-24 pb-10 px-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="bg-card rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
                 <div className="p-6">
                     <div className="flex items-start justify-between mb-4">
                         <div className={`w-12 h-12 rounded-full flex items-center justify-center ${variantStyles.iconBg}`}>
@@ -58,17 +58,17 @@ export default function ConfirmModal({
                         </div>
                         <button
                             onClick={onClose}
-                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                            className="text-muted-foreground hover:text-foreground transition-colors"
                         >
                             <X className="h-5 w-5" />
                         </button>
                     </div>
 
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
-                    <p className="text-gray-600">{message}</p>
+                    <h3 className="text-xl font-bold text-foreground mb-2">{title}</h3>
+                    <p className="text-muted-foreground">{message}</p>
                 </div>
 
-                <div className="bg-gray-50 px-6 py-4 flex flex-col sm:flex-row-reverse gap-3">
+                <div className="bg-accent px-6 py-4 flex flex-col sm:flex-row-reverse gap-3">
                     {showConfirm && (
                         <button
                             disabled={loading}
@@ -81,7 +81,7 @@ export default function ConfirmModal({
                     <button
                         disabled={loading}
                         onClick={onClose}
-                        className="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all active:scale-95"
+                        className="px-4 py-2 text-sm font-semibold text-foreground bg-card border border-border rounded-lg hover:bg-accent transition-all active:scale-95"
                     >
                         {showConfirm ? cancelText : 'Tamam'}
                     </button>

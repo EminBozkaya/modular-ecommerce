@@ -119,14 +119,14 @@ export default function ProductListPage() {
                 onSelect={handleCategorySelect} 
             />
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <h1 className="text-3xl font-bold tracking-tight text-gray-900 font-serif">{pageTitle}</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-foreground font-serif">{pageTitle}</h1>
                 <ProductSearchBar value={search} onChange={handleSearchChange} />
             </div>
 
             {isLoading && (
                 <div className="flex flex-col items-center justify-center py-20">
                     <LoadingSpinner size="lg" />
-                    <p className="mt-4 text-gray-500 font-medium font-serif">{t('list.loading')}</p>
+                    <p className="mt-4 text-muted-foreground font-medium font-serif">{t('list.loading')}</p>
                 </div>
             )}
 
@@ -159,7 +159,7 @@ export default function ProductListPage() {
 
             {!isLoading && !error && products && Array.isArray(products) && products.length > 0 && (
                 <>
-                    <div className="mb-4 text-sm text-gray-500 font-medium">
+                    <div className="mb-4 text-sm text-muted-foreground font-medium">
                         {t('list.showingCount', { count: products.length, total: totalCount, defaultValue: `Toplam ${totalCount} üründen ${products.length} tanesi gösteriliyor` })}
                     </div>
                     
@@ -170,11 +170,11 @@ export default function ProductListPage() {
                         {isFetchingNextPage && (
                             <div className="flex flex-col items-center">
                                 <LoadingSpinner size="md" />
-                                <p className="mt-2 text-sm text-gray-500">{t('list.loadingMore', { defaultValue: 'Daha fazla ürün yükleniyor...' })}</p>
+                                <p className="mt-2 text-sm text-muted-foreground">{t('list.loadingMore', { defaultValue: 'Daha fazla ürün yükleniyor...' })}</p>
                             </div>
                         )}
                         {!hasNextPage && products.length > 0 && (
-                            <p className="text-sm text-gray-400 font-medium">{t('list.allLoaded', { defaultValue: 'Tüm ürünler listelendi.' })}</p>
+                            <p className="text-sm text-muted-foreground font-medium">{t('list.allLoaded', { defaultValue: 'Tüm ürünler listelendi.' })}</p>
                         )}
                     </div>
                 </>

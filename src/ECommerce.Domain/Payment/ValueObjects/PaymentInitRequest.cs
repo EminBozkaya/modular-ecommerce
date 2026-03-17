@@ -27,5 +27,6 @@ public record PaymentInitResult(
     string? RedirectUrl,
     string? ProviderReference,
     string? ErrorCode,
-    string? ErrorMessage
+    string? ErrorMessage,
+    string? HtmlContent = null
 );

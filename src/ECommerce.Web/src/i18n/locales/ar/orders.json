@@ -1,0 +1,38 @@
+{
+  "history": {
+    "title": "طلباتي",
+    "empty": "لا توجد طلبات",
+    "emptyDesc": "تصفح منتجاتنا لإجراء أول طلب لك."
+  },
+  "detail": {
+    "backToOrders": "العودة لطلباتي",
+    "orderTitle": "طلب رقم #{{id}}...",
+    "products": "المنتجات",
+    "product": "المنتج",
+    "quantity": "الكمية",
+    "unitPrice": "سعر الوحدة",
+    "total": "الإجمالي",
+    "grandTotal": "الإجمالي الكلي",
+    "shippingAddress": "عنوان التوصيل",
+    "notFound": "الطلب غير موجود"
+  },
+  "confirmation": {
+    "success": "تم استلام طلبك!",
+    "orderNumber": "رقم الطلب:",
+    "detailTitle": "تفاصيل الطلب",
+    "total": "الإجمالي",
+    "shippingAddress": "عنوان التوصيل",
+    "continueShopping": "مواصلة التسوق",
+    "myOrders": "طلباتي",
+    "notFound": "الطلب غير موجود"
+  },
+  "status": {
+    "Pending": "قيد الانتظار",
+    "Processing": "قيد المعالجة",
+    "Paid": "مدفوع",
+    "Shipped": "تم الشحن",
+    "Delivered": "تم التوصيل",
+    "Cancelled": "ملغى",
+    "Refunded": "مسترجع"
+  }
+}

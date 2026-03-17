@@ -65,8 +65,8 @@ export function ProductCard({ product }: ProductCardProps) {
     };
 
     return (
-        <div className="group flex flex-col overflow-hidden rounded-xl border border-gray-100 bg-white hover:shadow-2xl hover:border-[var(--color-ebrar-green-light)] transition-all duration-500">
-            <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
+        <div className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card hover:shadow-2xl hover:border-[var(--brand-primary-light)] transition-all duration-500">
+            <div className="relative aspect-square w-full overflow-hidden bg-gray-50 dark:bg-white/10">
                 <Link to={`/products/${product.id}`} className="block w-full h-full">
                     {product.imageUrl ? (
                         <img
@@ -75,7 +75,7 @@ export function ProductCard({ product }: ProductCardProps) {
                             className="h-full w-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
                         />
                     ) : (
-                        <div className="flex h-full w-full flex-col items-center justify-center text-gray-400">
+                        <div className="flex h-full w-full flex-col items-center justify-center text-muted-foreground">
                             <svg className="h-12 w-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
@@ -89,7 +89,7 @@ export function ProductCard({ product }: ProductCardProps) {
                     disabled={isToggling || isWishlistError}
                     className={`absolute top-3 right-3 z-10 p-2 rounded-full shadow-lg backdrop-blur-sm transition-all duration-300 transform hover:scale-110 active:scale-95 ${isFavorited
                         ? 'bg-red-500 text-white'
-                        : 'bg-white/90 text-gray-400 hover:text-red-500 hover:bg-white'
+                        : 'bg-white/90 text-muted-foreground hover:text-red-500 hover:bg-white'
                         }`}
                     title={isFavorited ? t('product.removeFromFavorites') : t('product.addToFavorites')}
                 >
@@ -107,11 +107,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
             <div className="flex flex-1 flex-col px-4 py-3 gap-2">
                 <div>
-                    <p className="text-[11px] font-serif italic text-[var(--color-ebrar-green)] tracking-wide leading-none">
+                    <p className="text-[11px] font-serif italic text-[var(--brand-primary)] tracking-wide leading-none">
                         {product.categoryName}
                     </p>
-                    <h3 className="text-sm font-bold text-gray-900 line-clamp-2 leading-snug mt-0.5">
-                        <Link to={`/products/${product.id}`} className="hover:text-[var(--color-ebrar-green)] transition-colors duration-300">
+                    <h3 className="text-sm font-bold text-foreground line-clamp-2 leading-snug mt-0.5">
+                        <Link to={`/products/${product.id}`} className="hover:text-[var(--brand-primary)] transition-colors duration-300">
                             {product.name}
                         </Link>
                     </h3>
@@ -127,7 +127,7 @@ export function ProductCard({ product }: ProductCardProps) {
                                 disabled={isAnyActionPending}
                                 size="sm"
                             />
-                            <span className="text-sm font-black text-[var(--color-ebrar-green)] tabular-nums whitespace-nowrap">
+                            <span className="text-sm font-black text-[var(--brand-primary)] tabular-nums whitespace-nowrap">
                                 {calculateLinePrice(product.price, currentQuantity, product.currency)}
                             </span>
                         </div>
@@ -167,7 +167,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 {!inStock && (
                     <button
                         disabled
-                        className="w-full py-2 px-3 text-sm font-bold bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed border-b-2 border-gray-200"
+                        className="w-full py-2 px-3 text-sm font-bold bg-accent text-muted-foreground rounded-lg cursor-not-allowed border-b-2 border-border"
                     >
                         {t('product.outOfStock')}
                     </button>

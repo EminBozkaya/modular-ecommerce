@@ -5,8 +5,8 @@ interface ErrorMessageProps {
 
 export function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
     return (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-center">
-            <p className="text-sm font-medium text-red-700">{message}</p>
+        <div className="rounded-xl border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900/20 p-4 text-center">
+            <p className="text-sm font-medium text-red-700 dark:text-red-400">{message}</p>
             {onRetry && (
                 <button
                     onClick={onRetry}

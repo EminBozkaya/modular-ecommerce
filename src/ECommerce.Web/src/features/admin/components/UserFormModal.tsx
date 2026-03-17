@@ -62,10 +62,10 @@ export default function UserFormModal({
     const isEdit = !!user;
 
     const inputClass = (hasError: boolean) =>
-        `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors ${
+        `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors bg-background text-foreground ${
             hasError
-                ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30'
-                : 'border-gray-300 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]'
+                ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30 dark:bg-red-900/10'
+                : 'border-border focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]'
         }`;
 
     const errorMsg = (msg: string | undefined) =>
@@ -78,7 +78,7 @@ export default function UserFormModal({
             onClick={onClose}
         >
             <div
-                className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden"
+                className="bg-card rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
                 style={{ animation: 'fadeInUp 0.25s ease-out' }}
             >
@@ -101,7 +101,7 @@ export default function UserFormModal({
                 {/* Form */}
                 <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4" noValidate>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Ad Soyad *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Ad Soyad *</label>
                         <input
                             {...register('fullName')}
                             className={inputClass(!!errors.fullName)}
@@ -111,7 +111,7 @@ export default function UserFormModal({
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">E-posta *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">E-posta *</label>
                         <input
                             type="email"
                             {...register('email')}
@@ -122,7 +122,7 @@ export default function UserFormModal({
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Rol *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Rol *</label>
                         <select
                             {...register('role')}
                             className={inputClass(!!errors.role)}
@@ -133,7 +133,7 @@ export default function UserFormModal({
                         {errorMsg(errors.role?.message)}
                     </div>
 
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-white/10 rounded-lg border border-border">
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input
                                 type="checkbox"
@@ -143,8 +143,8 @@ export default function UserFormModal({
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--brand-primary)]"></div>
                         </label>
                         <div>
-                            <span className="block text-sm font-semibold text-gray-900">Hesap Aktif</span>
-                            <span className="block text-xs text-gray-500">Bu kullanıcı sisteme giriş yapabilecek mi?</span>
+                            <span className="block text-sm font-semibold text-foreground">Hesap Aktif</span>
+                            <span className="block text-xs text-muted-foreground">Bu kullanıcı sisteme giriş yapabilecek mi?</span>
                         </div>
                     </div>
 
@@ -153,7 +153,7 @@ export default function UserFormModal({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                            className="px-4 py-2 text-sm font-medium text-foreground bg-accent hover:bg-accent/80 rounded-lg transition-colors"
                         >
                             İptal
                         </button>

@@ -44,7 +44,7 @@ export function CategoryBreadcrumb({ categories, selectedCategoryId, onSelect }:
                 <li className="inline-flex items-center">
                     <button
                         onClick={() => onSelect(undefined)}
-                        className="inline-flex items-center text-xs md:text-[13px] font-medium text-gray-500 hover:text-[var(--color-ebrar-green)] transition-all duration-200 cursor-pointer group"
+                        className="inline-flex items-center text-xs md:text-[13px] font-medium text-muted-foreground hover:text-[var(--brand-primary)] transition-all duration-200 cursor-pointer group"
                     >
                         <Home className="w-3.5 h-3.5 mr-1.5 transition-transform group-hover:scale-110" />
                         <span className="hidden sm:inline">{t('nav.home')}</span>
@@ -53,13 +53,13 @@ export function CategoryBreadcrumb({ categories, selectedCategoryId, onSelect }:
                 
                 {/* 2. Root Products Link */}
                 <li className="flex items-center">
-                    <ChevronRight className="w-4 h-4 text-gray-300 mx-0.5 md:mx-1 flex-shrink-0" />
+                    <ChevronRight className="w-4 h-4 text-muted-foreground/50 mx-0.5 md:mx-1 flex-shrink-0" />
                     <button
                         onClick={() => onSelect(undefined)}
                         className={`text-xs md:text-[13px] font-medium transition-all duration-200 cursor-pointer ${
-                            !selectedCategoryId 
-                            ? 'text-[var(--color-ebrar-green)] font-bold' 
-                            : 'text-gray-500 hover:text-[var(--color-ebrar-green)]'
+                            !selectedCategoryId
+                            ? 'text-[var(--brand-primary)] font-bold'
+                            : 'text-muted-foreground hover:text-[var(--brand-primary)]'
                         }`}
                     >
                         {t('nav.products')}
@@ -74,14 +74,14 @@ export function CategoryBreadcrumb({ categories, selectedCategoryId, onSelect }:
                     return (
                         <Fragment key={cat.id}>
                             <li className="flex items-center">
-                                <ChevronRight className="w-4 h-4 text-gray-300 mx-0.5 md:mx-1 flex-shrink-0" />
+                                <ChevronRight className="w-4 h-4 text-muted-foreground/50 mx-0.5 md:mx-1 flex-shrink-0" />
                                 <button
                                     onClick={() => onSelect(cat.id)}
                                     disabled={isLast}
                                     className={`text-xs md:text-[13px] font-medium transition-all duration-200 ${
-                                        isLast 
-                                        ? 'text-[var(--color-ebrar-green)] font-bold cursor-default' 
-                                        : 'text-gray-500 hover:text-[var(--color-ebrar-green)] cursor-pointer'
+                                        isLast
+                                        ? 'text-[var(--brand-primary)] font-bold cursor-default'
+                                        : 'text-muted-foreground hover:text-[var(--brand-primary)] cursor-pointer'
                                     }`}
                                 >
                                     {cat.name}
@@ -91,10 +91,10 @@ export function CategoryBreadcrumb({ categories, selectedCategoryId, onSelect }:
                             {/* Insert Ellipsis if truncated and we just showed the first visible path item */}
                             {shouldTruncate && isFirstInDisplay && (
                                 <li className="flex items-center">
-                                    <ChevronRight className="w-4 h-4 text-gray-300 mx-0.5 md:mx-1 flex-shrink-0" />
+                                    <ChevronRight className="w-4 h-4 text-muted-foreground/50 mx-0.5 md:mx-1 flex-shrink-0" />
                                     <button 
                                         onClick={() => setIsExpanded(true)}
-                                        className="p-1 hover:bg-gray-100 rounded-md transition-all duration-200 text-gray-400 hover:text-[var(--color-ebrar-green)] active:scale-90"
+                                        className="p-1 hover:bg-accent rounded-md transition-all duration-200 text-muted-foreground hover:text-[var(--brand-primary)] active:scale-90"
                                         title="Tüm yolu göster"
                                     >
                                         <MoreHorizontal className="w-4 h-4" />
@@ -107,7 +107,7 @@ export function CategoryBreadcrumb({ categories, selectedCategoryId, onSelect }:
             </ol>
 
             {/* Subtle Gradient Shadow for Mobile Scroll Indication */}
-            <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent pointer-events-none z-10 md:hidden opacity-100" />
+            <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background to-transparent pointer-events-none z-10 md:hidden opacity-100" />
             
             <style>{`
                 .no-scrollbar::-webkit-scrollbar {

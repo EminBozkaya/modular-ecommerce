@@ -1,0 +1,62 @@
+{
+  "dashboard": {
+    "title": "Tableau de bord",
+    "periods": { "daily": "Quotidien", "weekly": "Hebdomadaire", "monthly": "Mensuel", "yearly": "Annuel" },
+    "cards": {
+      "totalOrders": "Total commandes",
+      "totalRevenue": "Chiffre d'affaires",
+      "totalCustomers": "Clients",
+      "lowStock": "Stock faible",
+      "lowStockDesc": "Produits avec 5 unités ou moins"
+    },
+    "recentOrders": "Commandes récentes",
+    "noOrders": "Aucune commande.",
+    "table": { "customer": "Client", "date": "Date", "amount": "Montant", "status": "Statut" },
+    "summaryError": "Impossible de charger le résumé.",
+    "revenueError": "Impossible de charger le graphique.",
+    "recentOrdersError": "Impossible de charger les commandes récentes.",
+    "lowStockError": "Impossible de charger les stocks faibles."
+  },
+  "products": {
+    "title": "Produits",
+    "addTooltip": "Ajouter un produit",
+    "excelTooltip": "Exporter Excel",
+    "pdfTooltip": "Exporter PDF",
+    "noProducts": "Aucun produit trouvé.",
+    "loadingProducts": "Chargement...",
+    "mobile": { "price": "Prix", "stock": "Stock", "category": "Catégorie", "description": "Description", "noDesc": "Aucune", "createdBy": "Créé par", "date": "Date", "edit": "MODIFIER", "delete": "SUPPRIMER", "restore": "RESTAURER" },
+    "grid": { "name": "Nom", "category": "Catégorie", "price": "Prix", "stock": "Stock", "unit": "Unité", "status": "Statut", "createdBy": "Créé par", "createdAt": "Date", "actions": "Actions" },
+    "status": { "active": "Actif", "passive": "Inactif", "deleted": "Supprimé" }
+  },
+  "categories": {
+    "title": "Catégories",
+    "addTooltip": "Ajouter une catégorie",
+    "excelTooltip": "Exporter Excel",
+    "pdfTooltip": "Exporter PDF",
+    "noCategories": "Aucune catégorie.",
+    "loadingCategories": "Chargement...",
+    "mobile": { "parentCategory": "Catégorie parente", "mainCategory": "Catégorie principale", "createdBy": "Créé par", "date": "Date", "edit": "MODIFIER", "delete": "SUPPRIMER", "restore": "RESTAURER" },
+    "grid": { "name": "Nom", "parentCategory": "Catégorie parente", "status": "Statut", "createdBy": "Créé par", "createdAt": "Date", "actions": "Actions" },
+    "status": { "active": "Actif", "passive": "Inactif", "deleted": "Supprimé" }
+  },
+  "orders": {
+    "title": "Commandes",
+    "excelTooltip": "Exporter Excel",
+    "pdfTooltip": "Exporter PDF",
+    "noOrders": "Aucune commande.",
+    "loadingOrders": "Chargement...",
+    "mobile": { "customer": "Client", "amount": "Montant", "products": "Produits", "address": "Adresse", "date": "Date", "updateStatus": "MISE À JOUR", "delete": "SUPPRIMER", "restore": "RESTAURER" },
+    "grid": { "orderId": "N° commande", "customer": "Client", "amount": "Montant", "status": "Statut", "date": "Date", "actions": "Actions" }
+  },
+  "users": {
+    "title": "Clients",
+    "addTooltip": "Ajouter un client",
+    "excelTooltip": "Exporter Excel",
+    "pdfTooltip": "Exporter PDF",
+    "noUsers": "Aucun client.",
+    "loadingUsers": "Chargement...",
+    "mobile": { "email": "E-mail", "role": "Rôle", "emailConfirmed": "E-mail confirmé", "confirmed": "✅ Confirmé", "notConfirmed": "❌ Non confirmé", "registrationDate": "Date d'inscription", "roleAdmin": "Administrateur", "roleCustomer": "Client", "edit": "MODIFIER", "delete": "SUPPRIMER", "restore": "RESTAURER" },
+    "grid": { "fullName": "Nom complet", "email": "E-mail", "role": "Rôle", "status": "Statut", "emailConfirmed": "E-mail confirmé", "createdAt": "Inscription", "actions": "Actions" }
+  },
+  "common": { "excel": "Excel", "pdf": "PDF", "add": "AJOUTER", "totalRecords": "Total : {{count}}", "showing": "Affichage : {{count}}", "deleted": "Supprimé", "active": "Actif", "passive": "Inactif" }
+}

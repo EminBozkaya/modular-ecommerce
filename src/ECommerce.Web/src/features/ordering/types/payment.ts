@@ -18,6 +18,7 @@ export interface InitializePaymentResponse {
     isSuccess: boolean;
     redirectUrl?: string;
     errorMessage?: string;
+    htmlContent?: string;
 }
 
 export interface PaymentReturnStatus {

@@ -45,7 +45,7 @@ function SortableCategoryRow({ category, index }: { category: Category; index: n
         <div
             ref={setNodeRef}
             style={style}
-            className={`flex items-center gap-3 px-4 py-3 bg-white rounded-xl border transition-shadow ${isDragging ? 'shadow-lg border-[var(--brand-primary)]' : 'border-gray-200 shadow-sm'
+            className={`flex items-center gap-3 px-4 py-3 bg-card rounded-xl border transition-shadow ${isDragging ? 'shadow-lg border-[var(--brand-primary)]' : 'border-border shadow-sm'
                 }`}
         >
             {/* Drag handle */}
@@ -53,7 +53,7 @@ function SortableCategoryRow({ category, index }: { category: Category; index: n
                 type="button"
                 {...attributes}
                 {...listeners}
-                className="flex-shrink-0 cursor-grab active:cursor-grabbing p-1 rounded hover:bg-gray-100 text-gray-400 touch-none"
+                className="flex-shrink-0 cursor-grab active:cursor-grabbing p-1 rounded hover:bg-accent text-muted-foreground touch-none"
                 aria-label="Sırayı değiştirmek için sürükle"
             >
                 <GripVertical className="h-5 w-5" />
@@ -66,17 +66,17 @@ function SortableCategoryRow({ category, index }: { category: Category; index: n
             </span>
 
             {/* Image */}
-            <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-gray-100 flex items-center justify-center bg-gray-50">
+            <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-border flex items-center justify-center bg-gray-50 dark:bg-white/10">
                 {category.imageUrl ? (
                     <img src={category.imageUrl} alt="" className="w-full h-full object-cover" />
                 ) : (
-                    <ImageIcon className="h-4 w-4 text-gray-300" />
+                    <ImageIcon className="h-4 w-4 text-muted-foreground" />
                 )}
             </div>
 
             {/* Name */}
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-800 truncate">{category.name}</p>
+                <p className="text-sm font-semibold text-foreground truncate">{category.name}</p>
                 {!category.isActive && (
                     <span className="inline-block text-xs px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 font-medium border border-amber-100 mt-0.5">
                         Pasif
@@ -85,7 +85,7 @@ function SortableCategoryRow({ category, index }: { category: Category; index: n
             </div>
 
             {/* Current saved order indicator */}
-            <span className="flex-shrink-0 text-xs text-gray-300 tabular-nums">
+            <span className="flex-shrink-0 text-xs text-muted-foreground tabular-nums">
                 #{category.displayOrder}
             </span>
         </div>
@@ -142,7 +142,7 @@ export default function AdminNavOrderPage() {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-64 text-gray-400 text-sm">
+            <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">
                 Yükleniyor…
             </div>
         );
@@ -153,8 +153,8 @@ export default function AdminNavOrderPage() {
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-xl font-bold text-gray-900">Navigasyon Sıralaması</h1>
-                    <p className="text-sm text-gray-500 mt-0.5">
+                    <h1 className="text-xl font-bold text-foreground">Navigasyon Sıralaması</h1>
+                    <p className="text-sm text-muted-foreground mt-0.5">
                         Üst menüdeki kategori butonlarını sürükleyerek sıraya dizin
                     </p>
                 </div>
@@ -172,18 +172,18 @@ export default function AdminNavOrderPage() {
 
             {/* Status feedback */}
             {mutation.isSuccess && !isDirty && (
-                <div className="mb-4 px-4 py-2.5 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
+                <div className="mb-4 px-4 py-2.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-400 rounded-lg text-sm">
                     ✓ Sıralama başarıyla kaydedildi.
                 </div>
             )}
             {mutation.isError && (
-                <div className="mb-4 px-4 py-2.5 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                <div className="mb-4 px-4 py-2.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-400 rounded-lg text-sm">
                     Kaydedilemedi. Lütfen tekrar deneyin.
                 </div>
             )}
 
             {/* Info box */}
-            <div className="flex items-start gap-2.5 mb-5 px-4 py-3 bg-blue-50 border border-blue-100 rounded-xl text-sm text-blue-700">
+            <div className="flex items-start gap-2.5 mb-5 px-4 py-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-700 rounded-xl text-sm text-blue-700 dark:text-blue-400">
                 <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
                 <p>
                     Yalnızca <strong>üst seviye (ana) kategoriler</strong> listelenmektedir.
@@ -194,7 +194,7 @@ export default function AdminNavOrderPage() {
 
             {/* Sortable list */}
             {ordered.length === 0 ? (
-                <div className="text-center py-16 text-gray-400 text-sm">
+                <div className="text-center py-16 text-muted-foreground text-sm">
                     Henüz ana kategori oluşturulmamış.
                 </div>
             ) : (
@@ -222,8 +222,8 @@ export default function AdminNavOrderPage() {
 
             {/* Live preview hint */}
             {ordered.length > 0 && (
-                <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                <div className="mt-6 p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-border">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                         Mevcut Sıralama Önizlemesi
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -237,7 +237,7 @@ export default function AdminNavOrderPage() {
                             </span>
                         ))}
                         {ordered.every(c => !c.isActive) && (
-                            <span className="text-xs text-gray-400 italic">Aktif kategori yok</span>
+                            <span className="text-xs text-muted-foreground italic">Aktif kategori yok</span>
                         )}
                     </div>
                 </div>

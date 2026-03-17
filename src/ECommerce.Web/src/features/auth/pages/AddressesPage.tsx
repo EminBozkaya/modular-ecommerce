@@ -31,8 +31,8 @@ const emptyForm: AddressFormState = {
 };
 
 const inputClass =
-    'w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-[var(--color-ebrar-green)] focus:bg-white focus:ring-2 focus:ring-[var(--color-ebrar-green)]/20';
-const labelClass = 'block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1';
+    'w-full rounded-xl border border-border bg-gray-50/50 dark:bg-white/10 px-4 py-3 text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground focus:border-[var(--brand-primary)] focus:bg-card focus:ring-2 focus:ring-[var(--brand-primary)]/10';
+const labelClass = 'text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1 mb-2 block';
 
 interface AddressFormProps {
     initial?: AddressFormState;
@@ -51,66 +51,77 @@ function AddressForm({ initial = emptyForm, onSave, onCancel, isSaving }: Addres
     const isValid = form.title && form.fullName && form.addressLine1 && form.city && form.postalCode && form.country;
 
     return (
-        <div className="space-y-3 rounded-2xl border border-[var(--color-ebrar-green)]/30 bg-[var(--color-ebrar-green)]/5 p-5">
-            <div className="grid grid-cols-2 gap-3">
-                <div>
-                    <label className={labelClass}>{t('addresses.form.titleField')}</label>
-                    <input className={inputClass} value={form.title} onChange={set('title')} placeholder={t('addresses.form.titlePlaceholder')} />
+        <div className="bg-card rounded-3xl shadow-xl shadow-black/5 border border-border overflow-hidden p-8 animate-fadeInUp">
+            <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className={labelClass}>{t('addresses.form.titleField')}</label>
+                        <input className={inputClass} value={form.title} onChange={set('title')} placeholder={t('addresses.form.titlePlaceholder')} />
+                    </div>
+                    <div>
+                        <label className={labelClass}>{t('addresses.form.fullName')}</label>
+                        <input className={inputClass} value={form.fullName} onChange={set('fullName')} placeholder={t('addresses.form.fullNamePlaceholder')} />
+                    </div>
                 </div>
                 <div>
-                    <label className={labelClass}>{t('addresses.form.fullName')}</label>
-                    <input className={inputClass} value={form.fullName} onChange={set('fullName')} placeholder={t('addresses.form.fullNamePlaceholder')} />
-                </div>
-            </div>
-            <div>
-                <label className={labelClass}>{t('addresses.form.addressLine1')}</label>
-                <input className={inputClass} value={form.addressLine1} onChange={set('addressLine1')} placeholder={t('addresses.form.addressPlaceholder')} />
-            </div>
-            <div>
-                <label className={labelClass}>{t('addresses.form.addressLine2')}</label>
-                <input className={inputClass} value={form.addressLine2} onChange={set('addressLine2')} placeholder={t('addresses.form.address2Placeholder')} />
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-                <div>
-                    <label className={labelClass}>{t('addresses.form.city')}</label>
-                    <input className={inputClass} value={form.city} onChange={set('city')} placeholder={t('addresses.form.cityPlaceholder')} />
+                    <label className={labelClass}>{t('addresses.form.addressLine1')}</label>
+                    <input className={inputClass} value={form.addressLine1} onChange={set('addressLine1')} placeholder={t('addresses.form.addressPlaceholder')} />
                 </div>
                 <div>
-                    <label className={labelClass}>{t('addresses.form.postalCode')}</label>
-                    <input className={inputClass} value={form.postalCode} onChange={set('postalCode')} placeholder={t('addresses.form.postalPlaceholder')} />
+                    <label className={labelClass}>{t('addresses.form.addressLine2')}</label>
+                    <input className={inputClass} value={form.addressLine2} onChange={set('addressLine2')} placeholder={t('addresses.form.address2Placeholder')} />
                 </div>
-                <div>
-                    <label className={labelClass}>{t('addresses.form.country')}</label>
-                    <input className={inputClass} value={form.country} onChange={set('country')} placeholder={t('addresses.form.countryPlaceholder')} />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label className={labelClass}>{t('addresses.form.city')}</label>
+                        <input className={inputClass} value={form.city} onChange={set('city')} placeholder={t('addresses.form.cityPlaceholder')} />
+                    </div>
+                    <div>
+                        <label className={labelClass}>{t('addresses.form.postalCode')}</label>
+                        <input className={inputClass} value={form.postalCode} onChange={set('postalCode')} placeholder={t('addresses.form.postalPlaceholder')} />
+                    </div>
+                    <div>
+                        <label className={labelClass}>{t('addresses.form.country')}</label>
+                        <input className={inputClass} value={form.country} onChange={set('country')} placeholder={t('addresses.form.countryPlaceholder')} />
+                    </div>
                 </div>
-            </div>
-            <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-600">
-                <input
-                    type="checkbox"
-                    checked={form.isDefault}
-                    onChange={(e) => setForm((prev) => ({ ...prev, isDefault: e.target.checked }))}
-                    className="rounded accent-[var(--color-ebrar-green)]"
-                />
-                {t('addresses.form.setAsDefault')}
-            </label>
-            <div className="flex gap-2 pt-1">
-                <button
-                    type="button"
-                    onClick={() => onSave(form)}
-                    disabled={isSaving || !isValid}
-                    className="flex items-center gap-1.5 rounded-xl bg-[var(--color-ebrar-green)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50 hover:bg-[var(--color-ebrar-green-dark)] transition-colors"
-                >
-                    {isSaving ? <LoadingSpinner size="sm" /> : <Check className="h-4 w-4" />}
-                    {tc('buttons.save')}
-                </button>
-                <button
-                    type="button"
-                    onClick={onCancel}
-                    className="flex items-center gap-1.5 rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
-                >
-                    <X className="h-4 w-4" />
-                    {tc('buttons.cancel')}
-                </button>
+
+                <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                        <div className="relative flex items-center">
+                            <input
+                                type="checkbox"
+                                checked={form.isDefault}
+                                onChange={(e) => setForm((prev) => ({ ...prev, isDefault: e.target.checked }))}
+                                className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-border transition-all checked:bg-[var(--brand-primary)] checked:border-[var(--brand-primary)]"
+                            />
+                            <Check className="absolute h-3.5 w-3.5 text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity" />
+                        </div>
+                        <span className="text-sm font-medium text-muted-foreground transition-colors group-hover:text-foreground">
+                            {t('addresses.form.setAsDefault')}
+                        </span>
+                    </label>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                    <button
+                        type="button"
+                        onClick={() => onSave(form)}
+                        disabled={isSaving || !isValid}
+                        className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-[var(--brand-primary)] px-6 py-4 text-sm font-bold text-white shadow-lg shadow-black/5 hover:bg-[var(--brand-primary-dark)] transition-all active:scale-[0.98] disabled:opacity-50"
+                    >
+                        {isSaving ? <LoadingSpinner size="sm" /> : <Check className="h-5 w-5" />}
+                        {tc('buttons.save')}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        className="flex-1 flex items-center justify-center gap-2 rounded-2xl border border-border px-6 py-4 text-sm font-bold text-muted-foreground hover:bg-accent transition-all active:scale-[0.98]"
+                    >
+                        <X className="h-5 w-5" />
+                        {tc('buttons.cancel')}
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -189,14 +200,14 @@ export default function AddressesPage() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
                     <div className="flex items-center gap-4">
-                        <div className="h-16 w-16 rounded-2xl bg-[var(--color-ebrar-green)] flex items-center justify-center text-white shadow-lg">
+                        <div className="h-16 w-16 rounded-2xl bg-[var(--brand-primary)] flex items-center justify-center text-white shadow-lg">
                             <MapPin className="h-8 w-8" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-black text-gray-900 font-serif">
-                                {t('addresses.title')} <span className="text-[var(--color-ebrar-green)]">{t('addresses.titleHighlight')}</span>
+                            <h1 className="text-3xl font-black text-foreground font-serif">
+                                {t('addresses.title')} <span className="text-[var(--brand-primary)]">{t('addresses.titleHighlight')}</span>
                             </h1>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-muted-foreground">
                                 {t('addresses.subtitle')}
                             </p>
                         </div>
@@ -205,7 +216,7 @@ export default function AddressesPage() {
                     {!showAddForm && (
                         <button
                             onClick={() => { setShowAddForm(true); setEditingId(null); }}
-                            className="flex items-center justify-center gap-2 bg-[var(--color-ebrar-green)] text-white font-bold px-6 py-3.5 rounded-2xl shadow-lg shadow-green-900/10 hover:bg-[var(--color-ebrar-green-dark)] transition-all active:scale-95"
+                            className="flex items-center justify-center gap-2 bg-[var(--brand-primary)] text-white font-bold px-6 py-3.5 rounded-2xl shadow-lg shadow-black/5 hover:bg-[var(--brand-primary-dark)] transition-all active:scale-95"
                         >
                             <Plus className="h-5 w-5" />
                             {t('addresses.addNew')}
@@ -245,18 +256,18 @@ export default function AddressesPage() {
                                     isSaving={updateMutation.isPending}
                                 />
                             ) : (
-                                <div className="group bg-white rounded-3xl p-6 shadow-xl shadow-black/5 border border-gray-100 hover:border-[var(--color-ebrar-green)] transition-all">
+                                <div className="group bg-card rounded-3xl p-6 shadow-xl shadow-black/5 border border-border hover:border-[var(--brand-primary)] transition-all">
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-xl bg-gray-50 flex items-center justify-center text-[var(--color-ebrar-green)]">
+                                            <div className="h-10 w-10 rounded-xl bg-accent flex items-center justify-center text-[var(--brand-primary)]">
                                                 {addr.title.toLowerCase().includes('iş') || addr.title.toLowerCase().includes('is')
                                                     ? <Briefcase className="h-5 w-5" />
                                                     : <Home className="h-5 w-5" />}
                                             </div>
                                             <div>
-                                                <h3 className="font-bold text-gray-900">{addr.title}</h3>
+                                                <h3 className="font-bold text-foreground">{addr.title}</h3>
                                                 {addr.isDefault && (
-                                                    <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--color-ebrar-green)]">
+                                                    <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--brand-primary)]">
                                                         {t('addresses.default')}
                                                     </span>
                                                 )}
@@ -268,21 +279,21 @@ export default function AddressesPage() {
                                                     title={t('addresses.makeDefault')}
                                                     onClick={() => handleSetDefault(addr.id)}
                                                     disabled={setDefaultMutation.isPending}
-                                                    className="p-2 text-gray-400 hover:text-yellow-500 hover:bg-yellow-50 rounded-lg transition-colors"
+                                                    className="p-2 text-muted-foreground hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-lg transition-colors"
                                                 >
                                                     <Star className="h-4 w-4" />
                                                 </button>
                                             )}
                                             <button
                                                 onClick={() => { setEditingId(addr.id); setShowAddForm(false); }}
-                                                className="p-2 text-gray-400 hover:text-[var(--color-ebrar-green)] hover:bg-[var(--color-ebrar-green)]/10 rounded-lg transition-colors"
+                                                className="p-2 text-gray-400 hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary-light)] rounded-lg transition-colors"
                                             >
                                                 <Edit2 className="h-4 w-4" />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(addr.id)}
                                                 disabled={deleteMutation.isPending}
-                                                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                             >
                                                 <Trash2 className="h-4 w-4" />
                                             </button>
@@ -290,8 +301,8 @@ export default function AddressesPage() {
                                     </div>
 
                                     <div className="space-y-1">
-                                        <p className="text-sm font-bold text-gray-800">{addr.fullName}</p>
-                                        <p className="text-sm text-gray-500 leading-relaxed">
+                                        <p className="text-sm font-bold text-foreground">{addr.fullName}</p>
+                                        <p className="text-sm text-muted-foreground leading-relaxed">
                                             {addr.addressLine1}
                                             {addr.addressLine2 && <>, {addr.addressLine2}</>}
                                             <br />
@@ -306,9 +317,9 @@ export default function AddressesPage() {
                     {!showAddForm && (
                         <button
                             onClick={() => setShowAddForm(true)}
-                            className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-gray-200 rounded-3xl p-10 text-gray-400 hover:border-[var(--color-ebrar-green)] hover:text-[var(--color-ebrar-green)] transition-all bg-white/40"
+                            className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-border rounded-3xl p-10 text-muted-foreground hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)] transition-all bg-background/40 group mb-6"
                         >
-                            <div className="h-12 w-12 rounded-full bg-gray-50 flex items-center justify-center">
+                            <div className="h-12 w-12 rounded-full bg-accent flex items-center justify-center transition-colors group-hover:bg-[var(--brand-primary-light)]">
                                 <Plus className="h-6 w-6" />
                             </div>
                             <span className="text-sm font-bold">{t('addresses.addAnother')}</span>
@@ -317,7 +328,7 @@ export default function AddressesPage() {
                 </div>
 
                 {addresses?.length === 0 && !showAddForm && (
-                    <p className="text-center text-gray-400 mt-8 text-sm">
+                    <p className="text-center text-muted-foreground mt-8 text-sm">
                         {t('addresses.noAddresses')}
                     </p>
                 )}

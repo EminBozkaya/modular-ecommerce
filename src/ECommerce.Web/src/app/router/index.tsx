@@ -25,13 +25,19 @@ const AdminUsersPage = lazy(() => import('../../features/admin/pages/AdminUsersP
 const AdminAddressesPage = lazy(() => import('../../features/admin/pages/AdminAddressesPage'));
 const AdminSettingsPlaceholderPage = lazy(() => import('../../features/admin/pages/AdminSettingsPlaceholderPage'));
 const AdminBrandDesignPage = lazy(() => import('../../features/admin/pages/AdminBrandDesignPage'));
+const AdminBackgroundPage = lazy(() => import('../../features/admin/pages/AdminBackgroundPage'));
+const AdminBannerPage = lazy(() => import('../../features/admin/pages/AdminBannerPage'));
 const AdminColorsPage = lazy(() => import('../../features/admin/pages/AdminColorsPage'));
 const AdminHeroCarouselPage = lazy(() => import('../../features/admin/pages/AdminHeroCarouselPage'));
 const AdminNavOrderPage = lazy(() => import('../../features/admin/pages/AdminNavOrderPage'));
+const AdminShowcasePage = lazy(() => import('../../features/admin/pages/AdminShowcasePage'));
+const AdminFooterPage = lazy(() => import('../../features/admin/pages/AdminFooterPage'));
 const FavoritesPage = lazy(() => import('../../features/favorites/pages/FavoritesPage'));
 const PaymentWaitingPage = lazy(() => import('../../features/ordering/pages/PaymentWaitingPage'));
 const ProfilePage = lazy(() => import('../../features/auth/pages/ProfilePage'));
 const AddressesPage = lazy(() => import('../../features/auth/pages/AddressesPage'));
+const IyzicoPaymentPage = lazy(() => import('../../features/ordering/pages/IyzicoPaymentPage'));
+const SocialCallbackPage = lazy(() => import('../../features/auth/pages/SocialCallbackPage'));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
     <Suspense
@@ -114,6 +120,14 @@ export const router = createBrowserRouter([
                     </SuspenseWrapper>
                 ),
             },
+            {
+                path: 'auth/social/callback',
+                element: (
+                    <SuspenseWrapper>
+                        <SocialCallbackPage />
+                    </SuspenseWrapper>
+                ),
+            },
         ],
     },
     // Protected ordering routes
@@ -169,6 +183,14 @@ export const router = createBrowserRouter([
                         element: (
                             <SuspenseWrapper>
                                 <OrderConfirmationPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'payment/iyzico',
+                        element: (
+                            <SuspenseWrapper>
+                                <IyzicoPaymentPage />
                             </SuspenseWrapper>
                         ),
                     },
@@ -265,6 +287,22 @@ export const router = createBrowserRouter([
                         ),
                     },
                     {
+                        path: 'settings/design/background',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminBackgroundPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'settings/design/banner',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminBannerPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
                         path: 'settings/design/colors',
                         element: (
                             <SuspenseWrapper>
@@ -292,7 +330,15 @@ export const router = createBrowserRouter([
                         path: 'settings/design/banners',
                         element: (
                             <SuspenseWrapper>
-                                <AdminSettingsPlaceholderPage />
+                                <AdminShowcasePage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'settings/design/footer',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminFooterPage />
                             </SuspenseWrapper>
                         ),
                     },

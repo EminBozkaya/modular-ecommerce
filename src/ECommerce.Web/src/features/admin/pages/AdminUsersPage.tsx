@@ -14,8 +14,10 @@ import { useUserActions, defaultUserModalSettings, type UserModalSettings } from
 import { exportUsersToExcel, exportUsersToPDF } from '../utils/userExport';
 import excelIcon from '../../../assets/excel_download_icon.png';
 import pdfIcon from '../../../assets/pdf_download_icon.png';
+import { useThemeStore } from '@/store/themeStore';
 ModuleRegistry.registerModules([AllCommunityModule]);
 export default function AdminUsersPage() {
+    const { resolved: theme } = useThemeStore();
     const gridRef = useRef<AgGridReact>(null);
     const [users, setUsers] = useState<AdminUser[]>([]);
     const [loading, setLoading] = useState(true);
@@ -118,7 +120,7 @@ export default function AdminUsersPage() {
                     params.api.redrawRows({ rowNodes: [params.node] });
                 }, 0);
             }}>
-                <div className="flex justify-between items-start border-b border-gray-100 pb-2 mb-2">
+                <div className="flex justify-between items-start border-b border-border pb-2 mb-2">
                    <div className="font-bold text-[var(--brand-primary)] text-lg">{u.fullName}</div>
                    <div style={{ color: statusColor, fontWeight: '700', fontSize: '12px' }}>{status}</div>
                 </div>
@@ -142,7 +144,7 @@ export default function AdminUsersPage() {
                     </div>
                 </div>
 
-                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+                <div className="flex gap-2 mt-3 pt-3 border-t border-border">
                     {!u.isDeleted ? (
                         <>
                             <button onClick={(e) => { e.stopPropagation(); handleEdit(u); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">DÜZENLE</button>
@@ -178,7 +180,7 @@ export default function AdminUsersPage() {
                         <div className="w-14 h-14 flex items-center justify-center">
                             <img src={excelIcon} alt="Excel" className="h-full w-full object-contain" />
                         </div>
-                        <span className="hidden xs:inline text-[10px] font-bold text-gray-500 uppercase tracking-wider">Excel</span>
+                        <span className="hidden xs:inline text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Excel</span>
                     </button>
                     <button
                         onClick={() => exportUsersToPDF(users).catch(() => alert('PDF hatasi.'))}
@@ -188,7 +190,7 @@ export default function AdminUsersPage() {
                         <div className="w-14 h-14 flex items-center justify-center">
                             <img src={pdfIcon} alt="PDF" className="h-10 w-10 object-contain" />
                         </div>
-                        <span className="hidden xs:inline text-[10px] font-bold text-gray-500 uppercase tracking-wider">PDF</span>
+                        <span className="hidden xs:inline text-[10px] font-bold text-muted-foreground uppercase tracking-wider">PDF</span>
                     </button>
                     <div className="flex flex-col items-center gap-1">
                         <button
@@ -201,12 +203,12 @@ export default function AdminUsersPage() {
                         >
                             <UserPlus className="h-6 w-6" />
                         </button>
-                        <span className="hidden xs:inline text-[10px] font-bold text-gray-500 uppercase tracking-wider">EKLE</span>
+                        <span className="hidden xs:inline text-[10px] font-bold text-muted-foreground uppercase tracking-wider">EKLE</span>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm overflow-x-auto" style={{ border: '1px solid #e5e7eb' }}>
+            <div className="bg-card rounded-xl shadow-sm overflow-x-auto border border-border">
                 <div style={{ minWidth: 'fit-content' }}>
                     <AgGridReact<AdminUser>
                         suppressHorizontalScroll={false}
@@ -268,9 +270,10 @@ export default function AdminUsersPage() {
                         animateRows={true}
                         localeText={localeTextTr}
                         getRowStyle={(params) => {
-                            if (params.data?.isDeleted) return { backgroundColor: '#fef2f2' };
-                            if (params.data?.isActive === false) return { backgroundColor: '#f1f5f9' };
-                            if (params.data?.isActive === true) return { backgroundColor: '#f0fdf4' };
+                            const isDark = theme === 'dark';
+                            if (params.data?.isDeleted) return { backgroundColor: isDark ? 'rgba(239,68,68,0.15)' : '#fef2f2' };
+                            if (params.data?.isActive === false) return { backgroundColor: isDark ? 'rgba(100,116,139,0.15)' : '#f1f5f9' };
+                            if (params.data?.isActive === true) return { backgroundColor: isDark ? 'rgba(34,197,94,0.12)' : '#f0fdf4' };
                             return undefined;
                         }}
                         defaultColDef={{
@@ -290,7 +293,7 @@ export default function AdminUsersPage() {
                 </div>
             </div>
 
-            <div className="flex items-center justify-between mt-3 px-1 text-xs text-gray-500">
+            <div className="flex items-center justify-between mt-3 px-1 text-xs text-muted-foreground">
                 <span>Toplam kayit: {users.length}</span>
                 <span>Gosterilen: {gridApi?.getDisplayedRowCount() ?? users.length} kayit</span>
             </div>

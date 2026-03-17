@@ -123,6 +123,65 @@ public static class DbInitializer
                     },
                 },
             },
+            HomepageSections = new
+            {
+                Sections = new[]
+                {
+                    new
+                    {
+                        Id = "ebrar-categories",
+                        Title = "Ana Kategoriler",
+                        ShowTitle = false,
+                        Layout = "grid",
+                        Columns = 3,
+                        BackgroundColor = "transparent",
+                        PaddingY = 48,
+                        Order = 0,
+                        Enabled = true,
+                        Cards = new[]
+                        {
+                            new { Id = "ecat-1", ImageBase64 = (string?)null, ImageUrl = "https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?w=400&h=300&fit=crop", Title = "KURU MEYVE", Subtitle = "", Description = "", TextPosition = "bottom-left", TextColor = "#FFFFFF", OverlayColor = "#000000", OverlayOpacity = 30, BadgeText = (string?)null, BadgeColor = (string?)null, BadgePosition = "top-left", LinkType = "url", LinkTarget = (string?)"/products?categoryId=4", ButtonText = (string?)null, ButtonVisible = false, AspectRatio = "landscape", ColSpan = 1, RowSpan = 1 },
+                            new { Id = "ecat-2", ImageBase64 = (string?)null, ImageUrl = "https://images.unsplash.com/photo-1608797178974-15b35a64ede9?w=400&h=300&fit=crop", Title = "KURUYEMİŞ", Subtitle = "", Description = "", TextPosition = "bottom-left", TextColor = "#FFFFFF", OverlayColor = "#000000", OverlayOpacity = 30, BadgeText = (string?)null, BadgeColor = (string?)null, BadgePosition = "top-left", LinkType = "url", LinkTarget = (string?)"/products?categoryId=1", ButtonText = (string?)null, ButtonVisible = false, AspectRatio = "landscape", ColSpan = 1, RowSpan = 1 },
+                            new { Id = "ecat-3", ImageBase64 = (string?)null, ImageUrl = "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=400&h=300&fit=crop", Title = "ATIŞTIYRMALIK & MİX", Subtitle = "", Description = "", TextPosition = "bottom-left", TextColor = "#FFFFFF", OverlayColor = "#000000", OverlayOpacity = 30, BadgeText = (string?)null, BadgeColor = (string?)null, BadgePosition = "top-left", LinkType = "url", LinkTarget = (string?)"/products?categoryId=5", ButtonText = (string?)null, ButtonVisible = false, AspectRatio = "landscape", ColSpan = 1, RowSpan = 1 },
+                        },
+                    },
+                    new
+                    {
+                        Id = "ebrar-featured",
+                        Title = "Öne Çıkan Ürünler",
+                        ShowTitle = false,
+                        Layout = "featured",
+                        Columns = 3,
+                        BackgroundColor = "transparent",
+                        PaddingY = 32,
+                        Order = 1,
+                        Enabled = true,
+                        Cards = new[]
+                        {
+                            new { Id = "efeat-1", ImageBase64 = (string?)null, ImageUrl = "https://images.unsplash.com/photo-1590005354167-6da97870c757?w=400&h=500&fit=crop", Title = "HAFTANIN FIRSATI", Subtitle = "Türk Kayısısı & Çekirdekli Hurma", Description = "", TextPosition = "bottom-left", TextColor = "#FFFFFF", OverlayColor = "#000000", OverlayOpacity = 40, BadgeText = (string?)"İndirimli", BadgeColor = (string?)"#D4A853", BadgePosition = "top-left", LinkType = "url", LinkTarget = (string?)"/products", ButtonText = (string?)"ALIŞVERİŞ YAP", ButtonVisible = true, AspectRatio = "auto", ColSpan = 1, RowSpan = 1 },
+                            new { Id = "efeat-2", ImageBase64 = (string?)null, ImageUrl = "https://images.unsplash.com/photo-1574570173583-a65fc27484be?w=400&h=300&fit=crop", Title = "ÜYELİK KULÜBÜ", Subtitle = "Her ay kapınıza özel seçilmiş kuruyemiş paketi.", Description = "", TextPosition = "center", TextColor = "#FFFFFF", OverlayColor = "#000000", OverlayOpacity = 40, BadgeText = (string?)null, BadgeColor = (string?)null, BadgePosition = "top-left", LinkType = "url", LinkTarget = (string?)"/products", ButtonText = (string?)"KATIL", ButtonVisible = true, AspectRatio = "landscape", ColSpan = 1, RowSpan = 1 },
+                            new { Id = "efeat-3", ImageBase64 = (string?)null, ImageUrl = "https://images.unsplash.com/photo-1606567595334-d39972c85dfd?w=400&h=200&fit=crop", Title = "TOHUMLAR", Subtitle = "Çeşit Çeşit Tohumlar", Description = "", TextPosition = "top-left", TextColor = "#FFFFFF", OverlayColor = "#000000", OverlayOpacity = 35, BadgeText = (string?)null, BadgeColor = (string?)null, BadgePosition = "top-left", LinkType = "url", LinkTarget = (string?)"/products", ButtonText = (string?)"ALIŞVERİŞ YAP", ButtonVisible = true, AspectRatio = "landscape", ColSpan = 1, RowSpan = 1 },
+                            new { Id = "efeat-4", ImageBase64 = (string?)null, ImageUrl = "https://images.unsplash.com/photo-1513135065346-a098a63a71ee?w=400&h=200&fit=crop", Title = "HEDİYELER", Subtitle = "Hediye için ihtiyacınız olan her şey!", Description = "", TextPosition = "top-left", TextColor = "#FFFFFF", OverlayColor = "#000000", OverlayOpacity = 35, BadgeText = (string?)null, BadgeColor = (string?)null, BadgePosition = "top-left", LinkType = "url", LinkTarget = (string?)"/products", ButtonText = (string?)"ALIŞVERİŞ YAP", ButtonVisible = true, AspectRatio = "landscape", ColSpan = 1, RowSpan = 1 },
+                        },
+                    },
+                    new
+                    {
+                        Id = "ebrar-satisfaction",
+                        Title = "%100 MEMNUNİYET GARANTİSİ",
+                        ShowTitle = true,
+                        Layout = "banner",
+                        Columns = 1,
+                        BackgroundColor = "transparent",
+                        PaddingY = 80,
+                        Order = 2,
+                        Enabled = true,
+                        Cards = new[]
+                        {
+                            new { Id = "ebanner-1", ImageBase64 = (string?)null, ImageUrl = "https://images.unsplash.com/photo-1608797178974-15b35a64ede9?w=1920&h=600&fit=crop", Title = "%100 MEMNUNİYET GARANTİSİ", Subtitle = "", Description = "Müşterilerimize Badem, Ceviz, Fıstık ve Fındık dahil en taze toptan kuruyemişleri sunuyoruz. Kabuklu ya da kabuksuz, en kaliteli ürünler burada.", TextPosition = "center", TextColor = "#FFFFFF", OverlayColor = "#1B5E3F", OverlayOpacity = 85, BadgeText = (string?)null, BadgeColor = (string?)null, BadgePosition = "top-left", LinkType = "url", LinkTarget = (string?)"/products", ButtonText = (string?)"DAHA FAZLA BİLGİ", ButtonVisible = true, AspectRatio = "auto", ColSpan = 1, RowSpan = 1 },
+                        },
+                    },
+                },
+            },
         }, new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
         var storeSettings = StoreSettings.Create(logoBase64, settingsJson);

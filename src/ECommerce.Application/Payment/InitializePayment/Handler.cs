@@ -116,7 +116,7 @@ public class InitializePaymentHandler : IRequestHandler<InitializePaymentCommand
         await _payments.SaveChangesAsync(ct);
 
         return result.IsSuccess
-            ? new InitializePaymentResponse(true, result.RedirectUrl, null)
+            ? new InitializePaymentResponse(true, result.RedirectUrl, null, result.HtmlContent)
             : new InitializePaymentResponse(false, null, result.ErrorMessage);
     }
 }

@@ -101,9 +101,9 @@ export default function AgGridDatePicker({ date, onDateChange }: AgGridDatePicke
                 autoComplete="off"
                 isClearable={true}
                 shouldCloseOnSelect={false}
-                className="w-full pl-7 pr-8 py-1 text-[11px] bg-white border border-gray-200 rounded-md 
-                           focus:ring-1 focus:ring-ebrar-green/30 focus:border-ebrar-green outline-none 
-                           transition-all duration-200 placeholder:text-gray-400 h-[26px]"
+                className="w-full pl-7 pr-8 py-1 text-[11px] bg-background border border-border rounded-md
+                           focus:ring-1 focus:ring-ebrar-green/30 focus:border-ebrar-green outline-none
+                           transition-all duration-200 placeholder:text-muted-foreground text-foreground h-[26px]"
                 calendarClassName="premium-calendar shadow-xl border-none rounded-lg overflow-hidden"
                 popperClassName="ag-custom-component-popup"
                 showPopperArrow={true}

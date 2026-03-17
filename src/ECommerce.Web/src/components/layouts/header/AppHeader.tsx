@@ -9,16 +9,19 @@ import { BasketButton } from './BasketButton';
 import { UserMenu } from './UserMenu';
 import { useCategories } from '@/features/catalog/hooks/useCategories';
 import { LanguageToggle } from '@/components/shared/LanguageToggle';
+import { ThemeToggle } from '@/components/shared/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { CategoryNavDropdownItem } from './CategoryNavDropdownItem';
 import { MobileCategoryDrawer } from './MobileCategoryDrawer';
 import { useStoreSettings } from '@/context/StoreSettingsContext';
+import { useThemeStore } from '@/store/themeStore';
 
 export function AppHeader() {
     const { t } = useTranslation('common');
     const { isAuthenticated, isAuthLoading } = useAuthStore();
     const settings = useStoreSettings();
+    const { resolved: theme } = useThemeStore();
 
     // Resolve dynamic logo: uploaded base64 takes precedence over bundled asset
     const resolvedLogo = settings.imageBase64 ?? logoImg;
@@ -103,15 +106,21 @@ export function AppHeader() {
         return buildTree(null);
     }, [allCategories]);
 
-    const navBg = isStuck ? settings.primaryColor : settings.backgroundColor;
+    // In dark mode, don't override with admin-configured light colors — let CSS vars handle it
+    const navBg = theme === 'dark'
+        ? undefined
+        : (isStuck ? settings.primaryColor : settings.backgroundColor);
+
+    // Gradient overlay color for nav scroll arrows — uses CSS variable in dark mode
+    const navGradientColor = navBg ?? 'hsl(var(--background))';
 
     return (
         <>
             {/* ── Top Row — normal flow, scrolls away with the page ──────────── */}
             <header
                 ref={headerRef}
-                className="relative z-[51]"
-                style={{ backgroundColor: settings.backgroundColor }}
+                className="relative z-[51] bg-background"
+                style={theme === 'dark' ? undefined : { backgroundColor: settings.backgroundColor }}
             >
                 <div className="w-full px-4 sm:px-6 md:px-10 pt-1 md:pt-0 pb-1 md:pb-0">
                     <div className="flex flex-row items-center justify-between gap-4 xl:gap-6 min-h-[70px] md:min-h-[85px]">
@@ -137,6 +146,7 @@ export function AppHeader() {
 
                             {/* Mobile Actions (Icons visible only on mobile) */}
                             <div className="flex md:hidden items-center gap-2 sm:gap-4 flex-shrink-0">
+                                <ThemeToggle />
                                 <LanguageToggle />
                                 <FavoriteButton />
                                 <BasketButton />
@@ -146,10 +156,10 @@ export function AppHeader() {
                                         : (
                                             <div className="flex items-center">
                                                 {/* Adaptif Giriş Paneli: 540px üzerinde geniş butonlar, altında sadece ikon */}
-                                                <div className="hidden min-[540px]:flex items-center gap-2 ml-1 sm:ml-2 border-l border-gray-200 pl-2 sm:pl-3">
+                                                <div className="hidden min-[540px]:flex items-center gap-2 ml-1 sm:ml-2 border-l border-border pl-2 sm:pl-3">
                                                     <Link
                                                         to="/login"
-                                                        className="text-[13px] font-bold text-muted-foreground hover:text-[var(--color-ebrar-green)] px-1 transition-colors whitespace-nowrap"
+                                                        className="text-[13px] font-bold text-muted-foreground hover:text-[var(--brand-primary)] px-1 transition-colors whitespace-nowrap"
                                                     >
                                                         {t('header.login')}
                                                     </Link>
@@ -165,7 +175,7 @@ export function AppHeader() {
                                                 <div className="flex min-[540px]:hidden flex-col items-center group">
                                                     <Link
                                                         to="/login"
-                                                        className="flex items-center justify-center w-11 h-11 rounded-full bg-gray-50 text-muted-foreground hover:bg-green-50 transition-colors shadow-sm"
+                                                        className="flex items-center justify-center w-11 h-11 rounded-full bg-gray-50 dark:bg-white/10 text-muted-foreground hover:bg-[var(--brand-primary-subtle)] transition-colors shadow-sm"
                                                     >
                                                         <UserCircle className="h-6 w-6" />
                                                     </Link>
@@ -189,6 +199,7 @@ export function AppHeader() {
                         {/* Desktop Actions Column */}
                         <div className="hidden md:flex justify-end items-center flex-shrink-0">
                             <div className="flex items-center gap-4 xl:gap-8 flex-shrink-0">
+                                <ThemeToggle />
                                 <LanguageToggle />
                                 <FavoriteButton />
                                 <BasketButton />
@@ -242,14 +253,14 @@ export function AppHeader() {
                     >
                         <div
                             className="absolute inset-0 w-24 pointer-events-none"
-                            style={{ background: `linear-gradient(to right, ${navBg}, transparent)` }}
+                            style={{ background: `linear-gradient(to right, ${navGradientColor}, transparent)` }}
                         />
                         <button
                             type="button"
                             onMouseEnter={() => startScrolling('left')}
                             onMouseLeave={stopScrolling}
                             onClick={() => scrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
-                            className="relative ml-2 w-8 h-8 rounded-full bg-white/40 hover:bg-white border border-white/20 shadow-sm flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group backdrop-blur-[2px]"
+                            className="relative ml-2 w-8 h-8 rounded-full bg-foreground/10 hover:bg-foreground/20 border border-foreground/10 shadow-sm flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group backdrop-blur-[2px]"
                             style={{ color: settings.primaryColor }}
                         >
                             <ChevronLeft className="w-5 h-5" />
@@ -289,14 +300,14 @@ export function AppHeader() {
                     >
                         <div
                             className="absolute inset-0 w-32 left-auto right-0 pointer-events-none"
-                            style={{ background: `linear-gradient(to left, ${navBg}, transparent)` }}
+                            style={{ background: `linear-gradient(to left, ${navGradientColor}, transparent)` }}
                         />
                         <button
                             type="button"
                             onMouseEnter={() => startScrolling('right')}
                             onMouseLeave={stopScrolling}
                             onClick={() => scrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
-                            className="relative w-8 h-8 rounded-full bg-white/40 hover:bg-white border border-white/20 shadow-sm flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group backdrop-blur-[2px]"
+                            className="relative w-8 h-8 rounded-full bg-foreground/10 hover:bg-foreground/20 border border-foreground/10 shadow-sm flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group backdrop-blur-[2px]"
                             style={{ color: settings.primaryColor }}
                         >
                             <ChevronRight className="w-5 h-5" />

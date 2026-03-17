@@ -30,15 +30,15 @@ export default function BasketPage() {
     if (!basket || !basket.items || basket.items.length === 0) {
         return (
             <div className="container mx-auto px-4 py-16 text-center">
-                <ShoppingCart className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">Sepetim</h1>
+                <ShoppingCart className="h-16 w-16 mx-auto mb-4 text-muted-foreground/40" />
+                <h1 className="text-2xl font-bold text-foreground mb-2">Sepetim</h1>
                 <EmptyState
                     title="Sepetiniz boş"
                     description="Henüz bir ürün eklemediniz."
                 />
                 <Link
                     to="/products"
-                    className="inline-flex items-center gap-2 mt-6 px-6 py-3 text-sm font-semibold text-white bg-[var(--color-ebrar-green)] rounded-lg hover:bg-[var(--color-ebrar-green-dark)] transition-colors"
+                    className="inline-flex items-center gap-2 mt-6 px-6 py-3 text-sm font-semibold text-white bg-[var(--brand-primary)] rounded-lg hover:bg-[var(--brand-primary-dark)] transition-colors"
                 >
                     <ShoppingCart className="h-4 w-4" />
                     Ürünlere Göz At
@@ -50,21 +50,21 @@ export default function BasketPage() {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex items-center gap-3 mb-8">
-                <ShoppingCart className="h-6 w-6 text-[var(--color-ebrar-green)]" />
-                <h1 className="text-2xl font-bold text-gray-900">
+                <ShoppingCart className="h-6 w-6 text-[var(--brand-primary)]" />
+                <h1 className="text-2xl font-bold text-foreground">
                     Sepetim ({basket.items.reduce((acc, item) => acc + item.quantity, 0)} ürün)
                 </h1>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 flex flex-col divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white overflow-hidden">
+                <div className="lg:col-span-2 flex flex-col divide-y divide-border rounded-lg border border-border bg-card overflow-hidden">
                     {basket.items.map(item => (
                         <BasketItemRow key={item.productId} item={item} />
                     ))}
                 </div>
 
                 <div className="flex flex-col gap-4">
-                    <div className="rounded-lg border border-gray-200 bg-white overflow-hidden">
+                    <div className="rounded-lg border border-border bg-card overflow-hidden">
                         <BasketSummary basket={basket} />
                     </div>
                     <button

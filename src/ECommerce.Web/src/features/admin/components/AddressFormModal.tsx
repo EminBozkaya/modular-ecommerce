@@ -102,10 +102,10 @@ export default function AddressFormModal({
     if (!open) return null;
 
     const inputClass = (hasError: boolean) =>
-        `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors ${
+        `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors bg-background text-foreground ${
             hasError
-                ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30'
-                : 'border-gray-300 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]'
+                ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30 dark:bg-red-900/10'
+                : 'border-border focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]'
         }`;
 
     const errorMsg = (msg: string | undefined) =>
@@ -118,7 +118,7 @@ export default function AddressFormModal({
             onClick={onClose}
         >
             <div
-                className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden"
+                className="bg-card rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
                 style={{ animation: 'fadeInUp 0.25s ease-out' }}
             >
@@ -141,14 +141,14 @@ export default function AddressFormModal({
                 {/* Form */}
                 <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4" noValidate>
                     {!isEdit && (
-                        <div className="space-y-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                            <label className="block text-sm font-semibold text-gray-700">Kullanıcı Seçimi *</label>
-                            
+                        <div className="space-y-2 p-3 bg-gray-50 dark:bg-white/10 rounded-lg border border-border">
+                            <label className="block text-sm font-semibold text-foreground">Kullanıcı Seçimi *</label>
+
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
                                 <input
                                     type="text"
-                                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-[var(--brand-primary)] focus:border-[var(--brand-primary)]"
+                                    className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm bg-background text-foreground focus:ring-1 focus:ring-[var(--brand-primary)] focus:border-[var(--brand-primary)]"
                                     placeholder="Kullanıcı ara (ad veya e-posta)..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -157,9 +157,9 @@ export default function AddressFormModal({
 
                             <div className="max-h-40 overflow-y-auto space-y-1 mt-2 custom-scrollbar">
                                 {usersLoading ? (
-                                    <p className="text-xs text-center py-2 text-gray-400 italic font-medium font-inter">Kullanıcılar yükleniyor...</p>
+                                    <p className="text-xs text-center py-2 text-muted-foreground italic font-medium font-inter">Kullanıcılar yükleniyor...</p>
                                 ) : !searchTerm.trim() ? (
-                                    <p className="text-xs text-center py-2 text-gray-400 italic font-medium font-inter">Aramak için yazın...</p>
+                                    <p className="text-xs text-center py-2 text-muted-foreground italic font-medium font-inter">Aramak için yazın...</p>
                                 ) : filteredUsers.length > 0 ? (
                                     filteredUsers.map(u => (
                                         <button
@@ -172,15 +172,15 @@ export default function AddressFormModal({
                                             className={`w-full text-left px-3 py-2 rounded-md text-sm transition-all duration-200 font-inter ${
                                                 selectedUserId === u.id
                                                     ? 'bg-[var(--brand-primary)] text-white shadow-md transform scale-[1.01]'
-                                                    : 'hover:bg-green-50 text-gray-700 hover:text-[var(--brand-primary)]'
+                                                    : 'hover:bg-accent text-foreground hover:text-[var(--brand-primary)]'
                                             }`}
                                         >
                                             <div className="font-semibold">{u.fullName}</div>
-                                            <div className={`text-xs ${selectedUserId === u.id ? 'text-green-100' : 'text-gray-500'}`}>{u.email}</div>
+                                            <div className={`text-xs ${selectedUserId === u.id ? 'text-green-100' : 'text-muted-foreground'}`}>{u.email}</div>
                                         </button>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center py-2 text-gray-400 italic font-medium font-inter">Kullanıcı bulunamadı.</p>
+                                    <p className="text-xs text-center py-2 text-muted-foreground italic font-medium font-inter">Kullanıcı bulunamadı.</p>
                                 )}
                             </div>
                             {errorMsg(errors.userId?.message)}
@@ -188,7 +188,7 @@ export default function AddressFormModal({
                     )}
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Adres Başlığı *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Adres Başlığı *</label>
                         <input
                             {...register('title')}
                             className={inputClass(!!errors.title)}
@@ -198,7 +198,7 @@ export default function AddressFormModal({
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Ad Soyad *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Ad Soyad *</label>
                         <input
                             {...register('fullName')}
                             className={inputClass(!!errors.fullName)}
@@ -208,7 +208,7 @@ export default function AddressFormModal({
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Adres Satırı 1 *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Adres Satırı 1 *</label>
                         <input
                             {...register('addressLine1')}
                             className={inputClass(!!errors.addressLine1)}
@@ -218,7 +218,7 @@ export default function AddressFormModal({
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Adres Satırı 2</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Adres Satırı 2</label>
                         <input
                             {...register('addressLine2')}
                             className={inputClass(!!errors.addressLine2)}
@@ -229,7 +229,7 @@ export default function AddressFormModal({
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Şehir *</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Şehir *</label>
                             <input
                                 {...register('city')}
                                 className={inputClass(!!errors.city)}
@@ -238,7 +238,7 @@ export default function AddressFormModal({
                             {errorMsg(errors.city?.message)}
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Posta Kodu *</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Posta Kodu *</label>
                             <input
                                 {...register('postalCode')}
                                 className={inputClass(!!errors.postalCode)}
@@ -249,7 +249,7 @@ export default function AddressFormModal({
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Ülke *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Ülke *</label>
                         <input
                             {...register('country')}
                             className={inputClass(!!errors.country)}
@@ -258,18 +258,18 @@ export default function AddressFormModal({
                         {errorMsg(errors.country?.message)}
                     </div>
 
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-white/10 rounded-lg border border-border">
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input
                                 type="checkbox"
                                 {...register('isActive')}
                                 className="sr-only peer"
                             />
-                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--brand-primary)]"></div>
+                            <div className="w-11 h-6 bg-gray-200 dark:bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--brand-primary)]"></div>
                         </label>
                         <div>
-                            <span className="block text-sm font-semibold text-gray-900">Adres Aktif</span>
-                            <span className="block text-xs text-gray-500">Bu adres sistemde aktif olarak kullanılabilir mi?</span>
+                            <span className="block text-sm font-semibold text-foreground">Adres Aktif</span>
+                            <span className="block text-xs text-muted-foreground">Bu adres sistemde aktif olarak kullanılabilir mi?</span>
                         </div>
                     </div>
 
@@ -278,7 +278,7 @@ export default function AddressFormModal({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                            className="px-4 py-2 text-sm font-medium text-foreground bg-accent hover:bg-accent/80 rounded-lg transition-colors"
                         >
                             İptal
                         </button>

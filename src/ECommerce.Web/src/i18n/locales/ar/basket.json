@@ -1,0 +1,18 @@
+{
+  "drawer": {
+    "title": "سلتي",
+    "loadError": "تعذّر تحميل السلة.",
+    "empty": "السلة فارغة",
+    "emptyDesc": "لم تضف أي منتجات بعد.",
+    "checkout": "إتمام الشراء"
+  },
+  "item": {
+    "noImage": "لا توجد صورة",
+    "removeAriaLabel": "إزالة من السلة",
+    "remove": "إزالة"
+  },
+  "summary": {
+    "products": "المنتجات ({{count}})",
+    "total": "الإجمالي"
+  }
+}

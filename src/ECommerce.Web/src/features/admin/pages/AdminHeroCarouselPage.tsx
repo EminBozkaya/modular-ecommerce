@@ -59,7 +59,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
             role="switch"
             aria-checked={checked}
             onClick={() => onChange(!checked)}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${checked ? 'bg-[var(--brand-primary)]' : 'bg-gray-200'}`}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${checked ? 'bg-[var(--brand-primary)]' : 'bg-gray-200 dark:bg-white/20'}`}
         >
             <span
                 className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${checked ? 'translate-x-6' : 'translate-x-1'}`}
@@ -72,8 +72,8 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 
 function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-4">
-            <h3 className="text-base font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100">{title}</h3>
+        <div className="bg-card rounded-xl shadow-sm border border-border p-5 mb-4">
+            <h3 className="text-base font-semibold text-foreground mb-4 pb-3 border-b border-border">{title}</h3>
             {children}
         </div>
     );
@@ -85,8 +85,8 @@ function LabelRow({ label, description, children }: { label: string; description
     return (
         <div className="flex items-center justify-between gap-4 py-2">
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800">{label}</p>
-                {description && <p className="text-xs text-gray-400 mt-0.5">{description}</p>}
+                <p className="text-sm font-medium text-foreground">{label}</p>
+                {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
             </div>
             <div className="flex-shrink-0">{children}</div>
         </div>
@@ -114,7 +114,7 @@ function EffectSelector({ value, onChange }: { value: Effect; onChange: (v: Effe
                     onClick={() => onChange(e.value)}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${value === e.value
                         ? 'bg-[var(--brand-primary)] text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        : 'bg-accent text-muted-foreground hover:bg-accent/80'
                         }`}
                 >
                     {e.label}
@@ -129,8 +129,8 @@ function EffectSelector({ value, onChange }: { value: Effect; onChange: (v: Effe
 function ColorInput({ value, onChange, label }: { value: string; onChange: (v: string) => void; label?: string }) {
     return (
         <div className="flex items-center gap-2">
-            {label && <span className="text-sm text-gray-600">{label}</span>}
-            <div className="flex items-center gap-1.5 border border-gray-200 rounded-lg px-2 py-1 bg-white">
+            {label && <span className="text-sm text-muted-foreground">{label}</span>}
+            <div className="flex items-center gap-1.5 border border-border rounded-lg px-2 py-1 bg-background">
                 <input
                     type="color"
                     value={value}
@@ -142,7 +142,7 @@ function ColorInput({ value, onChange, label }: { value: string; onChange: (v: s
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                     maxLength={7}
-                    className="w-20 text-xs font-mono outline-none bg-transparent text-gray-700"
+                    className="w-20 text-xs font-mono outline-none bg-transparent text-foreground"
                 />
             </div>
         </div>
@@ -187,16 +187,16 @@ function SlideEditorCard({
     }
 
     return (
-        <div className="border border-gray-200 rounded-xl overflow-hidden mb-3">
+        <div className="border border-border rounded-xl overflow-hidden mb-3">
             {/* Header */}
             <div
-                className="flex items-center gap-3 px-4 py-3 bg-gray-50 cursor-pointer select-none"
+                className="flex items-center gap-3 px-4 py-3 bg-gray-50 dark:bg-white/5 cursor-pointer select-none"
                 onClick={() => setExpanded((p) => !p)}
             >
                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--brand-primary)] text-white text-xs font-bold flex items-center justify-center">
                     {index + 1}
                 </span>
-                <span className="flex-1 text-sm font-medium text-gray-800 truncate">
+                <span className="flex-1 text-sm font-medium text-foreground truncate">
                     {slide.title || 'Başlıksız Slayt'}
                 </span>
                 <div className="flex items-center gap-1 flex-shrink-0">
@@ -204,44 +204,44 @@ function SlideEditorCard({
                         type="button"
                         onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
                         disabled={index === 0}
-                        className="p-1 rounded hover:bg-gray-200 disabled:opacity-30 transition-colors"
+                        className="p-1 rounded hover:bg-accent disabled:opacity-30 transition-colors"
                         aria-label="Yukarı taşı"
                     >
-                        <ChevronUp className="h-4 w-4 text-gray-500" />
+                        <ChevronUp className="h-4 w-4 text-muted-foreground" />
                     </button>
                     <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
                         disabled={index === total - 1}
-                        className="p-1 rounded hover:bg-gray-200 disabled:opacity-30 transition-colors"
+                        className="p-1 rounded hover:bg-accent disabled:opacity-30 transition-colors"
                         aria-label="Aşağı taşı"
                     >
-                        <ChevronDown className="h-4 w-4 text-gray-500" />
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
                     </button>
                     <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); onDelete(); }}
                         disabled={total <= 1}
-                        className="p-1 rounded hover:bg-red-100 disabled:opacity-30 transition-colors ml-1"
+                        className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/20 disabled:opacity-30 transition-colors ml-1"
                         aria-label="Slaytı sil"
                     >
                         <Trash2 className="h-4 w-4 text-red-400" />
                     </button>
                     <ChevronDown
-                        className={`h-4 w-4 text-gray-400 ml-1 transition-transform ${expanded ? 'rotate-180' : ''}`}
+                        className={`h-4 w-4 text-muted-foreground ml-1 transition-transform ${expanded ? 'rotate-180' : ''}`}
                     />
                 </div>
             </div>
 
             {/* Body */}
             {expanded && (
-                <div className="px-4 py-4 space-y-4 bg-white">
+                <div className="px-4 py-4 space-y-4 bg-card">
                     {/* Image */}
                     <div>
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Arka Plan Görseli</p>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Arka Plan Görseli</p>
                         <div className="flex gap-2 items-start">
                             <div
-                                className="w-20 h-14 rounded-lg border border-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden"
+                                className="w-20 h-14 rounded-lg border border-border flex items-center justify-center flex-shrink-0 overflow-hidden"
                                 style={{
                                     background: slide.imageBase64 || slide.imageUrl
                                         ? undefined
@@ -270,7 +270,7 @@ function SlideEditorCard({
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border rounded-lg hover:bg-accent transition-colors text-foreground"
                                 >
                                     <ImageIcon className="h-3.5 w-3.5" />
                                     Görsel Yükle
@@ -286,13 +286,13 @@ function SlideEditorCard({
                                     </button>
                                 )}
                                 <div>
-                                    <p className="text-xs text-gray-400 mb-1">veya URL girin</p>
+                                    <p className="text-xs text-muted-foreground mb-1">veya URL girin</p>
                                     <input
                                         type="url"
                                         value={slide.imageUrl ?? ''}
                                         onChange={(e) => { update('imageUrl', e.target.value || undefined); update('imageBase64', undefined); }}
                                         placeholder="https://..."
-                                        className="w-full text-xs border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-[var(--brand-primary)]"
+                                        className="w-full text-xs border border-border rounded-lg px-3 py-1.5 outline-none focus:border-[var(--brand-primary)] bg-background text-foreground"
                                     />
                                 </div>
                             </div>
@@ -301,35 +301,35 @@ function SlideEditorCard({
 
                     {/* Text Content */}
                     <div>
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">İçerik</p>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">İçerik</p>
                         <div className="space-y-2">
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">Başlık</label>
+                                <label className="text-xs text-muted-foreground block mb-1">Başlık</label>
                                 <input
                                     type="text"
                                     value={slide.title}
                                     onChange={(e) => update('title', e.target.value)}
-                                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)]"
+                                    className="w-full text-sm border border-border rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)] bg-background text-foreground"
                                     placeholder="Ana başlık"
                                 />
                             </div>
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">Alt Başlık</label>
+                                <label className="text-xs text-muted-foreground block mb-1">Alt Başlık</label>
                                 <input
                                     type="text"
                                     value={slide.subtitle}
                                     onChange={(e) => update('subtitle', e.target.value)}
-                                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)]"
+                                    className="w-full text-sm border border-border rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)] bg-background text-foreground"
                                     placeholder="Alt başlık"
                                 />
                             </div>
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">Açıklama</label>
+                                <label className="text-xs text-muted-foreground block mb-1">Açıklama</label>
                                 <textarea
                                     value={slide.description}
                                     onChange={(e) => update('description', e.target.value)}
                                     rows={2}
-                                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)] resize-none"
+                                    className="w-full text-sm border border-border rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)] resize-none bg-background text-foreground"
                                     placeholder="Kısa açıklama metni"
                                 />
                             </div>
@@ -338,20 +338,20 @@ function SlideEditorCard({
 
                     {/* Colors */}
                     <div>
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Renkler</p>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Renkler</p>
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600">Metin Rengi</span>
+                                <span className="text-sm text-muted-foreground">Metin Rengi</span>
                                 <ColorInput value={slide.textColor} onChange={(v) => update('textColor', v)} />
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600">Kaplama Rengi</span>
+                                <span className="text-sm text-muted-foreground">Kaplama Rengi</span>
                                 <ColorInput value={slide.overlayColor} onChange={(v) => update('overlayColor', v)} />
                             </div>
                             <div>
                                 <div className="flex items-center justify-between mb-1">
-                                    <span className="text-sm text-gray-600">Kaplama Opaklığı</span>
-                                    <span className="text-sm font-medium text-gray-800">{slide.overlayOpacity}%</span>
+                                    <span className="text-sm text-muted-foreground">Kaplama Opaklığı</span>
+                                    <span className="text-sm font-medium text-foreground">{slide.overlayOpacity}%</span>
                                 </div>
                                 <input
                                     type="range"
@@ -368,7 +368,7 @@ function SlideEditorCard({
                     {/* CTA Button */}
                     <div>
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Buton</p>
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Buton</p>
                             <Toggle
                                 checked={slide.buttonVisible}
                                 onChange={(v) => update('buttonVisible', v)}
@@ -377,22 +377,22 @@ function SlideEditorCard({
                         {slide.buttonVisible && (
                             <div className="space-y-2">
                                 <div>
-                                    <label className="text-xs text-gray-500 block mb-1">Buton Metni</label>
+                                    <label className="text-xs text-muted-foreground block mb-1">Buton Metni</label>
                                     <input
                                         type="text"
                                         value={slide.buttonText}
                                         onChange={(e) => update('buttonText', e.target.value)}
-                                        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)]"
+                                        className="w-full text-sm border border-border rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)] bg-background text-foreground"
                                         placeholder="Buton yazısı"
                                     />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-500 block mb-1">Buton Linki</label>
+                                    <label className="text-xs text-muted-foreground block mb-1">Buton Linki</label>
                                     <input
                                         type="text"
                                         value={slide.buttonLink}
                                         onChange={(e) => update('buttonLink', e.target.value)}
-                                        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)]"
+                                        className="w-full text-sm border border-border rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)] bg-background text-foreground"
                                         placeholder="/products"
                                     />
                                 </div>
@@ -533,7 +533,7 @@ export default function AdminHeroCarouselPage() {
 
     if (isLoading || !draft) {
         return (
-            <div className="flex items-center justify-center h-64 text-gray-400 text-sm">
+            <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">
                 Yükleniyor…
             </div>
         );
@@ -546,8 +546,8 @@ export default function AdminHeroCarouselPage() {
             {/* Page header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-xl font-bold text-gray-900">Hero Karosel</h1>
-                    <p className="text-sm text-gray-500 mt-0.5">
+                    <h1 className="text-xl font-bold text-foreground">Hero Karosel</h1>
+                    <p className="text-sm text-muted-foreground mt-0.5">
                         Ana sayfanın üst kısmında gösterilen karosel slaytlarını yönetin
                     </p>
                 </div>
@@ -564,13 +564,13 @@ export default function AdminHeroCarouselPage() {
             </div>
 
             {mutation.isSuccess && (
-                <div className="mb-4 px-4 py-2.5 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
+                <div className="mb-4 px-4 py-2.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-400 rounded-lg text-sm">
                     ✓ Değişiklikler başarıyla kaydedildi.
                 </div>
             )}
 
             {mutation.isError && (
-                <div className="mb-4 px-4 py-2.5 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                <div className="mb-4 px-4 py-2.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-400 rounded-lg text-sm">
                     Kaydedilemedi. Lütfen tekrar deneyin.
                 </div>
             )}
@@ -581,7 +581,7 @@ export default function AdminHeroCarouselPage() {
 
                     {/* Global settings */}
                     <SectionCard title="Genel Ayarlar">
-                        <div className="divide-y divide-gray-50">
+                        <div className="divide-y divide-border/50">
                             <LabelRow
                                 label="Karosel Aktif"
                                 description="Kapatınca ana sayfada karosel görünmez"
@@ -590,7 +590,7 @@ export default function AdminHeroCarouselPage() {
                             </LabelRow>
 
                             <div className="py-3">
-                                <p className="text-sm font-medium text-gray-800 mb-2">Geçiş Efekti</p>
+                                <p className="text-sm font-medium text-foreground mb-2">Geçiş Efekti</p>
                                 <EffectSelector
                                     value={draft.effect}
                                     onChange={(v) => updateDraft('effect', v)}
@@ -599,8 +599,8 @@ export default function AdminHeroCarouselPage() {
 
                             <div className="py-3">
                                 <div className="flex items-center justify-between mb-1">
-                                    <p className="text-sm font-medium text-gray-800">Karosel Yüksekliği</p>
-                                    <span className="text-sm font-medium text-gray-700">{draft.height} px</span>
+                                    <p className="text-sm font-medium text-foreground">Karosel Yüksekliği</p>
+                                    <span className="text-sm font-medium text-foreground">{draft.height} px</span>
                                 </div>
                                 <input
                                     type="range"
@@ -611,7 +611,7 @@ export default function AdminHeroCarouselPage() {
                                     onChange={(e) => updateDraft('height', Number(e.target.value))}
                                     className="w-full accent-[var(--brand-primary)]"
                                 />
-                                <div className="flex justify-between text-xs text-gray-400 mt-0.5">
+                                <div className="flex justify-between text-xs text-muted-foreground mt-0.5">
                                     <span>300 px</span>
                                     <span>800 px</span>
                                 </div>
@@ -624,8 +624,8 @@ export default function AdminHeroCarouselPage() {
                             {draft.autoPlay && (
                                 <div className="py-3">
                                     <div className="flex items-center justify-between mb-1">
-                                        <p className="text-sm font-medium text-gray-800">Geçiş Süresi</p>
-                                        <span className="text-sm font-medium text-gray-700">
+                                        <p className="text-sm font-medium text-foreground">Geçiş Süresi</p>
+                                        <span className="text-sm font-medium text-foreground">
                                             {(draft.autoPlayInterval / 1000).toFixed(1)} sn
                                         </span>
                                     </div>
@@ -638,7 +638,7 @@ export default function AdminHeroCarouselPage() {
                                         onChange={(e) => updateDraft('autoPlayInterval', Number(e.target.value))}
                                         className="w-full accent-[var(--brand-primary)]"
                                     />
-                                    <div className="flex justify-between text-xs text-gray-400 mt-0.5">
+                                    <div className="flex justify-between text-xs text-muted-foreground mt-0.5">
                                         <span>2 sn</span>
                                         <span>12 sn</span>
                                     </div>
@@ -678,7 +678,7 @@ export default function AdminHeroCarouselPage() {
                             type="button"
                             onClick={addSlide}
                             disabled={draft.slides.length >= 8}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-200 rounded-xl text-sm font-medium text-gray-500 hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-border rounded-xl text-sm font-medium text-muted-foreground hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             <Plus className="h-4 w-4" />
                             Slayt Ekle
@@ -688,19 +688,19 @@ export default function AdminHeroCarouselPage() {
 
                 {/* ── Right column: live preview ──────────────────────────── */}
                 <div className="xl:sticky xl:top-6 self-start">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                    <div className="bg-card rounded-xl shadow-sm border border-border p-5">
                         <div className="flex items-center gap-2 mb-3">
                             <Eye className="h-4 w-4 text-[var(--brand-primary)]" />
-                            <h3 className="text-base font-semibold text-gray-900">Canlı Önizleme</h3>
+                            <h3 className="text-base font-semibold text-foreground">Canlı Önizleme</h3>
                         </div>
-                        <p className="text-xs text-gray-400 mb-4">
+                        <p className="text-xs text-muted-foreground mb-4">
                             Değişiklikler kaydedilene kadar siteye yansımaz.
                         </p>
 
                         {/* Preview carousel */}
                         {draft.enabled && draft.slides.length > 0 ? (
                             <div
-                                className="rounded-lg overflow-hidden border border-gray-100"
+                                className="rounded-lg overflow-hidden border border-border"
                                 style={{ height: PREVIEW_HEIGHT }}
                             >
                                 <Swiper
@@ -732,7 +732,7 @@ export default function AdminHeroCarouselPage() {
                             </div>
                         ) : (
                             <div
-                                className="rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 text-sm gap-2"
+                                className="rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground text-sm gap-2"
                                 style={{ height: PREVIEW_HEIGHT }}
                             >
                                 <Eye className="h-8 w-8 opacity-30" />
@@ -740,7 +740,7 @@ export default function AdminHeroCarouselPage() {
                             </div>
                         )}
 
-                        <p className="text-xs text-gray-400 mt-3 text-center">
+                        <p className="text-xs text-muted-foreground mt-3 text-center">
                             Önizleme yaklaşık %55 ölçeğinde gösterilmektedir
                         </p>
                     </div>

@@ -369,7 +369,6 @@ namespace ECommerce.Persistence.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("RefreshToken")
@@ -6890,6 +6889,53 @@ namespace ECommerce.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ECommerce.Domain.Identity.Entities.ExternalLogin", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ProviderUserId")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("Provider", "ProviderUserId")
+                        .IsUnique();
+
+                    b.ToTable("ExternalLogins", (string)null);
+                });
+
             modelBuilder.Entity("ECommerce.Domain.Identity.Entities.UserAddress", b =>
                 {
                     b.Property<Guid>("Id")
@@ -7346,7 +7392,7 @@ namespace ECommerce.Persistence.Migrations
 
                             b1.HasKey("BasketItemId");
 
-                            b1.ToTable("BasketItems");
+                            b1.ToTable("BasketItems", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("BasketItemId");
@@ -7411,7 +7457,7 @@ namespace ECommerce.Persistence.Migrations
 
                             b1.HasKey("ProductId");
 
-                            b1.ToTable("Products");
+                            b1.ToTable("Products", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ProductId");
@@ -7429,7 +7475,7 @@ namespace ECommerce.Persistence.Migrations
 
                             b1.HasKey("ProductId");
 
-                            b1.ToTable("Products");
+                            b1.ToTable("Products", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ProductId");
@@ -7477,6 +7523,17 @@ namespace ECommerce.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("City");
+                });
+
+            modelBuilder.Entity("ECommerce.Domain.Identity.Entities.ExternalLogin", b =>
+                {
+                    b.HasOne("ECommerce.Domain.Identity.Entities.AppUser", "User")
+                        .WithMany("ExternalLogins")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ECommerce.Domain.Identity.Entities.UserAddress", b =>
@@ -7536,7 +7593,7 @@ namespace ECommerce.Persistence.Migrations
 
                             b1.HasKey("OrderItemId");
 
-                            b1.ToTable("OrderItems");
+                            b1.ToTable("OrderItems", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderItemId");
@@ -7566,7 +7623,7 @@ namespace ECommerce.Persistence.Migrations
 
                             b1.HasKey("PaymentRecordId");
 
-                            b1.ToTable("PaymentRecords");
+                            b1.ToTable("PaymentRecords", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("PaymentRecordId");
@@ -7593,6 +7650,11 @@ namespace ECommerce.Persistence.Migrations
             modelBuilder.Entity("ECommerce.Domain.Catalog.Entities.Product", b =>
                 {
                     b.Navigation("Translations");
+                });
+
+            modelBuilder.Entity("ECommerce.Domain.Identity.Entities.AppUser", b =>
+                {
+                    b.Navigation("ExternalLogins");
                 });
 
             modelBuilder.Entity("ECommerce.Domain.Identity.Entities.City", b =>

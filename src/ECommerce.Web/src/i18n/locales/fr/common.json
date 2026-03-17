@@ -1,0 +1,72 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "products": "Produits",
+    "basket": "Panier",
+    "favorites": "Favoris",
+    "login": "Connexion",
+    "register": "Inscription",
+    "logout": "Déconnexion",
+    "profile": "Mon Profil",
+    "orders": "Mes Commandes",
+    "admin": "Administration"
+  },
+  "buttons": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "loading": "Chargement...",
+    "continue": "Continuer",
+    "continueAsGuest": "Continuer en tant qu'invité"
+  },
+  "status": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "empty": "Aucun résultat",
+    "success": "Opération réussie"
+  },
+  "language": {
+    "tr": "Turc",
+    "en": "Anglais",
+    "de": "Allemand",
+    "fr": "Français",
+    "es": "Espagnol",
+    "ru": "Russe",
+    "ar": "Arabe",
+    "changeLanguage": "Changer de langue"
+  },
+  "header": {
+    "login": "Connexion",
+    "basketTitle": "Mon Panier",
+    "basketEmpty": "Panier",
+    "openBasket": "Ouvrir le panier",
+    "favorites": "Favoris",
+    "favoritesTitle": "Mes Favoris"
+  },
+  "userMenu": {
+    "login": "Connexion",
+    "register": "Inscription",
+    "myAccount": "Mon Compte",
+    "admin": "Administrateur",
+    "adminPanel": "Panneau Admin",
+    "profile": "Profil",
+    "orders": "Mes Commandes",
+    "addresses": "Mes Adresses",
+    "settings": "Paramètres",
+    "logout": "Déconnexion"
+  },
+  "pagination": {
+    "prev": "Précédent",
+    "next": "Suivant",
+    "page": "Page {{page}}",
+    "showing": "Affichage de <med>{{from}}</med> - <med>{{to}}</med> sur <bold>{{total}}</bold> produits"
+  },
+  "table": {
+    "total": "Total : {{count}} entrées",
+    "showing": "Affichage : {{count}} entrées"
+  }
+}

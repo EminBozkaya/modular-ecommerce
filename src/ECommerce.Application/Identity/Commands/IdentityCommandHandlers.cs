@@ -48,6 +48,8 @@ public class LoginHandler : IRequestHandler<LoginCommand, LoginResult>
     {
         var user = await _users.GetByEmailAsync(cmd.Email, ct)
             ?? throw new UnauthorizedAccessException("Invalid credentials.");
+        if (user.PasswordHash is null)
+            throw new UnauthorizedAccessException("This account uses social login. Please sign in with the linked social account.");
         if (!VerifyPassword(cmd.Password, user.PasswordHash))
             throw new UnauthorizedAccessException("Invalid credentials.");
         var accessToken = _jwt.GenerateAccessToken(user);

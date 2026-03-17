@@ -1,0 +1,56 @@
+{
+  "page": {
+    "title": "Finaliser la commande",
+    "subtitle": "Renseignez vos coordonnées et choisissez un mode de paiement.",
+    "emptyBasket": "Votre panier est vide",
+    "emptyBasketDesc": "Ajoutez des produits à votre panier pour procéder au paiement.",
+    "continueShopping": "Continuer les achats",
+    "processing": "Traitement en cours...",
+    "proceed": "Procéder au paiement",
+    "terms": "En confirmant votre commande, vous acceptez nos",
+    "termsLink": "conditions d'utilisation",
+    "termsEnd": ".",
+    "creatingOrder": "Création de votre commande...",
+    "redirecting": "Redirection vers la page de paiement..."
+  },
+  "shipping": {
+    "sectionTitle": "Adresse de livraison",
+    "savedAddresses": "Mes adresses enregistrées",
+    "loading": "Chargement des adresses...",
+    "default": "Par défaut",
+    "useNew": "Utiliser une autre adresse",
+    "fullName": "Nom complet",
+    "fullNamePlaceholder": "Jean Dupont",
+    "address1": "Adresse",
+    "address1Placeholder": "Rue, quartier, numéro",
+    "address2": "Complément",
+    "address2Placeholder": "Étage, appartement (facultatif)",
+    "city": "Ville",
+    "cityPlaceholder": "Paris",
+    "postalCode": "Code postal",
+    "postalCodePlaceholder": "75001",
+    "country": "Pays",
+    "countryPlaceholder": "France"
+  },
+  "payment": {
+    "sectionTitle": "Mode de paiement",
+    "loading": "Chargement des modes de paiement...",
+    "loadError": "Impossible de charger les modes de paiement.",
+    "notFound": "Aucun mode de paiement",
+    "notFoundDesc": "Aucun mode de paiement actif disponible pour l'instant.",
+    "selectRequired": "Veuillez sélectionner un mode de paiement pour continuer."
+  },
+  "summary": {
+    "title": "Récapitulatif",
+    "total": "Total"
+  },
+  "waiting": {
+    "titleTimeout": "Traitement de votre paiement",
+    "descTimeout": "La confirmation peut prendre un peu plus de temps. Vous pouvez suivre depuis vos commandes.",
+    "goToOrders": "Voir mes commandes",
+    "titleError": "Statut introuvable",
+    "descError": "Vérifiez le statut depuis vos commandes.",
+    "titleProcessing": "Vérification du paiement...",
+    "descProcessing": "Ce processus peut prendre quelques secondes."
+  }
+}

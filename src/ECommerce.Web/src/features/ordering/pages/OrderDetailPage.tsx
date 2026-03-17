@@ -58,7 +58,7 @@ export default function OrderDetailPage() {
                 {t('detail.backToOrders')}
             </Link>
 
-            <div className="rounded-lg border border-border bg-white p-6 space-y-6">
+            <div className="rounded-lg border border-border bg-card p-6 space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
@@ -73,7 +73,7 @@ export default function OrderDetailPage() {
                     <h2 className="text-sm font-semibold mb-3">{t('detail.products')}</h2>
                     <div className="border border-border rounded-md overflow-hidden">
                         <table className="w-full text-sm">
-                            <thead className="bg-gray-50">
+                            <thead className="bg-gray-50 dark:bg-white/10">
                                 <tr>
                                     <th className="text-left px-4 py-2 font-medium">{t('detail.product')}</th>
                                     <th className="text-center px-4 py-2 font-medium">{t('detail.quantity')}</th>

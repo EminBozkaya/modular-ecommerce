@@ -15,5 +15,6 @@ public record InitializePaymentCommand(
 public record InitializePaymentResponse(
     bool IsSuccess,
     string? RedirectUrl,
-    string? ErrorMessage
+    string? ErrorMessage,
+    string? HtmlContent = null
 );

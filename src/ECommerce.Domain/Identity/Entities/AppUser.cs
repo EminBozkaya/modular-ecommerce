@@ -8,13 +8,16 @@ public class AppUser : BaseAuditableEntity
     public string FirstName { get; private set; } = default!;
     public string LastName { get; private set; } = default!;
     public string Email { get; private set; } = default!;
-    public string PasswordHash { get; private set; } = default!;
+    public string? PasswordHash { get; private set; }
     public UserRole Role { get; private set; }
     public bool IsEmailConfirmed { get; private set; }
 
     // Refresh token — security-rules: rotation is mandatory
     public string? RefreshToken { get; private set; }
     public DateTime? RefreshTokenExpiresAt { get; private set; }
+
+    private readonly List<ExternalLogin> _externalLogins = new();
+    public IReadOnlyCollection<ExternalLogin> ExternalLogins => _externalLogins.AsReadOnly();
 
     private AppUser() { }
 
@@ -33,6 +36,23 @@ public class AppUser : BaseAuditableEntity
             PasswordHash = passwordHash,
             Role = UserRole.Customer,
             IsEmailConfirmed = false,
+            CreatedAt = DateTime.UtcNow
+        };
+    }
+
+    public static AppUser CreateFromSocialLogin(string firstName, string lastName, string email, bool isEmailConfirmed = true)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(email);
+
+        return new AppUser
+        {
+            FirstName = firstName,
+            LastName = string.IsNullOrWhiteSpace(lastName) ? "" : lastName,
+            Email = email.ToLowerInvariant(),
+            PasswordHash = null,
+            Role = UserRole.Customer,
+            IsEmailConfirmed = isEmailConfirmed,
             CreatedAt = DateTime.UtcNow
         };
     }
@@ -59,4 +79,9 @@ public class AppUser : BaseAuditableEntity
         RefreshToken == token && RefreshTokenExpiresAt > DateTime.UtcNow;
 
     public void ConfirmEmail() { IsEmailConfirmed = true; UpdatedAt = DateTime.UtcNow; }
+
+    public void AddExternalLogin(string provider, string providerUserId)
+    {
+        _externalLogins.Add(ExternalLogin.Create(this.Id, provider, providerUserId));
+    }
 }

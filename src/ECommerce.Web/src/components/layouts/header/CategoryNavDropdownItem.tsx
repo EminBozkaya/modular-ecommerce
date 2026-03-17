@@ -56,7 +56,7 @@ function FlyoutSubMenu({ node, level, closeAll }: { node: CategoryTreeNode; leve
                 <Link
                     to={`/products?categoryId=${node.category.id}`}
                     onClick={closeAll}
-                    className="block mx-1.5 px-3 py-2.5 text-[13px] text-foreground hover:bg-gray-100 hover:text-[var(--color-ebrar-green)] transition-colors rounded-lg"
+                    className="block mx-1.5 px-3 py-2.5 text-[13px] text-foreground hover:bg-gray-100 hover:text-[var(--brand-primary)] transition-colors rounded-lg"
                 >
                     {node.category.name}
                 </Link>
@@ -85,12 +85,12 @@ function FlyoutSubMenu({ node, level, closeAll }: { node: CategoryTreeNode; leve
             >
                 <span className={cn(
                     "flex-1 text-[13px] transition-colors",
-                    isOpen ? "text-[var(--color-ebrar-green)] font-semibold" : "text-foreground group-hover:text-[var(--color-ebrar-green)]"
+                    isOpen ? "text-[var(--brand-primary)] font-semibold" : "text-foreground group-hover:text-[var(--brand-primary)]"
                 )}>
                     {node.category.name}
                 </span>
                 <ChevronRight className={cn(
-                    "h-3.5 w-3.5 text-muted-foreground group-hover:text-[var(--color-ebrar-green)] ml-2 transition-transform",
+                    "h-3.5 w-3.5 text-muted-foreground group-hover:text-[var(--brand-primary)] ml-2 transition-transform",
                     isOpen && "rotate-90"
                 )} />
             </button>
@@ -194,7 +194,7 @@ export function CategoryNavDropdownItem({ node, isStuck }: Props) {
         'group inline-flex h-[50px] w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-[14px] font-medium transition-colors hover:bg-transparent focus:bg-transparent focus:outline-none disabled:pointer-events-none select-none cursor-pointer',
         isStuck
             ? 'text-white hover:text-white/80 focus:text-white/80'
-            : 'text-foreground hover:text-[var(--color-ebrar-green)] focus:text-[var(--color-ebrar-green)]',
+            : 'text-foreground hover:text-[var(--brand-primary)] focus:text-[var(--brand-primary)]',
         open && 'bg-white/10'
     );
 

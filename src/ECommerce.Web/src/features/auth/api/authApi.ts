@@ -21,13 +21,42 @@ export async function logout(): Promise<void> {
     await apiClient.post('/api/auth/logout');
 }
 
-/**
- * RESTORES SESSION ON PAGE LOAD.
- * NOTE TO BACKEND: /api/auth/me is not yet in the backend README. It is a standard session-restoration endpoint.
- * The backend should implement GET /api/auth/me -> returns current user from JWT cookie, or 401 if not authenticated.
- */
 export async function getMe(): Promise<AuthUser> {
     if (USE_MOCK) return mockGetMe();
     const response = await apiClient.get<AuthUser>('/api/auth/me');
+    return response.data;
+}
+
+// ─── Social Auth ─────────────────────────────────────────────────────────────
+
+export interface SocialAuthUrlResponse {
+    isSuccess: boolean;
+    authorizationUrl: string;
+    state: string;
+}
+
+/**
+ * Fetches the OAuth Authorization URL for a given social provider.
+ * The frontend redirects the user there so they can authenticate.
+ */
+export async function getSocialAuthUrl(provider: string): Promise<SocialAuthUrlResponse> {
+    const redirectUri = `${window.location.origin}/auth/social/callback`;
+    const response = await apiClient.get<SocialAuthUrlResponse>(
+        `/api/auth/social/${provider}/url`,
+        { params: { redirectUri } }
+    );
+    return response.data;
+}
+
+/**
+ * Exchanges the OAuth `code` for a session.
+ * Backend handles token exchange + user lookup/create + JWT cookie.
+ */
+export async function socialLogin(provider: string, code: string): Promise<AuthResponse> {
+    const redirectUri = `${window.location.origin}/auth/social/callback`;
+    const response = await apiClient.post<AuthResponse>(`/api/auth/social/login/${provider}`, {
+        code,
+        redirectUri,
+    });
     return response.data;
 }

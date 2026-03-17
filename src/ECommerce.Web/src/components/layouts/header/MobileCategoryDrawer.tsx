@@ -26,7 +26,7 @@ function MobileCategoryAccordion({ node, closeDrawer, level = 0 }: AccordionProp
                     to={`/products?categoryId=${node.category.id}`}
                     onClick={closeDrawer}
                     style={{ paddingLeft, paddingRight: '1.25rem' }}
-                    className="flex items-center py-3.5 text-sm font-medium text-foreground hover:bg-gray-50 hover:text-[var(--color-ebrar-green)] transition-colors"
+                    className="flex items-center py-3.5 text-sm font-medium text-foreground hover:bg-accent hover:text-[var(--brand-primary)] transition-colors"
                 >
                     {/* Ok kadar boşluk bırakıldı, hizalama korunsun diye */}
                     <div className="w-4 mr-2 flex-shrink-0" />
@@ -43,7 +43,7 @@ function MobileCategoryAccordion({ node, closeDrawer, level = 0 }: AccordionProp
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 style={{ paddingLeft, paddingRight: '1.25rem' }}
-                className="flex items-center w-full py-3.5 text-sm font-medium text-foreground hover:bg-gray-50 transition-colors"
+                className="flex items-center w-full py-3.5 text-sm font-medium text-foreground hover:bg-accent transition-colors"
             >
                 <ChevronRight 
                     className={cn(
@@ -56,7 +56,7 @@ function MobileCategoryAccordion({ node, closeDrawer, level = 0 }: AccordionProp
 
             {/* Alt kategoriler */}
             {isOpen && (
-                <ul className="bg-gray-50/70 border-t border-border/30">
+                <ul className="bg-gray-50/70 dark:bg-white/5 border-t border-border/30">
                     {node.subCategories.map((childNode) => (
                         <MobileCategoryAccordion
                             key={childNode.category.id}
@@ -89,7 +89,7 @@ export function MobileCategoryDrawer({ tree }: Props) {
                 aria-label="Kategoriler menüsünü aç"
                 aria-expanded={drawerOpen}
                 onClick={() => setDrawerOpen(true)}
-                className="lg:hidden flex-shrink-0 flex items-center justify-center h-9 w-9 rounded-full bg-white/80 shadow-sm border border-border text-foreground hover:text-[var(--color-ebrar-green)] transition-colors"
+                className="lg:hidden flex-shrink-0 flex items-center justify-center h-9 w-9 rounded-full bg-card/80 shadow-sm border border-border text-foreground hover:text-[var(--brand-primary)] transition-colors"
             >
                 <Menu className="h-5 w-5" />
             </button>
@@ -117,7 +117,7 @@ export function MobileCategoryDrawer({ tree }: Props) {
                         aria-label="Kategoriler"
                         className={cn(
                             'absolute top-0 left-0 h-full w-72 max-w-[85vw]',
-                            'bg-white shadow-2xl flex flex-col',
+                            'bg-card shadow-2xl flex flex-col',
                             'transform transition-transform duration-300 ease-in-out',
                             drawerOpen ? 'translate-x-0' : '-translate-x-full',
                         )}
@@ -129,7 +129,7 @@ export function MobileCategoryDrawer({ tree }: Props) {
                                 type="button"
                                 aria-label="Menüyü kapat"
                                 onClick={close}
-                                className="p-1.5 rounded-full hover:bg-gray-100 text-muted-foreground transition-colors"
+                                className="p-1.5 rounded-full hover:bg-accent text-muted-foreground transition-colors"
                             >
                                 <X className="h-5 w-5" />
                             </button>

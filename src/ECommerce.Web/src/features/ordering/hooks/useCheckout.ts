@@ -50,8 +50,23 @@ export function useCheckout() {
 
                 const paymentResponse = await initializePaymentMutation.mutateAsync(paymentReq);
 
-                if (!paymentResponse.isSuccess || !paymentResponse.redirectUrl) {
+                if (!paymentResponse.isSuccess) {
                     throw new Error(paymentResponse.errorMessage ?? 'Ödeme başlatılamadı.');
+                }
+
+                // Handle embedded HTML content (e.g., Iyzico Checkout Form)
+                if (paymentResponse.htmlContent) {
+                    navigate('/payment/iyzico', {
+                        state: {
+                            htmlContent: paymentResponse.htmlContent,
+                            orderId: orderResponse.orderId,
+                        },
+                    });
+                    return true;
+                }
+
+                if (!paymentResponse.redirectUrl) {
+                    throw new Error('Ödeme yönlendirme adresi bulunamadı.');
                 }
 
                 const url = paymentResponse.redirectUrl;

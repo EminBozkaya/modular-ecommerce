@@ -1,0 +1,72 @@
+{
+  "nav": {
+    "home": "Главная",
+    "products": "Товары",
+    "basket": "Корзина",
+    "favorites": "Избранное",
+    "login": "Войти",
+    "register": "Регистрация",
+    "logout": "Выйти",
+    "profile": "Мой профиль",
+    "orders": "Мои заказы",
+    "admin": "Панель администратора"
+  },
+  "buttons": {
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "edit": "Изменить",
+    "add": "Добавить",
+    "confirm": "Подтвердить",
+    "back": "Назад",
+    "loading": "Загрузка...",
+    "continue": "Продолжить",
+    "continueAsGuest": "Продолжить как гость"
+  },
+  "status": {
+    "loading": "Загрузка...",
+    "error": "Произошла ошибка",
+    "empty": "Ничего не найдено",
+    "success": "Операция выполнена"
+  },
+  "language": {
+    "tr": "Турецкий",
+    "en": "Английский",
+    "de": "Немецкий",
+    "fr": "Французский",
+    "es": "Испанский",
+    "ru": "Русский",
+    "ar": "Арабский",
+    "changeLanguage": "Сменить язык"
+  },
+  "header": {
+    "login": "Войти",
+    "basketTitle": "Моя корзина",
+    "basketEmpty": "Корзина",
+    "openBasket": "Открыть корзину",
+    "favorites": "Избранное",
+    "favoritesTitle": "Моё избранное"
+  },
+  "userMenu": {
+    "login": "Войти",
+    "register": "Регистрация",
+    "myAccount": "Мой аккаунт",
+    "admin": "Администратор",
+    "adminPanel": "Панель администратора",
+    "profile": "Профиль",
+    "orders": "Мои заказы",
+    "addresses": "Мои адреса",
+    "settings": "Настройки",
+    "logout": "Выйти"
+  },
+  "pagination": {
+    "prev": "Назад",
+    "next": "Далее",
+    "page": "Страница {{page}}",
+    "showing": "Показано <med>{{from}}</med> - <med>{{to}}</med> из <bold>{{total}}</bold> товаров"
+  },
+  "table": {
+    "total": "Всего: {{count}}",
+    "showing": "Показано: {{count}}"
+  }
+}

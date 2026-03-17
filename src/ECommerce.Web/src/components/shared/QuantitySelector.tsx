@@ -121,7 +121,7 @@ export function QuantitySelector({
 
     return (
         <div
-            className={`inline-flex items-stretch ${cls.wrapper} rounded-xl border border-gray-200 bg-white overflow-hidden transition-all duration-200 ${isFocused ? 'ring-2 ring-[var(--color-ebrar-green)]/30 border-[var(--color-ebrar-green)]' : 'hover:border-gray-300'} ${disabled ? 'opacity-60 pointer-events-none' : ''}`}
+            className={`inline-flex items-stretch ${cls.wrapper} rounded-xl border border-border bg-background overflow-hidden transition-all duration-200 ${isFocused ? 'ring-2 ring-[var(--brand-primary)]/30 border-[var(--brand-primary)]' : 'hover:border-border'} ${disabled ? 'opacity-60 pointer-events-none' : ''}`}
             role="spinbutton"
             aria-valuenow={value}
             aria-valuemin={config.min}
@@ -131,7 +131,7 @@ export function QuantitySelector({
                 onClick={handleDecrement}
                 disabled={disabled || isAtMin}
                 aria-label="Miktarı azalt"
-                className={`${cls.btn} flex items-center justify-center bg-gray-50 text-gray-600 hover:text-white hover:bg-[var(--color-ebrar-green)] active:bg-[var(--color-ebrar-green-dark)] transition-all duration-150 disabled:text-gray-300 disabled:hover:bg-gray-50 border-r border-gray-200`}
+                className={`${cls.btn} flex items-center justify-center bg-gray-50 dark:bg-white/5 text-muted-foreground hover:text-white hover:bg-[var(--brand-primary)] active:bg-[var(--brand-primary-dark)] transition-all duration-150 disabled:text-muted-foreground/40 disabled:hover:bg-gray-50 dark:disabled:hover:bg-white/5 border-r border-border`}
             >
                 <Minus className={cls.icon} strokeWidth={2.5} />
             </button>
@@ -149,7 +149,7 @@ export function QuantitySelector({
                 }}
                 onBlur={commitValue}
                 disabled={disabled}
-                className={`${cls.input} text-center font-bold tabular-nums bg-transparent outline-none text-gray-900`}
+                className={`${cls.input} text-center font-bold tabular-nums bg-transparent outline-none text-foreground`}
             />
 
             <button
@@ -157,7 +157,7 @@ export function QuantitySelector({
                 onClick={handleIncrement}
                 disabled={disabled}
                 aria-label="Miktarı artır"
-                className={`${cls.btn} flex items-center justify-center bg-gray-50 text-gray-600 hover:text-white hover:bg-[var(--color-ebrar-green)] active:bg-[var(--color-ebrar-green-dark)] transition-all duration-150 disabled:text-gray-300 disabled:hover:bg-gray-50 border-l border-gray-200`}
+                className={`${cls.btn} flex items-center justify-center bg-gray-50 dark:bg-white/5 text-muted-foreground hover:text-white hover:bg-[var(--brand-primary)] active:bg-[var(--brand-primary-dark)] transition-all duration-150 disabled:text-muted-foreground/40 disabled:hover:bg-gray-50 dark:disabled:hover:bg-white/5 border-l border-border`}
             >
                 <Plus className={cls.icon} strokeWidth={2.5} />
             </button>

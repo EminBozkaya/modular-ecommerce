@@ -1,0 +1,62 @@
+{
+  "dashboard": {
+    "title": "Panel de control",
+    "periods": { "daily": "Diario", "weekly": "Semanal", "monthly": "Mensual", "yearly": "Anual" },
+    "cards": {
+      "totalOrders": "Total pedidos",
+      "totalRevenue": "Ingresos totales",
+      "totalCustomers": "Clientes",
+      "lowStock": "Stock bajo",
+      "lowStockDesc": "Productos con 5 unidades o menos"
+    },
+    "recentOrders": "Pedidos recientes",
+    "noOrders": "Sin pedidos.",
+    "table": { "customer": "Cliente", "date": "Fecha", "amount": "Importe", "status": "Estado" },
+    "summaryError": "Error al cargar el resumen.",
+    "revenueError": "Error al cargar el gráfico.",
+    "recentOrdersError": "Error al cargar pedidos recientes.",
+    "lowStockError": "Error al cargar stock bajo."
+  },
+  "products": {
+    "title": "Productos",
+    "addTooltip": "Añadir producto",
+    "excelTooltip": "Exportar Excel",
+    "pdfTooltip": "Exportar PDF",
+    "noProducts": "Sin productos.",
+    "loadingProducts": "Cargando...",
+    "mobile": { "price": "Precio", "stock": "Stock", "category": "Categoría", "description": "Descripción", "noDesc": "Ninguna", "createdBy": "Creado por", "date": "Fecha", "edit": "EDITAR", "delete": "ELIMINAR", "restore": "RESTAURAR" },
+    "grid": { "name": "Nombre", "category": "Categoría", "price": "Precio", "stock": "Stock", "unit": "Unidad", "status": "Estado", "createdBy": "Creado por", "createdAt": "Fecha", "actions": "Acciones" },
+    "status": { "active": "Activo", "passive": "Inactivo", "deleted": "Eliminado" }
+  },
+  "categories": {
+    "title": "Categorías",
+    "addTooltip": "Añadir categoría",
+    "excelTooltip": "Exportar Excel",
+    "pdfTooltip": "Exportar PDF",
+    "noCategories": "Sin categorías.",
+    "loadingCategories": "Cargando...",
+    "mobile": { "parentCategory": "Categoría padre", "mainCategory": "Categoría principal", "createdBy": "Creado por", "date": "Fecha", "edit": "EDITAR", "delete": "ELIMINAR", "restore": "RESTAURAR" },
+    "grid": { "name": "Nombre", "parentCategory": "Categoría padre", "status": "Estado", "createdBy": "Creado por", "createdAt": "Fecha", "actions": "Acciones" },
+    "status": { "active": "Activo", "passive": "Inactivo", "deleted": "Eliminado" }
+  },
+  "orders": {
+    "title": "Pedidos",
+    "excelTooltip": "Exportar Excel",
+    "pdfTooltip": "Exportar PDF",
+    "noOrders": "Sin pedidos.",
+    "loadingOrders": "Cargando...",
+    "mobile": { "customer": "Cliente", "amount": "Importe", "products": "Productos", "address": "Dirección", "date": "Fecha", "updateStatus": "ACTUALIZAR", "delete": "ELIMINAR", "restore": "RESTAURAR" },
+    "grid": { "orderId": "N° pedido", "customer": "Cliente", "amount": "Importe", "status": "Estado", "date": "Fecha", "actions": "Acciones" }
+  },
+  "users": {
+    "title": "Clientes",
+    "addTooltip": "Añadir cliente",
+    "excelTooltip": "Exportar Excel",
+    "pdfTooltip": "Exportar PDF",
+    "noUsers": "Sin clientes.",
+    "loadingUsers": "Cargando...",
+    "mobile": { "email": "Email", "role": "Rol", "emailConfirmed": "Email confirmado", "confirmed": "✅ Confirmado", "notConfirmed": "❌ No confirmado", "registrationDate": "Registro", "roleAdmin": "Administrador", "roleCustomer": "Cliente", "edit": "EDITAR", "delete": "ELIMINAR", "restore": "RESTAURAR" },
+    "grid": { "fullName": "Nombre completo", "email": "Email", "role": "Rol", "status": "Estado", "emailConfirmed": "Email confirmado", "createdAt": "Registro", "actions": "Acciones" }
+  },
+  "common": { "excel": "Excel", "pdf": "PDF", "add": "AÑADIR", "totalRecords": "Total: {{count}}", "showing": "Mostrando: {{count}}", "deleted": "Eliminado", "active": "Activo", "passive": "Inactivo" }
+}

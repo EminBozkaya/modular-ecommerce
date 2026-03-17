@@ -17,6 +17,9 @@ public class UserRepository : IUserRepository
     public async Task<AppUser?> GetByEmailAsync(string email, CancellationToken ct = default)
         => await _ctx.Users.FirstOrDefaultAsync(u => u.Email == email.ToLowerInvariant(), ct);
 
+    public async Task<AppUser?> GetByExternalLoginAsync(string provider, string providerUserId, CancellationToken ct = default)
+        => await _ctx.Users.FirstOrDefaultAsync(u => u.ExternalLogins.Any(el => el.Provider == provider && el.ProviderUserId == providerUserId), ct);
+
     public async Task<AppUser?> GetByRefreshTokenAsync(string refreshToken, CancellationToken ct = default)
         => await _ctx.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken, ct);
 

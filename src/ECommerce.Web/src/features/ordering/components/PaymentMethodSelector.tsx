@@ -16,12 +16,12 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
 
     if (isLoading) {
         return (
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <div className="flex items-center gap-3 mb-5">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-ebrar-green)] text-white text-xs font-bold shrink-0">
+            <div className="rounded-3xl border border-border bg-card p-6 shadow-xl shadow-black/5">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shrink-0 shadow-lg shadow-black/5">
                         2
                     </div>
-                    <h2 className="text-base font-semibold text-gray-900">{t('payment.sectionTitle')}</h2>
+                    <h2 className="text-base font-bold text-foreground">{t('payment.sectionTitle')}</h2>
                 </div>
                 <div className="flex items-center justify-center py-6">
                     <LoadingSpinner size="md" />
@@ -32,7 +32,7 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
 
     if (error) {
         return (
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
                 <ErrorMessage message={t('payment.loadError')} onRetry={() => refetch()} />
             </div>
         );
@@ -40,7 +40,7 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
 
     if (!providers || providers.length === 0) {
         return (
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div className="rounded-3xl border border-border bg-card p-6 shadow-xl shadow-black/5">
                 <EmptyState
                     title={t('payment.notFound')}
                     description={t('payment.notFoundDesc')}
@@ -50,12 +50,12 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
     }
 
     return (
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-3 mb-5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-ebrar-green)] text-white text-xs font-bold shrink-0">
+        <div className="rounded-3xl border border-border bg-card p-6 shadow-xl shadow-black/5">
+            <div className="flex items-center gap-3 mb-6">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shrink-0 shadow-lg shadow-black/5">
                     2
                 </div>
-                <h2 className="text-base font-semibold text-gray-900">{t('payment.sectionTitle')}</h2>
+                <h2 className="text-base font-bold text-foreground">{t('payment.sectionTitle')}</h2>
             </div>
 
             <div className="space-y-2">
@@ -70,8 +70,8 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
                             className={[
                                 'group w-full flex items-center gap-4 rounded-xl border-2 px-4 py-3.5 text-left transition-all duration-150',
                                 isSelected
-                                    ? 'border-[var(--color-ebrar-green)] bg-[var(--color-ebrar-green)]/5 shadow-sm'
-                                    : 'border-gray-100 bg-gray-50 hover:border-gray-200 hover:bg-white',
+                                    ? 'border-[var(--brand-primary)] bg-[var(--brand-primary-light)]'
+                                    : 'border-border bg-gray-50 dark:bg-white/10 hover:border-border hover:bg-card',
                                 disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
                             ].join(' ')}
                         >
@@ -80,12 +80,12 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
                                 className={[
                                     'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors',
                                     isSelected
-                                        ? 'border-[var(--color-ebrar-green)]'
-                                        : 'border-gray-300 group-hover:border-gray-400',
+                                        ? 'border-[var(--brand-primary)]'
+                                        : 'border-border group-hover:border-muted-foreground',
                                 ].join(' ')}
                             >
                                 {isSelected && (
-                                    <div className="h-2.5 w-2.5 rounded-full bg-[var(--color-ebrar-green)]" />
+                                    <div className="h-2.5 w-2.5 rounded-full bg-[var(--brand-primary)]" />
                                 )}
                             </div>
 
@@ -103,14 +103,14 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
                             <span
                                 className={[
                                     'flex-1 text-sm font-medium transition-colors',
-                                    isSelected ? 'text-gray-900' : 'text-gray-600',
+                                    isSelected ? 'text-foreground' : 'text-muted-foreground',
                                 ].join(' ')}
                             >
                                 {provider.displayName}
                             </span>
 
                             {/* Supported currencies */}
-                            <span className="text-[11px] text-gray-400 tabular-nums">
+                            <span className="text-[11px] text-muted-foreground tabular-nums">
                                 {provider.supportedCurrencies.join(' · ')}
                             </span>
                         </button>
@@ -119,7 +119,7 @@ export function PaymentMethodSelector({ selectedProvider, onSelect, disabled }: 
             </div>
 
             {!selectedProvider && (
-                <p className="mt-3 text-xs text-gray-400">
+                <p className="mt-3 text-xs text-muted-foreground">
                     {t('payment.selectRequired')}
                 </p>
             )}

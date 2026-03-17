@@ -68,7 +68,7 @@ export default function ProductDetailPage() {
         return (
             <div className="container mx-auto px-4 py-20 flex flex-col items-center justify-center min-h-[50vh]">
                 <LoadingSpinner size="lg" />
-                <p className="mt-4 text-gray-500 font-medium">{t('detail.loading')}</p>
+                <p className="mt-4 text-muted-foreground font-medium">{t('detail.loading')}</p>
             </div>
         );
     }
@@ -76,7 +76,7 @@ export default function ProductDetailPage() {
     if (error) {
         return (
             <div className="container mx-auto px-4 py-12 max-w-2xl">
-                <button onClick={handleBack} className="mb-8 flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                <button onClick={handleBack} className="mb-8 flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     {t('detail.backToProducts')}
                 </button>
@@ -91,7 +91,7 @@ export default function ProductDetailPage() {
     if (!product) {
         return (
             <div className="container mx-auto px-4 py-12 max-w-2xl">
-                <button onClick={handleBack} className="mb-8 flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                <button onClick={handleBack} className="mb-8 flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     {t('detail.backToProducts')}
                 </button>
@@ -105,15 +105,15 @@ export default function ProductDetailPage() {
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl">
-            <button onClick={handleBack} className="mb-8 flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+            <button onClick={handleBack} className="mb-8 flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 {t('detail.backToProducts')}
             </button>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
                 <div className="flex flex-col md:flex-row">
                     {/* Image */}
-                    <div className="md:w-1/2 p-8 md:p-12 bg-gray-50 flex items-center justify-center md:border-r border-gray-100 min-h-[400px]">
+                    <div className="md:w-1/2 p-8 md:p-12 bg-gray-50 dark:bg-white/10 flex items-center justify-center md:border-r border-border min-h-[400px]">
                         {product.imageUrl ? (
                             <img
                                 src={product.imageUrl}
@@ -121,7 +121,7 @@ export default function ProductDetailPage() {
                                 className="max-w-full h-auto object-contain max-h-[500px] hover:scale-105 transition-transform duration-500"
                             />
                         ) : (
-                            <div className="flex flex-col items-center justify-center text-gray-400">
+                            <div className="flex flex-col items-center justify-center text-muted-foreground">
                                 <svg className="h-24 w-24 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
@@ -133,49 +133,49 @@ export default function ProductDetailPage() {
                     {/* Info */}
                     <div className="md:w-1/2 p-8 md:p-12 flex flex-col">
                         <div className="mb-2">
-                            <span className="text-sm font-bold tracking-wider text-blue-600 uppercase">
+                            <span className="text-sm font-bold tracking-wider text-blue-500 uppercase">
                                 {product.categoryName}
                             </span>
                         </div>
 
-                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                             {product.name}
                         </h1>
 
                         {/* Unit info */}
-                        <p className="text-sm text-gray-500 mb-2">
+                        <p className="text-sm text-muted-foreground mb-2">
                             {t('detail.salesUnit')}{' '}
-                            <span className="font-semibold text-gray-700">{config.displayName}</span>
+                            <span className="font-semibold text-foreground">{config.displayName}</span>
                         </p>
 
                         <div className="flex items-end mb-4">
-                            <span className="text-3xl font-extrabold text-gray-900">
+                            <span className="text-3xl font-extrabold text-foreground">
                                 {formatPrice(product.price, product.currency)}
                             </span>
-                            <span className="ml-2 text-base text-gray-400">/ {product.unitName}</span>
+                            <span className="ml-2 text-base text-muted-foreground">/ {product.unitName}</span>
                         </div>
 
                         <div className="mb-6 flex items-center space-x-4">
-                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${inStock ? 'bg-green-50 dark:bg-green-900/20 text-green-800' : 'bg-red-50 dark:bg-red-900/20 text-red-800'}`}>
                                 <span className={`w-2 h-2 rounded-full mr-2 ${inStock ? 'bg-green-500' : 'bg-red-500'}`}></span>
                                 {inStock ? t('detail.inStock') : t('detail.outOfStock')}
                             </span>
                             {inStock && (
-                                <span className="text-sm font-medium text-gray-500 border border-gray-200 py-1 px-3 rounded-full">
+                                <span className="text-sm font-medium text-muted-foreground border border-border py-1 px-3 rounded-full">
                                     {t('detail.stockAvailable', { count: product.stockQuantity, unit: product.unitName })}
                                 </span>
                             )}
                         </div>
 
-                        <div className="prose prose-sm md:prose-base text-gray-600 max-w-none mb-8 flex-1">
+                        <div className="prose prose-sm md:prose-base text-muted-foreground max-w-none mb-8 flex-1">
                             <p className="leading-relaxed">{product.description}</p>
                         </div>
 
                         {inStock && (
-                            <div className="pt-6 border-t border-gray-100 mt-auto space-y-4">
+                            <div className="pt-6 border-t border-border mt-auto space-y-4">
                                 {/* Quantity selector */}
                                 <div>
-                                    <p className="text-sm font-medium text-gray-700 mb-2">{t('detail.selectQuantity')}</p>
+                                    <p className="text-sm font-medium text-foreground mb-2">{t('detail.selectQuantity')}</p>
                                     <QuantitySelector
                                         unitName={product.unitName}
                                         value={currentQuantity}
@@ -186,22 +186,22 @@ export default function ProductDetailPage() {
                                 </div>
 
                                 {/* Price preview card */}
-                                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-1.5">
-                                    <div className="flex justify-between text-sm text-gray-600">
+                                <div className="rounded-xl border border-border bg-gray-50 dark:bg-white/10 p-4 space-y-1.5">
+                                    <div className="flex justify-between text-sm text-muted-foreground">
                                         <span>{t('detail.selectedQuantity')}</span>
-                                        <span className="font-semibold text-gray-800">{config.formatValue(currentQuantity)}</span>
+                                        <span className="font-semibold text-foreground">{config.formatValue(currentQuantity)}</span>
                                     </div>
-                                    <div className="flex justify-between text-sm text-gray-600">
+                                    <div className="flex justify-between text-sm text-muted-foreground">
                                         <span>{t('detail.unitPrice')}</span>
-                                        <span className="font-semibold text-gray-800">
+                                        <span className="font-semibold text-foreground">
                                             {formatPrice(product.price, product.currency)} / {product.unitName}
                                         </span>
                                     </div>
-                                    <div className="flex justify-between text-base font-bold text-gray-900 pt-1 border-t border-gray-200 mt-1">
+                                    <div className="flex justify-between text-base font-bold text-foreground pt-1 border-t border-border mt-1">
                                         <span>{t('detail.estimatedTotal')}</span>
                                         <span>{calculateLinePrice(product.price, currentQuantity, product.currency)}</span>
                                     </div>
-                                    <p className="text-[11px] text-gray-400 pt-0.5">
+                                    <p className="text-[11px] text-muted-foreground pt-0.5">
                                         {t('detail.pricingNote')}
                                     </p>
                                 </div>
@@ -237,15 +237,15 @@ export default function ProductDetailPage() {
                                         </span>
                                     )}
                                 </button>
-                                <p className="text-xs text-center text-gray-400">
+                                <p className="text-xs text-center text-muted-foreground">
                                     {t('detail.freeShipping')}
                                 </p>
                             </div>
                         )}
 
                         {!inStock && (
-                            <div className="pt-6 border-t border-gray-100 mt-auto">
-                                <button disabled className="w-full py-3 px-4 text-base font-bold bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed border-b-2 border-gray-200">
+                            <div className="pt-6 border-t border-border mt-auto">
+                                <button disabled className="w-full py-3 px-4 text-base font-bold bg-accent text-muted-foreground rounded-lg cursor-not-allowed border-b-2 border-border">
                                     {t('detail.outOfStock')}
                                 </button>
                             </div>

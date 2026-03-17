@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getPublicStoreSettings } from '@/features/admin/api/storeSettingsApi';
+import { getPublicStoreSettings, defaultHomepageSections, defaultFooterSettings } from '@/features/admin/api/storeSettingsApi';
 import type { StoreSettingsDto } from '@/features/admin/api/storeSettingsApi';
 import { queryKeys } from '@/utils/queryKeys';
 
@@ -10,15 +10,54 @@ const defaults: StoreSettingsDto = {
     imageBase64: undefined,
     storeName: 'Mağazam',
     showStoreNameInHeader: true,
+    // area bg colors
     primaryColor: '#2C3E50',
-    navbarActiveColor: '#ECF0F1',
+    headerBackgroundColor: '#2C3E50',
+    bannerBackgroundColor: '#243342',
+    backgroundColor: '#F5F6F7',
+    adminSidebarBackgroundColor: '#2C3E50',
+    adminPageBackgroundColor: '#F4F6F8',
+    // banner
     freeShippingBannerText: 'Hızlı ve güvenli teslimat garantisiyle alışveriş yapın!',
     freeShippingBannerVisible: false,
     freeShippingBannerMarquee: false,
     freeShippingBannerMarqueeSpeed: 5,
+    // pattern
     backgroundPatternBase64: undefined,
     backgroundPatternOpacity: 20,
-    backgroundColor: '#F5F6F7',
+    // text colors
+    navbarActiveColor: '#ECF0F1',
+    navbarMenuTextColor: '#ECF0F1',
+    storeNameColor: '#FFFFFF',
+    avatarTextColor: '#FFFFFF',
+    headerIconTextColor: '#ECF0F1',
+    bannerTextColor: '#FFFFFF',
+    pageTitleColor: '#1F2937',
+    productCardCategoryColor: '#6B7280',
+    productCardNameColor: '#111827',
+    productCardQuantityColor: '#6B7280',
+    productCardTotalColor: '#374151',
+    productCardPriceColor: '#2C3E50',
+    productCardButtonColor: '#2C3E50',
+    adminSidebarTextColor: '#ECF0F1',
+    adminPageTitleColor: '#2C3E50',
+    footerTextColor: '#D1D5DB',
+    // fonts
+    storeNameFont: 'Arial, Helvetica, sans-serif',
+    avatarTextFont: 'Arial, Helvetica, sans-serif',
+    headerIconTextFont: 'Arial, Helvetica, sans-serif',
+    navbarMenuTextFont: 'Arial, Helvetica, sans-serif',
+    bannerTextFont: 'Arial, Helvetica, sans-serif',
+    pageTitleFont: 'Arial, Helvetica, sans-serif',
+    productCardCategoryFont: 'Arial, Helvetica, sans-serif',
+    productCardNameFont: 'Arial, Helvetica, sans-serif',
+    productCardQuantityFont: 'Arial, Helvetica, sans-serif',
+    productCardTotalFont: 'Arial, Helvetica, sans-serif',
+    productCardPriceFont: 'Arial, Helvetica, sans-serif',
+    productCardButtonFont: 'Arial, Helvetica, sans-serif',
+    adminSidebarTextFont: 'Arial, Helvetica, sans-serif',
+    adminPageTitleFont: 'Arial, Helvetica, sans-serif',
+    footerTextFont: 'Arial, Helvetica, sans-serif',
     heroCarousel: {
         enabled: true,
         effect: 'slide',
@@ -55,6 +94,8 @@ const defaults: StoreSettingsDto = {
             },
         ],
     },
+    homepageSections: defaultHomepageSections,
+    footer: defaultFooterSettings,
 };
 
 /**

@@ -37,7 +37,7 @@ export function AdminOrdersTable({ data, onPageChange, statusFilter, onStatusFil
                 <select
                     value={statusFilter ?? ''}
                     onChange={(e) => onStatusFilter(e.target.value ? (e.target.value as OrderStatus) : undefined)}
-                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]"
+                    className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)] bg-background text-foreground"
                 >
                     {statusOptions.map((opt) => (
                         <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -46,22 +46,22 @@ export function AdminOrdersTable({ data, onPageChange, statusFilter, onStatusFil
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="bg-gray-50 border-b border-gray-100">
-                                <th className="text-left py-3 px-4 text-gray-500 font-medium">Sipariş No</th>
-                                <th className="text-left py-3 px-4 text-gray-500 font-medium">Müşteri</th>
-                                <th className="text-left py-3 px-4 text-gray-500 font-medium">Tarih</th>
-                                <th className="text-right py-3 px-4 text-gray-500 font-medium">Tutar</th>
-                                <th className="text-center py-3 px-4 text-gray-500 font-medium">Durum</th>
+                            <tr className="bg-gray-50 dark:bg-white/5 border-b border-border">
+                                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Sipariş No</th>
+                                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Müşteri</th>
+                                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Tarih</th>
+                                <th className="text-right py-3 px-4 text-muted-foreground font-medium">Tutar</th>
+                                <th className="text-center py-3 px-4 text-muted-foreground font-medium">Durum</th>
                             </tr>
                         </thead>
                         <tbody>
                             {data.items.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="text-center py-8 text-gray-500">
+                                    <td colSpan={5} className="text-center py-8 text-muted-foreground">
                                         Sipariş bulunamadı.
                                     </td>
                                 </tr>
@@ -69,15 +69,15 @@ export function AdminOrdersTable({ data, onPageChange, statusFilter, onStatusFil
                                 data.items.map((order) => (
                                     <tr
                                         key={order.id}
-                                        className="border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors"
+                                        className="border-b border-border hover:bg-accent cursor-pointer transition-colors"
                                         onClick={() => onRowClick(order)}
                                     >
-                                        <td className="py-3 px-4 font-mono text-xs text-gray-700">
+                                        <td className="py-3 px-4 font-mono text-xs text-foreground">
                                             {order.id.length > 12 ? `${order.id.slice(0, 12)}...` : order.id}
                                         </td>
-                                        <td className="py-3 px-4 text-gray-900">{order.shippingAddress.fullName}</td>
-                                        <td className="py-3 px-4 text-gray-600">{formatDate(order.createdAt)}</td>
-                                        <td className="py-3 px-4 text-right font-medium text-gray-900">
+                                        <td className="py-3 px-4 text-foreground">{order.shippingAddress.fullName}</td>
+                                        <td className="py-3 px-4 text-muted-foreground">{formatDate(order.createdAt)}</td>
+                                        <td className="py-3 px-4 text-right font-medium text-foreground">
                                             {formatPrice(order.totalAmount, order.currency)}
                                         </td>
                                         <td className="py-3 px-4 text-center">
@@ -92,25 +92,25 @@ export function AdminOrdersTable({ data, onPageChange, statusFilter, onStatusFil
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                    <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-                        <span className="text-sm text-gray-500">
+                    <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+                        <span className="text-sm text-muted-foreground">
                             Toplam {data.totalCount} sipariş
                         </span>
                         <div className="flex items-center gap-2">
                             <button
                                 disabled={data.page <= 1}
                                 onClick={() => onPageChange(data.page - 1)}
-                                className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                className="p-1.5 rounded-lg border border-border hover:bg-accent disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                             >
                                 <ChevronLeft className="h-4 w-4" />
                             </button>
-                            <span className="text-sm text-gray-600">
+                            <span className="text-sm text-muted-foreground">
                                 {data.page} / {totalPages}
                             </span>
                             <button
                                 disabled={data.page >= totalPages}
                                 onClick={() => onPageChange(data.page + 1)}
-                                className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                className="p-1.5 rounded-lg border border-border hover:bg-accent disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                             >
                                 <ChevronRight className="h-4 w-4" />
                             </button>

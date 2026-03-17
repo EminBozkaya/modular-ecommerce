@@ -71,15 +71,15 @@ export default function PaymentWaitingPage() {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
                 <div className="max-w-md space-y-4">
-                    <p className="text-lg font-semibold text-gray-800">
+                    <p className="text-lg font-semibold text-foreground">
                         {t('waiting.titleTimeout')}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-muted-foreground">
                         {t('waiting.descTimeout')}
                     </p>
                     <Link
                         to="/orders"
-                        className="inline-block rounded-md bg-[var(--color-ebrar-green)] px-6 py-2 text-sm font-semibold text-white hover:bg-[var(--color-ebrar-green-dark)] transition-colors"
+                        className="inline-block rounded-md bg-[var(--brand-primary)] px-6 py-2 text-sm font-semibold text-white hover:bg-[var(--brand-primary-dark)] transition-colors"
                     >
                         {t('waiting.goToOrders')}
                     </Link>
@@ -92,15 +92,15 @@ export default function PaymentWaitingPage() {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
                 <div className="max-w-md space-y-4">
-                    <p className="text-lg font-semibold text-gray-800">
+                    <p className="text-lg font-semibold text-foreground">
                         {t('waiting.titleError')}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-muted-foreground">
                         {t('waiting.descError')}
                     </p>
                     <Link
                         to="/orders"
-                        className="inline-block rounded-md bg-[var(--color-ebrar-green)] px-6 py-2 text-sm font-semibold text-white hover:bg-[var(--color-ebrar-green-dark)] transition-colors"
+                        className="inline-block rounded-md bg-[var(--brand-primary)] px-6 py-2 text-sm font-semibold text-white hover:bg-[var(--brand-primary-dark)] transition-colors"
                     >
                         {t('waiting.goToOrders')}
                     </Link>
@@ -113,8 +113,8 @@ export default function PaymentWaitingPage() {
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
             <div className="space-y-4">
                 <LoadingSpinner size="lg" />
-                <p className="text-lg font-semibold text-gray-800">{t('waiting.titleProcessing')}</p>
-                <p className="text-sm text-gray-500">{t('waiting.descProcessing')}</p>
+                <p className="text-lg font-semibold text-foreground">{t('waiting.titleProcessing')}</p>
+                <p className="text-sm text-muted-foreground">{t('waiting.descProcessing')}</p>
             </div>
         </div>
     );

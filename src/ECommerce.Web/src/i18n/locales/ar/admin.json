@@ -1,0 +1,62 @@
+{
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "periods": { "daily": "يومي", "weekly": "أسبوعي", "monthly": "شهري", "yearly": "سنوي" },
+    "cards": {
+      "totalOrders": "إجمالي الطلبات",
+      "totalRevenue": "الإيرادات",
+      "totalCustomers": "العملاء",
+      "lowStock": "مخزون منخفض",
+      "lowStockDesc": "منتجات بـ5 وحدات أو أقل"
+    },
+    "recentOrders": "الطلبات الأخيرة",
+    "noOrders": "لا توجد طلبات.",
+    "table": { "customer": "العميل", "date": "التاريخ", "amount": "المبلغ", "status": "الحالة" },
+    "summaryError": "تعذّر تحميل الملخص.",
+    "revenueError": "تعذّر تحميل الرسم البياني.",
+    "recentOrdersError": "تعذّر تحميل الطلبات الأخيرة.",
+    "lowStockError": "تعذّر تحميل بيانات المخزون."
+  },
+  "products": {
+    "title": "المنتجات",
+    "addTooltip": "إضافة منتج",
+    "excelTooltip": "تصدير Excel",
+    "pdfTooltip": "تصدير PDF",
+    "noProducts": "لا توجد منتجات.",
+    "loadingProducts": "جارٍ التحميل...",
+    "mobile": { "price": "السعر", "stock": "المخزون", "category": "الفئة", "description": "الوصف", "noDesc": "لا يوجد", "createdBy": "أنشأه", "date": "التاريخ", "edit": "تعديل", "delete": "حذف", "restore": "استعادة" },
+    "grid": { "name": "الاسم", "category": "الفئة", "price": "السعر", "stock": "المخزون", "unit": "الوحدة", "status": "الحالة", "createdBy": "أنشأه", "createdAt": "التاريخ", "actions": "الإجراءات" },
+    "status": { "active": "نشط", "passive": "غير نشط", "deleted": "محذوف" }
+  },
+  "categories": {
+    "title": "الفئات",
+    "addTooltip": "إضافة فئة",
+    "excelTooltip": "تصدير Excel",
+    "pdfTooltip": "تصدير PDF",
+    "noCategories": "لا توجد فئات.",
+    "loadingCategories": "جارٍ التحميل...",
+    "mobile": { "parentCategory": "الفئة الأم", "mainCategory": "الفئة الرئيسية", "createdBy": "أنشأه", "date": "التاريخ", "edit": "تعديل", "delete": "حذف", "restore": "استعادة" },
+    "grid": { "name": "الاسم", "parentCategory": "الفئة الأم", "status": "الحالة", "createdBy": "أنشأه", "createdAt": "التاريخ", "actions": "الإجراءات" },
+    "status": { "active": "نشطة", "passive": "غير نشطة", "deleted": "محذوفة" }
+  },
+  "orders": {
+    "title": "الطلبات",
+    "excelTooltip": "تصدير Excel",
+    "pdfTooltip": "تصدير PDF",
+    "noOrders": "لا توجد طلبات.",
+    "loadingOrders": "جارٍ التحميل...",
+    "mobile": { "customer": "العميل", "amount": "المبلغ", "products": "المنتجات", "address": "العنوان", "date": "التاريخ", "updateStatus": "تحديث", "delete": "حذف", "restore": "استعادة" },
+    "grid": { "orderId": "رقم الطلب", "customer": "العميل", "amount": "المبلغ", "status": "الحالة", "date": "التاريخ", "actions": "الإجراءات" }
+  },
+  "users": {
+    "title": "العملاء",
+    "addTooltip": "إضافة عميل",
+    "excelTooltip": "تصدير Excel",
+    "pdfTooltip": "تصدير PDF",
+    "noUsers": "لا يوجد عملاء.",
+    "loadingUsers": "جارٍ التحميل...",
+    "mobile": { "email": "البريد الإلكتروني", "role": "الدور", "emailConfirmed": "البريد مؤكد", "confirmed": "✅ مؤكد", "notConfirmed": "❌ غير مؤكد", "registrationDate": "تاريخ التسجيل", "roleAdmin": "مدير", "roleCustomer": "عميل", "edit": "تعديل", "delete": "حذف", "restore": "استعادة" },
+    "grid": { "fullName": "الاسم الكامل", "email": "البريد", "role": "الدور", "status": "الحالة", "emailConfirmed": "البريد", "createdAt": "التسجيل", "actions": "الإجراءات" }
+  },
+  "common": { "excel": "Excel", "pdf": "PDF", "add": "إضافة", "totalRecords": "الإجمالي: {{count}}", "showing": "معروض: {{count}}", "deleted": "محذوف", "active": "نشط", "passive": "غير نشط" }
+}

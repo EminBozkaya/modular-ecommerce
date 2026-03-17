@@ -34,6 +34,7 @@ public class ApplicationDbContext : DbContext
 
     // Identity
     public DbSet<AppUser> Users => Set<AppUser>();
+    public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
     public DbSet<UserAddress> UserAddresses => Set<UserAddress>();
     public DbSet<Country> Countries => Set<Country>();
     public DbSet<City> Cities => Set<City>();
@@ -59,6 +60,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Unit>().HasQueryFilter(u => !u.IsDeleted);
         modelBuilder.Entity<Order>().HasQueryFilter(o => !o.IsDeleted);
         modelBuilder.Entity<AppUser>().HasQueryFilter(u => !u.IsDeleted);
+        modelBuilder.Entity<ExternalLogin>().HasQueryFilter(e => !e.IsDeleted);
         modelBuilder.Entity<WishlistItem>().HasQueryFilter(w => !w.IsDeleted);
         modelBuilder.Entity<UserAddress>().HasQueryFilter(a => !a.IsDeleted);
         modelBuilder.Entity<ProductTranslation>().HasQueryFilter(t => !t.IsDeleted);

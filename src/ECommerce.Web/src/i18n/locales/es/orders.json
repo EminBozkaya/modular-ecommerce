@@ -1,0 +1,38 @@
+{
+  "history": {
+    "title": "Mis Pedidos",
+    "empty": "Sin pedidos",
+    "emptyDesc": "Explora nuestros productos para realizar tu primer pedido."
+  },
+  "detail": {
+    "backToOrders": "Volver a mis pedidos",
+    "orderTitle": "Pedido #{{id}}...",
+    "products": "Productos",
+    "product": "Producto",
+    "quantity": "Cantidad",
+    "unitPrice": "Precio unitario",
+    "total": "Total",
+    "grandTotal": "Total general",
+    "shippingAddress": "Dirección de entrega",
+    "notFound": "Pedido no encontrado"
+  },
+  "confirmation": {
+    "success": "¡Tu pedido ha sido recibido!",
+    "orderNumber": "Número de pedido:",
+    "detailTitle": "Detalles del pedido",
+    "total": "Total",
+    "shippingAddress": "Dirección de entrega",
+    "continueShopping": "Seguir comprando",
+    "myOrders": "Mis pedidos",
+    "notFound": "Pedido no encontrado"
+  },
+  "status": {
+    "Pending": "Pendiente",
+    "Processing": "En proceso",
+    "Paid": "Pagado",
+    "Shipped": "Enviado",
+    "Delivered": "Entregado",
+    "Cancelled": "Cancelado",
+    "Refunded": "Reembolsado"
+  }
+}

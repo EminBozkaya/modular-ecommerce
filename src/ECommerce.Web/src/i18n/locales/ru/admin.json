@@ -1,0 +1,62 @@
+{
+  "dashboard": {
+    "title": "Панель управления",
+    "periods": { "daily": "День", "weekly": "Неделя", "monthly": "Месяц", "yearly": "Год" },
+    "cards": {
+      "totalOrders": "Заказы",
+      "totalRevenue": "Выручка",
+      "totalCustomers": "Клиенты",
+      "lowStock": "Мало на складе",
+      "lowStockDesc": "Товары с остатком 5 единиц и менее"
+    },
+    "recentOrders": "Последние заказы",
+    "noOrders": "Заказов нет.",
+    "table": { "customer": "Клиент", "date": "Дата", "amount": "Сумма", "status": "Статус" },
+    "summaryError": "Ошибка загрузки сводки.",
+    "revenueError": "Ошибка загрузки графика.",
+    "recentOrdersError": "Ошибка загрузки заказов.",
+    "lowStockError": "Ошибка загрузки данных о стоке."
+  },
+  "products": {
+    "title": "Товары",
+    "addTooltip": "Добавить товар",
+    "excelTooltip": "Экспорт Excel",
+    "pdfTooltip": "Экспорт PDF",
+    "noProducts": "Товары не найдены.",
+    "loadingProducts": "Загрузка...",
+    "mobile": { "price": "Цена", "stock": "Склад", "category": "Категория", "description": "Описание", "noDesc": "Нет", "createdBy": "Создал", "date": "Дата", "edit": "ИЗМЕНИТЬ", "delete": "УДАЛИТЬ", "restore": "ВОССТАНОВИТЬ" },
+    "grid": { "name": "Название", "category": "Категория", "price": "Цена", "stock": "Склад", "unit": "Единица", "status": "Статус", "createdBy": "Создал", "createdAt": "Дата", "actions": "Действия" },
+    "status": { "active": "Активен", "passive": "Неактивен", "deleted": "Удалён" }
+  },
+  "categories": {
+    "title": "Категории",
+    "addTooltip": "Добавить категорию",
+    "excelTooltip": "Экспорт Excel",
+    "pdfTooltip": "Экспорт PDF",
+    "noCategories": "Категории не найдены.",
+    "loadingCategories": "Загрузка...",
+    "mobile": { "parentCategory": "Родительская", "mainCategory": "Основная", "createdBy": "Создал", "date": "Дата", "edit": "ИЗМЕНИТЬ", "delete": "УДАЛИТЬ", "restore": "ВОССТАНОВИТЬ" },
+    "grid": { "name": "Название", "parentCategory": "Родительская", "status": "Статус", "createdBy": "Создал", "createdAt": "Дата", "actions": "Действия" },
+    "status": { "active": "Активна", "passive": "Неактивна", "deleted": "Удалена" }
+  },
+  "orders": {
+    "title": "Заказы",
+    "excelTooltip": "Экспорт Excel",
+    "pdfTooltip": "Экспорт PDF",
+    "noOrders": "Заказов нет.",
+    "loadingOrders": "Загрузка...",
+    "mobile": { "customer": "Клиент", "amount": "Сумма", "products": "Товары", "address": "Адрес", "date": "Дата", "updateStatus": "ОБНОВИТЬ", "delete": "УДАЛИТЬ", "restore": "ВОССТАНОВИТЬ" },
+    "grid": { "orderId": "№ заказа", "customer": "Клиент", "amount": "Сумма", "status": "Статус", "date": "Дата", "actions": "Действия" }
+  },
+  "users": {
+    "title": "Клиенты",
+    "addTooltip": "Добавить клиента",
+    "excelTooltip": "Экспорт Excel",
+    "pdfTooltip": "Экспорт PDF",
+    "noUsers": "Клиенты не найдены.",
+    "loadingUsers": "Загрузка...",
+    "mobile": { "email": "Email", "role": "Роль", "emailConfirmed": "Email подтверждён", "confirmed": "✅ Подтверждён", "notConfirmed": "❌ Не подтверждён", "registrationDate": "Дата регистрации", "roleAdmin": "Администратор", "roleCustomer": "Клиент", "edit": "ИЗМЕНИТЬ", "delete": "УДАЛИТЬ", "restore": "ВОССТАНОВИТЬ" },
+    "grid": { "fullName": "Имя", "email": "Email", "role": "Роль", "status": "Статус", "emailConfirmed": "Email", "createdAt": "Регистрация", "actions": "Действия" }
+  },
+  "common": { "excel": "Excel", "pdf": "PDF", "add": "ДОБАВИТЬ", "totalRecords": "Всего: {{count}}", "showing": "Показано: {{count}}", "deleted": "Удалён", "active": "Активен", "passive": "Неактивен" }
+}

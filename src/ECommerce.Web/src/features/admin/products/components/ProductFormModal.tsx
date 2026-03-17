@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Product, Category, Unit } from '../../../catalog/types/product';
 import { X, Globe } from 'lucide-react';
 import { useProductSchema, type ProductFormData } from '@/lib/validations/admin.schema';
 import { getProductTranslations, upsertProductTranslation, type TranslationData } from '../../api/adminApi';
+import { useLanguageConfig } from '@/hooks/useLanguageConfig';
 
 interface ProductFormModalProps {
     open: boolean;
@@ -19,10 +20,7 @@ interface ProductFormModalProps {
 // ProductFormData artık ProductFormModal.tsx'ten değil admin.schema.ts'ten gelir
 export type { ProductFormData };
 
-const NON_DEFAULT_LANGS = [
-    { code: 'en', label: 'İngilizce', flag: '🇬🇧' },
-    { code: 'de', label: 'Almanca', flag: '🇩🇪' },
-];
+const DEFAULT_LANG_CODE = 'tr';
 
 type TabId = 'genel' | 'ceviri';
 
@@ -35,6 +33,12 @@ export default function ProductFormModal({
     units,
     loading,
 }: ProductFormModalProps) {
+    const { languages } = useLanguageConfig();
+    const nonDefaultLangs = useMemo(
+        () => languages.filter(l => l.code !== DEFAULT_LANG_CODE),
+        [languages],
+    );
+
     const productSchema = useProductSchema();
     const {
         register,
@@ -57,11 +61,10 @@ export default function ProductFormModal({
     });
 
     const [activeTab, setActiveTab] = useState<TabId>('genel');
-    const [activeLang, setActiveLang] = useState('en');
-    const [translations, setTranslations] = useState<Record<string, { name: string; description: string }>>({
-        en: { name: '', description: '' },
-        de: { name: '', description: '' },
-    });
+    const [activeLang, setActiveLang] = useState(() => nonDefaultLangs[0]?.code ?? 'en');
+    const [translations, setTranslations] = useState<Record<string, { name: string; description: string }>>(() =>
+        Object.fromEntries(nonDefaultLangs.map(l => [l.code, { name: '', description: '' }]))
+    );
     const [translationSaving, setTranslationSaving] = useState(false);
     const [translationSaved, setTranslationSaved] = useState(false);
     const [translationError, setTranslationError] = useState('');
@@ -95,9 +98,14 @@ export default function ProductFormModal({
             });
         }
         setActiveTab('genel');
-        setTranslations({ en: { name: '', description: '' }, de: { name: '', description: '' } });
+        setActiveLang(nonDefaultLangs[0]?.code ?? 'en');
+        setTranslations(Object.fromEntries(nonDefaultLangs.map(l => [l.code, { name: '', description: '' }])));
         setTranslationSaved(false);
         setTranslationError('');
+        // nonDefaultLangs intentionally excluded: it is derived from store settings and is
+        // semantically stable, but useLanguageConfig() returns a new array reference on every
+        // render, making it an unstable dependency that causes an infinite useEffect loop.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [product, open, reset]);
 
     // Load existing translations when editing
@@ -108,7 +116,7 @@ export default function ProductFormModal({
                 setTranslations(prev => {
                     const next = { ...prev };
                     for (const t of data) {
-                        if (next[t.languageCode] !== undefined) {
+                        if (t.languageCode !== DEFAULT_LANG_CODE) {
                             next[t.languageCode] = { name: t.name, description: t.description || '' };
                         }
                     }
@@ -124,7 +132,7 @@ export default function ProductFormModal({
         setTranslationSaved(false);
         setTranslationError('');
         try {
-            const tasks = NON_DEFAULT_LANGS
+            const tasks = nonDefaultLangs
                 .filter(l => translations[l.code]?.name?.trim())
                 .map(l =>
                     upsertProductTranslation(product.id, l.code, {
@@ -153,10 +161,10 @@ export default function ProductFormModal({
     );
 
     const inputClass = (hasError: boolean) =>
-        `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors ${
+        `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors bg-background text-foreground ${
             hasError
-                ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30'
-                : 'border-gray-300 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]'
+                ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30 dark:bg-red-900/10'
+                : 'border-border focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]'
         }`;
 
     const errorMsg = (msg: string | undefined) =>
@@ -169,7 +177,7 @@ export default function ProductFormModal({
             onClick={onClose}
         >
             <div
-                className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden"
+                className="bg-card rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
                 style={{ animation: 'fadeInUp 0.25s ease-out' }}
             >
@@ -190,14 +198,14 @@ export default function ProductFormModal({
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-gray-200 bg-gray-50">
+                <div className="flex border-b border-border bg-gray-50 dark:bg-white/5">
                     <button
                         type="button"
                         onClick={() => setActiveTab('genel')}
                         className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
                             activeTab === 'genel'
                                 ? 'border-[var(--brand-primary)] text-[var(--brand-primary)]'
-                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                                : 'border-transparent text-muted-foreground hover:text-foreground'
                         }`}
                     >
                         Genel
@@ -208,7 +216,7 @@ export default function ProductFormModal({
                         className={`flex items-center gap-1.5 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
                             activeTab === 'ceviri'
                                 ? 'border-[var(--brand-primary)] text-[var(--brand-primary)]'
-                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                                : 'border-transparent text-muted-foreground hover:text-foreground'
                         }`}
                     >
                         <Globe className="h-4 w-4" />
@@ -226,7 +234,7 @@ export default function ProductFormModal({
                         )}
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Ürün Adı (TR) *</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Ürün Adı (TR) *</label>
                             <input
                                 {...register('name')}
                                 className={inputClass(!!errors.name)}
@@ -236,18 +244,18 @@ export default function ProductFormModal({
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Açıklama (TR)</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Açıklama (TR)</label>
                             <textarea
                                 {...register('description')}
                                 rows={3}
-                                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm resize-none transition-colors ${errors.description ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30' : 'border-gray-300 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]'}`}
+                                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm resize-none transition-colors bg-background text-foreground ${errors.description ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30 dark:bg-red-900/10' : 'border-border focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]'}`}
                                 placeholder="Türkçe ürün açıklaması"
                             />
                             {errorMsg(errors.description?.message)}
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Görsel URL</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Görsel URL</label>
                             <input
                                 {...register('imageUrl')}
                                 className={inputClass(!!errors.imageUrl)}
@@ -258,7 +266,7 @@ export default function ProductFormModal({
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Fiyat (₺) *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Fiyat (₺) *</label>
                                 <input
                                     type="number"
                                     step="0.01"
@@ -269,7 +277,7 @@ export default function ProductFormModal({
                                 {errorMsg(errors.price?.message)}
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Stok Miktarı *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Stok Miktarı *</label>
                                 <input
                                     type="number"
                                     min="0"
@@ -282,7 +290,7 @@ export default function ProductFormModal({
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Kategori *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Kategori *</label>
                                 <select
                                     {...register('categoryId')}
                                     className={inputClass(!!errors.categoryId)}
@@ -301,7 +309,7 @@ export default function ProductFormModal({
                                 {errorMsg(errors.categoryId?.message)}
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Birim *</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Birim *</label>
                                 <select
                                     {...register('unitId')}
                                     className={inputClass(!!errors.unitId)}
@@ -317,18 +325,18 @@ export default function ProductFormModal({
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-white/10 rounded-lg border border-border">
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input
                                     type="checkbox"
                                     {...register('isActive')}
                                     className="sr-only peer"
                                 />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--brand-primary)]"></div>
+                                <div className="w-11 h-6 bg-gray-200 dark:bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--brand-primary)]"></div>
                             </label>
                             <div>
-                                <span className="block text-sm font-semibold text-gray-900">Ürün Aktif</span>
-                                <span className="block text-xs text-gray-500">Bu ürün mağazada listelenecek mi?</span>
+                                <span className="block text-sm font-semibold text-foreground">Ürün Aktif</span>
+                                <span className="block text-xs text-muted-foreground">Bu ürün mağazada listelenecek mi?</span>
                             </div>
                         </div>
 
@@ -337,7 +345,7 @@ export default function ProductFormModal({
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                                className="px-4 py-2 text-sm font-medium text-foreground bg-accent hover:bg-accent/80 rounded-lg transition-colors"
                             >
                                 İptal
                             </button>
@@ -359,37 +367,37 @@ export default function ProductFormModal({
                 {activeTab === 'ceviri' && (
                     <div className="p-6 space-y-5">
                         {!isEdit ? (
-                            <div className="flex flex-col items-center justify-center py-8 text-center text-gray-500">
-                                <Globe className="h-10 w-10 mb-3 text-gray-300" />
+                            <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
+                                <Globe className="h-10 w-10 mb-3 text-muted-foreground/40" />
                                 <p className="text-sm font-medium">Çeviri eklemek için önce ürünü kaydedin.</p>
                             </div>
                         ) : (
                             <>
                                 {/* Language sub-tabs */}
-                                <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
-                                    {NON_DEFAULT_LANGS.map(lang => (
+                                <div className="flex flex-wrap gap-1 bg-accent p-1 rounded-lg">
+                                    {nonDefaultLangs.map(lang => (
                                         <button
                                             key={lang.code}
                                             type="button"
                                             onClick={() => setActiveLang(lang.code)}
-                                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-sm font-medium rounded-md transition-colors ${
+                                            className={`flex items-center gap-1.5 py-1.5 px-3 text-xs font-medium rounded-md transition-colors ${
                                                 activeLang === lang.code
-                                                    ? 'bg-white shadow-sm text-[var(--brand-primary)]'
-                                                    : 'text-gray-500 hover:text-gray-700'
+                                                    ? 'bg-card shadow-sm text-[var(--brand-primary)]'
+                                                    : 'text-muted-foreground hover:text-foreground'
                                             }`}
                                         >
                                             <span>{lang.flag}</span>
-                                            <span>{lang.label}</span>
+                                            <span className="uppercase">{lang.code}</span>
                                         </button>
                                     ))}
                                 </div>
 
                                 {/* Translation fields for active language */}
-                                {NON_DEFAULT_LANGS.map(lang =>
+                                {nonDefaultLangs.map(lang =>
                                     activeLang === lang.code ? (
                                         <div key={lang.code} className="space-y-4">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                <label className="block text-sm font-medium text-foreground mb-1">
                                                     Ürün Adı ({lang.label})
                                                 </label>
                                                 <input
@@ -399,12 +407,12 @@ export default function ProductFormModal({
                                                         ...prev,
                                                         [lang.code]: { ...prev[lang.code], name: e.target.value }
                                                     }))}
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)] text-sm transition-colors"
+                                                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)] text-sm transition-colors bg-background text-foreground"
                                                     placeholder={`Ürün adı (${lang.label})`}
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                <label className="block text-sm font-medium text-foreground mb-1">
                                                     Açıklama ({lang.label})
                                                 </label>
                                                 <textarea
@@ -414,7 +422,7 @@ export default function ProductFormModal({
                                                         ...prev,
                                                         [lang.code]: { ...prev[lang.code], description: e.target.value }
                                                     }))}
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)] text-sm resize-none transition-colors"
+                                                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)] text-sm resize-none transition-colors bg-background text-foreground"
                                                     placeholder={`Ürün açıklaması (${lang.label})`}
                                                 />
                                             </div>
@@ -435,7 +443,7 @@ export default function ProductFormModal({
                                     <button
                                         type="button"
                                         onClick={onClose}
-                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                                        className="px-4 py-2 text-sm font-medium text-foreground bg-accent hover:bg-accent/80 rounded-lg transition-colors"
                                     >
                                         Kapat
                                     </button>

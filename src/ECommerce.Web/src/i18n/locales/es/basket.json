@@ -1,0 +1,18 @@
+{
+  "drawer": {
+    "title": "Mi Cesta",
+    "loadError": "Error al cargar la cesta.",
+    "empty": "Tu cesta está vacía",
+    "emptyDesc": "Aún no has añadido ningún producto.",
+    "checkout": "Finalizar compra"
+  },
+  "item": {
+    "noImage": "Sin imagen",
+    "removeAriaLabel": "Quitar de la cesta",
+    "remove": "Quitar"
+  },
+  "summary": {
+    "products": "Productos ({{count}})",
+    "total": "Total"
+  }
+}

@@ -40,7 +40,7 @@ export const BasketDrawer = () => {
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-4 border-b">
                     <h2 className="text-lg font-semibold">{t('drawer.title')}</h2>
-                    <button onClick={closeDrawer} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                    <button onClick={closeDrawer} className="p-2 rounded-full hover:bg-accent transition-colors">
                         <X className="h-5 w-5" />
                     </button>
                 </div>

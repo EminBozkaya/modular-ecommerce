@@ -144,8 +144,8 @@ export function useCategoryGridColumns({
             minWidth: 150,
             cellRenderer: (params: { value?: string | null }) =>
                 params.value
-                    ? <span className="text-gray-600">{params.value}</span>
-                    : <span className="text-gray-400 italic">{t('categories.mobile.mainCategory')}</span>,
+                    ? <span className="text-foreground">{params.value}</span>
+                    : <span className="text-muted-foreground italic">{t('categories.mobile.mainCategory')}</span>,
         },
         {
             headerName: t('categories.grid.createdAt'),

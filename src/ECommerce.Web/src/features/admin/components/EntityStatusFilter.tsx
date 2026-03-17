@@ -102,7 +102,7 @@ export const EntityStatusFilter = ({ model, onModelChange }: CustomFilterProps) 
                 return (
                     <label
                         key={opt.key}
-                        className="flex items-center gap-2 px-1 py-[5px] rounded cursor-pointer hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-2 px-1 py-[5px] rounded cursor-pointer hover:bg-accent transition-colors"
                     >
                         <input
                             type="checkbox"
@@ -123,7 +123,7 @@ export const EntityStatusFilter = ({ model, onModelChange }: CustomFilterProps) 
                 );
             })}
 
-            <hr className="my-2 border-gray-200" />
+            <hr className="my-2 border-border" />
 
             <label className="flex items-center gap-2 px-1 py-[5px] rounded cursor-pointer hover:bg-green-50 transition-colors">
                 <input
