@@ -208,7 +208,7 @@ export function useCategoryGridColumns({
                                     className="p-1 rounded-md transition-colors hover:bg-green-50"
                                     style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
                                 >
-                                    <Edit2 size={16} color="#1B5E3F" />
+                                    <Edit2 size={16} color="var(--brand-primary)" />
                                 </button>
                                 <button
                                     title="Sil"

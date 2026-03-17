@@ -37,7 +37,7 @@ export function AdminOrdersTable({ data, onPageChange, statusFilter, onStatusFil
                 <select
                     value={statusFilter ?? ''}
                     onChange={(e) => onStatusFilter(e.target.value ? (e.target.value as OrderStatus) : undefined)}
-                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B5E3F]/30 focus:border-[#1B5E3F]"
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]"
                 >
                     {statusOptions.map((opt) => (
                         <option key={opt.value} value={opt.value}>{opt.label}</option>

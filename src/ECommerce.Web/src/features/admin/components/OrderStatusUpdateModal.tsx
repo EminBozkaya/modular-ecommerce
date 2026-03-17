@@ -69,7 +69,7 @@ export function OrderStatusUpdateModal({ order, isOpen, onClose }: OrderStatusUp
                             id="newStatus"
                             value={newStatus}
                             onChange={(e) => setNewStatus(e.target.value as OrderStatus)}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B5E3F]/30 focus:border-[#1B5E3F]"
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]"
                         >
                             {statusOptions.map((opt) => (
                                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -87,7 +87,7 @@ export function OrderStatusUpdateModal({ order, isOpen, onClose }: OrderStatusUp
                         disabled={!hasChanged || mutation.isPending}
                         onClick={handleConfirm}
                         className="px-4 py-2 text-sm font-semibold text-white rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
-                        style={{ background: '#1B5E3F' }}
+                        style={{ background: 'var(--brand-primary)' }}
                     >
                         {mutation.isPending ? 'Güncelleniyor...' : 'Onayla'}
                     </button>

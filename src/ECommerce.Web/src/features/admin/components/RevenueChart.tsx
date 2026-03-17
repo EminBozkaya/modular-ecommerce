@@ -2,6 +2,7 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tool
 import type { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
 import type { RevenueDataPoint } from '../types/dashboard';
 import { formatPrice } from '../../../utils/formatters';
+import { useStoreSettings } from '@/context/StoreSettingsContext';
 
 interface RevenueChartProps {
     data: RevenueDataPoint[];
@@ -13,6 +14,10 @@ function formatDateLabel(dateStr: string): string {
 }
 
 export function RevenueChart({ data }: RevenueChartProps) {
+    // SVG presentation attributes (stopColor, stroke) do not support CSS variables;
+    // read the live brand color directly from context instead.
+    const { primaryColor } = useStoreSettings();
+
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <h3 className="text-base font-semibold text-gray-900 mb-4">Gelir Grafiği (Son 30 Gün)</h3>
@@ -21,8 +26,8 @@ export function RevenueChart({ data }: RevenueChartProps) {
                     <AreaChart data={data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
                         <defs>
                             <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#1B5E3F" stopOpacity={0.3} />
-                                <stop offset="95%" stopColor="#1B5E3F" stopOpacity={0} />
+                                <stop offset="5%" stopColor={primaryColor} stopOpacity={0.3} />
+                                <stop offset="95%" stopColor={primaryColor} stopOpacity={0} />
                             </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -47,7 +52,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
                         <Area
                             type="monotone"
                             dataKey="revenue"
-                            stroke="#1B5E3F"
+                            stroke={primaryColor}
                             strokeWidth={2}
                             fill="url(#revenueGradient)"
                         />

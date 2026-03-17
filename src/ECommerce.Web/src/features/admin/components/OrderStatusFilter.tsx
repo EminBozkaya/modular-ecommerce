@@ -130,9 +130,9 @@ export const OrderStatusFilter = ({ model, onModelChange }: CustomFilterProps) =
                     type="checkbox"
                     checked={isTumu}
                     onChange={handleTumu}
-                    style={{ accentColor: '#1B5E3F', width: 14, height: 14, cursor: 'pointer' }}
+                    style={{ accentColor: 'var(--brand-primary)', width: 14, height: 14, cursor: 'pointer' }}
                 />
-                <span style={{ color: '#1B5E3F', fontWeight: 600, fontSize: '13px' }}>Tümü</span>
+                <span style={{ color: 'var(--brand-primary)', fontWeight: 600, fontSize: '13px' }}>Tümü</span>
             </label>
         </div>
     );
@@ -166,7 +166,7 @@ export const OrderStatusFloatingFilter = ({ model, onModelChange }: CustomFloati
                     outline: 'none',
                     backgroundColor: 'white',
                 }}
-                onFocus={(e) => { e.currentTarget.style.borderColor = '#1B5E3F'; }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--brand-primary)'; }}
                 onBlur={(e) => { e.currentTarget.style.borderColor = '#babfc7'; }}
             />
         </div>

@@ -16,7 +16,8 @@
       "Bash(mv /Users/wingman/.claire/projects/-Users-wingman-Projects-EbrarKuruyemis/memory/project_milestone_status.md /Users/wingman/.claude/projects/-Users-wingman-Projects-EbrarKuruyemis/memory/project_milestone_status.md)",
       "Bash(rmdir /Users/wingman/.claire/projects/-Users-wingman-Projects-EbrarKuruyemis)",
       "Bash(rmdir /Users/wingman/.claire/projects)",
-      "Bash(rmdir /Users/wingman/.claire)"
+      "Bash(rmdir /Users/wingman/.claire)",
+      "Bash(dotnet clean:*)"
     ]
   }
 }

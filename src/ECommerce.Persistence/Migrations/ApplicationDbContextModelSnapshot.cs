@@ -87,6 +87,11 @@ namespace ECommerce.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<int>("DisplayOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -112,6 +117,8 @@ namespace ECommerce.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DisplayOrder");
 
                     b.HasIndex("Name")
                         .IsUnique();
@@ -7193,6 +7200,83 @@ namespace ECommerce.Persistence.Migrations
                         .HasFilter("\"Status\" = 'Processing'");
 
                     b.ToTable("PaymentRecords", (string)null);
+                });
+
+            modelBuilder.Entity("ECommerce.Domain.Settings.Entities.AppSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Settings")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Category")
+                        .IsUnique();
+
+                    b.ToTable("AppSettings", (string)null);
+                });
+
+            modelBuilder.Entity("ECommerce.Domain.Settings.Entities.StoreSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ImageBase64")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Settings")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StoreSettings", (string)null);
                 });
 
             modelBuilder.Entity("ECommerce.Domain.Wishlist.Entities.WishlistItem", b =>

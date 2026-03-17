@@ -3,6 +3,7 @@ using ECommerce.Domain.Catalog.Entities;
 using ECommerce.Domain.Identity.Entities;
 using ECommerce.Domain.Ordering.Entities;
 using ECommerce.Domain.Payment.Entities;
+using ECommerce.Domain.Settings.Entities;
 using ECommerce.Domain.Wishlist.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,6 +41,10 @@ public class ApplicationDbContext : DbContext
 
     // Wishlist
     public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
+
+    // Settings
+    public DbSet<StoreSettings> StoreSettings => Set<StoreSettings>();
+    public DbSet<AppSettings> AppSettings => Set<AppSettings>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

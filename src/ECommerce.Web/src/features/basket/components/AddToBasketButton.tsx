@@ -40,7 +40,7 @@ export const AddToBasketButton = ({ productId, disabled }: AddToBasketButtonProp
                 transition-all duration-150 active:translate-y-1 active:border-b-0
                 ${isError
                     ? 'bg-red-500 border-b-4 border-red-700 hover:bg-red-600'
-                    : 'bg-[#1B5E3F] border-b-4 border-[#12412b] hover:bg-[#164d33] hover:shadow-lg'
+                    : 'bg-[var(--brand-primary)] border-b-4 border-[var(--brand-primary-dark)] hover:bg-[var(--brand-primary-dark)] hover:shadow-lg'
                 }
                 disabled:opacity-70 disabled:cursor-wait
             `}

@@ -105,7 +105,7 @@ export default function AddressFormModal({
         `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors ${
             hasError
                 ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30'
-                : 'border-gray-300 focus:ring-[#1B5E3F]/30 focus:border-[#1B5E3F]'
+                : 'border-gray-300 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]'
         }`;
 
     const errorMsg = (msg: string | undefined) =>
@@ -125,7 +125,7 @@ export default function AddressFormModal({
                 {/* Header */}
                 <div
                     className="flex items-center justify-between px-6 py-4"
-                    style={{ background: '#1B5E3F', color: 'white' }}
+                    style={{ background: 'var(--brand-primary)', color: 'white' }}
                 >
                     <h2 className="text-lg font-semibold">
                         {address?.isDeleted ? 'Adresi Geri Yükle ve Düzenle' : (isEdit ? 'Adresi Düzenle' : 'Yeni Adres Ekle')}
@@ -148,7 +148,7 @@ export default function AddressFormModal({
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
                                 <input
                                     type="text"
-                                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-[#1B5E3F] focus:border-[#1B5E3F]"
+                                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-[var(--brand-primary)] focus:border-[var(--brand-primary)]"
                                     placeholder="Kullanıcı ara (ad veya e-posta)..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -171,8 +171,8 @@ export default function AddressFormModal({
                                             }}
                                             className={`w-full text-left px-3 py-2 rounded-md text-sm transition-all duration-200 font-inter ${
                                                 selectedUserId === u.id
-                                                    ? 'bg-[#1B5E3F] text-white shadow-md transform scale-[1.01]'
-                                                    : 'hover:bg-green-50 text-gray-700 hover:text-[#1B5E3F]'
+                                                    ? 'bg-[var(--brand-primary)] text-white shadow-md transform scale-[1.01]'
+                                                    : 'hover:bg-green-50 text-gray-700 hover:text-[var(--brand-primary)]'
                                             }`}
                                         >
                                             <div className="font-semibold">{u.fullName}</div>
@@ -265,7 +265,7 @@ export default function AddressFormModal({
                                 {...register('isActive')}
                                 className="sr-only peer"
                             />
-                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B5E3F]"></div>
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--brand-primary)]"></div>
                         </label>
                         <div>
                             <span className="block text-sm font-semibold text-gray-900">Adres Aktif</span>
@@ -286,7 +286,7 @@ export default function AddressFormModal({
                             type="submit"
                             disabled={loading}
                             className="px-5 py-2 text-sm font-medium text-white rounded-lg transition-colors disabled:opacity-50"
-                            style={{ background: '#1B5E3F' }}
+                            style={{ background: 'var(--brand-primary)' }}
                         >
                             {loading ? 'Kaydediliyor...' : isEdit ? 'Güncelle' : 'Ekle'}
                         </button>

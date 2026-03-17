@@ -15,6 +15,7 @@ const queryClient = new QueryClient({
 import { useInitAuth } from '@/features/auth/hooks/useInitAuth';
 import { useAuthStore } from '@/store/authStore';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import { StoreSettingsProvider } from '@/context/StoreSettingsContext';
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
     useInitAuth();
@@ -27,9 +28,11 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
 export function AppProviders() {
     return (
         <QueryClientProvider client={queryClient}>
-            <AuthInitializer>
-                <RouterProvider router={router} />
-            </AuthInitializer>
+            <StoreSettingsProvider>
+                <AuthInitializer>
+                    <RouterProvider router={router} />
+                </AuthInitializer>
+            </StoreSettingsProvider>
         </QueryClientProvider>
     );
 }

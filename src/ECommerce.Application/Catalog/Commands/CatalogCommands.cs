@@ -64,3 +64,7 @@ public record UpsertProductTranslationCommand(Guid ProductId, string LanguageCod
 
 // --- UpsertCategoryTranslation ---
 public record UpsertCategoryTranslationCommand(Guid CategoryId, string LanguageCode, string Name, string? Description) : IRequest;
+
+// --- ReorderCategories ---
+public record CategoryOrderItem(Guid CategoryId, int DisplayOrder);
+public record ReorderCategoriesCommand(List<CategoryOrderItem> Items) : IRequest;

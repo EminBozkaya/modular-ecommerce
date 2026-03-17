@@ -26,6 +26,7 @@ public class CategoryRepository : ICategoryRepository
             .AsNoTracking();
         if (includeDeleted) query = query.IgnoreQueryFilters();
         if (onlyMain) query = query.Where(c => c.ParentCategoryId == null);
+        query = query.OrderBy(c => c.DisplayOrder);
         return await query.ToListAsync(ct);
     }
 

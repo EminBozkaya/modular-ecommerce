@@ -3,6 +3,7 @@ export interface Category {
     name: string;
     slug: string;
     isActive: boolean;
+    displayOrder: number;
     description?: string | null;
     imageUrl?: string | null;
     parentCategoryId?: string | null;
@@ -36,6 +37,7 @@ export interface Product {
     unitName: string;
     imageUrl: string | null;
     isActive: boolean;
+    displayOrder: number;
     isDeleted?: boolean;
     createdAt: string;
     createdBy?: string | null;

@@ -23,6 +23,11 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 
         builder.HasIndex(c => c.Name).IsUnique();
 
+        builder.Property(c => c.DisplayOrder)
+            .HasDefaultValue(0);
+
+        builder.HasIndex(c => c.DisplayOrder);
+
         builder.HasOne(c => c.ParentCategory)
             .WithMany(c => c.SubCategories)
             .HasForeignKey(c => c.ParentCategoryId)

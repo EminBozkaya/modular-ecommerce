@@ -3,6 +3,7 @@ using ECommerce.Domain.Catalog;
 using ECommerce.Domain.Identity;
 using ECommerce.Domain.Ordering;
 using ECommerce.Domain.Payment;
+using ECommerce.Domain.Settings;
 using ECommerce.Domain.Wishlist;
 using ECommerce.Persistence.Context;
 using ECommerce.Persistence.Interceptors;
@@ -46,6 +47,8 @@ public static class DependencyInjection
         services.AddScoped<IWishlistRepository, WishlistRepository>();
         services.AddScoped<IUserAddressRepository, UserAddressRepository>();
         services.AddScoped<ILocationRepository, LocationRepository>();
+        services.AddScoped<IStoreSettingsRepository, StoreSettingsRepository>();
+        services.AddScoped<IAppSettingsRepository, AppSettingsRepository>();
 
         return services;
     }

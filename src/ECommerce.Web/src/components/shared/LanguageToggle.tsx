@@ -28,16 +28,16 @@ export function LanguageToggle() {
                     <button
                         id="language-dropdown-trigger"
                         className={cn(
-                            "relative flex items-center justify-center w-11 h-11 rounded-full bg-gray-50 text-muted-foreground transition-all duration-300 shadow-sm border border-transparent outline-none",
+                            "relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gray-50 text-muted-foreground transition-all duration-300 shadow-sm border border-transparent outline-none",
                             "group-hover:text-[var(--color-ebrar-green)] group-hover:bg-green-50 group-hover:border-green-100",
                             "focus:ring-2 focus:ring-[var(--color-ebrar-green)]/20"
                         )}
                         aria-label={t('language.changeLanguage')}
                     >
-                        <span className="text-xl leading-none pointer-events-none transition-transform duration-300 group-hover:scale-110">
+                        <span className="text-[17px] sm:text-xl leading-none pointer-events-none transition-transform duration-300 group-hover:scale-110">
                             {activeLanguage.flag}
                         </span>
-                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border border-gray-100 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-[1px] sm:p-0.5 shadow-sm border border-gray-100 opacity-0 group-hover:opacity-100 transition-opacity">
                             <ChevronDown className="h-2.5 w-2.5 text-gray-400" />
                         </div>
                     </button>
@@ -59,7 +59,7 @@ export function LanguageToggle() {
                     ))}
                 </DropdownMenuContent>
             </DropdownMenu>
-            <span className="text-[11px] font-bold text-muted-foreground group-hover:text-[var(--color-ebrar-green)] mt-1 transition-colors uppercase">
+            <span className="text-[11px] sm:text-[11px] font-bold text-muted-foreground group-hover:text-[var(--color-ebrar-green)] mt-[2px] sm:mt-1 transition-colors uppercase">
                 {activeLanguage.code}
             </span>
         </div>

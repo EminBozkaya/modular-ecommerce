@@ -89,7 +89,7 @@ export default function AdminOrdersPage() {
                             params.api.redrawRows({ rowNodes: [params.node] });
                         }, 0);
                     }}>
-                        {isExpanded ? <ChevronDown size={20} className="text-[#1B5E3F]" /> : <ChevronRight size={20} className="text-gray-400" />}
+                        {isExpanded ? <ChevronDown size={20} className="text-[var(--brand-primary)]" /> : <ChevronRight size={20} className="text-gray-400" />}
                     </div>
                 );
             }
@@ -128,7 +128,7 @@ export default function AdminOrdersPage() {
                 }, 0);
             }}>
                 <div className="flex justify-between items-start border-b border-gray-100 pb-2 mb-2">
-                   <div className="font-bold text-[#1B5E3F] text-sm break-all pr-2">Sipariş: #{o.id}</div>
+                   <div className="font-bold text-[var(--brand-primary)] text-sm break-all pr-2">Sipariş: #{o.id}</div>
                    <div style={{ color: colors.text, backgroundColor: colors.bg, padding: '2px 8px', borderRadius: '9999px', fontSize: '10px', fontWeight: '700' }}>{statusText}</div>
                 </div>
                 
@@ -158,7 +158,7 @@ export default function AdminOrdersPage() {
                 <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
                     {!o.isDeleted ? (
                         <>
-                            <button onClick={(e) => { e.stopPropagation(); handleEdit(o); }} className="flex-1 bg-green-50 text-[#1B5E3F] py-2 rounded-lg font-bold text-sm border border-green-100">DURUM GÜNCELLE</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleEdit(o); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">DURUM GÜNCELLE</button>
                             <button onClick={(e) => { e.stopPropagation(); handleDelete(o.id); }} className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm border border-red-100">SİL</button>
                         </>
                     ) : (
@@ -177,11 +177,11 @@ export default function AdminOrdersPage() {
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#ecfdf5' }}>
-                        <ShoppingBag className="h-5 w-5" style={{ color: '#1B5E3F' }} />
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'var(--brand-primary-light)' }}>
+                        <ShoppingBag className="h-5 w-5" style={{ color: 'var(--brand-primary)' }} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold" style={{ color: '#1B5E3F' }}>Siparişler</h1>
+                        <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>Siparişler</h1>
                     </div>
                 </div>
                 <div className="flex items-center gap-4 self-end sm:self-auto">
@@ -286,7 +286,7 @@ export default function AdminOrdersPage() {
                             type: 'fitCellContents'
                         }}
                         overlayNoRowsTemplate="<span style='padding:10px;color:#6b7280'>Henuz siparis bulunamadi.</span>"
-                        overlayLoadingTemplate="<span style='padding:10px;color:#1B5E3F'>Siparisler yukleniyor...</span>"
+                        overlayLoadingTemplate="<span style='padding:10px;color:var(--brand-primary)'>Siparisler yukleniyor...</span>"
                     />
                 </div>
             </div>

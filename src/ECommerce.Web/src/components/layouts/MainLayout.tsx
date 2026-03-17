@@ -8,28 +8,53 @@ import {
     Instagram,
 } from 'lucide-react';
 import { AppHeader } from './header/AppHeader';
-import bgPattern from '@/assets/background-pattern.jpg';
+import { useStoreSettings } from '@/context/StoreSettingsContext';
 
 export function MainLayout() {
     const location = useLocation();
     const isAuthPage = ['/login', '/register'].includes(location.pathname);
+    const settings = useStoreSettings();
+
+    const bgPatternStyle = settings.backgroundPatternBase64
+        ? {
+              backgroundImage: `url(${settings.backgroundPatternBase64})`,
+              opacity: settings.backgroundPatternOpacity / 100,
+          }
+        : undefined;
 
     return (
-        <div className="relative min-h-screen flex flex-col bg-[#F5FFEA]">
+        <div
+            className="relative min-h-screen flex flex-col"
+            style={{ backgroundColor: settings.backgroundColor }}
+        >
             {/* Background pattern layer — opacity only affects the image */}
-            <div
-                className="fixed inset-0 bg-cover bg-center bg-fixed opacity-20 pointer-events-none z-0"
-                style={{ backgroundImage: `url(${bgPattern})` }}
-            />
+            {bgPatternStyle && (
+                <div
+                    className="fixed inset-0 bg-cover bg-center bg-fixed pointer-events-none z-0"
+                    style={bgPatternStyle}
+                />
+            )}
 
             {!isAuthPage && <AppHeader />}
 
             {/* Free Shipping Banner */}
-            {!isAuthPage && (
-                <div className="relative z-10 bg-[var(--color-ebrar-green)] py-2">
-                    <p className="text-center text-sm font-medium text-white tracking-wide">
-                        1000TL UZERI SIPARISLERDE KARGO BEDAVA!
-                    </p>
+            {!isAuthPage && settings.freeShippingBannerVisible && (
+                <div
+                    className="relative z-10 py-2 overflow-hidden"
+                    style={{ backgroundColor: settings.primaryColor }}
+                >
+                    {settings.freeShippingBannerMarquee ? (
+                        <div
+                            className="animate-marquee-track text-sm font-medium text-white tracking-wide"
+                            style={{ animationDuration: `${(11 - settings.freeShippingBannerMarqueeSpeed) * 3}s` }}
+                        >
+                            {settings.freeShippingBannerText}
+                        </div>
+                    ) : (
+                        <p className="text-center text-sm font-medium text-white tracking-wide">
+                            {settings.freeShippingBannerText}
+                        </p>
+                    )}
                 </div>
             )}
 
@@ -40,7 +65,10 @@ export function MainLayout() {
 
             {/* Footer */}
             {!isAuthPage && (
-                <footer className="relative z-10 bg-[var(--color-ebrar-green)] text-white">
+                <footer
+                    className="relative z-10 text-white"
+                    style={{ backgroundColor: settings.primaryColor }}
+                >
                     <div className="container mx-auto px-4 py-12">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 max-w-5xl mx-auto text-center lg:text-left">
                             <div>
@@ -101,7 +129,7 @@ export function MainLayout() {
                     <div className="border-t border-white/20">
                         <div className="container mx-auto px-4 py-4">
                             <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/70">
-                                <p>&copy; 2026 Ebrar Kuruyemis. Tum haklari saklidir.</p>
+                                <p>&copy; 2026 {settings.storeName}. Tum haklari saklidir.</p>
                                 <div className="flex items-center gap-4">
                                     <a href="#" className="hover:text-white transition-colors">Kullanim Sartlari</a>
                                     <span>|</span>
@@ -118,4 +146,3 @@ export function MainLayout() {
         </div>
     );
 }
-

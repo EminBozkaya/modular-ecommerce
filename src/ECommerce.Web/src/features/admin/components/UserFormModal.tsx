@@ -65,7 +65,7 @@ export default function UserFormModal({
         `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors ${
             hasError
                 ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30'
-                : 'border-gray-300 focus:ring-[#1B5E3F]/30 focus:border-[#1B5E3F]'
+                : 'border-gray-300 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]'
         }`;
 
     const errorMsg = (msg: string | undefined) =>
@@ -85,7 +85,7 @@ export default function UserFormModal({
                 {/* Header */}
                 <div
                     className="flex items-center justify-between px-6 py-4"
-                    style={{ background: '#1B5E3F', color: 'white' }}
+                    style={{ background: 'var(--brand-primary)', color: 'white' }}
                 >
                     <h2 className="text-lg font-semibold">
                         {user?.isDeleted ? 'Müşteriyi Geri Yükle ve Düzenle' : (isEdit ? 'Müşteriyi Düzenle' : 'Yeni Müşteri Ekle')}
@@ -140,7 +140,7 @@ export default function UserFormModal({
                                 {...register('isActive')}
                                 className="sr-only peer"
                             />
-                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B5E3F]"></div>
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--brand-primary)]"></div>
                         </label>
                         <div>
                             <span className="block text-sm font-semibold text-gray-900">Hesap Aktif</span>
@@ -161,9 +161,9 @@ export default function UserFormModal({
                             type="submit"
                             disabled={loading}
                             className="px-5 py-2 text-sm font-medium text-white rounded-lg transition-colors disabled:opacity-50"
-                            style={{ background: '#1B5E3F' }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = '#164A32')}
-                            onMouseLeave={(e) => (e.currentTarget.style.background = '#1B5E3F')}
+                            style={{ background: 'var(--brand-primary)' }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--brand-primary-dark)')}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--brand-primary)')}
                         >
                             {loading ? 'Kaydediliyor...' : isEdit ? 'Güncelle' : 'Ekle'}
                         </button>

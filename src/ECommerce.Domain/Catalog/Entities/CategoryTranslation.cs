@@ -4,7 +4,8 @@ namespace ECommerce.Domain.Catalog.Entities;
 
 /// <summary>
 /// Translation of Category's localizable text fields for a specific language.
-/// Created only for non-default languages — the default language lives on Category.Name/Description.
+/// ALL languages including the deployment's DefaultLanguage are stored here.
+/// Category.Name serves as an internal canonical identifier only.
 /// Unique constraint: (CategoryId, LanguageCode).
 /// </summary>
 public class CategoryTranslation : BaseAuditableEntity
@@ -12,7 +13,7 @@ public class CategoryTranslation : BaseAuditableEntity
     public Guid CategoryId { get; private set; }
     public Category? Category { get; private set; }
 
-    /// <summary>Language code (e.g. "en", "de"). Never the deployment's DefaultLanguage.</summary>
+    /// <summary>Language code (e.g. "tr", "en", "de"). Includes the deployment's DefaultLanguage.</summary>
     public string LanguageCode { get; private set; } = default!;
 
     public string Name { get; private set; } = default!;

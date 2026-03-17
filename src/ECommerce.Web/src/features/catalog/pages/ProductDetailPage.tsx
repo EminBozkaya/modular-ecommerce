@@ -217,7 +217,7 @@ export default function ProductDetailPage() {
                                             ? 'bg-red-600 border-b-4 border-red-800 hover:bg-red-700'
                                             : isAddSuccess
                                                 ? 'bg-green-600 border-b-4 border-green-800'
-                                                : 'bg-[#1B5E3F] border-b-4 border-[#12412b] hover:bg-[#164d33] hover:shadow-lg',
+                                                : 'bg-[var(--brand-primary)] border-b-4 border-[var(--brand-primary-dark)] hover:bg-[var(--brand-primary-dark)] hover:shadow-lg',
                                         'disabled:opacity-70 disabled:cursor-not-allowed',
                                     ].join(' ')}
                                 >

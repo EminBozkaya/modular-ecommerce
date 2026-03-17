@@ -74,7 +74,7 @@ export const BasketDrawer = () => {
                         <BasketSummary basket={basket} />
                         <div className="p-4 pt-0 bg-gray-50 dark:bg-zinc-900">
                             <button
-                                className="w-full py-3 px-4 text-base font-bold text-white rounded-lg bg-[#1B5E3F] border-b-4 border-[#12412b] hover:bg-[#164d33] hover:shadow-lg transition-all duration-150 active:translate-y-1 active:border-b-0"
+                                className="w-full py-3 px-4 text-base font-bold text-white rounded-lg bg-[var(--brand-primary)] border-b-4 border-[var(--brand-primary-dark)] hover:bg-[var(--brand-primary-dark)] hover:shadow-lg transition-all duration-150 active:translate-y-1 active:border-b-0"
                                 onClick={() => {
                                     closeDrawer();
                                     navigate('/checkout'); // Placeholder

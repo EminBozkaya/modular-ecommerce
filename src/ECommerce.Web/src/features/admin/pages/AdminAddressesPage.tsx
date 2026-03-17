@@ -98,7 +98,7 @@ export default function AdminAddressesPage() {
                             params.api.redrawRows({ rowNodes: [params.node] });
                         }, 0);
                     }}>
-                        {isExpanded ? <ChevronDown size={20} className="text-[#1B5E3F]" /> : <ChevronRight size={20} className="text-gray-400" />}
+                        {isExpanded ? <ChevronDown size={20} className="text-[var(--brand-primary)]" /> : <ChevronRight size={20} className="text-gray-400" />}
                     </div>
                 );
             }
@@ -136,7 +136,7 @@ export default function AdminAddressesPage() {
                 }, 0);
             }}>
                 <div className="flex justify-between items-start border-b border-gray-100 pb-2 mb-2">
-                   <div className="font-bold text-[#1B5E3F] text-lg">{a.title}</div>
+                   <div className="font-bold text-[var(--brand-primary)] text-lg">{a.title}</div>
                    <div style={{ color: statusColor, fontWeight: '700', fontSize: '12px' }}>{status}</div>
                 </div>
                 
@@ -162,7 +162,7 @@ export default function AdminAddressesPage() {
                 <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
                     {!a.isDeleted ? (
                         <>
-                            <button onClick={(e) => { e.stopPropagation(); handleEdit(a); }} className="flex-1 bg-green-50 text-[#1B5E3F] py-2 rounded-lg font-bold text-sm border border-green-100">DÜZENLE</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleEdit(a); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">DÜZENLE</button>
                             <button onClick={(e) => { e.stopPropagation(); handleDelete(a.id); }} className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm border border-red-100">SİL</button>
                         </>
                     ) : (
@@ -181,11 +181,11 @@ export default function AdminAddressesPage() {
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#ecfdf5' }}>
-                        <MapPin className="h-5 w-5" style={{ color: '#1B5E3F' }} />
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'var(--brand-primary-light)' }}>
+                        <MapPin className="h-5 w-5" style={{ color: 'var(--brand-primary)' }} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold" style={{ color: '#1B5E3F' }}>Adres Yönetimi</h1>
+                        <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>Adres Yönetimi</h1>
                         <p className="text-gray-500 text-sm">Tüm kullanıcı adreslerini buradan yönetebilirsiniz.</p>
                     </div>
                 </div>
@@ -215,7 +215,7 @@ export default function AdminAddressesPage() {
                             setEditingAddress(null);
                             setModalOpen(true);
                         }}
-                        className="bg-[#1B5E3F] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#14472f] transition-colors shadow-sm flex items-center gap-2"
+                        className="bg-[var(--brand-primary)] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[var(--brand-primary-dark)] transition-colors shadow-sm flex items-center gap-2"
                     >
                         Yeni Adres Ekle
                     </button>
@@ -287,7 +287,7 @@ export default function AdminAddressesPage() {
                             type: 'fitCellContents'
                         }}
                         overlayNoRowsTemplate="<span style='padding:10px;color:#6b7280'>Henüz adres bulunamadı.</span>"
-                        overlayLoadingTemplate="<span style='padding:10px;color:#1B5E3F'>Adresler yükleniyor...</span>"
+                        overlayLoadingTemplate="<span style='padding:10px;color:var(--brand-primary)'>Adresler yükleniyor...</span>"
                     />
                 </div>
             </div>

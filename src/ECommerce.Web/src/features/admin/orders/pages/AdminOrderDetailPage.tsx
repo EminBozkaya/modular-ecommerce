@@ -43,13 +43,13 @@ export default function AdminOrderDetailPage() {
 
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold" style={{ color: '#1B5E3F' }}>{t('orders:detail.detailTitle')}</h1>
+                    <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>{t('orders:detail.detailTitle')}</h1>
                     <p className="text-sm text-gray-500 font-mono mt-1">{order.id}</p>
                 </div>
                 <button
                     onClick={() => setShowStatusModal(true)}
                     className="px-4 py-2 text-sm font-semibold text-white rounded-lg transition-all active:scale-95"
-                    style={{ background: '#1B5E3F' }}
+                    style={{ background: 'var(--brand-primary)' }}
                 >
                     {t('admin:orders.mobile.updateStatus')}
                 </button>
@@ -89,7 +89,7 @@ export default function AdminOrderDetailPage() {
                             <tfoot>
                                 <tr className="border-t border-gray-200">
                                     <td colSpan={3} className="py-3 px-2 text-right font-semibold text-gray-900">{t('orders:detail.grandTotal')}</td>
-                                    <td className="py-3 px-2 text-right font-bold text-lg" style={{ color: '#1B5E3F' }}>
+                                    <td className="py-3 px-2 text-right font-bold text-lg" style={{ color: 'var(--brand-primary)' }}>
                                         {formatPrice(order.totalAmount, order.currency)}
                                     </td>
                                 </tr>

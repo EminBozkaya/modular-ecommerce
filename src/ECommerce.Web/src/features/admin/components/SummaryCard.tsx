@@ -14,7 +14,7 @@ export function SummaryCard({ title, value, icon, description }: SummaryCardProp
                 className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{ background: 'rgba(27, 94, 63, 0.1)' }}
             >
-                <div style={{ color: '#1B5E3F' }} className="h-5 w-5 sm:h-6 sm:w-6">{icon}</div>
+                <div style={{ color: 'var(--brand-primary)' }} className="h-5 w-5 sm:h-6 sm:w-6">{icon}</div>
             </div>
             <div className="min-w-0 flex-1">
                 <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">{title}</p>

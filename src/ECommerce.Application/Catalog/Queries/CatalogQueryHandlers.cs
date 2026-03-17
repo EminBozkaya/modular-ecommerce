@@ -1,9 +1,11 @@
 using ECommerce.Application.Catalog.Specifications;
 using ECommerce.Application.Common.Models;
+using ECommerce.Application.Common.Settings;
 using ECommerce.Domain.Catalog;
 using ECommerce.Domain.Catalog.Entities;
 using ECommerce.Domain.Identity;
 using MediatR;
+using Microsoft.Extensions.Options;
 
 namespace ECommerce.Application.Catalog.Queries;
 
@@ -11,11 +13,13 @@ public class GetProductsHandler : IRequestHandler<GetProductsQuery, PagedResult<
 {
     private readonly IProductRepository _products;
     private readonly IUserRepository _users;
+    private readonly string _defaultLanguage;
 
-    public GetProductsHandler(IProductRepository products, IUserRepository users)
+    public GetProductsHandler(IProductRepository products, IUserRepository users, IOptions<LocalizationOptions> locOptions)
     {
         _products = products;
         _users = users;
+        _defaultLanguage = locOptions.Value.DefaultLanguage;
     }
 
     public async Task<PagedResult<ProductDto>> Handle(GetProductsQuery q, CancellationToken ct)
@@ -32,14 +36,16 @@ public class GetProductsHandler : IRequestHandler<GetProductsQuery, PagedResult<
         var items = products.Select(p =>
         {
             var t = p.Translations.FirstOrDefault(x => x.LanguageCode == q.Language);
+            var defaultT = p.Translations.FirstOrDefault(x => x.LanguageCode == _defaultLanguage);
             var catT = p.Category?.Translations.FirstOrDefault(x => x.LanguageCode == q.Language);
+            var catDefaultT = p.Category?.Translations.FirstOrDefault(x => x.LanguageCode == _defaultLanguage);
             return new ProductDto(
                 p.Id,
-                t?.Name ?? p.Name,
-                t?.Description ?? p.Description,
+                t?.Name ?? defaultT?.Name ?? p.Name,
+                t?.Description ?? defaultT?.Description ?? p.Description,
                 p.ImageUrl,
                 p.Price.Amount, p.Price.Currency.ToString(), p.Stock.Value, p.IsActive,
-                p.CategoryId, catT?.Name ?? p.Category?.Name,
+                p.CategoryId, catT?.Name ?? catDefaultT?.Name ?? p.Category?.Name,
                 p.UnitId, p.Unit?.Name,
                 p.CreatedAt, !string.IsNullOrEmpty(p.CreatedBy) && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
                 p.UpdatedAt, !string.IsNullOrEmpty(p.UpdatedBy) && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
@@ -54,11 +60,13 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, Produc
 {
     private readonly IProductRepository _products;
     private readonly IUserRepository _users;
+    private readonly string _defaultLanguage;
 
-    public GetProductByIdHandler(IProductRepository products, IUserRepository users)
+    public GetProductByIdHandler(IProductRepository products, IUserRepository users, IOptions<LocalizationOptions> locOptions)
     {
         _products = products;
         _users = users;
+        _defaultLanguage = locOptions.Value.DefaultLanguage;
     }
 
     public async Task<ProductDto?> Handle(GetProductByIdQuery q, CancellationToken ct)
@@ -68,15 +76,17 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, Produc
 
         var userMap = (await _users.GetAllWithDeletedAsync(ct)).ToDictionary(u => u.Id.ToString(), u => u.FullName, StringComparer.OrdinalIgnoreCase);
         var t = p.Translations.FirstOrDefault(x => x.LanguageCode == q.Language);
+        var defaultT = p.Translations.FirstOrDefault(x => x.LanguageCode == _defaultLanguage);
         var catT = p.Category?.Translations.FirstOrDefault(x => x.LanguageCode == q.Language);
+        var catDefaultT = p.Category?.Translations.FirstOrDefault(x => x.LanguageCode == _defaultLanguage);
 
         return new ProductDto(
             p.Id,
-            t?.Name ?? p.Name,
-            t?.Description ?? p.Description,
+            t?.Name ?? defaultT?.Name ?? p.Name,
+            t?.Description ?? defaultT?.Description ?? p.Description,
             p.ImageUrl,
             p.Price.Amount, p.Price.Currency.ToString(), p.Stock.Value, p.IsActive,
-            p.CategoryId, catT?.Name ?? p.Category?.Name,
+            p.CategoryId, catT?.Name ?? catDefaultT?.Name ?? p.Category?.Name,
             p.UnitId, p.Unit?.Name,
             p.CreatedAt, !string.IsNullOrEmpty(p.CreatedBy) && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
             p.UpdatedAt, !string.IsNullOrEmpty(p.UpdatedBy) && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
@@ -88,11 +98,13 @@ public class GetCategoriesHandler : IRequestHandler<GetCategoriesQuery, IReadOnl
 {
     private readonly ICategoryRepository _categories;
     private readonly IUserRepository _users;
+    private readonly string _defaultLanguage;
 
-    public GetCategoriesHandler(ICategoryRepository categories, IUserRepository users)
+    public GetCategoriesHandler(ICategoryRepository categories, IUserRepository users, IOptions<LocalizationOptions> locOptions)
     {
         _categories = categories;
         _users = users;
+        _defaultLanguage = locOptions.Value.DefaultLanguage;
     }
 
     public async Task<IReadOnlyList<CategoryDto>> Handle(GetCategoriesQuery q, CancellationToken ct)
@@ -103,13 +115,15 @@ public class GetCategoriesHandler : IRequestHandler<GetCategoriesQuery, IReadOnl
         return categories.Select(c =>
         {
             var t = c.Translations.FirstOrDefault(x => x.LanguageCode == q.Language);
+            var defaultT = c.Translations.FirstOrDefault(x => x.LanguageCode == _defaultLanguage);
             var parentT = c.ParentCategory?.Translations.FirstOrDefault(x => x.LanguageCode == q.Language);
+            var parentDefaultT = c.ParentCategory?.Translations.FirstOrDefault(x => x.LanguageCode == _defaultLanguage);
             return new CategoryDto(
                 c.Id,
-                t?.Name ?? c.Name,
-                t?.Description ?? c.Description,
-                c.ImageUrl, c.IsActive, c.ParentCategoryId,
-                parentT?.Name ?? c.ParentCategory?.Name,
+                t?.Name ?? defaultT?.Name ?? c.Name,
+                t?.Description ?? defaultT?.Description ?? c.Description,
+                c.ImageUrl, c.IsActive, c.DisplayOrder, c.ParentCategoryId,
+                parentT?.Name ?? parentDefaultT?.Name ?? c.ParentCategory?.Name,
                 c.CreatedAt, !string.IsNullOrEmpty(c.CreatedBy) && userMap.TryGetValue(c.CreatedBy, out var cb) ? cb : c.CreatedBy,
                 c.UpdatedAt, !string.IsNullOrEmpty(c.UpdatedBy) && userMap.TryGetValue(c.UpdatedBy, out var ub) ? ub : c.UpdatedBy,
                 c.DeletedAt, c.IsDeleted);

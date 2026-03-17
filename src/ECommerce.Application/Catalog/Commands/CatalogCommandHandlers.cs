@@ -1,10 +1,12 @@
 using ECommerce.Application.Catalog.Specifications;
 using ECommerce.Application.Common.Caching;
+using ECommerce.Application.Common.Settings;
 using ECommerce.Domain.Catalog;
 using ECommerce.Domain.Catalog.Entities;
 using ECommerce.Domain.Catalog.ValueObjects;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace ECommerce.Application.Catalog.Commands;
 
@@ -12,11 +14,13 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Guid>
 {
     private readonly IProductRepository _products;
     private readonly ICacheService _cacheService;
+    private readonly string _defaultLanguage;
 
-    public CreateProductHandler(IProductRepository products, ICacheService cacheService)
+    public CreateProductHandler(IProductRepository products, ICacheService cacheService, IOptions<LocalizationOptions> locOptions)
     {
         _products = products;
         _cacheService = cacheService;
+        _defaultLanguage = locOptions.Value.DefaultLanguage;
     }
 
     public async Task<Guid> Handle(CreateProductCommand cmd, CancellationToken ct)
@@ -30,7 +34,7 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Guid>
             {
                 throw new InvalidOperationException($"'{cmd.Name}' isminde aktif bir ürün zaten var.");
             }
-            // If deleted, we could return a specific error to trigger the UI modal, 
+            // If deleted, we could return a specific error to trigger the UI modal,
             // but for now let's just allow it or throw a specific exception that frontend can catch.
             // Based on discussion, frontend will catch "Duplicate archived" error.
             throw new InvalidOperationException($"ARCHIVED_DUPLICATE|{exactMatch.Id}|{exactMatch.Name}");
@@ -40,6 +44,12 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Guid>
             new Money(cmd.Price, cmd.Currency), new StockQuantity(cmd.StockQuantity), cmd.CategoryId, cmd.UnitId, cmd.IsActive);
         await _products.AddAsync(product, ct);
         await _products.SaveChangesAsync(ct);
+
+        // Write DefaultLanguage translation row — language-agnostic architecture requires all
+        // languages including the default to live in the translations table.
+        product.UpsertTranslation(_defaultLanguage, cmd.Name, cmd.Description);
+        await _products.SaveChangesAsync(ct);
+
         await _cacheService.RemoveByPrefixAsync("catalog", ct);
         return product.Id;
     }
@@ -71,24 +81,30 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand>
     private readonly IProductRepository _products;
     private readonly ICacheService _cacheService;
     private readonly ILogger<UpdateProductHandler> _logger;
+    private readonly string _defaultLanguage;
 
-    public UpdateProductHandler(IProductRepository products, ICacheService cacheService, ILogger<UpdateProductHandler> logger)
+    public UpdateProductHandler(IProductRepository products, ICacheService cacheService, ILogger<UpdateProductHandler> logger, IOptions<LocalizationOptions> locOptions)
     {
         _products = products;
         _cacheService = cacheService;
         _logger = logger;
+        _defaultLanguage = locOptions.Value.DefaultLanguage;
     }
 
     public async Task Handle(UpdateProductCommand cmd, CancellationToken ct)
     {
         var product = await _products.GetByIdAsync(cmd.Id, ct)
             ?? throw new KeyNotFoundException($"Product {cmd.Id} not found.");
-        
+
         _logger.LogInformation("Updating product {Id}: Name={Name}, IsActive={IsActive}", cmd.Id, cmd.Name, cmd.IsActive);
-        
+
         product.UpdateDetails(cmd.Name, cmd.Description, cmd.ImageUrl,
             new Money(cmd.Price, cmd.Currency), cmd.CategoryId, cmd.UnitId, cmd.IsActive);
-        
+
+        // Keep DefaultLanguage translation in sync with the canonical entity name.
+        // The admin "Genel" tab always edits in the DefaultLanguage.
+        product.UpsertTranslation(_defaultLanguage, cmd.Name, cmd.Description);
+
         await _products.SaveChangesAsync(ct);
         await _cacheService.RemoveByPrefixAsync("catalog", ct);
     }
@@ -133,15 +149,18 @@ public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, Guid
 {
     private readonly ICategoryRepository _categories;
     private readonly ICacheService _cacheService;
-    public CreateCategoryHandler(ICategoryRepository categories, ICacheService cacheService)
+    private readonly string _defaultLanguage;
+
+    public CreateCategoryHandler(ICategoryRepository categories, ICacheService cacheService, IOptions<LocalizationOptions> locOptions)
     {
         _categories = categories;
         _cacheService = cacheService;
+        _defaultLanguage = locOptions.Value.DefaultLanguage;
     }
 
     public async Task<Guid> Handle(CreateCategoryCommand cmd, CancellationToken ct)
     {
-        var allCats = await _categories.GetAllAsync(includeDeleted: true, ct: ct); 
+        var allCats = await _categories.GetAllAsync(includeDeleted: true, ct: ct);
         var exactMatch = allCats.FirstOrDefault(c => c.Name.Trim().Equals(cmd.Name.Trim(), StringComparison.OrdinalIgnoreCase));
 
         if (exactMatch != null)
@@ -152,10 +171,16 @@ public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, Guid
             }
             throw new InvalidOperationException($"ARCHIVED_DUPLICATE|{exactMatch.Id}|{exactMatch.Name}");
         }
-        
+
         var category = Category.Create(cmd.Name, cmd.Description, cmd.ImageUrl, cmd.IsActive, cmd.ParentCategoryId);
         await _categories.AddAsync(category, ct);
         await _categories.SaveChangesAsync(ct);
+
+        // Write DefaultLanguage translation row — language-agnostic architecture.
+        category.UpsertTranslation(_defaultLanguage, cmd.Name, cmd.Description);
+        _categories.Update(category);
+        await _categories.SaveChangesAsync(ct);
+
         await _cacheService.RemoveByPrefixAsync("catalog", ct);
         return category.Id;
     }
@@ -188,23 +213,29 @@ public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand>
     private readonly IProductRepository _products;
     private readonly ICacheService _cacheService;
     private readonly ILogger<UpdateCategoryHandler> _logger;
+    private readonly string _defaultLanguage;
 
-    public UpdateCategoryHandler(ICategoryRepository categories, IProductRepository products, ICacheService cacheService, ILogger<UpdateCategoryHandler> logger)
+    public UpdateCategoryHandler(ICategoryRepository categories, IProductRepository products, ICacheService cacheService, ILogger<UpdateCategoryHandler> logger, IOptions<LocalizationOptions> locOptions)
     {
         _categories = categories;
         _products = products;
         _cacheService = cacheService;
         _logger = logger;
+        _defaultLanguage = locOptions.Value.DefaultLanguage;
     }
 
     public async Task Handle(UpdateCategoryCommand cmd, CancellationToken ct)
     {
         var category = await _categories.GetByIdAsync(cmd.Id, ct)
             ?? throw new KeyNotFoundException($"Category {cmd.Id} not found.");
-            
+
         _logger.LogInformation("Updating category {Id}: Name={Name}, IsActive={IsActive}", cmd.Id, cmd.Name, cmd.IsActive);
-        
+
         category.Update(cmd.Name, cmd.Description, cmd.ImageUrl, cmd.IsActive, cmd.ParentCategoryId);
+
+        // Keep DefaultLanguage translation in sync with the canonical entity name.
+        category.UpsertTranslation(_defaultLanguage, cmd.Name, cmd.Description);
+
         _categories.Update(category);
         await _categories.SaveChangesAsync(ct);
         await _cacheService.RemoveByPrefixAsync("catalog", ct);
@@ -229,7 +260,7 @@ public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand>
         var category = await _categories.GetByIdAsync(cmd.Id, ct)
             ?? throw new KeyNotFoundException($"Category {cmd.Id} not found.");
 
-        if (category.ParentCategoryId == null) 
+        if (category.ParentCategoryId == null)
         {
             // --- ROOT CATEGORY DELETION SCENARIOS ---
             var allSubCategories = category.SubCategories.Where(c => !c.IsDeleted).ToList();
@@ -243,7 +274,7 @@ public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand>
             {
                 // Scenario 3: Only 1 SubCategory, and it has products. Root has no products.
                 bool rootHasProducts = productsInTree.Any(p => p.CategoryId == category.Id);
-                var subCategoriesWithProducts = allSubCategories.Where(subCat => 
+                var subCategoriesWithProducts = allSubCategories.Where(subCat =>
                     productsInTree.Any(p => p.CategoryId == subCat.Id)
                 ).ToList();
 
@@ -332,6 +363,37 @@ public class UpsertCategoryTranslationHandler : IRequestHandler<UpsertCategoryTr
             ?? throw new KeyNotFoundException($"Category {cmd.CategoryId} not found.");
         category.UpsertTranslation(cmd.LanguageCode, cmd.Name, cmd.Description);
         _categories.Update(category);
+        await _categories.SaveChangesAsync(ct);
+        await _cacheService.RemoveByPrefixAsync("catalog", ct);
+    }
+}
+
+public class ReorderCategoriesHandler : IRequestHandler<ReorderCategoriesCommand>
+{
+    private readonly ICategoryRepository _categories;
+    private readonly ICacheService _cacheService;
+
+    public ReorderCategoriesHandler(ICategoryRepository categories, ICacheService cacheService)
+    {
+        _categories = categories;
+        _cacheService = cacheService;
+    }
+
+    public async Task Handle(ReorderCategoriesCommand cmd, CancellationToken ct)
+    {
+        // Load all categories in a single query to avoid N+1
+        var all = await _categories.GetAllAsync(includeDeleted: false, onlyMain: false, ct);
+        var lookup = all.ToDictionary(c => c.Id);
+
+        foreach (var item in cmd.Items)
+        {
+            if (lookup.TryGetValue(item.CategoryId, out var category))
+            {
+                category.SetDisplayOrder(item.DisplayOrder);
+                _categories.Update(category);
+            }
+        }
+
         await _categories.SaveChangesAsync(ct);
         await _cacheService.RemoveByPrefixAsync("catalog", ct);
     }

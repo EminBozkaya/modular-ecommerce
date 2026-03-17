@@ -17,7 +17,8 @@ public record ProductDto(
 
 public record CategoryDto(
     Guid Id, string Name, string? Description, string? ImageUrl,
-    bool IsActive, Guid? ParentCategoryId = null, string? ParentCategoryName = null,
+    bool IsActive, int DisplayOrder = 0,
+    Guid? ParentCategoryId = null, string? ParentCategoryName = null,
     DateTime? CreatedAt = null, string? CreatedBy = null,
     DateTime? UpdatedAt = null, string? UpdatedBy = null,
     DateTime? DeletedAt = null, bool IsDeleted = false);

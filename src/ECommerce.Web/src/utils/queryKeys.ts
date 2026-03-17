@@ -45,5 +45,12 @@ export const queryKeys = {
         users: {
             all: ['admin', 'users'] as const,
         },
+        settings: {
+            store: ['admin', 'settings', 'store'] as const,
+            app: (category: string) => ['admin', 'settings', 'app', category] as const,
+        },
+    },
+    store: {
+        settings: ['store', 'settings'] as const,
     },
 } as const;

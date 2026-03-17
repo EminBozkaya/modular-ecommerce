@@ -1,96 +1,17 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import {
-    heroSlides,
     mainCategories,
     featuredProducts,
     newsItems,
     testimonials,
 } from '../api/homepageMock';
+import { HeroCarousel } from '../components/HeroCarousel';
 
 export default function StorefrontHomePage() {
-    const [currentSlide, setCurrentSlide] = useState(0);
-
-    // Auto-advance carousel
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-        }, 5000);
-        return () => clearInterval(timer);
-    }, []);
-
     return (
         <div>
             {/* ========== HERO CAROUSEL ========== */}
-            <section className="relative h-[500px] overflow-hidden" id="hero-carousel">
-                <div
-                    className="absolute inset-0 bg-cover bg-center transition-all duration-700"
-                    style={{
-                        backgroundImage: heroSlides[currentSlide].image
-                            ? `url('${heroSlides[currentSlide].image}')`
-                            : undefined,
-                        backgroundColor: heroSlides[currentSlide].image ? undefined : '#F5F0E8',
-                    }}
-                >
-                    {heroSlides[currentSlide].image && (
-                        <div className="absolute inset-0 bg-black/40" />
-                    )}
-                </div>
-
-                <div className="relative container mx-auto px-4 h-full flex items-center">
-                    <div className={`max-w-lg ${heroSlides[currentSlide].image ? 'text-white' : 'text-[var(--color-ebrar-green)]'}`}>
-                        <h2 className="text-4xl md:text-5xl font-serif font-bold mb-2 leading-tight">
-                            {heroSlides[currentSlide].title}
-                        </h2>
-                        <h3 className="text-2xl md:text-3xl font-serif mb-4 text-white/90">
-                            {heroSlides[currentSlide].subtitle}
-                        </h3>
-                        <p className="text-white/85 mb-6 leading-relaxed">
-                            {heroSlides[currentSlide].description}
-                        </p>
-                        <Link
-                            to={heroSlides[currentSlide].buttonLink}
-                            className="inline-block bg-[var(--color-ebrar-green)] hover:bg-[var(--color-ebrar-green-dark)] text-white px-8 py-3 text-sm font-semibold tracking-wider rounded-md transition-colors"
-                        >
-                            {heroSlides[currentSlide].buttonText}
-                        </Link>
-                    </div>
-                </div>
-
-                {/* Carousel Controls */}
-                <button
-                    onClick={() =>
-                        setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)
-                    }
-                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 p-3 rounded-full transition-colors"
-                    aria-label="Önceki slayt"
-                >
-                    <ChevronLeft className="h-6 w-6 text-white" />
-                </button>
-                <button
-                    onClick={() =>
-                        setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
-                    }
-                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/50 p-3 rounded-full transition-colors"
-                    aria-label="Sonraki slayt"
-                >
-                    <ChevronRight className="h-6 w-6 text-white" />
-                </button>
-
-                {/* Carousel Indicators */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                    {heroSlides.map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => setCurrentSlide(index)}
-                            className={`w-3 h-3 rounded-full transition-colors ${currentSlide === index ? 'bg-white' : 'bg-white/50'
-                                }`}
-                            aria-label={`Slayt ${index + 1}`}
-                        />
-                    ))}
-                </div>
-            </section>
+            <HeroCarousel />
 
             {/* ========== MAIN CATEGORIES ========== */}
             <section className="py-12 bg-transparent" id="main-categories">

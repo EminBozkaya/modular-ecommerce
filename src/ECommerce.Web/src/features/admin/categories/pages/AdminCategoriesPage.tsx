@@ -84,7 +84,7 @@ export default function AdminCategoriesPage() {
                             params.api.redrawRows({ rowNodes: [params.node] });
                         }, 0);
                     }}>
-                        {isExpanded ? <ChevronDown size={20} className="text-[#1B5E3F]" /> : <ChevronRight size={20} className="text-gray-400" />}
+                        {isExpanded ? <ChevronDown size={20} className="text-[var(--brand-primary)]" /> : <ChevronRight size={20} className="text-gray-400" />}
                     </div>
                 );
             }
@@ -121,7 +121,7 @@ export default function AdminCategoriesPage() {
                 }, 0);
             }}>
                 <div className="flex justify-between items-start border-b border-gray-100 pb-2 mb-2">
-                   <div className="font-bold text-[#1B5E3F] text-lg">{c.name}</div>
+                   <div className="font-bold text-[var(--brand-primary)] text-lg">{c.name}</div>
                    <div style={{ color: statusColor, fontWeight: '700', fontSize: '12px' }}>{status}</div>
                 </div>
                 
@@ -143,7 +143,7 @@ export default function AdminCategoriesPage() {
                 <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
                     {!c.isDeleted ? (
                         <>
-                            <button onClick={(e) => { e.stopPropagation(); handleEdit(c); }} className="flex-1 bg-green-50 text-[#1B5E3F] py-2 rounded-lg font-bold text-sm border border-green-100">DÜZENLE</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleEdit(c); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">DÜZENLE</button>
                             <button onClick={(e) => { e.stopPropagation(); handleDelete(c.id); }} className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm border border-red-100">SİL</button>
                         </>
                     ) : (
@@ -160,11 +160,11 @@ export default function AdminCategoriesPage() {
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#ecfdf5' }}>
-                        <FolderTree className="h-5 w-5" style={{ color: '#1B5E3F' }} />
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'var(--brand-primary-light)' }}>
+                        <FolderTree className="h-5 w-5" style={{ color: 'var(--brand-primary)' }} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold" style={{ color: '#1B5E3F' }}>Kategoriler</h1>
+                        <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>Kategoriler</h1>
                     </div>
                 </div>
                 <div className="flex items-center gap-4 self-end sm:self-auto">
@@ -192,10 +192,10 @@ export default function AdminCategoriesPage() {
                         <button
                             onClick={() => { setEditingCategory(null); setModalOpen(true); }}
                             className="flex items-center justify-center w-14 h-14 text-white rounded-xl transition-all duration-200 shadow-sm hover:shadow-md shrink-0"
-                            style={{ background: '#1B5E3F' }}
+                            style={{ background: 'var(--brand-primary)' }}
                             title="Yeni Kategori Ekle"
-                            onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = '#164A32')}
-                            onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = '#1B5E3F')}
+                            onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = 'var(--brand-primary-dark)')}
+                            onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = 'var(--brand-primary)')}
                         >
                             <FolderPlus className="h-6 w-6" />
                         </button>
@@ -283,7 +283,7 @@ export default function AdminCategoriesPage() {
                         }}
                         localeText={localeTextTr}
                         overlayNoRowsTemplate="<span style='padding:10px;color:#6b7280'>Henuz kategori bulunamadi.</span>"
-                        overlayLoadingTemplate="<span style='padding:10px;color:#1B5E3F'>Kategoriler yukleniyor...</span>"
+                        overlayLoadingTemplate="<span style='padding:10px;color:var(--brand-primary)'>Kategoriler yukleniyor...</span>"
                     />
                 </div>
             </div>

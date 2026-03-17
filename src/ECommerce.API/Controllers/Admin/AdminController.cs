@@ -82,6 +82,12 @@ public class AdminController : ControllerBase
         return NoContent();
     }
 
+    [HttpPut("categories/reorder")]
+    public async Task<IActionResult> ReorderCategories([FromBody] ReorderCategoriesCommand cmd, CancellationToken ct)
+    {
+        await _mediator.Send(cmd, ct);
+        return NoContent();
+    }
 
     // ── Translations ──
 

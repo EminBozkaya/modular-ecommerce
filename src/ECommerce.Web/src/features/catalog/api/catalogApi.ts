@@ -112,3 +112,16 @@ export async function getUnits(): Promise<Unit[]> {
 
     return response.data as Unit[];
 }
+
+export interface CategoryOrderItem {
+    categoryId: string;
+    displayOrder: number;
+}
+
+export async function reorderCategories(items: CategoryOrderItem[]): Promise<void> {
+    if (isMock) {
+        await delay(300);
+        return;
+    }
+    await apiClient.put('/api/admin/categories/reorder', { items });
+}

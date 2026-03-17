@@ -32,29 +32,27 @@ export default function AdminDashboardPage() {
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <h1 className="text-2xl font-bold" style={{ color: '#1B5E3F' }}>Kontrol Paneli</h1>
+                <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>Kontrol Paneli</h1>
 
                 {/* Period Selector */}
-                <div className="flex flex-wrap rounded-lg border border-gray-200 overflow-hidden w-full sm:w-fit">
-                    {periodOptions.map((opt, index) => (
-                        <button
-                            key={opt.value}
-                            onClick={() => setPeriod(opt.value)}
-                            className={`
-                                px-3 py-2 text-sm font-medium transition-all flex-1 min-w-[50%] sm:min-w-0
-                                border-gray-100
-                                ${index % 2 === 0 ? 'border-r' : 'sm:border-r'} 
-                                ${index < 2 ? 'border-b sm:border-b-0' : ''}
-                                last:border-r-0
-                            `}
-                            style={{
-                                background: period === opt.value ? '#1B5E3F' : 'white',
-                                color: period === opt.value ? 'white' : '#6b7280',
-                            }}
-                        >
-                            {opt.label}
-                        </button>
-                    ))}
+                <div className="grid grid-cols-2 gap-1 p-1 bg-gray-100/80 rounded-xl w-full sm:w-fit sm:flex sm:items-center border border-gray-200/50 shadow-inner">
+                    {periodOptions.map((opt) => {
+                        const isActive = period === opt.value;
+                        return (
+                            <button
+                                key={opt.value}
+                                onClick={() => setPeriod(opt.value)}
+                                className={`
+                                    relative px-3 sm:px-5 py-2 text-sm font-medium rounded-lg transition-all duration-300 w-full sm:w-auto
+                                    ${isActive
+                                        ? 'bg-white text-[var(--brand-primary)] shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+                                        : 'text-gray-500 hover:text-gray-800 hover:bg-gray-200/50'}
+                                `}
+                            >
+                                {opt.label}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 

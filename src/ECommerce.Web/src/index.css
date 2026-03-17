@@ -32,11 +32,6 @@
   --color-input: hsl(214.3 31.8% 91.4%);
   --color-ring: hsl(222.2 84% 4.9%);
 
-  --color-ebrar-green: #1B5E3F;
-  --color-ebrar-green-dark: #164A32;
-  --color-ebrar-gold: #C5A962;
-  --color-ebrar-gold-dark: #B09952;
-
   --radius: 0.5rem;
 }
 
@@ -71,6 +66,23 @@
   --ring: 222.2 84% 4.9%;
 
   --radius: 0.5rem;
+
+  /* ── Brand CSS Variables ───────────────────────────────────────────────────
+   * Set at runtime by StoreSettingsContext.applyBrandCssVars().
+   * Defaults here act as a safety net before the JS runs (e.g., SSR or
+   * very first paint). They match the white-label neutral defaults in
+   * StoreSettingsContext and backend GetStoreSettingsQuery.
+   *
+   *   --brand-primary        : hex (#RRGGBB)
+   *   --brand-primary-light  : 10 % rgba  — icon badge bg, paging hover
+   *   --brand-primary-subtle :  5 % rgba  — calendar day hover
+   *   --brand-primary-shadow : 20 % rgba  — datepicker selected shadow
+   * ─────────────────────────────────────────────────────────────────────── */
+  --brand-primary: #2C3E50;
+  --brand-primary-dark: rgb(33, 46, 60);
+  --brand-primary-light: rgba(44, 62, 80, 0.10);
+  --brand-primary-subtle: rgba(44, 62, 80, 0.05);
+  --brand-primary-shadow: rgba(44, 62, 80, 0.20);
 }
 
 .dark {
@@ -113,25 +125,25 @@ body {
   font-family: var(--font-sans);
 }
 
-  /* ── AG Grid Ebrar Green Theme ── */
+  /* ── AG Grid — Brand-Aware Theme ── */
 .ag-theme-alpine,
 .ag-root-wrapper {
-  --ag-alpine-active-color: #1B5E3F;
+  --ag-alpine-active-color: var(--brand-primary, #2C3E50);
   --ag-selected-row-background-color: #cbd5e1; /* Selection Gray (Slate 300) */
   --ag-row-hover-color: #e2e8f0; /* Hover Gray (Slate 200) */
   --ag-header-background-color: #f8faf9;
-  --ag-header-foreground-color: #1B5E3F;
+  --ag-header-foreground-color: var(--brand-primary, #2C3E50);
   --ag-border-color: #e5e7eb;
   --ag-font-size: 13px;
   --ag-font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  --ag-range-selection-border-color: #1B5E3F;
-  --ag-checkbox-checked-color: #1B5E3F;
-  --ag-input-focus-border-color: #1B5E3F;
+  --ag-range-selection-border-color: var(--brand-primary, #2C3E50);
+  --ag-checkbox-checked-color: var(--brand-primary, #2C3E50);
+  --ag-input-focus-border-color: var(--brand-primary, #2C3E50);
 }
 
-/* Fix browser default selection highlight to Ebrar Green */
+/* Fix browser default selection highlight to brand primary */
 .ag-theme-alpine ::selection {
-  background-color: #16a34a !important;
+  background-color: var(--brand-primary, #2C3E50) !important;
   color: white !important;
 }
 
@@ -144,7 +156,7 @@ body {
 .mobile-detail-card {
   padding: 12px 16px;
   background: white !important;
-  border-bottom: 2px solid #1B5E3F;
+  border-bottom: 2px solid var(--brand-primary, #2C3E50);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -167,7 +179,7 @@ body {
 .mobile-detail-label {
   font-size: 11px;
   font-weight: 700;
-  color: #1B5E3F;
+  color: var(--brand-primary, #2C3E50);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -196,11 +208,32 @@ body {
 }
 
 .ag-paging-button {
-  color: #1B5E3F !important;
+  color: var(--brand-primary, #2C3E50) !important;
 }
 
 .ag-paging-button:hover {
-  background-color: #ecfdf5 !important;
+  background-color: var(--brand-primary-light, rgba(44,62,80,0.10)) !important;
+}
+
+/* ── Marquee (scrolling banner text) ── */
+/*
+ * Technique: padding-left:100% pushes the text to start at the parent's right
+ * edge (100% of parent width per CSS spec). translateX(-100%) then moves the
+ * element by its full own width (parent_width + text_width), carrying the text
+ * completely off the left side. Both endpoints are off-screen → the
+ * instantaneous loop reset is invisible: no gap, no JS, any container size.
+ */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+
+.animate-marquee-track {
+  display: inline-block;
+  white-space: nowrap;
+  padding-left: 100%; /* 100% of parent width → text starts at right edge */
+  will-change: transform;
+  animation: marquee 18s linear infinite;
 }
 
 /* ── Modal Animations ── */
@@ -219,8 +252,8 @@ body {
 input:focus,
 textarea:focus,
 select:focus {
-  --tw-ring-color: #1B5E3F;
-  border-color: #1B5E3F;
+  --tw-ring-color: var(--brand-primary, #2C3E50);
+  border-color: var(--brand-primary, #2C3E50);
 }
 
 /* ── Premium DatePicker Overrides ── */
@@ -240,7 +273,7 @@ select:focus {
 }
 
 .react-datepicker__current-month {
-  color: #1B5E3F !important;
+  color: var(--brand-primary, #2C3E50) !important;
   font-weight: 700 !important;
   font-size: 0.95rem !important;
   margin-bottom: 8px !important;
@@ -263,20 +296,20 @@ select:focus {
 }
 
 .react-datepicker__day--selected {
-  background-color: #1B5E3F !important;
+  background-color: var(--brand-primary, #2C3E50) !important;
   color: white !important;
   font-weight: 600 !important;
-  box-shadow: 0 4px 6px -1px rgba(27, 94, 63, 0.2) !important;
+  box-shadow: 0 4px 6px -1px var(--brand-primary-shadow, rgba(44,62,80,0.20)) !important;
 }
 
 .react-datepicker__day--keyboard-selected {
-  background-color: #ecfdf5 !important;
-  color: #1B5E3F !important;
+  background-color: var(--brand-primary-light, rgba(44,62,80,0.10)) !important;
+  color: var(--brand-primary, #2C3E50) !important;
 }
 
 .react-datepicker__day:hover {
-  background-color: #f0fdf4 !important;
-  color: #1B5E3F !important;
+  background-color: var(--brand-primary-subtle, rgba(44,62,80,0.05)) !important;
+  color: var(--brand-primary, #2C3E50) !important;
   transform: scale(1.05) !important;
 }
 
@@ -285,7 +318,7 @@ select:focus {
 }
 
 .react-datepicker__navigation-icon::before {
-  border-color: #1B5E3F !important;
+  border-color: var(--brand-primary, #2C3E50) !important;
   border-width: 2px 2px 0 0 !important;
 }
 
@@ -303,7 +336,7 @@ select:focus {
 }
 
 .datepicker-time-label {
-  color: #1B5E3F;
+  color: var(--brand-primary, #2C3E50);
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
@@ -329,8 +362,8 @@ select:focus {
 }
 
 .datepicker-time-input:focus {
-  border-color: #1B5E3F;
-  box-shadow: 0 0 0 2px rgba(27, 94, 63, 0.15);
+  border-color: var(--brand-primary, #2C3E50);
+  box-shadow: 0 0 0 2px var(--brand-primary-shadow, rgba(44,62,80,0.15));
 }
 
 /* Fix AG Grid component height in floating filter */

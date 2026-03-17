@@ -92,7 +92,7 @@ export function useAddressGridColumns({ onEdit, onDelete, onRestore }: UseAddres
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center', height: '100%' }}>
                         {!isDeleted ? (
                             <>
-                                <button title="Düzenle" onClick={(e) => { e.stopPropagation(); if (params.data) onEdit(params.data); }} className="p-1 rounded-md transition-colors hover:bg-green-50" style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}><Edit2 size={16} color="#1B5E3F" /></button>
+                                <button title="Düzenle" onClick={(e) => { e.stopPropagation(); if (params.data) onEdit(params.data); }} className="p-1 rounded-md transition-colors hover:bg-green-50" style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}><Edit2 size={16} color="var(--brand-primary)" /></button>
                                 <button title="Sil" onClick={(e) => { e.stopPropagation(); if (params.data) onDelete(params.data.id); }} className="p-1 rounded-md transition-colors hover:bg-red-50" style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}><Trash2 size={16} color="#dc2626" /></button>
                             </>
                         ) : (

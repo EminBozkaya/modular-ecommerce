@@ -156,7 +156,7 @@ export default function ProductFormModal({
         `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors ${
             hasError
                 ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30'
-                : 'border-gray-300 focus:ring-[#1B5E3F]/30 focus:border-[#1B5E3F]'
+                : 'border-gray-300 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]'
         }`;
 
     const errorMsg = (msg: string | undefined) =>
@@ -176,7 +176,7 @@ export default function ProductFormModal({
                 {/* Header */}
                 <div
                     className="flex items-center justify-between px-6 py-4"
-                    style={{ background: '#1B5E3F', color: 'white' }}
+                    style={{ background: 'var(--brand-primary)', color: 'white' }}
                 >
                     <h2 className="text-lg font-semibold">
                         {product?.isDeleted ? 'Ürünü Geri Yükle ve Düzenle' : (isEdit ? 'Ürünü Düzenle' : 'Yeni Ürün Ekle')}
@@ -196,7 +196,7 @@ export default function ProductFormModal({
                         onClick={() => setActiveTab('genel')}
                         className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
                             activeTab === 'genel'
-                                ? 'border-[#1B5E3F] text-[#1B5E3F]'
+                                ? 'border-[var(--brand-primary)] text-[var(--brand-primary)]'
                                 : 'border-transparent text-gray-500 hover:text-gray-700'
                         }`}
                     >
@@ -207,7 +207,7 @@ export default function ProductFormModal({
                         onClick={() => setActiveTab('ceviri')}
                         className={`flex items-center gap-1.5 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
                             activeTab === 'ceviri'
-                                ? 'border-[#1B5E3F] text-[#1B5E3F]'
+                                ? 'border-[var(--brand-primary)] text-[var(--brand-primary)]'
                                 : 'border-transparent text-gray-500 hover:text-gray-700'
                         }`}
                     >
@@ -240,7 +240,7 @@ export default function ProductFormModal({
                             <textarea
                                 {...register('description')}
                                 rows={3}
-                                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm resize-none transition-colors ${errors.description ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30' : 'border-gray-300 focus:ring-[#1B5E3F]/30 focus:border-[#1B5E3F]'}`}
+                                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm resize-none transition-colors ${errors.description ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30' : 'border-gray-300 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]'}`}
                                 placeholder="Türkçe ürün açıklaması"
                             />
                             {errorMsg(errors.description?.message)}
@@ -324,7 +324,7 @@ export default function ProductFormModal({
                                     {...register('isActive')}
                                     className="sr-only peer"
                                 />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B5E3F]"></div>
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--brand-primary)]"></div>
                             </label>
                             <div>
                                 <span className="block text-sm font-semibold text-gray-900">Ürün Aktif</span>
@@ -345,9 +345,9 @@ export default function ProductFormModal({
                                 type="submit"
                                 disabled={loading}
                                 className="px-5 py-2 text-sm font-medium text-white rounded-lg transition-colors disabled:opacity-50"
-                                style={{ background: '#1B5E3F' }}
-                                onMouseEnter={(e) => (e.currentTarget.style.background = '#164A32')}
-                                onMouseLeave={(e) => (e.currentTarget.style.background = '#1B5E3F')}
+                                style={{ background: 'var(--brand-primary)' }}
+                                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--brand-primary-dark)')}
+                                onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--brand-primary)')}
                             >
                                 {loading ? 'Kaydediliyor...' : isEdit ? 'Güncelle' : 'Ekle'}
                             </button>
@@ -374,7 +374,7 @@ export default function ProductFormModal({
                                             onClick={() => setActiveLang(lang.code)}
                                             className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-sm font-medium rounded-md transition-colors ${
                                                 activeLang === lang.code
-                                                    ? 'bg-white shadow-sm text-[#1B5E3F]'
+                                                    ? 'bg-white shadow-sm text-[var(--brand-primary)]'
                                                     : 'text-gray-500 hover:text-gray-700'
                                             }`}
                                         >
@@ -399,7 +399,7 @@ export default function ProductFormModal({
                                                         ...prev,
                                                         [lang.code]: { ...prev[lang.code], name: e.target.value }
                                                     }))}
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B5E3F]/30 focus:border-[#1B5E3F] text-sm transition-colors"
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)] text-sm transition-colors"
                                                     placeholder={`Ürün adı (${lang.label})`}
                                                 />
                                             </div>
@@ -414,7 +414,7 @@ export default function ProductFormModal({
                                                         ...prev,
                                                         [lang.code]: { ...prev[lang.code], description: e.target.value }
                                                     }))}
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B5E3F]/30 focus:border-[#1B5E3F] text-sm resize-none transition-colors"
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)] text-sm resize-none transition-colors"
                                                     placeholder={`Ürün açıklaması (${lang.label})`}
                                                 />
                                             </div>
@@ -444,9 +444,9 @@ export default function ProductFormModal({
                                         onClick={handleTranslationSave}
                                         disabled={translationSaving}
                                         className="px-5 py-2 text-sm font-medium text-white rounded-lg transition-colors disabled:opacity-50"
-                                        style={{ background: '#1B5E3F' }}
-                                        onMouseEnter={(e) => (e.currentTarget.style.background = '#164A32')}
-                                        onMouseLeave={(e) => (e.currentTarget.style.background = '#1B5E3F')}
+                                        style={{ background: 'var(--brand-primary)' }}
+                                        onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--brand-primary-dark)')}
+                                        onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--brand-primary)')}
                                     >
                                         {translationSaving ? 'Kaydediliyor...' : 'Tüm Çevirileri Kaydet'}
                                     </button>

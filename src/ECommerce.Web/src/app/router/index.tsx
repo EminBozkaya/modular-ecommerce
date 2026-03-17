@@ -23,6 +23,11 @@ const AdminCategoriesPage = lazy(() => import('../../features/admin/categories/p
 const AdminOrderDetailPage = lazy(() => import('../../features/admin/orders/pages/AdminOrderDetailPage'));
 const AdminUsersPage = lazy(() => import('../../features/admin/pages/AdminUsersPage'));
 const AdminAddressesPage = lazy(() => import('../../features/admin/pages/AdminAddressesPage'));
+const AdminSettingsPlaceholderPage = lazy(() => import('../../features/admin/pages/AdminSettingsPlaceholderPage'));
+const AdminBrandDesignPage = lazy(() => import('../../features/admin/pages/AdminBrandDesignPage'));
+const AdminColorsPage = lazy(() => import('../../features/admin/pages/AdminColorsPage'));
+const AdminHeroCarouselPage = lazy(() => import('../../features/admin/pages/AdminHeroCarouselPage'));
+const AdminNavOrderPage = lazy(() => import('../../features/admin/pages/AdminNavOrderPage'));
 const FavoritesPage = lazy(() => import('../../features/favorites/pages/FavoritesPage'));
 const PaymentWaitingPage = lazy(() => import('../../features/ordering/pages/PaymentWaitingPage'));
 const ProfilePage = lazy(() => import('../../features/auth/pages/ProfilePage'));
@@ -231,6 +236,63 @@ export const router = createBrowserRouter([
                         element: (
                             <SuspenseWrapper>
                                 <AdminAddressesPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    // ── Settings Routes ──────────────────────────────
+                    {
+                        path: 'settings/payment',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminSettingsPlaceholderPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'settings/shipping',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminSettingsPlaceholderPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'settings/design/logo',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminBrandDesignPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'settings/design/colors',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminColorsPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'settings/design/hero',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminHeroCarouselPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'settings/design/nav',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminNavOrderPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'settings/design/banners',
+                        element: (
+                            <SuspenseWrapper>
+                                <AdminSettingsPlaceholderPage />
                             </SuspenseWrapper>
                         ),
                     },

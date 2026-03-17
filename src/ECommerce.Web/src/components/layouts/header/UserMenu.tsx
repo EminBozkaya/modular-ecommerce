@@ -55,12 +55,12 @@ export function UserMenu() {
         <div className="flex flex-col items-center group relative" ref={menuRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center justify-center w-11 h-11 rounded-full bg-[var(--color-ebrar-green)] text-white font-bold text-sm border-2 border-white shadow-md hover:bg-[var(--color-ebrar-green-dark)] transition-all duration-200"
+                className="flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[var(--color-ebrar-green)] text-white font-bold text-[12px] sm:text-sm border-[1.5px] sm:border-2 border-white shadow-md hover:bg-[var(--color-ebrar-green-dark)] transition-all duration-200"
                 title={user?.fullName}
             >
                 {userInitials}
             </button>
-            <span className="text-[11px] font-bold text-muted-foreground group-hover:text-[var(--color-ebrar-green)] mt-1 transition-colors">
+            <span className="text-[11px] font-bold text-muted-foreground group-hover:text-[var(--color-ebrar-green)] mt-[2px] sm:mt-1 transition-colors capitalize">
                 {t('userMenu.myAccount')}
             </span>
 

@@ -4,7 +4,8 @@ namespace ECommerce.Domain.Catalog.Entities;
 
 /// <summary>
 /// Translation of Product's localizable text fields for a specific language.
-/// Created only for non-default languages — the default language lives on Product.Name/Description.
+/// ALL languages including the deployment's DefaultLanguage are stored here.
+/// Product.Name serves as an internal canonical identifier only.
 /// Unique constraint: (ProductId, LanguageCode).
 /// </summary>
 public class ProductTranslation : BaseAuditableEntity
@@ -12,7 +13,7 @@ public class ProductTranslation : BaseAuditableEntity
     public Guid ProductId { get; private set; }
     public Product? Product { get; private set; }
 
-    /// <summary>Language code (e.g. "en", "de"). Never the deployment's DefaultLanguage.</summary>
+    /// <summary>Language code (e.g. "tr", "en", "de"). Includes the deployment's DefaultLanguage.</summary>
     public string LanguageCode { get; private set; } = default!;
 
     public string Name { get; private set; } = default!;

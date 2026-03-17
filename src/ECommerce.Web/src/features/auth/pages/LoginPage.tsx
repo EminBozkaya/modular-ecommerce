@@ -4,12 +4,15 @@ import { Link } from 'react-router-dom';
 import { useLogin } from '@/features/auth/hooks/useLogin';
 import { useLoginSchema, type LoginFormData } from '@/lib/validations/auth.schema';
 import { applyServerErrors } from '@/utils/formErrors';
-import logoImg from '@/assets/ebrar-logo.png';
+import logoImg from '@/assets/LOGO.png';
 import { useTranslation } from 'react-i18next';
+import { useStoreSettings } from '@/context/StoreSettingsContext';
 
 export default function LoginPage() {
     const { mutate: login, isPending } = useLogin();
     const { t } = useTranslation('auth');
+    const settings = useStoreSettings();
+    const resolvedLogo = settings.imageBase64 ?? logoImg;
 
     const loginSchema = useLoginSchema();
 
@@ -34,23 +37,23 @@ export default function LoginPage() {
         <div className="flex min-h-screen flex-col items-center justify-center p-4">
             <Link to="/" className="mb-8 block transition-transform hover:scale-105 duration-300">
                 <img
-                    src={logoImg}
-                    alt="Ebrar Kuruyemiş"
+                    src={resolvedLogo}
+                    alt={settings.storeName || "Ebrar Kuruyemiş"}
                     className="h-24 sm:h-32 w-auto object-contain"
                 />
             </Link>
 
             <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 shadow-2xl shadow-black/5 border border-gray-100 relative overflow-hidden">
                 {/* Decorative background element */}
-                <div className="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 rounded-full bg-[var(--color-ebrar-green)]/10 blur-3xl" />
+                <div className="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 rounded-full bg-[var(--brand-primary)]/10 blur-3xl" />
 
                 <div className="relative z-10 text-center">
                     <h2 className="text-3xl font-black tracking-tight text-gray-900 font-serif lowercase">
-                        {t('login.title')} <span className="text-[var(--color-ebrar-green)]">{t('login.titleHighlight')}</span>
+                        {t('login.title')} <span className="text-[var(--brand-primary)]">{t('login.titleHighlight')}</span>
                     </h2>
                     <p className="mt-3 text-sm text-gray-500 font-medium">
                         {t('login.noAccount')}{' '}
-                        <Link to="/register" className="font-bold text-[var(--color-ebrar-green)] hover:text-[var(--color-ebrar-green-dark)] transition-colors underline decoration-2 underline-offset-4">
+                        <Link to="/register" className="font-bold text-[var(--brand-primary)] hover:text-[var(--brand-primary-dark)] transition-colors underline decoration-2 underline-offset-4">
                             {t('login.registerLink')}
                         </Link>
                     </p>
@@ -103,7 +106,7 @@ export default function LoginPage() {
                                     type="email"
                                     autoComplete="email"
                                     {...register('email')}
-                                    className={`block w-full rounded-xl border-0 py-3 text-gray-900 bg-white ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all ${errors.email ? 'ring-red-400 focus:ring-red-500' : 'ring-gray-200'}`}
+                                    className={`block w-full rounded-xl border-0 py-3 text-gray-900 bg-white ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--brand-primary)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all ${errors.email ? 'ring-red-400 focus:ring-red-500' : 'ring-gray-200'}`}
                                     placeholder="ornek@ebrahim.com"
                                 />
                                 {errors.email && (
@@ -120,7 +123,7 @@ export default function LoginPage() {
                                     type="password"
                                     autoComplete="current-password"
                                     {...register('password')}
-                                    className={`block w-full rounded-xl border-0 py-3 text-gray-900 bg-white ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--color-ebrar-green)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all ${errors.password ? 'ring-red-400 focus:ring-red-500' : 'ring-gray-200'}`}
+                                    className={`block w-full rounded-xl border-0 py-3 text-gray-900 bg-white ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--brand-primary)] sm:text-sm sm:leading-6 px-4 shadow-sm transition-all ${errors.password ? 'ring-red-400 focus:ring-red-500' : 'ring-gray-200'}`}
                                     placeholder="••••••••"
                                 />
                                 {errors.password && (
@@ -133,7 +136,7 @@ export default function LoginPage() {
                             <button
                                 type="submit"
                                 disabled={isPending}
-                                className="flex w-full justify-center rounded-xl bg-[var(--color-ebrar-green)] px-4 py-3 text-sm font-black text-white shadow-xl shadow-green-900/10 hover:bg-[var(--color-ebrar-green-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-ebrar-green)] disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
+                                className="flex w-full justify-center rounded-xl bg-[var(--brand-primary)] px-4 py-3 text-sm font-black text-white shadow-xl shadow-green-900/10 hover:bg-[var(--brand-primary-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-primary)] disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
                             >
                                 {isPending ? t('login.submitting') : t('login.submit')}
                             </button>
