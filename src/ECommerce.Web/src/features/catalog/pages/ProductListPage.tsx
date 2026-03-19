@@ -160,7 +160,7 @@ export default function ProductListPage() {
             {!isLoading && !error && products && Array.isArray(products) && products.length > 0 && (
                 <>
                     <div className="mb-4 text-sm text-muted-foreground font-medium">
-                        {t('list.showingCount', { count: products.length, total: totalCount, defaultValue: `Toplam ${totalCount} üründen ${products.length} tanesi gösteriliyor` })}
+                        {t('list.showingCount', { count: products.length, total: totalCount })}
                     </div>
                     
                     <ProductGrid products={products} />

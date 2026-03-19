@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { SUPPORTED_LANGUAGES, type LanguageCode } from '@/i18n/languages';
 
 function applyDirectionToDocument(langCode: string) {
-    const lang = SUPPORTED_LANGUAGES.find((l) => l.code === langCode);
-    const dir = lang?.dir ?? 'ltr';
-    document.documentElement.dir = dir;
     document.documentElement.lang = langCode;
+    // dir is intentionally NOT set on <html> — layout stays LTR for all languages.
+    // Arabic text flows RTL naturally via Unicode bidi algorithm without mirroring the UI.
 }
 
 export function useLanguage() {

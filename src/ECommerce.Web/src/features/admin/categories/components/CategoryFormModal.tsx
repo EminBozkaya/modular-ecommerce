@@ -6,6 +6,7 @@ import type { Category } from '../../../catalog/types/product';
 import { useCategorySchema, type CategoryFormData } from '@/lib/validations/admin.schema';
 import { getCategoryTranslations, upsertCategoryTranslation, type TranslationData } from '../../api/adminApi';
 import { useLanguageConfig } from '@/hooks/useLanguageConfig';
+import { useTranslation } from 'react-i18next';
 
 interface CategoryFormModalProps {
     open: boolean;
@@ -31,6 +32,7 @@ export default function CategoryFormModal({
     categories,
     loading,
 }: CategoryFormModalProps) {
+    const { t } = useTranslation('admin');
     const { languages } = useLanguageConfig();
     const nonDefaultLangs = useMemo(
         () => languages.filter(l => l.code !== DEFAULT_LANG_CODE),
@@ -133,7 +135,7 @@ export default function CategoryFormModal({
             setTranslationSaved(true);
             setTimeout(() => setTranslationSaved(false), 3000);
         } catch {
-            setTranslationError('Çeviriler kaydedilirken bir hata oluştu.');
+            setTranslationError(t('forms.errors.translationSave'));
         } finally {
             setTranslationSaving(false);
         }
@@ -175,7 +177,7 @@ export default function CategoryFormModal({
                 {/* Header */}
                 <div
                     className="flex items-center justify-between px-6 py-4"
-                    style={{ background: 'var(--brand-primary)', color: 'white' }}
+                    style={{ background: 'var(--brand-surface)', color: 'white' }}
                 >
                     <h2 className="text-lg font-semibold">{category ? 'Kategori Düzenle' : 'Yeni Kategori Ekle'}</h2>
                     <button
@@ -197,7 +199,7 @@ export default function CategoryFormModal({
                                 : 'border-transparent text-muted-foreground hover:text-foreground'
                         }`}
                     >
-                        Genel
+                        {t('forms.tabs.general')}
                     </button>
                     <button
                         type="button"
@@ -209,7 +211,7 @@ export default function CategoryFormModal({
                         }`}
                     >
                         <Globe className="h-4 w-4" />
-                        Çeviriler
+                        {t('forms.tabs.translations')}
                     </button>
                 </div>
 

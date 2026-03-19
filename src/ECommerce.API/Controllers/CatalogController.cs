@@ -51,5 +51,5 @@ public class CatalogController : ControllerBase
 
     [HttpGet("units")]
     public async Task<IActionResult> GetUnits(CancellationToken ct)
-        => Ok(await _mediator.Send(new GetUnitsQuery(), ct));
+        => Ok(await _mediator.Send(new GetUnitsQuery(_language.Language), ct));
 }

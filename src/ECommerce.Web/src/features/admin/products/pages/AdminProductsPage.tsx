@@ -9,15 +9,20 @@ import ProductFormModal from '../components/ProductFormModal';
 import ConfirmModal from '../../components/ConfirmModal';
 import AgGridDatePicker from '../../components/AgGridDatePicker';
 import { EntityStatusFilter, EntityStatusFloatingFilter } from '../../components/EntityStatusFilter';
-import { useProductGridColumns, localeTextTr } from '../hooks/useProductGridColumns';
+import { useProductGridColumns } from '../hooks/useProductGridColumns';
 import { useProductActions, defaultProductModalSettings, type ProductModalSettings } from '../hooks/useProductActions';
 import { exportProductsToExcel, exportProductsToPDF } from '../utils/productExport';
 import excelIcon from '../../../../assets/excel_download_icon.png';
 import pdfIcon from '../../../../assets/pdf_download_icon.png';
-import { useThemeStore } from '@/store/themeStore';
+import { useAgGridTheme, useRowStyleColors } from '../../utils/agGridTheme';
+import { useTranslation } from 'react-i18next';
+import { useAgGridLocale } from '@/hooks/useAgGridLocale';
 ModuleRegistry.registerModules([AllCommunityModule]);
 export default function AdminProductsPage() {
-    const { resolved: theme } = useThemeStore();
+    const { t } = useTranslation('admin');
+    const { localeText } = useAgGridLocale();
+    const agGridTheme = useAgGridTheme();
+    const rowColors = useRowStyleColors();
     const gridRef = useRef<AgGridReact>(null);
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -103,7 +108,7 @@ export default function AdminProductsPage() {
 
     const fullWidthCellRenderer = useMemo(() => (params: any) => {
         const p = params.data as Product;
-        const status = p.isDeleted ? 'Silinmiş' : (p.isActive ? 'Aktif' : 'Pasif');
+        const status = p.isDeleted ? t('filter.deleted') : (p.isActive ? t('filter.active') : t('filter.passive'));
         const statusColor = p.isDeleted ? '#dc2626' : (p.isActive ? '#16a34a' : '#ca8a04');
         const nodeId = params.node.id as string;
 
@@ -136,27 +141,27 @@ export default function AdminProductsPage() {
                 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Fiyat</span>
+                        <span className="mobile-detail-label">{t('products.mobile.price')}</span>
                         <span className="mobile-detail-value font-bold">{p.priceAmount?.toFixed(2)} TL</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Stok</span>
+                        <span className="mobile-detail-label">{t('products.mobile.stock')}</span>
                         <span className="mobile-detail-value">{p.stockQuantity} {p.unitName}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Kategori</span>
+                        <span className="mobile-detail-label">{t('products.mobile.category')}</span>
                         <span className="mobile-detail-value">{p.categoryName}</span>
                     </div>
                     <div className="mobile-detail-item col-span-2">
-                        <span className="mobile-detail-label">Açıklama</span>
-                        <span className="mobile-detail-value italic text-muted-foreground">{p.description || 'Yok'}</span>
+                        <span className="mobile-detail-label">{t('products.mobile.description')}</span>
+                        <span className="mobile-detail-value italic text-muted-foreground">{p.description || t('products.mobile.noDesc')}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Oluşturan</span>
+                        <span className="mobile-detail-label">{t('products.mobile.createdBy')}</span>
                         <span className="mobile-detail-value">{p.createdBy}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Tarih</span>
+                        <span className="mobile-detail-label">{t('products.mobile.date')}</span>
                         <span className="mobile-detail-value">{new Date(p.createdAt).toLocaleDateString('tr-TR')}</span>
                     </div>
                 </div>
@@ -164,11 +169,11 @@ export default function AdminProductsPage() {
                 <div className="flex gap-2 mt-3 pt-3 border-t border-border">
                     {!p.isDeleted ? (
                         <>
-                            <button onClick={(e) => { e.stopPropagation(); handleEdit(p); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">DÜZENLE</button>
-                            <button onClick={(e) => { e.stopPropagation(); handleDelete(p.id); }} className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm border border-red-100">SİL</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleEdit(p); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">{t('products.mobile.edit')}</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleDelete(p.id); }} className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm border border-red-100">{t('products.mobile.delete')}</button>
                         </>
                     ) : (
-                        <button onClick={(e) => { e.stopPropagation(); handleRestore(p.id); }} className="flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm border border-blue-100">GERİ YÜKLE</button>
+                        <button onClick={(e) => { e.stopPropagation(); handleRestore(p.id); }} className="flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm border border-blue-100">{t('products.mobile.restore')}</button>
                     )}
                 </div>
             </div>
@@ -185,7 +190,7 @@ export default function AdminProductsPage() {
                         <Package className="h-5 w-5" style={{ color: 'var(--brand-primary)' }} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>Ürünler</h1>
+                        <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>{t('products.title')}</h1>
                     </div>
                 </div>
                 <div className="flex items-center gap-4 self-end sm:self-auto">
@@ -200,7 +205,7 @@ export default function AdminProductsPage() {
                         <span className="hidden xs:inline text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Excel</span>
                     </button>
                     <button
-                        onClick={() => exportProductsToPDF(products).catch(() => alert('PDF hatasi.'))}
+                        onClick={() => exportProductsToPDF(products).catch(() => alert(t('errors.pdfExport')))}
                         className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group"
                         title="PDF'e Aktar"
                     >
@@ -214,7 +219,7 @@ export default function AdminProductsPage() {
                             onClick={() => { setEditingProduct(null); setModalOpen(true); }}
                             className="flex items-center justify-center w-14 h-14 text-white rounded-xl transition-all duration-200 shadow-sm hover:shadow-md shrink-0"
                             style={{ background: 'var(--brand-primary)' }}
-                            title="Yeni Ürün Ekle"
+                            title={t('products.addTooltip')}
                             onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--brand-primary-dark)')}
                             onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--brand-primary)')}
                         >
@@ -228,6 +233,7 @@ export default function AdminProductsPage() {
             <div className="bg-card rounded-xl shadow-sm overflow-x-auto border border-border">
                 <div style={{ minWidth: 'fit-content' }}>
                     <AgGridReact<Product>
+                        theme={agGridTheme}
                         components={gridComponents}
                         ref={gridRef}
                         rowData={products}
@@ -240,12 +246,11 @@ export default function AdminProductsPage() {
                         domLayout="autoHeight"
                         suppressColumnVirtualisation={true}
                         animateRows={true}
-                        localeText={localeTextTr}
+                        localeText={localeText}
                         getRowStyle={(params) => {
-                            const isDark = theme === 'dark';
-                            if (params.data?.isDeleted) return { backgroundColor: isDark ? 'rgba(239,68,68,0.15)' : '#fef2f2' };
-                            if (params.data?.isActive === false) return { backgroundColor: isDark ? 'rgba(100,116,139,0.15)' : '#f1f5f9' };
-                            if (params.data?.isActive === true) return { backgroundColor: isDark ? 'rgba(34,197,94,0.12)' : '#f0fdf4' };
+                            if (params.data?.isDeleted) return { backgroundColor: rowColors.deleted };
+                            if (params.data?.isActive === false) return { backgroundColor: rowColors.inactive };
+                            if (params.data?.isActive === true) return { backgroundColor: rowColors.active };
                             return undefined;
                         }}
                         suppressHorizontalScroll={false}
@@ -310,8 +315,8 @@ export default function AdminProductsPage() {
             </div>
 
             <div className="flex items-center justify-between mt-3 px-1 text-xs text-muted-foreground">
-                <span>Toplam kayit: {products.length}</span>
-                <span>Gosterilen: {gridApi?.getDisplayedRowCount() ?? products.length} kayit</span>
+                <span>{t('common:totalRecords', { count: products.length })}</span>
+                <span>{t('common:showing', { count: gridApi?.getDisplayedRowCount() ?? products.length })}</span>
             </div>
             <ProductFormModal open={modalOpen} onClose={() => { setModalOpen(false); setEditingProduct(null); }} onSubmit={(data: ProductFormData) => handleFormSubmit(data, editingProduct)} product={editingProduct} categories={categories} units={units} loading={saving} />
             <ConfirmModal open={modalSettings.open} title={modalSettings.title} message={modalSettings.message} variant={modalSettings.variant} confirmText={modalSettings.confirmText} showConfirm={modalSettings.showConfirm} onConfirm={() => handleConfirmDelete(modalSettings)} onClose={() => setModalSettings(prev => ({ ...prev, open: false }))} loading={deleting} />

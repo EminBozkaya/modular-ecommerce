@@ -14,5 +14,11 @@
   "summary": {
     "products": "Productos ({{count}})",
     "total": "Total"
+  },
+  "page": {
+    "title": "Mi carrito",
+    "titleWithCount": "Mi carrito ({{count}} artículos)",
+    "browseProducts": "Ver productos",
+    "loadError": "No se pudo cargar el carrito."
   }
 }

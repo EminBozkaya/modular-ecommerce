@@ -1,30 +1,24 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useGridFilter } from 'ag-grid-react';
 import type { CustomFilterProps, CustomFloatingFilterProps } from 'ag-grid-react';
+import { useTranslation } from 'react-i18next';
 
 type EntityStatusKey = 'Active' | 'Passive' | 'Deleted';
 
 interface StatusOption {
     key: EntityStatusKey;
-    label: string;
     color: string;
 }
 
-const statusOptions: StatusOption[] = [
-    { key: 'Active', label: 'Aktif', color: '#16a34a' },
-    { key: 'Passive', label: 'Pasif', color: '#ca8a04' },
-    { key: 'Deleted', label: 'Silinmiş', color: '#dc2626' },
+const statusOptionDefs: StatusOption[] = [
+    { key: 'Active', color: '#16a34a' },
+    { key: 'Passive', color: '#ca8a04' },
+    { key: 'Deleted', color: '#dc2626' },
 ];
-
-const statusLabelMap: Record<EntityStatusKey, string> = {
-    Active: 'Aktif',
-    Passive: 'Pasif',
-    Deleted: 'Silinmiş',
-};
 
 export interface EntityStatusFilterModel {
     searchText: string;
-    checkedStatuses: EntityStatusKey[] | null; // null = Tümü (show all)
+    checkedStatuses: EntityStatusKey[] | null; // null = All (show all)
 }
 
 const DEFAULT_MODEL: EntityStatusFilterModel = { searchText: '', checkedStatuses: null };
@@ -40,7 +34,14 @@ function rowKey(data: { isActive?: boolean; isDeleted?: boolean }): EntityStatus
 
 // ── Parent Filter — Checkbox Popup ──
 export const EntityStatusFilter = ({ model, onModelChange }: CustomFilterProps) => {
+    const { t } = useTranslation('admin');
     const [filterModel, setFilterModel] = useState<EntityStatusFilterModel>(model ?? DEFAULT_MODEL);
+
+    const statusLabelMap: Record<EntityStatusKey, string> = {
+        Active: t('filter.active'),
+        Passive: t('filter.passive'),
+        Deleted: t('filter.deleted'),
+    };
 
     useEffect(() => {
         setFilterModel(model ?? DEFAULT_MODEL);
@@ -55,8 +56,8 @@ export const EntityStatusFilter = ({ model, onModelChange }: CustomFilterProps) 
             const label = statusLabelMap[key];
 
             if (filterModel.searchText) {
-                const search = filterModel.searchText.toLocaleLowerCase('tr-TR');
-                if (!label.toLocaleLowerCase('tr-TR').includes(search)) return false;
+                const search = filterModel.searchText.toLocaleLowerCase();
+                if (!label.toLocaleLowerCase().includes(search)) return false;
             }
 
             if (filterModel.checkedStatuses !== null) {
@@ -66,6 +67,7 @@ export const EntityStatusFilter = ({ model, onModelChange }: CustomFilterProps) 
 
             return true;
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [filterModel],
     );
 
@@ -87,7 +89,7 @@ export const EntityStatusFilter = ({ model, onModelChange }: CustomFilterProps) 
             update({ ...filterModel, checkedStatuses: remaining.length === 0 ? null : remaining });
         } else {
             const next = [...(filterModel.checkedStatuses ?? []), key] as EntityStatusKey[];
-            update({ ...filterModel, checkedStatuses: next.length === statusOptions.length ? null : next });
+            update({ ...filterModel, checkedStatuses: next.length === statusOptionDefs.length ? null : next });
         }
     };
 
@@ -96,8 +98,8 @@ export const EntityStatusFilter = ({ model, onModelChange }: CustomFilterProps) 
     };
 
     return (
-        <div style={{ padding: '10px 12px', minWidth: '160px', fontFamily: 'inherit' }}>
-            {statusOptions.map((opt) => {
+        <div className="bg-popover text-popover-foreground" style={{ padding: '10px 12px', minWidth: '160px', fontFamily: 'inherit' }}>
+            {statusOptionDefs.map((opt) => {
                 const isChecked = !isTumu && checkedSet.has(opt.key);
                 return (
                     <label
@@ -112,12 +114,12 @@ export const EntityStatusFilter = ({ model, onModelChange }: CustomFilterProps) 
                         />
                         <span
                             style={{
-                                color: isChecked ? opt.color : '#374151',
+                                color: isChecked ? opt.color : undefined,
                                 fontWeight: isChecked ? 600 : 400,
                                 fontSize: '13px',
                             }}
                         >
-                            {opt.label}
+                            {statusLabelMap[opt.key]}
                         </span>
                     </label>
                 );
@@ -125,14 +127,14 @@ export const EntityStatusFilter = ({ model, onModelChange }: CustomFilterProps) 
 
             <hr className="my-2 border-border" />
 
-            <label className="flex items-center gap-2 px-1 py-[5px] rounded cursor-pointer hover:bg-green-50 transition-colors">
+            <label className="flex items-center gap-2 px-1 py-[5px] rounded cursor-pointer hover:bg-accent transition-colors">
                 <input
                     type="checkbox"
                     checked={isTumu}
                     onChange={handleTumu}
                     style={{ accentColor: 'var(--brand-primary)', width: 14, height: 14, cursor: 'pointer' }}
                 />
-                <span style={{ color: 'var(--brand-primary)', fontWeight: 600, fontSize: '13px' }}>Tümü</span>
+                <span style={{ color: 'var(--brand-primary)', fontWeight: 600, fontSize: '13px' }}>{t('filter.all')}</span>
             </label>
         </div>
     );
@@ -154,20 +156,8 @@ export const EntityStatusFloatingFilter = ({ model, onModelChange }: CustomFloat
                 type="text"
                 value={current.searchText}
                 onChange={handleChange}
-                placeholder="Durum ara..."
-                className="ag-input-field-input ag-text-field-input"
-                style={{
-                    width: '100%',
-                    height: '24px',
-                    fontSize: '12px',
-                    padding: '0 6px',
-                    border: '1px solid #babfc7',
-                    borderRadius: '3px',
-                    outline: 'none',
-                    backgroundColor: 'white',
-                }}
-                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--brand-primary)'; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = '#babfc7'; }}
+                placeholder="..."
+                className="ag-input-field-input ag-text-field-input w-full h-6 text-xs px-1.5 rounded-sm outline-none bg-transparent border border-border text-foreground placeholder:text-muted-foreground focus:border-[var(--brand-primary)]"
             />
         </div>
     );

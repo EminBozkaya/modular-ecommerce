@@ -7,6 +7,7 @@ import {
 import { Edit2, Trash2, RotateCcw } from 'lucide-react';
 import type { Category } from '../../../catalog/types/product';
 import { useTranslation } from 'react-i18next';
+import { formatDateByLocale } from '@/utils/agGridLocales';
 
 // ── AG Grid locale (Turkish) ──────────────────────────────────────────────────
 export const localeTextTr: Record<string, string> = {
@@ -165,7 +166,7 @@ export function useCategoryGridColumns({
             tooltipValueGetter: (params) => params.value ?? '',
         },
         {
-            headerName: t('common.updatedAt', 'Güncellenme Tarihi'),
+            headerName: t('common:updatedAt'),
             field: 'updatedAt',
             sortable: true,
             filter: 'agDateColumnFilter',
@@ -174,14 +175,14 @@ export function useCategoryGridColumns({
             valueFormatter: formatDateCell,
         },
         {
-            headerName: t('common.updatedBy', 'Güncelleyen'),
+            headerName: t('common:updatedBy'),
             field: 'updatedBy',
             sortable: true,
             filter: 'agTextColumnFilter',
             minWidth: 120,
         },
         {
-            headerName: t('common.deletedAt', 'Silinme Tarihi'),
+            headerName: t('common:deletedAt'),
             field: 'deletedAt',
             sortable: true,
             filter: false,

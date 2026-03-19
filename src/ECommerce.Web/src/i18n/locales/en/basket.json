@@ -14,5 +14,11 @@
   "summary": {
     "products": "Products ({{count}})",
     "total": "Total"
+  },
+  "page": {
+    "title": "My Basket",
+    "titleWithCount": "My Basket ({{count}} items)",
+    "browseProducts": "Browse Products",
+    "loadError": "Failed to load basket."
   }
 }

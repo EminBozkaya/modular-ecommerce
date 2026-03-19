@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import { apiClient } from '../../../api/client';
 
 export interface HeroSlideDto {
@@ -192,7 +193,7 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK_API === 'true';
 export const defaultHomepageSections: HomepageSectionDto[] = [
     {
         id: 'default-categories',
-        title: 'Ana Kategoriler',
+        title: 'Main Categories',
         showTitle: false,
         layout: 'grid',
         columns: 3,
@@ -201,14 +202,14 @@ export const defaultHomepageSections: HomepageSectionDto[] = [
         order: 0,
         enabled: true,
         cards: [
-            { id: 'cat-1', imageUrl: 'https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?w=400&h=300&fit=crop', title: 'KURU MEYVE', subtitle: '', description: '', textPosition: 'bottom-left', textColor: '#FFFFFF', overlayColor: '#000000', overlayOpacity: 30, badgePosition: 'top-left', linkType: 'url', linkTarget: '/products?categoryId=4', buttonVisible: false, aspectRatio: 'landscape', colSpan: 1, rowSpan: 1 },
-            { id: 'cat-2', imageUrl: 'https://images.unsplash.com/photo-1608797178974-15b35a64ede9?w=400&h=300&fit=crop', title: 'KURUYEMİŞ', subtitle: '', description: '', textPosition: 'bottom-left', textColor: '#FFFFFF', overlayColor: '#000000', overlayOpacity: 30, badgePosition: 'top-left', linkType: 'url', linkTarget: '/products?categoryId=1', buttonVisible: false, aspectRatio: 'landscape', colSpan: 1, rowSpan: 1 },
-            { id: 'cat-3', imageUrl: 'https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=400&h=300&fit=crop', title: 'ATIŞTIYRMALIK & MİX', subtitle: '', description: '', textPosition: 'bottom-left', textColor: '#FFFFFF', overlayColor: '#000000', overlayOpacity: 30, badgePosition: 'top-left', linkType: 'url', linkTarget: '/products?categoryId=5', buttonVisible: false, aspectRatio: 'landscape', colSpan: 1, rowSpan: 1 },
+            { id: 'cat-1', imageUrl: 'https://picsum.photos/seed/cat-a/400/300', title: 'CATEGORY A', subtitle: '', description: '', textPosition: 'bottom-left', textColor: '#FFFFFF', overlayColor: '#000000', overlayOpacity: 30, badgePosition: 'top-left', linkType: 'url', linkTarget: '/products?categoryId=1', buttonVisible: false, aspectRatio: 'landscape', colSpan: 1, rowSpan: 1 },
+            { id: 'cat-2', imageUrl: 'https://picsum.photos/seed/cat-b/400/300', title: 'CATEGORY B', subtitle: '', description: '', textPosition: 'bottom-left', textColor: '#FFFFFF', overlayColor: '#000000', overlayOpacity: 30, badgePosition: 'top-left', linkType: 'url', linkTarget: '/products?categoryId=2', buttonVisible: false, aspectRatio: 'landscape', colSpan: 1, rowSpan: 1 },
+            { id: 'cat-3', imageUrl: 'https://picsum.photos/seed/cat-c/400/300', title: 'CATEGORY C', subtitle: '', description: '', textPosition: 'bottom-left', textColor: '#FFFFFF', overlayColor: '#000000', overlayOpacity: 30, badgePosition: 'top-left', linkType: 'url', linkTarget: '/products?categoryId=3', buttonVisible: false, aspectRatio: 'landscape', colSpan: 1, rowSpan: 1 },
         ],
     },
     {
         id: 'default-featured',
-        title: 'Öne Çıkan Ürünler',
+        title: 'Featured Products',
         showTitle: false,
         layout: 'featured',
         columns: 3,
@@ -217,15 +218,15 @@ export const defaultHomepageSections: HomepageSectionDto[] = [
         order: 1,
         enabled: true,
         cards: [
-            { id: 'feat-1', imageUrl: 'https://images.unsplash.com/photo-1590005354167-6da97870c757?w=400&h=500&fit=crop', title: 'HAFTANIN FIRSATI', subtitle: 'Türk Kayısısı & Çekirdekli Hurma', description: '', textPosition: 'bottom-left', textColor: '#FFFFFF', overlayColor: '#000000', overlayOpacity: 40, badgeText: 'İndirimli', badgeColor: '#D4A853', badgePosition: 'top-left', linkType: 'url', linkTarget: '/products', buttonText: 'ALIŞVERİŞ YAP', buttonVisible: true, aspectRatio: 'auto', colSpan: 1, rowSpan: 1 },
-            { id: 'feat-2', imageUrl: 'https://images.unsplash.com/photo-1574570173583-a65fc27484be?w=400&h=300&fit=crop', title: 'ÜYELİK KULÜBÜ', subtitle: 'Her ay kapınıza özel seçilmiş kuruyemiş paketi.', description: '', textPosition: 'center', textColor: '#FFFFFF', overlayColor: '#000000', overlayOpacity: 40, badgePosition: 'top-left', linkType: 'url', linkTarget: '/products', buttonText: 'KATIL', buttonVisible: true, aspectRatio: 'landscape', colSpan: 1, rowSpan: 1 },
-            { id: 'feat-3', imageUrl: 'https://images.unsplash.com/photo-1606567595334-d39972c85dfd?w=400&h=200&fit=crop', title: 'TOHUMLAR', subtitle: 'Çeşit Çeşit Tohumlar', description: '', textPosition: 'top-left', textColor: '#FFFFFF', overlayColor: '#000000', overlayOpacity: 35, badgePosition: 'top-left', linkType: 'url', linkTarget: '/products', buttonText: 'ALIŞVERİŞ YAP', buttonVisible: true, aspectRatio: 'landscape', colSpan: 1, rowSpan: 1 },
-            { id: 'feat-4', imageUrl: 'https://images.unsplash.com/photo-1513135065346-a098a63a71ee?w=400&h=200&fit=crop', title: 'HEDİYELER', subtitle: 'Hediye için ihtiyacınız olan her şey!', description: '', textPosition: 'top-left', textColor: '#FFFFFF', overlayColor: '#000000', overlayOpacity: 35, badgePosition: 'top-left', linkType: 'url', linkTarget: '/products', buttonText: 'ALIŞVERİŞ YAP', buttonVisible: true, aspectRatio: 'landscape', colSpan: 1, rowSpan: 1 },
+            { id: 'feat-1', imageUrl: 'https://picsum.photos/seed/featured-1/400/500', title: 'WEEKLY DEAL', subtitle: 'Special discounts on selected products.', description: '', textPosition: 'bottom-left', textColor: '#FFFFFF', overlayColor: '#000000', overlayOpacity: 40, badgeText: 'Sale', badgeColor: '#D4A853', badgePosition: 'top-left', linkType: 'url', linkTarget: '/products', buttonText: 'SHOP NOW', buttonVisible: true, aspectRatio: 'auto', colSpan: 1, rowSpan: 1 },
+            { id: 'feat-2', imageUrl: 'https://picsum.photos/seed/featured-2/400/300', title: 'NEW ARRIVALS', subtitle: 'Discover the latest additions to our collection.', description: '', textPosition: 'center', textColor: '#FFFFFF', overlayColor: '#000000', overlayOpacity: 40, badgePosition: 'top-left', linkType: 'url', linkTarget: '/products', buttonText: 'EXPLORE', buttonVisible: true, aspectRatio: 'landscape', colSpan: 1, rowSpan: 1 },
+            { id: 'feat-3', imageUrl: 'https://picsum.photos/seed/featured-3/400/200', title: 'BEST SELLERS', subtitle: 'Our most popular products.', description: '', textPosition: 'top-left', textColor: '#FFFFFF', overlayColor: '#000000', overlayOpacity: 35, badgePosition: 'top-left', linkType: 'url', linkTarget: '/products', buttonText: 'SHOP NOW', buttonVisible: true, aspectRatio: 'landscape', colSpan: 1, rowSpan: 1 },
+            { id: 'feat-4', imageUrl: 'https://picsum.photos/seed/featured-4/400/200', title: 'GIFTS', subtitle: 'Perfect gift ideas for your loved ones!', description: '', textPosition: 'top-left', textColor: '#FFFFFF', overlayColor: '#000000', overlayOpacity: 35, badgePosition: 'top-left', linkType: 'url', linkTarget: '/products', buttonText: 'SHOP NOW', buttonVisible: true, aspectRatio: 'landscape', colSpan: 1, rowSpan: 1 },
         ],
     },
     {
         id: 'default-satisfaction',
-        title: '%100 MEMNUNİYET GARANTİSİ',
+        title: '100% SATISFACTION GUARANTEE',
         showTitle: false,
         layout: 'banner',
         columns: 1,
@@ -234,12 +235,12 @@ export const defaultHomepageSections: HomepageSectionDto[] = [
         order: 2,
         enabled: true,
         cards: [
-            { id: 'banner-1', imageUrl: 'https://images.unsplash.com/photo-1608797178974-15b35a64ede9?w=1920&h=600&fit=crop', title: '%100 MEMNUNİYET GARANTİSİ', subtitle: '', description: 'Müşterilerimize Badem, Ceviz, Fıstık ve Fındık dahil en taze toptan kuruyemişleri sunuyoruz. Kabuklu ya da kabuksuz, en kaliteli ürünler burada.', textPosition: 'center', textColor: '#FFFFFF', overlayColor: '#2C3E50', overlayOpacity: 85, badgePosition: 'top-left', linkType: 'url', linkTarget: '/products', buttonText: 'DAHA FAZLA BİLGİ', buttonVisible: true, aspectRatio: 'auto', colSpan: 1, rowSpan: 1 },
+            { id: 'banner-1', imageUrl: 'https://picsum.photos/seed/banner-1/1920/600', title: '100% SATISFACTION GUARANTEE', subtitle: '', description: 'We are committed to providing the highest quality products and services. If you are not satisfied, we will make it right.', textPosition: 'center', textColor: '#FFFFFF', overlayColor: '#2C3E50', overlayOpacity: 85, badgePosition: 'top-left', linkType: 'url', linkTarget: '/products', buttonText: 'LEARN MORE', buttonVisible: true, aspectRatio: 'auto', colSpan: 1, rowSpan: 1 },
         ],
     },
     {
         id: 'default-news',
-        title: 'HABERLER & İPUÇLARI',
+        title: 'NEWS & TIPS',
         showTitle: true,
         layout: 'grid',
         columns: 2,
@@ -248,13 +249,13 @@ export const defaultHomepageSections: HomepageSectionDto[] = [
         order: 3,
         enabled: true,
         cards: [
-            { id: 'news-1', imageUrl: 'https://images.unsplash.com/photo-1590005354167-6da97870c757?w=200&h=200&fit=crop', title: 'ŞİMDİ İNDİRİMDE!', subtitle: '', description: 'Kuru Kayısı & Çekirdekli Hurma\'da özel indirim – Sınırlı süre! Premium kalite ürünlerimizi kaçırmayın...', textPosition: 'center', textColor: '#333333', overlayColor: '#000000', overlayOpacity: 0, badgePosition: 'top-left', linkType: 'none', buttonText: 'DEVAMINI OKU', buttonVisible: true, aspectRatio: 'square', colSpan: 1, rowSpan: 1 },
-            { id: 'news-2', imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop', title: 'YENİ ŞUBE', subtitle: '', description: 'Yeni şubemizi ziyaret edin! Daha geniş ürün yelpazesi ve kolay erişim ile hizmetinizdeyiz...', textPosition: 'center', textColor: '#333333', overlayColor: '#000000', overlayOpacity: 0, badgePosition: 'top-left', linkType: 'none', buttonText: 'DEVAMINI OKU', buttonVisible: true, aspectRatio: 'square', colSpan: 1, rowSpan: 1 },
+            { id: 'news-1', imageUrl: 'https://picsum.photos/seed/news-1/200/200', title: 'ON SALE NOW!', subtitle: '', description: 'Special discounts on selected products. Limited time offer — don\'t miss out!', textPosition: 'center', textColor: '#333333', overlayColor: '#000000', overlayOpacity: 0, badgePosition: 'top-left', linkType: 'none', buttonText: 'READ MORE', buttonVisible: true, aspectRatio: 'square', colSpan: 1, rowSpan: 1 },
+            { id: 'news-2', imageUrl: 'https://picsum.photos/seed/news-2/200/200', title: 'NEW COLLECTION', subtitle: '', description: 'Check out our latest products and expanded range of items now available.', textPosition: 'center', textColor: '#333333', overlayColor: '#000000', overlayOpacity: 0, badgePosition: 'top-left', linkType: 'none', buttonText: 'READ MORE', buttonVisible: true, aspectRatio: 'square', colSpan: 1, rowSpan: 1 },
         ],
     },
     {
         id: 'default-testimonials',
-        title: 'MÜŞTERİLERİMİZ NE DİYOR?',
+        title: 'WHAT OUR CUSTOMERS SAY',
         showTitle: true,
         layout: 'grid',
         columns: 3,
@@ -263,9 +264,9 @@ export const defaultHomepageSections: HomepageSectionDto[] = [
         order: 4,
         enabled: true,
         cards: [
-            { id: 'test-1', title: 'Ayşe Y.', subtitle: 'İstanbul', description: 'Harika ürünler. Zamanında teslim edildi. Hediye kutusunu çok beğendik! Teşekkürler!', textPosition: 'center', textColor: '#333333', overlayColor: '#000000', overlayOpacity: 0, badgePosition: 'top-left', linkType: 'none', buttonVisible: false, aspectRatio: 'auto', colSpan: 1, rowSpan: 1 },
-            { id: 'test-2', title: 'Mehmet K.', subtitle: 'Ankara', description: 'İlk kez sipariş verdim ve artık sürekli müşteriyim! Mango dilimleri muhteşem.', textPosition: 'center', textColor: '#333333', overlayColor: '#000000', overlayOpacity: 0, badgePosition: 'top-left', linkType: 'none', buttonVisible: false, aspectRatio: 'auto', colSpan: 1, rowSpan: 1 },
-            { id: 'test-3', title: 'Fatma C.', subtitle: 'İzmir', description: 'Yıl boyunca kabuklu kuruyemiş bulabilmek harika. Kuruyemişlerinizi çok seviyorum, TEŞEKKÜRLER!', textPosition: 'center', textColor: '#333333', overlayColor: '#000000', overlayOpacity: 0, badgePosition: 'top-left', linkType: 'none', buttonVisible: false, aspectRatio: 'auto', colSpan: 1, rowSpan: 1 },
+            { id: 'test-1', title: 'Alex M.', subtitle: 'Berlin', description: 'Great products and fast delivery. Very satisfied, thank you!', textPosition: 'center', textColor: '#333333', overlayColor: '#000000', overlayOpacity: 0, badgePosition: 'top-left', linkType: 'none', buttonVisible: false, aspectRatio: 'auto', colSpan: 1, rowSpan: 1 },
+            { id: 'test-2', title: 'Sarah L.', subtitle: 'London', description: 'Product quality exceeded my expectations. Will definitely order again.', textPosition: 'center', textColor: '#333333', overlayColor: '#000000', overlayOpacity: 0, badgePosition: 'top-left', linkType: 'none', buttonVisible: false, aspectRatio: 'auto', colSpan: 1, rowSpan: 1 },
+            { id: 'test-3', title: 'Yuki T.', subtitle: 'Tokyo', description: 'Excellent customer service. Products arrived on time and without any issues.', textPosition: 'center', textColor: '#333333', overlayColor: '#000000', overlayOpacity: 0, badgePosition: 'top-left', linkType: 'none', buttonVisible: false, aspectRatio: 'auto', colSpan: 1, rowSpan: 1 },
         ],
     },
 ];
@@ -276,43 +277,43 @@ export const defaultFooterSettings: FooterSettingsDto = {
         {
             id: 'footer-col-1',
             type: 'links',
-            title: 'HAKKIMIZDA',
+            title: 'ABOUT US',
             order: 0,
             enabled: true,
             links: [
-                { id: 'fl-1', label: 'Referanslar', url: '#', order: 0 },
-                { id: 'fl-2', label: 'SSS', url: '#', order: 1 },
-                { id: 'fl-3', label: 'Müşteri Hizmetleri', url: '#', order: 2 },
+                { id: 'fl-1', label: 'References', url: '#', order: 0 },
+                { id: 'fl-2', label: 'FAQ', url: '#', order: 1 },
+                { id: 'fl-3', label: 'Customer Service', url: '#', order: 2 },
             ],
         },
         {
             id: 'footer-col-2',
             type: 'links',
-            title: 'HABERLER & İPUÇLARI',
+            title: 'NEWS & TIPS',
             order: 1,
             enabled: true,
             links: [
-                { id: 'fl-4', label: 'Kuruyemiş Haberleri', url: '#', order: 0 },
-                { id: 'fl-5', label: 'Bilgi Köşesi', url: '#', order: 1 },
-                { id: 'fl-6', label: 'Tarifler', url: '#', order: 2 },
+                { id: 'fl-4', label: 'Latest News', url: '#', order: 0 },
+                { id: 'fl-5', label: 'Knowledge Base', url: '#', order: 1 },
+                { id: 'fl-6', label: 'Guides', url: '#', order: 2 },
             ],
         },
         {
             id: 'footer-col-3',
             type: 'contact',
-            title: 'İLETİŞİM',
+            title: 'CONTACT',
             order: 2,
             enabled: true,
-            phone: '0212 555 00 00',
-            address: 'Atatürk Caddesi No: 42\nİstanbul, Türkiye',
+            phone: '+1 (555) 000-0000',
+            address: '123 Main Street\nNew York, NY 10001',
         },
         {
             id: 'footer-col-4',
             type: 'social',
-            title: 'SOSYAL MEDYA',
+            title: 'SOCIAL MEDIA',
             order: 3,
             enabled: true,
-            followText: 'Bizi takip edin:',
+            followText: 'Follow us:',
             socialLinks: [
                 { id: 'fsl-1', platform: 'facebook', url: '#' },
                 { id: 'fsl-2', platform: 'twitter', url: '#' },
@@ -320,14 +321,127 @@ export const defaultFooterSettings: FooterSettingsDto = {
             ],
         },
     ],
-    copyrightText: 'Tüm hakları saklıdır.',
+    copyrightText: 'All rights reserved.',
     bottomBarAlignment: 'between',
     bottomLinks: [
-        { id: 'fbl-1', label: 'Kullanım Şartları', url: '#', order: 0 },
-        { id: 'fbl-2', label: 'Gizlilik Politikası', url: '#', order: 1 },
-        { id: 'fbl-3', label: 'Yasal Uyarı', url: '#', order: 2 },
+        { id: 'fbl-1', label: 'Terms of Use', url: '#', order: 0 },
+        { id: 'fbl-2', label: 'Privacy Policy', url: '#', order: 1 },
+        { id: 'fbl-3', label: 'Legal Notice', url: '#', order: 2 },
     ],
 };
+
+/** Language-aware footer column title translations for mock mode */
+const FOOTER_COL_TITLE_TRANSLATIONS: Record<string, Record<string, string>> = {
+    'footer-col-1': { tr: 'HAKKIMIZDA', en: 'ABOUT US', de: 'ÜBER UNS', fr: 'À PROPOS', es: 'SOBRE NOSOTROS', ru: 'О НАС', ar: 'من نحن' },
+    'footer-col-2': { tr: 'HABERLER & İPUÇLARI', en: 'NEWS & TIPS', de: 'NEUIGKEITEN & TIPPS', fr: 'ACTUALITÉS & CONSEILS', es: 'NOTICIAS Y CONSEJOS', ru: 'НОВОСТИ И СОВЕТЫ', ar: 'أخبار ونصائح' },
+    'footer-col-3': { tr: 'İLETİŞİM', en: 'CONTACT', de: 'KONTAKT', fr: 'CONTACT', es: 'CONTACTO', ru: 'КОНТАКТЫ', ar: 'اتصل بنا' },
+    'footer-col-4': { tr: 'SOSYAL MEDYA', en: 'SOCIAL MEDIA', de: 'SOZIALE MEDIEN', fr: 'RÉSEAUX SOCIAUX', es: 'REDES SOCIALES', ru: 'СОЦИАЛЬНЫЕ СЕТИ', ar: 'التواصل الاجتماعي' },
+};
+
+const FOOTER_BOTTOM_LINK_TRANSLATIONS: Record<string, Record<string, string>> = {
+    'fbl-1': { tr: 'Kullanım Şartları', en: 'Terms of Use', de: 'Nutzungsbedingungen', fr: "Conditions d'utilisation", es: 'Términos de uso', ru: 'Условия использования', ar: 'شروط الاستخدام' },
+    'fbl-2': { tr: 'Gizlilik Politikası', en: 'Privacy Policy', de: 'Datenschutzrichtlinie', fr: 'Politique de confidentialité', es: 'Política de privacidad', ru: 'Политика конфиденциальности', ar: 'سياسة الخصوصية' },
+    'fbl-3': { tr: 'Yasal Uyarı', en: 'Legal Notice', de: 'Rechtlicher Hinweis', fr: 'Mentions légales', es: 'Aviso legal', ru: 'Юридическое уведомление', ar: 'إشعار قانوني' },
+};
+
+function getMockFooter(): FooterSettingsDto {
+    const lang = i18next.language?.split('-')[0] ?? 'en';
+    return {
+        ...defaultFooterSettings,
+        columns: defaultFooterSettings.columns.map(col => ({
+            ...col,
+            title: FOOTER_COL_TITLE_TRANSLATIONS[col.id]?.[lang]
+                ?? FOOTER_COL_TITLE_TRANSLATIONS[col.id]?.['en']
+                ?? col.title,
+        })),
+        bottomLinks: defaultFooterSettings.bottomLinks.map(link => ({
+            ...link,
+            label: FOOTER_BOTTOM_LINK_TRANSLATIONS[link.id]?.[lang]
+                ?? FOOTER_BOTTOM_LINK_TRANSLATIONS[link.id]?.['en']
+                ?? link.label,
+        })),
+    };
+}
+
+/** Language-aware section title translations for mock mode */
+const SECTION_TITLE_TRANSLATIONS: Record<string, Record<string, string>> = {
+    'default-categories': { tr: 'Ana Kategoriler', en: 'Main Categories', de: 'Hauptkategorien', fr: 'Catégories Principales', es: 'Categorías Principales', ru: 'Основные категории', ar: 'الفئات الرئيسية' },
+    'default-featured':   { tr: 'Öne Çıkan Ürünler', en: 'Featured Products', de: 'Ausgewählte Produkte', fr: 'Produits Vedettes', es: 'Productos Destacados', ru: 'Рекомендуемые товары', ar: 'المنتجات المميزة' },
+    'default-satisfaction':{ tr: '%100 MEMNUNİYET GARANTİSİ', en: '100% SATISFACTION GUARANTEE', de: '100% ZUFRIEDENHEITSGARANTIE', fr: 'GARANTIE 100% SATISFACTION', es: 'GARANTÍA 100% SATISFACCIÓN', ru: '100% ГАРАНТИЯ КАЧЕСТВА', ar: 'ضمان الرضا 100%' },
+    'default-news':        { tr: 'HABERLER & İPUÇLARI', en: 'NEWS & TIPS', de: 'NEUIGKEITEN & TIPPS', fr: 'ACTUALITÉS & CONSEILS', es: 'NOTICIAS Y CONSEJOS', ru: 'НОВОСТИ И СОВЕТЫ', ar: 'أخبار ونصائح' },
+    'default-testimonials':{ tr: 'MÜŞTERİLERİMİZ NE SÖYLÜYOR', en: 'WHAT OUR CUSTOMERS SAY', de: 'WAS UNSERE KUNDEN SAGEN', fr: 'CE QUE DISENT NOS CLIENTS', es: 'LO QUE DICEN NUESTROS CLIENTES', ru: 'ЧТО ГОВОРЯТ НАШИ КЛИЕНТЫ', ar: 'ما يقوله عملاؤنا' },
+};
+
+function getMockSections(): HomepageSectionDto[] {
+    const lang = i18next.language?.split('-')[0] ?? 'en';
+    return defaultHomepageSections.map(section => ({
+        ...section,
+        title: SECTION_TITLE_TRANSLATIONS[section.id]?.[lang]
+            ?? SECTION_TITLE_TRANSLATIONS[section.id]?.['en']
+            ?? section.title,
+    }));
+}
+
+/** Language-aware slide content for mock mode */
+const MOCK_SLIDES_BY_LANG: Record<string, { title: string; subtitle: string; description: string; buttonText: string }[]> = {
+    tr: [
+        { title: 'Hoş Geldiniz', subtitle: 'Mağazamıza hoş geldiniz', description: 'En kaliteli ürünleri uygun fiyatlarla sunuyoruz.', buttonText: 'Alışverişe Başla' },
+        { title: 'Özel Kampanyalar', subtitle: 'Seçili ürünlerde fırsatlar', description: 'Kaçırmayın, sınırlı süre geçerlidir.', buttonText: 'Fırsatları Keşfet' },
+    ],
+    en: [
+        { title: 'Welcome', subtitle: 'Welcome to our store', description: 'We offer the finest products at great prices.', buttonText: 'Start Shopping' },
+        { title: 'Special Offers', subtitle: 'Deals on selected products', description: 'Don\'t miss out — limited time only.', buttonText: 'Explore Deals' },
+    ],
+    de: [
+        { title: 'Willkommen', subtitle: 'Willkommen in unserem Shop', description: 'Wir bieten die besten Produkte zu fairen Preisen.', buttonText: 'Jetzt einkaufen' },
+        { title: 'Sonderangebote', subtitle: 'Aktionen auf ausgewählte Produkte', description: 'Nicht verpassen — nur für begrenzte Zeit.', buttonText: 'Angebote entdecken' },
+    ],
+    fr: [
+        { title: 'Bienvenue', subtitle: 'Bienvenue dans notre boutique', description: 'Nous proposons les meilleurs produits aux meilleurs prix.', buttonText: 'Commencer' },
+        { title: 'Offres Spéciales', subtitle: 'Promotions sur des produits sélectionnés', description: 'Ne ratez pas — durée limitée.', buttonText: 'Découvrir les offres' },
+    ],
+    es: [
+        { title: 'Bienvenido', subtitle: 'Bienvenido a nuestra tienda', description: 'Ofrecemos los mejores productos a precios increíbles.', buttonText: 'Empezar a comprar' },
+        { title: 'Ofertas Especiales', subtitle: 'Descuentos en productos seleccionados', description: 'No te lo pierdas — tiempo limitado.', buttonText: 'Ver ofertas' },
+    ],
+    ru: [
+        { title: 'Добро пожаловать', subtitle: 'Добро пожаловать в наш магазин', description: 'Мы предлагаем лучшие товары по отличным ценам.', buttonText: 'Начать покупки' },
+        { title: 'Специальные предложения', subtitle: 'Скидки на выбранные товары', description: 'Не пропустите — ограниченное время.', buttonText: 'Посмотреть акции' },
+    ],
+    ar: [
+        { title: 'مرحبًا بك', subtitle: 'مرحبًا بك في متجرنا', description: 'نقدم أفضل المنتجات بأسعار رائعة.', buttonText: 'ابدأ التسوق' },
+        { title: 'عروض خاصة', subtitle: 'خصومات على منتجات مختارة', description: 'لا تفوت الفرصة — لفترة محدودة فقط.', buttonText: 'استكشف العروض' },
+    ],
+};
+
+function getMockSlides() {
+    const lang = i18next.language?.split('-')[0] ?? 'tr';
+    const texts = MOCK_SLIDES_BY_LANG[lang] ?? MOCK_SLIDES_BY_LANG['tr'];
+    return [
+        {
+            id: 'mock-slide-1',
+            imageBase64: undefined,
+            imageUrl: undefined,
+            textColor: '#FFFFFF',
+            overlayColor: '#2C3E50',
+            overlayOpacity: 85,
+            buttonLink: '/products',
+            buttonVisible: true,
+            ...texts[0],
+        },
+        {
+            id: 'mock-slide-2',
+            imageBase64: undefined,
+            imageUrl: undefined,
+            textColor: '#FFFFFF',
+            overlayColor: '#1A252F',
+            overlayOpacity: 80,
+            buttonLink: '/products',
+            buttonVisible: true,
+            ...texts[1],
+        },
+    ];
+}
 
 // Mock simulates what the backend returns when VITE_USE_MOCK_API=true.
 // Uses the same white-label neutral defaults as the backend query handler
@@ -335,7 +449,7 @@ export const defaultFooterSettings: FooterSettingsDto = {
 const _mockSettings: StoreSettingsDto = {
     // Brand
     imageBase64: undefined,
-    storeName: 'Mağazam',
+    storeName: 'Demo Store',
     showStoreNameInHeader: true,
     // Area bg colors
     primaryColor: '#2C3E50',
@@ -345,7 +459,7 @@ const _mockSettings: StoreSettingsDto = {
     adminSidebarBackgroundColor: '#2C3E50',
     adminPageBackgroundColor: '#F4F6F8',
     // Banner
-    freeShippingBannerText: 'Hızlı ve güvenli teslimat garantisiyle alışveriş yapın!',
+    freeShippingBannerText: 'FREE SHIPPING ON ORDERS OVER $100!',
     freeShippingBannerVisible: false,
     freeShippingBannerMarquee: false,
     freeShippingBannerMarqueeSpeed: 5,
@@ -394,44 +508,33 @@ const _mockSettings: StoreSettingsDto = {
         loop: true,
         showArrows: true,
         showDots: true,
-        slides: [
-            {
-                id: 'mock-slide-1',
-                imageBase64: undefined,
-                imageUrl: undefined,
-                title: 'Hoş Geldiniz',
-                subtitle: 'Mağazamıza hoş geldiniz',
-                description: 'En kaliteli ürünleri uygun fiyatlarla sunuyoruz.',
-                textColor: '#FFFFFF',
-                overlayColor: '#2C3E50',
-                overlayOpacity: 85,
-                buttonText: 'Alışverişe Başla',
-                buttonLink: '/products',
-                buttonVisible: true,
-            },
-            {
-                id: 'mock-slide-2',
-                imageBase64: undefined,
-                imageUrl: undefined,
-                title: 'Özel Kampanyalar',
-                subtitle: 'Seçili ürünlerde fırsatlar',
-                description: 'Kaçırmayın, sınırlı süre geçerlidir.',
-                textColor: '#FFFFFF',
-                overlayColor: '#1A252F',
-                overlayOpacity: 80,
-                buttonText: 'Fırsatları Keşfet',
-                buttonLink: '/products',
-                buttonVisible: true,
-            },
-        ],
+        slides: [],
     },
     homepageSections: defaultHomepageSections,
     footer: defaultFooterSettings,
 };
 
+function buildMockSettings(): StoreSettingsDto {
+    return {
+        ..._mockSettings,
+        heroCarousel: {
+            ..._mockSettings.heroCarousel,
+            slides: _mockSettings.heroCarousel.slides.length > 0
+                ? _mockSettings.heroCarousel.slides
+                : getMockSlides(),
+        },
+        homepageSections: _mockSettings.homepageSections === defaultHomepageSections
+            ? getMockSections()
+            : _mockSettings.homepageSections,
+        footer: _mockSettings.footer === defaultFooterSettings
+            ? getMockFooter()
+            : _mockSettings.footer,
+    };
+}
+
 /** Admin-only: GET /api/admin/store-settings */
 export async function getAdminStoreSettings(): Promise<StoreSettingsDto> {
-    if (USE_MOCK) return { ..._mockSettings };
+    if (USE_MOCK) return buildMockSettings();
     const res = await apiClient.get<StoreSettingsDto>('/api/admin/store-settings');
     return res.data;
 }
@@ -447,7 +550,7 @@ export async function updateStoreSettings(data: UpdateStoreSettingsRequest): Pro
 
 /** Public: GET /api/store/settings — used by storefront layouts */
 export async function getPublicStoreSettings(): Promise<StoreSettingsDto> {
-    if (USE_MOCK) return { ..._mockSettings };
+    if (USE_MOCK) return buildMockSettings();
     const res = await apiClient.get<StoreSettingsDto>('/api/store/settings');
     return res.data;
 }

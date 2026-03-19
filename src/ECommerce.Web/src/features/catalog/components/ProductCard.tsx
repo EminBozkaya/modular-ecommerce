@@ -19,7 +19,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
     const { t } = useTranslation('catalog');
-    const unitConfig = getUnitConfig(product.unitName);
+    const unitConfig = getUnitConfig(product.unitCode, product.unitName);
     const [quantity, setQuantity] = useState<number>(Math.max(unitConfig.min, 1));
 
     const inStock = product.stockQuantity > 0;
@@ -121,6 +121,7 @@ export function ProductCard({ product }: ProductCardProps) {
                     <div onClick={(e) => e.stopPropagation()} className="relative z-20 flex flex-col gap-2">
                         <div className="flex items-center justify-center gap-2">
                             <QuantitySelector
+                                unitCode={product.unitCode}
                                 unitName={product.unitName}
                                 value={currentQuantity}
                                 onChange={handleQuantityChange}

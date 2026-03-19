@@ -101,7 +101,7 @@ public class GetLowStockProductsHandler : IRequestHandler<GetLowStockProductsQue
                 p.Price.Amount, p.Price.Currency.ToString(),
                 p.Stock.Value, p.IsActive,
                 p.CategoryId, p.Category?.Name,
-                p.UnitId, p.Unit?.Name,
+                p.UnitId, p.Unit?.Name, p.Unit?.Code,
                 p.CreatedAt, p.CreatedBy,
                 p.UpdatedAt, p.UpdatedBy,
                 p.DeletedAt, p.IsDeleted))

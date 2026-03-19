@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ProductSearchBarProps {
     value: string;
@@ -6,6 +7,7 @@ interface ProductSearchBarProps {
 }
 
 export function ProductSearchBar({ value, onChange }: ProductSearchBarProps) {
+    const { t } = useTranslation('catalog');
     const [inputValue, setInputValue] = useState(value);
 
     useEffect(() => {
@@ -32,8 +34,8 @@ export function ProductSearchBar({ value, onChange }: ProductSearchBarProps) {
             <input
                 type="text"
                 className="block w-full rounded-xl border-0 py-3 pl-11 pr-4 text-foreground bg-background ring-1 ring-inset ring-border placeholder:text-muted-foreground focus:ring-2 focus:ring-inset focus:ring-[var(--brand-primary)] sm:text-sm sm:leading-6 shadow-md shadow-black/5 transition-all duration-300 hover:ring-border"
-                placeholder="Ürün gruplarında arayın..."
-                aria-label="Ürün ara"
+                placeholder={t('list.categorySearchPlaceholder')}
+                aria-label={t('list.searchAriaLabel')}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
             />

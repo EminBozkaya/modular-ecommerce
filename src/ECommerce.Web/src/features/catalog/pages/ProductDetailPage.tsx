@@ -34,7 +34,7 @@ export default function ProductDetailPage() {
     const isAnyActionPending = isAdding || isRemoving || isUpdating;
 
     // quantity is initialised after product loads; default to 1 until then
-    const unitConfig = product ? getUnitConfig(product.unitName) : null;
+    const unitConfig = product ? getUnitConfig(product.unitCode, product.unitName) : null;
     const [quantity, setQuantity] = useState<number>(1);
 
     // Sync quantity min when product first loads
@@ -101,7 +101,7 @@ export default function ProductDetailPage() {
     }
 
     const inStock = product.stockQuantity > 0;
-    const config = getUnitConfig(product.unitName);
+    const config = getUnitConfig(product.unitCode, product.unitName);
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -177,6 +177,7 @@ export default function ProductDetailPage() {
                                 <div>
                                     <p className="text-sm font-medium text-foreground mb-2">{t('detail.selectQuantity')}</p>
                                     <QuantitySelector
+                                        unitCode={product.unitCode}
                                         unitName={product.unitName}
                                         value={currentQuantity}
                                         onChange={handleQuantityChange}
@@ -189,7 +190,7 @@ export default function ProductDetailPage() {
                                 <div className="rounded-xl border border-border bg-gray-50 dark:bg-white/10 p-4 space-y-1.5">
                                     <div className="flex justify-between text-sm text-muted-foreground">
                                         <span>{t('detail.selectedQuantity')}</span>
-                                        <span className="font-semibold text-foreground">{config.formatValue(currentQuantity)}</span>
+                                        <span className="font-semibold text-foreground">{config.formatValue(currentQuantity, product.unitName)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm text-muted-foreground">
                                         <span>{t('detail.unitPrice')}</span>

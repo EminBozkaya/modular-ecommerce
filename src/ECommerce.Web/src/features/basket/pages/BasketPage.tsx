@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useBasket } from '../hooks/useBasket';
 import { BasketItemRow } from '../components/BasketItemRow';
 import { BasketSummary } from '../components/BasketSummary';
@@ -8,6 +9,7 @@ import { EmptyState } from '../../../components/shared/EmptyState';
 import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 
 export default function BasketPage() {
+    const { t } = useTranslation('basket');
     const { data: basket, isLoading, isError } = useBasket();
     const navigate = useNavigate();
 
@@ -22,7 +24,7 @@ export default function BasketPage() {
     if (isError) {
         return (
             <div className="container mx-auto px-4 py-16">
-                <ErrorMessage message="Sepet yüklenirken bir hata oluştu." />
+                <ErrorMessage message={t('page.loadError')} />
             </div>
         );
     }
@@ -31,28 +33,30 @@ export default function BasketPage() {
         return (
             <div className="container mx-auto px-4 py-16 text-center">
                 <ShoppingCart className="h-16 w-16 mx-auto mb-4 text-muted-foreground/40" />
-                <h1 className="text-2xl font-bold text-foreground mb-2">Sepetim</h1>
+                <h1 className="text-2xl font-bold text-foreground mb-2">{t('page.title')}</h1>
                 <EmptyState
-                    title="Sepetiniz boş"
-                    description="Henüz bir ürün eklemediniz."
+                    title={t('drawer.empty')}
+                    description={t('drawer.emptyDesc')}
                 />
                 <Link
                     to="/products"
                     className="inline-flex items-center gap-2 mt-6 px-6 py-3 text-sm font-semibold text-white bg-[var(--brand-primary)] rounded-lg hover:bg-[var(--brand-primary-dark)] transition-colors"
                 >
                     <ShoppingCart className="h-4 w-4" />
-                    Ürünlere Göz At
+                    {t('page.browseProducts')}
                 </Link>
             </div>
         );
     }
+
+    const itemCount = basket.items.reduce((acc, item) => acc + item.quantity, 0);
 
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex items-center gap-3 mb-8">
                 <ShoppingCart className="h-6 w-6 text-[var(--brand-primary)]" />
                 <h1 className="text-2xl font-bold text-foreground">
-                    Sepetim ({basket.items.reduce((acc, item) => acc + item.quantity, 0)} ürün)
+                    {t('page.titleWithCount', { count: itemCount })}
                 </h1>
             </div>
 
@@ -71,7 +75,7 @@ export default function BasketPage() {
                         className="w-full py-3 px-4 text-base font-bold text-white rounded-lg bg-[var(--brand-primary)] border-b-4 border-[var(--brand-primary-dark)] hover:bg-[var(--brand-primary-dark)] hover:shadow-lg transition-all duration-150 active:translate-y-1 active:border-b-0"
                         onClick={() => navigate('/checkout')}
                     >
-                        Ödemeye Geç
+                        {t('drawer.checkout')}
                     </button>
                 </div>
             </div>

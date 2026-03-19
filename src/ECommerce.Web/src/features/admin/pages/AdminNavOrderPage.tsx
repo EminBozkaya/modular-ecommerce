@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
     DndContext,
     closestCenter,
@@ -24,7 +26,7 @@ import { queryKeys } from '@/utils/queryKeys';
 
 // ── Sortable Row ─────────────────────────────────────────────────────────────
 
-function SortableCategoryRow({ category, index }: { category: Category; index: number }) {
+function SortableCategoryRow({ category, index, t }: { category: Category; index: number; t: TFunction }) {
     const {
         attributes,
         listeners,
@@ -54,7 +56,7 @@ function SortableCategoryRow({ category, index }: { category: Category; index: n
                 {...attributes}
                 {...listeners}
                 className="flex-shrink-0 cursor-grab active:cursor-grabbing p-1 rounded hover:bg-accent text-muted-foreground touch-none"
-                aria-label="Sırayı değiştirmek için sürükle"
+                aria-label={t('design.navOrder.dragHint')}
             >
                 <GripVertical className="h-5 w-5" />
             </button>
@@ -79,7 +81,7 @@ function SortableCategoryRow({ category, index }: { category: Category; index: n
                 <p className="text-sm font-semibold text-foreground truncate">{category.name}</p>
                 {!category.isActive && (
                     <span className="inline-block text-xs px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 font-medium border border-amber-100 mt-0.5">
-                        Pasif
+                        {t('design.common.passive')}
                     </span>
                 )}
             </div>
@@ -94,7 +96,10 @@ function SortableCategoryRow({ category, index }: { category: Category; index: n
 
 // ── Main Page ────────────────────────────────────────────────────────────────
 
+const USE_MOCK = import.meta.env.VITE_USE_MOCK_API === 'true';
+
 export default function AdminNavOrderPage() {
+    const { t, i18n } = useTranslation('admin');
     const queryClient = useQueryClient();
 
     const { data: allCategories, isLoading } = useQuery({
@@ -106,12 +111,31 @@ export default function AdminNavOrderPage() {
     // Local ordered list (draft — only persisted on save)
     const [ordered, setOrdered] = useState<Category[]>([]);
     const [isDirty, setIsDirty] = useState(false);
+    const initializedRef = useRef(false);
 
+    // In mock mode, re-fetch categories when language changes so translated names appear
     useEffect(() => {
-        if (allCategories && ordered.length === 0) {
-            setOrdered([...allCategories].sort((a, b) => a.displayOrder - b.displayOrder));
+        if (USE_MOCK) {
+            void queryClient.invalidateQueries({ queryKey: queryKeys.catalog.categories.all });
         }
-    }, [allCategories, ordered.length]);
+    }, [i18n.language, queryClient]);
+
+    // Sync ordered list when allCategories updates (initial load or language change)
+    useEffect(() => {
+        if (!allCategories || allCategories.length === 0) return;
+
+        if (!initializedRef.current) {
+            // First load: sort by displayOrder from server
+            initializedRef.current = true;
+            setOrdered([...allCategories].sort((a, b) => a.displayOrder - b.displayOrder));
+        } else {
+            // Language changed: update names while preserving user's drag order
+            setOrdered(prev => prev.map(cat => {
+                const updated = allCategories.find(c => c.id === cat.id);
+                return updated ? { ...cat, name: updated.name } : cat;
+            }));
+        }
+    }, [allCategories]);
 
     const mutation = useMutation({
         mutationFn: () =>
@@ -143,7 +167,7 @@ export default function AdminNavOrderPage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">
-                Yükleniyor…
+                {t('design.common.loading')}
             </div>
         );
     }
@@ -153,9 +177,9 @@ export default function AdminNavOrderPage() {
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-xl font-bold text-foreground">Navigasyon Sıralaması</h1>
+                    <h1 className="text-xl font-bold text-foreground">{t('design.navOrder.title')}</h1>
                     <p className="text-sm text-muted-foreground mt-0.5">
-                        Üst menüdeki kategori butonlarını sürükleyerek sıraya dizin
+                        {t('design.navOrder.subtitle')}
                     </p>
                 </div>
                 <button
@@ -166,36 +190,36 @@ export default function AdminNavOrderPage() {
                     style={{ backgroundColor: 'var(--brand-primary)' }}
                 >
                     <Save className="h-4 w-4" />
-                    {mutation.isPending ? 'Kaydediliyor…' : 'Sıralamayı Kaydet'}
+                    {mutation.isPending ? t('design.common.saving') : t('design.navOrder.saveOrder')}
                 </button>
             </div>
 
             {/* Status feedback */}
             {mutation.isSuccess && !isDirty && (
                 <div className="mb-4 px-4 py-2.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-400 rounded-lg text-sm">
-                    ✓ Sıralama başarıyla kaydedildi.
+                    {t('design.navOrder.saveSuccess')}
                 </div>
             )}
             {mutation.isError && (
                 <div className="mb-4 px-4 py-2.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-400 rounded-lg text-sm">
-                    Kaydedilemedi. Lütfen tekrar deneyin.
+                    {t('design.navOrder.saveError')}
                 </div>
             )}
 
             {/* Info box */}
             <div className="flex items-start gap-2.5 mb-5 px-4 py-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-700 rounded-xl text-sm text-blue-700 dark:text-blue-400">
                 <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <p>
-                    Yalnızca <strong>üst seviye (ana) kategoriler</strong> listelenmektedir.
-                    Pasif kategoriler menüde görünmez, ancak sıralamada yer kaplar.
-                    Kategoriyi aktif/pasif etmek için <strong>Kategoriler</strong> sayfasını kullanın.
-                </p>
+                <div className="space-y-1">
+                    <p>{t('design.navOrder.infoMain')}</p>
+                    <p>{t('design.navOrder.infoPassive')}</p>
+                    <p>{t('design.navOrder.infoEdit')}</p>
+                </div>
             </div>
 
             {/* Sortable list */}
             {ordered.length === 0 ? (
                 <div className="text-center py-16 text-muted-foreground text-sm">
-                    Henüz ana kategori oluşturulmamış.
+                    {t('design.navOrder.empty')}
                 </div>
             ) : (
                 <DndContext
@@ -213,6 +237,7 @@ export default function AdminNavOrderPage() {
                                     key={category.id}
                                     category={category}
                                     index={index}
+                                    t={t}
                                 />
                             ))}
                         </div>
@@ -224,7 +249,7 @@ export default function AdminNavOrderPage() {
             {ordered.length > 0 && (
                 <div className="mt-6 p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-border">
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                        Mevcut Sıralama Önizlemesi
+                        {t('design.navOrder.previewTitle')}
                     </p>
                     <div className="flex flex-wrap gap-2">
                         {ordered.filter(c => c.isActive).map((c) => (
@@ -237,7 +262,7 @@ export default function AdminNavOrderPage() {
                             </span>
                         ))}
                         {ordered.every(c => !c.isActive) && (
-                            <span className="text-xs text-muted-foreground italic">Aktif kategori yok</span>
+                            <span className="text-xs text-muted-foreground italic">{t('design.navOrder.noActive')}</span>
                         )}
                     </div>
                 </div>

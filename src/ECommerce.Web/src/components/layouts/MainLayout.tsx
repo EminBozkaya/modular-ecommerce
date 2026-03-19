@@ -39,7 +39,7 @@ export function MainLayout() {
             {!isAuthPage && settings.freeShippingBannerVisible && (
                 <div
                     className="relative z-10 py-2 overflow-hidden"
-                    style={{ backgroundColor: settings.primaryColor }}
+                    style={{ backgroundColor: resolved === 'dark' ? 'var(--brand-tinted-dark-bg)' : settings.primaryColor }}
                 >
                     {settings.freeShippingBannerMarquee ? (
                         <div

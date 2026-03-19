@@ -35,6 +35,7 @@ export interface Product {
     categoryName: string;
     unitId: string;
     unitName: string;
+    unitCode: string | null;
     imageUrl: string | null;
     isActive: boolean;
     displayOrder: number;

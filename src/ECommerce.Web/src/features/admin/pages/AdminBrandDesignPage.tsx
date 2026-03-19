@@ -1,27 +1,36 @@
 import { useState, useRef, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Upload, X, Image, Store } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
     getAdminStoreSettings,
     updateStoreSettings,
 } from '../api/storeSettingsApi';
 import type { StoreSettingsDto } from '../api/storeSettingsApi';
 import { queryKeys } from '@/utils/queryKeys';
-import { useStoreSettings } from '@/context/StoreSettingsContext';
+/** Normalize any uploaded logo to a 400×400 square PNG (object-contain, transparent bg). */
+const LOGO_CANVAS_SIZE = 400;
 
-function hexToRgba(hex: string, alpha: number): string {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r},${g},${b},${alpha})`;
-}
-
-function fileToBase64(file: File): Promise<string> {
+function normalizeLogoImage(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+        const img = new window.Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+            const canvas = document.createElement('canvas');
+            canvas.width = LOGO_CANVAS_SIZE;
+            canvas.height = LOGO_CANVAS_SIZE;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) { reject(new Error('Canvas not supported')); return; }
+            ctx.clearRect(0, 0, LOGO_CANVAS_SIZE, LOGO_CANVAS_SIZE);
+            const scale = Math.min(LOGO_CANVAS_SIZE / img.naturalWidth, LOGO_CANVAS_SIZE / img.naturalHeight);
+            const w = img.naturalWidth * scale;
+            const h = img.naturalHeight * scale;
+            ctx.drawImage(img, (LOGO_CANVAS_SIZE - w) / 2, (LOGO_CANVAS_SIZE - h) / 2, w, h);
+            resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = reject;
+        img.src = url;
     });
 }
 
@@ -30,13 +39,16 @@ interface ImageUploadFieldProps {
     value?: string;
     onChange: (base64: string | undefined) => void;
     hint?: string;
+    changeLabel: string;
+    deleteLabel: string;
+    selectLabel: string;
 }
 
-function ImageUploadField({ label, value, onChange, hint }: ImageUploadFieldProps) {
+function ImageUploadField({ label, value, onChange, hint, changeLabel, deleteLabel, selectLabel }: ImageUploadFieldProps) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleFile = async (file: File) => {
-        const base64 = await fileToBase64(file);
+        const base64 = await normalizeLogoImage(file);
         onChange(base64);
     };
 
@@ -61,7 +73,7 @@ function ImageUploadField({ label, value, onChange, hint }: ImageUploadFieldProp
                             className="flex items-center gap-1.5 px-3 py-1.5 bg-card rounded-lg text-xs font-semibold text-foreground hover:bg-accent transition-colors"
                         >
                             <Upload className="w-3 h-3" />
-                            Değiştir
+                            {changeLabel}
                         </button>
                         <button
                             type="button"
@@ -69,7 +81,7 @@ function ImageUploadField({ label, value, onChange, hint }: ImageUploadFieldProp
                             className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500 rounded-lg text-xs font-semibold text-white hover:bg-red-600 transition-colors"
                         >
                             <X className="w-3 h-3" />
-                            Sil
+                            {deleteLabel}
                         </button>
                     </div>
                 </div>
@@ -80,7 +92,7 @@ function ImageUploadField({ label, value, onChange, hint }: ImageUploadFieldProp
                     className="flex flex-col items-center justify-center w-40 h-28 border-2 border-dashed border-border rounded-xl hover:border-[var(--primary)] hover:bg-accent transition-colors cursor-pointer"
                 >
                     <Upload className="w-6 h-6 mb-1" style={{ color: '#9ca3af' }} />
-                    <span className="text-xs" style={{ color: '#9ca3af' }}>Görsel seç</span>
+                    <span className="text-xs" style={{ color: '#9ca3af' }}>{selectLabel}</span>
                 </button>
             )}
 
@@ -100,8 +112,8 @@ function ImageUploadField({ label, value, onChange, hint }: ImageUploadFieldProp
 }
 
 export default function AdminBrandDesignPage() {
+    const { t } = useTranslation('admin');
     const queryClient = useQueryClient();
-    const settings = useStoreSettings();
 
     const { data, isLoading, isError } = useQuery({
         queryKey: queryKeys.admin.settings.store,
@@ -127,7 +139,7 @@ export default function AdminBrandDesignPage() {
             <div className="flex items-center justify-center py-24">
                 <div
                     className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
-                    style={{ borderColor: settings.primaryColor, borderTopColor: 'transparent' }}
+                    style={{ borderColor: 'var(--brand-primary)', borderTopColor: 'transparent' }}
                 />
             </div>
         );
@@ -136,7 +148,7 @@ export default function AdminBrandDesignPage() {
     if (isError) {
         return (
             <div className="py-24 text-center text-red-600">
-                Ayarlar yüklenemedi. Lütfen sayfayı yenileyin.
+                {t('design.common.loading')}
             </div>
         );
     }
@@ -154,16 +166,16 @@ export default function AdminBrandDesignPage() {
             <div className="flex items-center gap-3 mb-8">
                 <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: hexToRgba(settings.primaryColor, 0.1) }}
+                    style={{ background: 'var(--brand-primary-light)' }}
                 >
-                    <Store className="w-5 h-5" style={{ color: settings.primaryColor }} />
+                    <Store className="w-5 h-5" style={{ color: 'var(--brand-primary)' }} />
                 </div>
                 <div>
-                    <h1 className="text-xl font-bold" style={{ color: settings.primaryColor }}>
-                        Marka &amp; Logo
+                    <h1 className="text-xl font-bold" style={{ color: 'var(--brand-primary)' }}>
+                        {t('design.brand.title')}
                     </h1>
                     <p className="text-sm" style={{ color: '#6b7280' }}>
-                        Mağaza adı ve logo ayarları
+                        {t('design.brand.subtitle')}
                     </p>
                 </div>
             </div>
@@ -172,34 +184,37 @@ export default function AdminBrandDesignPage() {
                 onSubmit={handleSubmit}
                 className="space-y-8"
                 style={{
-                    '--primary': settings.primaryColor,
-                    '--tw-ring-color': settings.primaryColor,
-                    accentColor: settings.primaryColor,
+                    '--primary': 'var(--brand-primary)',
+                    '--tw-ring-color': 'var(--brand-primary)',
+                    accentColor: 'var(--brand-primary)',
                 } as React.CSSProperties}
             >
                 <section className="bg-card rounded-2xl border border-border shadow-sm p-6 space-y-6">
                     <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: '#9ca3af' }}>
-                        Marka Kimliği
+                        {t('design.brand.sectionTitle')}
                     </h2>
 
                     <div>
                         <label className="block text-sm font-semibold mb-1" style={{ color: '#374151' }}>
-                            Mağaza Adı
+                            {t('design.brand.storeName')}
                         </label>
                         <input
                             type="text"
                             value={form.storeName}
                             onChange={(e) => set('storeName', e.target.value)}
                             className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 bg-background text-foreground"
-                            placeholder="Mağaza adını girin"
+                            placeholder={t('design.brand.storeNamePlaceholder')}
                         />
                     </div>
 
                     <ImageUploadField
-                        label="Logo"
+                        label={t('design.brand.logoLabel')}
                         value={form.imageBase64}
                         onChange={(v) => set('imageBase64', v)}
-                        hint="PNG veya SVG önerilir. Görselin üzerine gelince değiştirme seçenekleri görüntülenir."
+                        hint={t('design.brand.logoHint')}
+                        changeLabel={t('design.common.change')}
+                        deleteLabel={t('design.common.delete')}
+                        selectLabel={t('design.common.selectImage')}
                     />
 
                     <label className="flex items-start gap-3 cursor-pointer select-none">
@@ -211,11 +226,10 @@ export default function AdminBrandDesignPage() {
                         />
                         <div>
                             <span className="text-sm font-medium" style={{ color: '#374151' }}>
-                                Mağaza adını header'da göster
+                                {t('design.brand.showInHeader')}
                             </span>
                             <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>
-                                Logonun sağında mağaza adı metin olarak görünür.
-                                Logonuzda zaten mağaza adı varsa kapalı bırakabilirsiniz.
+                                {t('design.brand.showInHeaderHint')}
                             </p>
                         </div>
                     </label>
@@ -223,8 +237,8 @@ export default function AdminBrandDesignPage() {
 
                 <div className="flex items-center justify-between">
                     {isSuccess && (
-                        <span className="text-sm font-medium" style={{ color: settings.primaryColor }}>
-                            Kaydedildi.
+                        <span className="text-sm font-medium" style={{ color: 'var(--brand-primary)' }}>
+                            {t('design.common.saved')}
                         </span>
                     )}
                     <div className="ml-auto">
@@ -232,9 +246,9 @@ export default function AdminBrandDesignPage() {
                             type="submit"
                             disabled={isPending}
                             className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-60"
-                            style={{ background: settings.primaryColor }}
+                            style={{ backgroundColor: 'var(--brand-primary)' }}
                         >
-                            {isPending ? 'Kaydediliyor…' : 'Kaydet'}
+                            {isPending ? t('design.common.saving') : t('design.common.save')}
                         </button>
                     </div>
                 </div>
@@ -244,14 +258,14 @@ export default function AdminBrandDesignPage() {
             {form && (
                 <div className="mt-8 rounded-2xl overflow-hidden border border-border shadow-sm">
                     <p className="text-xs font-bold uppercase tracking-wider px-4 py-2 bg-gray-50 dark:bg-white/5 border-b border-border text-muted-foreground">
-                        Canlı Önizleme — Header
+                        {t('design.brand.previewTitle')}
                     </p>
                     <div
                         className="flex items-center gap-3 px-5 py-4"
                         style={{ backgroundColor: form.headerBackgroundColor }}
                     >
                         {form.imageBase64 ? (
-                            <img src={form.imageBase64} alt="logo" className="h-8 object-contain" />
+                            <img src={form.imageBase64} alt="logo" className="h-8 w-8 object-contain" />
                         ) : (
                             <div
                                 className="w-8 h-8 rounded-lg flex items-center justify-center"

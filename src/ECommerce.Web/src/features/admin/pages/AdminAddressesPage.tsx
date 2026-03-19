@@ -8,17 +8,22 @@ import AddressFormModal from '../components/AddressFormModal';
 import ConfirmModal from '../components/ConfirmModal';
 import AgGridDatePicker from '../components/AgGridDatePicker';
 import { EntityStatusFilter, EntityStatusFloatingFilter } from '../components/EntityStatusFilter';
-import { useAddressGridColumns, localeTextTr } from '../products/hooks/useAddressGridColumns';
+import { useAddressGridColumns } from '../products/hooks/useAddressGridColumns';
 import { useAddressActions, defaultAddressModalSettings, type AddressModalSettings } from '../products/hooks/useAddressActions';
 import { exportAddressesToExcel, exportAddressesToPDF } from '../utils/addressExport';
 import excelIcon from '../../../assets/excel_download_icon.png';
 import pdfIcon from '../../../assets/pdf_download_icon.png';
-import { useThemeStore } from '@/store/themeStore';
+import { useAgGridTheme, useRowStyleColors } from '../utils/agGridTheme';
+import { useTranslation } from 'react-i18next';
+import { useAgGridLocale } from '@/hooks/useAgGridLocale';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 export default function AdminAddressesPage() {
-    const { resolved: theme } = useThemeStore();
+    const { t } = useTranslation('admin');
+    const { localeText } = useAgGridLocale();
+    const agGridTheme = useAgGridTheme();
+    const rowColors = useRowStyleColors();
     const gridRef = useRef<AgGridReact>(null);
     const [addresses, setAddresses] = useState<AdminAddress[]>([]);
     const [loading, setLoading] = useState(true);
@@ -110,7 +115,7 @@ export default function AdminAddressesPage() {
 
     const fullWidthCellRenderer = useMemo(() => (params: any) => {
         const a = params.data as AdminAddress;
-        const status = a.isDeleted ? 'Silinmiş' : (a.isActive ? 'Aktif' : 'Pasif');
+        const status = a.isDeleted ? t('filter.deleted') : (a.isActive ? t('filter.active') : t('filter.passive'));
         const statusColor = a.isDeleted ? '#dc2626' : (a.isActive ? '#16a34a' : '#ca8a04');
         const nodeId = params.node.id as string;
 
@@ -144,31 +149,31 @@ export default function AdminAddressesPage() {
                 
                 <div className="grid grid-cols-1 gap-3">
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Ad Soyad</span>
+                        <span className="mobile-detail-label">{t('addresses.mobile.fullName')}</span>
                         <span className="mobile-detail-value font-medium">{a.fullName}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Adres</span>
+                        <span className="mobile-detail-label">{t('addresses.mobile.address')}</span>
                         <span className="mobile-detail-value">{a.addressLine1} {a.addressLine2}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Şehir / Ülke</span>
+                        <span className="mobile-detail-label">{t('addresses.mobile.cityCountry')}</span>
                         <span className="mobile-detail-value">{a.city} / {a.country}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Varsayılan</span>
-                        <span className="mobile-detail-value">{a.isDefault ? 'Evet' : 'Hayır'}</span>
+                        <span className="mobile-detail-label">{t('addresses.mobile.default')}</span>
+                        <span className="mobile-detail-value">{a.isDefault ? t('addresses.mobile.yes') : t('addresses.mobile.no')}</span>
                     </div>
                 </div>
 
                 <div className="flex gap-2 mt-3 pt-3 border-t border-border">
                     {!a.isDeleted ? (
                         <>
-                            <button onClick={(e) => { e.stopPropagation(); handleEdit(a); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">DÜZENLE</button>
-                            <button onClick={(e) => { e.stopPropagation(); handleDelete(a.id); }} className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm border border-red-100">SİL</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleEdit(a); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">{t('addresses.mobile.edit')}</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleDelete(a.id); }} className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm border border-red-100">{t('addresses.mobile.delete')}</button>
                         </>
                     ) : (
-                        <button onClick={(e) => { e.stopPropagation(); handleRestore(a.id); }} className="flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm border border-blue-100">GERI YÜKLE</button>
+                        <button onClick={(e) => { e.stopPropagation(); handleRestore(a.id); }} className="flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm border border-blue-100">{t('addresses.mobile.restore')}</button>
                     )}
                 </div>
             </div>
@@ -187,8 +192,8 @@ export default function AdminAddressesPage() {
                         <MapPin className="h-5 w-5" style={{ color: 'var(--brand-primary)' }} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>Adres Yönetimi</h1>
-                        <p className="text-muted-foreground text-sm">Tüm kullanıcı adreslerini buradan yönetebilirsiniz.</p>
+                        <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>{t('addresses.title')}</h1>
+                        <p className="text-muted-foreground text-sm">{t('addresses.subtitle')}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-4 self-end sm:self-auto">
@@ -203,7 +208,7 @@ export default function AdminAddressesPage() {
                         <span className="hidden xs:inline text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Excel</span>
                     </button>
                     <button
-                        onClick={() => exportAddressesToPDF(addresses).catch(() => alert('PDF hatası.'))}
+                        onClick={() => exportAddressesToPDF(addresses).catch(() => alert(t('errors.pdfExport')))}
                         className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group"
                         title="PDF'e Aktar"
                     >
@@ -219,7 +224,7 @@ export default function AdminAddressesPage() {
                         }}
                         className="bg-[var(--brand-primary)] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[var(--brand-primary-dark)] transition-colors shadow-sm flex items-center gap-2"
                     >
-                        Yeni Adres Ekle
+                        {t('addresses.addButton')}
                     </button>
                 </div>
             </div>
@@ -227,6 +232,7 @@ export default function AdminAddressesPage() {
             <div className="bg-card rounded-xl shadow-sm overflow-x-auto border border-border">
                 <div style={{ minWidth: 'fit-content' }}>
                     <AgGridReact<AdminAddress>
+                        theme={agGridTheme}
                         suppressHorizontalScroll={false}
                         suppressColumnVirtualisation={true}
                         tooltipShowDelay={300}
@@ -271,11 +277,10 @@ export default function AdminAddressesPage() {
                         loading={loading}
                         domLayout="autoHeight"
                         animateRows={true}
-                        localeText={localeTextTr}
+                        localeText={localeText}
                         getRowStyle={(params) => {
-                            const isDark = theme === 'dark';
-                            if (params.data?.isDeleted) return { backgroundColor: isDark ? 'rgba(239,68,68,0.15)' : '#fef2f2' };
-                            if (params.data?.isActive === false) return { backgroundColor: isDark ? 'rgba(100,116,139,0.15)' : '#f1f5f9' };
+                            if (params.data?.isDeleted) return { backgroundColor: rowColors.deleted };
+                            if (params.data?.isActive === false) return { backgroundColor: rowColors.inactive };
                             return undefined;
                         }}
                         defaultColDef={{
@@ -296,8 +301,8 @@ export default function AdminAddressesPage() {
             </div>
 
             <div className="flex items-center justify-between mt-3 px-1 text-xs text-muted-foreground">
-                <span>Toplam kayıt: {addresses.length}</span>
-                <span>Gösterilen: {gridApi?.getDisplayedRowCount() ?? addresses.length} kayıt</span>
+                <span>{t('common:totalRecords', { count: addresses.length })}</span>
+                <span>{t('common:showing', { count: gridApi?.getDisplayedRowCount() ?? addresses.length })}</span>
             </div>
 
             <AddressFormModal 

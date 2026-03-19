@@ -16,12 +16,17 @@ public class UnitRepository : IUnitRepository
 
     public async Task<Unit?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
-        return await _context.Units.FindAsync(new object[] { id }, ct);
+        return await _context.Units
+            .Include(u => u.Translations)
+            .FirstOrDefaultAsync(u => u.Id == id, ct);
     }
 
     public async Task<IReadOnlyList<Unit>> GetAllAsync(CancellationToken ct = default)
     {
-        return await _context.Units.OrderBy(u => u.Name).ToListAsync(ct);
+        return await _context.Units
+            .Include(u => u.Translations)
+            .OrderBy(u => u.Name)
+            .ToListAsync(ct);
     }
 
     public async Task AddAsync(Unit unit, CancellationToken ct = default)

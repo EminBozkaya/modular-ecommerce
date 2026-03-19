@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminUser } from '../types/adminUser';
 import { X } from 'lucide-react';
 import { useAdminUserSchema, type AdminUserFormData } from '@/lib/validations/admin.schema';
+import { useTranslation } from 'react-i18next';
 
 interface UserFormModalProps {
     open: boolean;
@@ -23,6 +24,7 @@ export default function UserFormModal({
     user,
     loading,
 }: UserFormModalProps) {
+    const { t } = useTranslation('admin');
     const adminUserSchema = useAdminUserSchema();
     const {
         register,
@@ -61,6 +63,12 @@ export default function UserFormModal({
 
     const isEdit = !!user;
 
+    const modalTitle = user?.isDeleted
+        ? t('modals.user.titleRestore')
+        : isEdit
+        ? t('modals.user.titleEdit')
+        : t('modals.user.titleAdd');
+
     const inputClass = (hasError: boolean) =>
         `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors bg-background text-foreground ${
             hasError
@@ -85,11 +93,9 @@ export default function UserFormModal({
                 {/* Header */}
                 <div
                     className="flex items-center justify-between px-6 py-4"
-                    style={{ background: 'var(--brand-primary)', color: 'white' }}
+                    style={{ background: 'var(--brand-surface)', color: 'white' }}
                 >
-                    <h2 className="text-lg font-semibold">
-                        {user?.isDeleted ? 'Müşteriyi Geri Yükle ve Düzenle' : (isEdit ? 'Müşteriyi Düzenle' : 'Yeni Müşteri Ekle')}
-                    </h2>
+                    <h2 className="text-lg font-semibold">{modalTitle}</h2>
                     <button
                         onClick={onClose}
                         className="p-1 rounded-full hover:bg-white/20 transition-colors"
@@ -101,34 +107,34 @@ export default function UserFormModal({
                 {/* Form */}
                 <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4" noValidate>
                     <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">Ad Soyad *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">{t('forms.labels.fullName')} *</label>
                         <input
                             {...register('fullName')}
                             className={inputClass(!!errors.fullName)}
-                            placeholder="Ad ve soyadı girin"
+                            placeholder={t('forms.placeholders.fullName')}
                         />
                         {errorMsg(errors.fullName?.message)}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">E-posta *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">{t('forms.labels.email')} *</label>
                         <input
                             type="email"
                             {...register('email')}
                             className={inputClass(!!errors.email)}
-                            placeholder="ornek@email.com"
+                            placeholder={t('forms.placeholders.email')}
                         />
                         {errorMsg(errors.email?.message)}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">Rol *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">{t('forms.labels.role')} *</label>
                         <select
                             {...register('role')}
                             className={inputClass(!!errors.role)}
                         >
-                            <option value="Customer">Müşteri</option>
-                            <option value="Admin">Yönetici</option>
+                            <option value="Customer">{t('forms.labels.roleCustomer')}</option>
+                            <option value="Admin">{t('forms.labels.roleAdmin')}</option>
                         </select>
                         {errorMsg(errors.role?.message)}
                     </div>
@@ -143,8 +149,8 @@ export default function UserFormModal({
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--brand-primary)]"></div>
                         </label>
                         <div>
-                            <span className="block text-sm font-semibold text-foreground">Hesap Aktif</span>
-                            <span className="block text-xs text-muted-foreground">Bu kullanıcı sisteme giriş yapabilecek mi?</span>
+                            <span className="block text-sm font-semibold text-foreground">{t('forms.labels.isActive')}</span>
+                            <span className="block text-xs text-muted-foreground">{t('forms.labels.isActiveHint')}</span>
                         </div>
                     </div>
 
@@ -155,7 +161,7 @@ export default function UserFormModal({
                             onClick={onClose}
                             className="px-4 py-2 text-sm font-medium text-foreground bg-accent hover:bg-accent/80 rounded-lg transition-colors"
                         >
-                            İptal
+                            {t('modals.orderStatus.cancel')}
                         </button>
                         <button
                             type="submit"
@@ -165,7 +171,7 @@ export default function UserFormModal({
                             onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--brand-primary-dark)')}
                             onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--brand-primary)')}
                         >
-                            {loading ? 'Kaydediliyor...' : isEdit ? 'Güncelle' : 'Ekle'}
+                            {loading ? t('buttons.saving') : isEdit ? t('modals.orderStatus.confirm') : t('common:add')}
                         </button>
                     </div>
                 </form>

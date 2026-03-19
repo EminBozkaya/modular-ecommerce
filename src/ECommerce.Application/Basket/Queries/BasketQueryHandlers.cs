@@ -1,6 +1,9 @@
+using ECommerce.Application.Catalog.Queries;
+using ECommerce.Application.Common.Settings;
 using ECommerce.Domain.Basket;
 using ECommerce.Domain.Catalog;
 using MediatR;
+using Microsoft.Extensions.Options;
 
 namespace ECommerce.Application.Basket.Queries;
 
@@ -8,11 +11,13 @@ public class GetBasketHandler : IRequestHandler<GetBasketQuery, BasketDto?>
 {
     private readonly IBasketRepository _baskets;
     private readonly IProductRepository _products;
+    private readonly string _defaultLanguage;
 
-    public GetBasketHandler(IBasketRepository baskets, IProductRepository products)
+    public GetBasketHandler(IBasketRepository baskets, IProductRepository products, IOptions<LocalizationOptions> locOptions)
     {
         _baskets = baskets;
         _products = products;
+        _defaultLanguage = locOptions.Value.DefaultLanguage;
     }
 
     public async Task<BasketDto?> Handle(GetBasketQuery q, CancellationToken ct)
@@ -25,7 +30,8 @@ public class GetBasketHandler : IRequestHandler<GetBasketQuery, BasketDto?>
         var itemDtos = new List<BasketItemDto>();
         foreach (var i in basket.Items)
         {
-            var product = await _products.GetByIdAsync(i.ProductId, ct);
+            // GetByIdAsNoTrackingAsync includes Unit.Translations via ThenInclude
+            var product = await _products.GetByIdAsNoTrackingAsync(i.ProductId, ct);
             itemDtos.Add(new BasketItemDto(
                 i.ProductId,
                 i.ProductName,
@@ -34,7 +40,7 @@ public class GetBasketHandler : IRequestHandler<GetBasketQuery, BasketDto?>
                 i.Quantity,
                 i.LineTotalSnapshot.Amount,
                 product?.ImageUrl,
-                product?.Unit?.Name));
+                UnitNameResolver.Resolve(product?.Unit, q.Language, _defaultLanguage)));
         }
 
         return new BasketDto(basket.Id, itemDtos, basket.Total.Amount, basket.Total.Currency.ToString());

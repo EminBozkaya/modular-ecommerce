@@ -4,7 +4,11 @@
     "loading": "Loading products...",
     "loadError": "An error occurred while loading products. Please try again.",
     "empty": "No products found",
-    "emptyDesc": "No products matching your search criteria or selected category."
+    "emptyDesc": "No products matching your search criteria or selected category.",
+    "searchPlaceholder": "Search our premium products...",
+    "searchAriaLabel": "Search products",
+    "categorySearchPlaceholder": "Search product groups...",
+    "showingCount": "Showing {{count}} of {{total}} products"
   },
   "detail": {
     "loading": "Loading product details...",

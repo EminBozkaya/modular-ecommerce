@@ -1,9 +1,26 @@
+import i18next from 'i18next';
 import { apiClient } from '../../../api/client';
 import type { Category, Product, ProductListParams, Unit } from '../types/product';
 import type { PaginatedResult } from '../../../types/api';
-import { mockCategories, mockProducts, mockPaginate } from './mock';
+import { mockCategories, mockProducts, mockPaginate, translateUnitCode, translateCategoryName, translateProductName, UNIT_NAME_TRANSLATIONS } from './mock';
 
-const isMock = import.meta.env.VITE_USE_MOCK === 'true';
+/** Applies language-aware translations (name + unit) to a mock product */
+function applyMockTranslations(product: Product): Product {
+    const lang = i18next.language?.split('-')[0] ?? 'tr';
+    return {
+        ...product,
+        name: translateProductName(product.id, product.name, lang),
+        unitName: translateUnitCode(product.unitCode, lang),
+    };
+}
+
+/** Applies language-aware name translation to a mock category */
+function applyMockCategoryTranslation(category: Category): Category {
+    const lang = i18next.language?.split('-')[0] ?? 'tr';
+    return { ...category, name: translateCategoryName(category.id, category.name, lang) };
+}
+
+const isMock = import.meta.env.VITE_USE_MOCK_API === 'true';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -24,7 +41,8 @@ export async function getProducts(params: ProductListParams): Promise<PaginatedR
             );
         }
 
-        return mockPaginate<Product>(items, params);
+        const paginated = mockPaginate<Product>(items, params);
+        return { ...paginated, items: paginated.items.map(applyMockTranslations) };
     }
 
     const response = await apiClient.get<PaginatedResult<Product> | { value: PaginatedResult<Product> }>('/api/catalog/products', { params });
@@ -56,7 +74,7 @@ export async function getProductById(id: string): Promise<Product> {
         if (!product) {
             throw new Error('Product not found');
         }
-        return product;
+        return applyMockTranslations(product);
     }
 
     const response = await apiClient.get<Product>(`/api/catalog/products/${id}`);
@@ -80,7 +98,7 @@ export async function getCategories(params?: { includeDeleted?: boolean, onlyMai
         if (params?.onlyMain) {
             items = items.filter(c => !c.parentCategoryId);
         }
-        return items;
+        return items.map(applyMockCategoryTranslation);
     }
 
     const response = await apiClient.get<Category[] | { value: Category[] }>('/api/catalog/categories', { params });
@@ -97,11 +115,22 @@ export async function getCategories(params?: { includeDeleted?: boolean, onlyMai
 export async function getUnits(): Promise<Unit[]> {
     if (isMock) {
         await delay(400);
-        return [
-            { id: '1', name: 'Kilogram', code: 'kg' },
-            { id: '2', name: 'Gram', code: 'g' },
-            { id: '3', name: 'Adet', code: 'adet' },
+        const lang = i18next.language?.split('-')[0] ?? 'tr';
+        const unitDefs: { id: string; code: string }[] = [
+            { id: '1', code: 'kg' },
+            { id: '2', code: 'g' },
+            { id: '3', code: 'adet' },
+            { id: '4', code: 'lt' },
+            { id: '5', code: 'paket' },
+            { id: '6', code: 'deste' },
+            { id: '7', code: 'koli' },
+            { id: '8', code: 'kit' },
         ];
+        return unitDefs.map(u => ({
+            id: u.id,
+            name: (UNIT_NAME_TRANSLATIONS[u.code]?.[lang] ?? UNIT_NAME_TRANSLATIONS[u.code]?.['tr'] ?? u.code),
+            code: u.code,
+        }));
     }
 
     const response = await apiClient.get<Unit[] | { value: Unit[] }>('/api/catalog/units');

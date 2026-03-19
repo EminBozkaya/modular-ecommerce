@@ -3,6 +3,7 @@ import { Minus, Plus } from 'lucide-react';
 import { getUnitConfig } from '../../utils/unitConfig';
 
 interface QuantitySelectorProps {
+    unitCode: string | null | undefined;
     unitName: string;
     value: number;
     onChange: (newValue: number) => void;
@@ -11,13 +12,14 @@ interface QuantitySelectorProps {
 }
 
 export function QuantitySelector({
+    unitCode,
     unitName,
     value,
     onChange,
     disabled = false,
     size = 'md',
 }: QuantitySelectorProps) {
-    const config = getUnitConfig(unitName);
+    const config = getUnitConfig(unitCode, unitName);
     const [inputValue, setInputValue] = useState(() => value.toFixed(config.decimals));
     const [isFocused, setIsFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);

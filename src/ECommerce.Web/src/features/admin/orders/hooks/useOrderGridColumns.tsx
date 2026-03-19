@@ -3,6 +3,7 @@ import { type ColDef, type ICellRendererParams, type ValueFormatterParams } from
 import { Edit2, Trash2, RotateCcw } from 'lucide-react';
 import type { Order, OrderStatus } from '../../../ordering/types/order';
 import { useTranslation } from 'react-i18next';
+import { formatDateByLocale } from '@/utils/agGridLocales';
 
 export const localeTextTr = {
     filterOoo: 'Filtrele...',
@@ -121,7 +122,7 @@ export function useOrderGridColumns({
                 if (params.data?.isDeleted) {
                     return (
                         <span style={{ color: '#dc2626', backgroundColor: '#fef2f2', padding: '2px 10px', borderRadius: '9999px', fontSize: '12px', fontWeight: 600 }}>
-                            {t('common.deleted')}
+                            {t('common:deleted')}
                         </span>
                     );
                 }
@@ -142,7 +143,7 @@ export function useOrderGridColumns({
             cellRenderer: (params: ICellRendererParams<Order, string>) => {
                 if (!params.value) return '';
                 return (
-                    <span style={{ fontFamily: 'monospace', fontSize: '12px', color: '#374151' }}>
+                    <span style={{ fontFamily: 'monospace', fontSize: '12px', color: 'var(--ag-foreground-color, #374151)' }}>
                         {params.value.length > 12 ? `${params.value.slice(0, 12)}...` : params.value}
                     </span>
                 );

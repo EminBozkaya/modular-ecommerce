@@ -21,7 +21,15 @@
     "back": "Zurück",
     "loading": "Wird geladen...",
     "continue": "Weiter",
-    "continueAsGuest": "Als Gast fortfahren"
+    "continueAsGuest": "Als Gast fortfahren",
+    "restore": "Wiederherstellen",
+    "filter": "Filtern",
+    "export": "Exportieren",
+    "close": "Schließen",
+    "update": "Aktualisieren",
+    "search": "Suchen",
+    "reset": "Zurücksetzen",
+    "apply": "Anwenden"
   },
   "status": {
     "loading": "Wird geladen...",
@@ -33,7 +41,17 @@
     "tr": "Türkisch",
     "en": "Englisch",
     "de": "Deutsch",
+    "fr": "Französisch",
+    "es": "Spanisch",
+    "ru": "Russisch",
+    "ar": "Arabisch",
+    "all": "Alle Sprachen",
     "changeLanguage": "Sprache ändern"
+  },
+  "theme": {
+    "light": "Helles Design",
+    "dark": "Dunkles Design",
+    "toggle": "Design wechseln"
   },
   "header": {
     "login": "Anmelden",
@@ -64,5 +82,14 @@
   "table": {
     "total": "Datensätze gesamt: {{count}}",
     "showing": "Angezeigt: {{count}} Datensätze"
-  }
+  },
+  "updatedAt": "Aktualisierungsdatum",
+  "updatedBy": "Aktualisiert von",
+  "deletedAt": "Löschdatum",
+  "active": "Aktiv",
+  "passive": "Passiv",
+  "deleted": "Gelöscht",
+  "totalRecords": "Gesamteinträge: {{count}}",
+  "showing": "Angezeigt: {{count}} Einträge",
+  "add": "Hinzufügen"
 }

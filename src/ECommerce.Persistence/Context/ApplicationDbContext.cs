@@ -19,6 +19,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Unit> Units => Set<Unit>();
     public DbSet<ProductTranslation> ProductTranslations => Set<ProductTranslation>();
     public DbSet<CategoryTranslation> CategoryTranslations => Set<CategoryTranslation>();
+    public DbSet<UnitTranslation> UnitTranslations => Set<UnitTranslation>();
 
     // Basket
     public DbSet<Basket> Baskets => Set<Basket>();
@@ -65,5 +66,6 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<UserAddress>().HasQueryFilter(a => !a.IsDeleted);
         modelBuilder.Entity<ProductTranslation>().HasQueryFilter(t => !t.IsDeleted);
         modelBuilder.Entity<CategoryTranslation>().HasQueryFilter(t => !t.IsDeleted);
+        modelBuilder.Entity<UnitTranslation>().HasQueryFilter(t => !t.IsDeleted);
     }
 }

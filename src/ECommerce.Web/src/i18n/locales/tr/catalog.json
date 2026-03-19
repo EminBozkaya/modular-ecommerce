@@ -4,7 +4,11 @@
     "loading": "Ürünler hazırlanıyor...",
     "loadError": "Ürünler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.",
     "empty": "Ürün bulunamadı",
-    "emptyDesc": "Arama kriterlerinize veya seçtiğiniz kategoriye uygun ürün bulunamadı."
+    "emptyDesc": "Arama kriterlerinize veya seçtiğiniz kategoriye uygun ürün bulunamadı.",
+    "searchPlaceholder": "Premium ürünlerimizde arayın...",
+    "searchAriaLabel": "Ürün ara",
+    "categorySearchPlaceholder": "Ürün gruplarında arayın...",
+    "showingCount": "Toplam {{total}} üründen {{count}} tanesi gösteriliyor"
   },
   "detail": {
     "loading": "Ürün detayları yükleniyor...",

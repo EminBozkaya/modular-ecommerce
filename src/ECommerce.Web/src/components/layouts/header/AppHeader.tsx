@@ -129,15 +129,18 @@ export function AppHeader() {
                         {/* Menü duvarımız (sol hizalama) buraya bağlı: md'de 220px, xl'de 320px. (Padding değil width ile) */}
                         <div className="flex items-center justify-between w-full md:w-[220px] xl:w-[320px] flex-shrink-0 relative">
                             <Link to="/" className="flex-shrink-0 group flex items-center gap-2 md:gap-3 py-1 md:py-0 md:relative md:z-[60] md:-mb-10 xl:-mb-14 transition-all">
-                                <img
-                                    src={resolvedLogo}
-                                    alt={settings.storeName}
-                                    className="h-14 sm:h-20 md:h-24 xl:h-40 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-                                />
+                                {/* Square container: normalizes any logo aspect ratio. h-N drives size, aspect-square keeps width=height. */}
+                                <div className="h-16 sm:h-20 md:h-24 xl:h-32 aspect-square flex-shrink-0">
+                                    <img
+                                        src={resolvedLogo}
+                                        alt={settings.storeName}
+                                        className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                                    />
+                                </div>
                                 {settings.showStoreNameInHeader && settings.storeName && (
                                     <span
                                         className="hidden md:block text-base lg:text-xl font-bold tracking-tight whitespace-nowrap transition-transform duration-300 group-hover:scale-105"
-                                        style={{ color: settings.primaryColor }}
+                                        style={{ color: 'var(--brand-primary)' }}
                                     >
                                         {settings.storeName}
                                     </span>
@@ -166,7 +169,7 @@ export function AppHeader() {
                                                     <Link
                                                         to="/register"
                                                         className="px-4 py-2 text-[13px] font-bold text-white rounded-full shadow-md transition-all active:scale-95 whitespace-nowrap"
-                                                        style={{ backgroundColor: settings.primaryColor }}
+                                                        style={{ backgroundColor: 'var(--brand-primary)' }}
                                                     >
                                                         {t('userMenu.register')}
                                                     </Link>
@@ -261,7 +264,7 @@ export function AppHeader() {
                             onMouseLeave={stopScrolling}
                             onClick={() => scrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
                             className="relative ml-2 w-8 h-8 rounded-full bg-foreground/10 hover:bg-foreground/20 border border-foreground/10 shadow-sm flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group backdrop-blur-[2px]"
-                            style={{ color: settings.primaryColor }}
+                            style={{ color: 'var(--brand-primary)' }}
                         >
                             <ChevronLeft className="w-5 h-5" />
                         </button>
@@ -308,7 +311,7 @@ export function AppHeader() {
                             onMouseLeave={stopScrolling}
                             onClick={() => scrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
                             className="relative w-8 h-8 rounded-full bg-foreground/10 hover:bg-foreground/20 border border-foreground/10 shadow-sm flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group backdrop-blur-[2px]"
-                            style={{ color: settings.primaryColor }}
+                            style={{ color: 'var(--brand-primary)' }}
                         >
                             <ChevronRight className="w-5 h-5" />
                         </button>

@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import type { Order, OrderStatus } from '../../ordering/types/order';
 import type { PaginatedResult } from '../../../types/api';
 import { OrderStatusBadge } from '../../ordering/components/OrderStatusBadge';
 import { formatPrice } from '../../../utils/formatters';
+import { SUPPORTED_LANGUAGES } from '../../../i18n/languages';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface AdminOrdersTableProps {
@@ -12,22 +14,22 @@ interface AdminOrdersTableProps {
     onRowClick: (order: Order) => void;
 }
 
-const statusOptions: { value: OrderStatus | ''; label: string }[] = [
-    { value: '', label: 'Tümü' },
-    { value: 'Pending', label: 'Beklemede' },
-    { value: 'Processing', label: 'İşleniyor' },
-    { value: 'Paid', label: 'Ödendi' },
-    { value: 'Shipped', label: 'Kargoda' },
-    { value: 'Delivered', label: 'Teslim Edildi' },
-    { value: 'Cancelled', label: 'İptal Edildi' },
-    { value: 'Refunded', label: 'İade Edildi' },
-];
-
-function formatDate(iso: string): string {
-    return new Date(iso).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-}
-
 export function AdminOrdersTable({ data, onPageChange, statusFilter, onStatusFilter, onRowClick }: AdminOrdersTableProps) {
+    const { t, i18n } = useTranslation(['admin', 'orders']);
+
+    const currentLocale = SUPPORTED_LANGUAGES.find(l => l.code === i18n.language)?.locale ?? 'tr-TR';
+
+    const statusOptions: { value: OrderStatus | ''; label: string }[] = [
+        { value: '', label: t('filter.all', { ns: 'admin' }) },
+        { value: 'Pending', label: t('status.Pending', { ns: 'admin' }) },
+        { value: 'Processing', label: t('status.Processing', { ns: 'admin' }) },
+        { value: 'Paid', label: t('status.Paid', { ns: 'admin' }) },
+        { value: 'Shipped', label: t('status.Shipped', { ns: 'admin' }) },
+        { value: 'Delivered', label: t('status.Delivered', { ns: 'admin' }) },
+        { value: 'Cancelled', label: t('status.Cancelled', { ns: 'admin' }) },
+        { value: 'Refunded', label: t('status.Refunded', { ns: 'admin' }) },
+    ];
+
     const totalPages = Math.ceil(data.totalCount / data.pageSize);
 
     return (
@@ -51,18 +53,18 @@ export function AdminOrdersTable({ data, onPageChange, statusFilter, onStatusFil
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="bg-gray-50 dark:bg-white/5 border-b border-border">
-                                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Sipariş No</th>
-                                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Müşteri</th>
-                                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Tarih</th>
-                                <th className="text-right py-3 px-4 text-muted-foreground font-medium">Tutar</th>
-                                <th className="text-center py-3 px-4 text-muted-foreground font-medium">Durum</th>
+                                <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('orders.grid.orderId', { ns: 'admin' })}</th>
+                                <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('orders.grid.customer', { ns: 'admin' })}</th>
+                                <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('orders.grid.date', { ns: 'admin' })}</th>
+                                <th className="text-right py-3 px-4 text-muted-foreground font-medium">{t('orders.grid.amount', { ns: 'admin' })}</th>
+                                <th className="text-center py-3 px-4 text-muted-foreground font-medium">{t('orders.grid.status', { ns: 'admin' })}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {data.items.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="text-center py-8 text-muted-foreground">
-                                        Sipariş bulunamadı.
+                                        {t('orders.noOrders', { ns: 'admin' })}
                                     </td>
                                 </tr>
                             ) : (
@@ -76,7 +78,9 @@ export function AdminOrdersTable({ data, onPageChange, statusFilter, onStatusFil
                                             {order.id.length > 12 ? `${order.id.slice(0, 12)}...` : order.id}
                                         </td>
                                         <td className="py-3 px-4 text-foreground">{order.shippingAddress.fullName}</td>
-                                        <td className="py-3 px-4 text-muted-foreground">{formatDate(order.createdAt)}</td>
+                                        <td className="py-3 px-4 text-muted-foreground">
+                                            {new Date(order.createdAt).toLocaleDateString(currentLocale, { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                                        </td>
                                         <td className="py-3 px-4 text-right font-medium text-foreground">
                                             {formatPrice(order.totalAmount, order.currency)}
                                         </td>
@@ -94,7 +98,7 @@ export function AdminOrdersTable({ data, onPageChange, statusFilter, onStatusFil
                 {totalPages > 1 && (
                     <div className="flex items-center justify-between px-4 py-3 border-t border-border">
                         <span className="text-sm text-muted-foreground">
-                            Toplam {data.totalCount} sipariş
+                            {t('common:totalRecords', { count: data.totalCount })}
                         </span>
                         <div className="flex items-center gap-2">
                             <button

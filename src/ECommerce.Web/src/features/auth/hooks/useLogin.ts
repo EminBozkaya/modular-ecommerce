@@ -7,7 +7,7 @@ import { queryKeys } from '@/utils/queryKeys';
 import type { ApiError } from '@/api/errorHandling';
 import { addToWishlist } from '@/features/favorites/api/favoritesApi';
 
-const GUEST_WISHLIST_KEY = 'ebrar_guest_wishlist';
+const GUEST_WISHLIST_KEY = 'guest_wishlist';
 
 export function useLogin() {
     const queryClient = useQueryClient();

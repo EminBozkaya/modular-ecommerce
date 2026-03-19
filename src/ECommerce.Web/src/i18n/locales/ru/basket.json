@@ -14,5 +14,11 @@
   "summary": {
     "products": "Товары ({{count}})",
     "total": "Итого"
+  },
+  "page": {
+    "title": "Моя корзина",
+    "titleWithCount": "Моя корзина ({{count}} товаров)",
+    "browseProducts": "Просмотр товаров",
+    "loadError": "Не удалось загрузить корзину."
   }
 }

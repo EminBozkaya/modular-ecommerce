@@ -1,7 +1,8 @@
+import i18next from 'i18next';
 import type { AddToBasketRequest, Basket, UpdateBasketItemRequest } from '../types/basket';
-import { mockProducts } from '../../catalog/api/mock';
+import { mockProducts, translateUnitCode } from '../../catalog/api/mock';
 
-let mockBasket: Basket = { items: [], totalAmount: 0, currency: 'TRY' };
+let mockBasket: Basket = { items: [], totalAmount: 0, currency: 'USD' };
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -11,7 +12,13 @@ const recalculateTotal = () => {
 
 export const mockGetBasket = async (): Promise<Basket> => {
     await delay(300);
-    return { ...mockBasket };
+    const lang = i18next.language?.split('-')[0] ?? 'tr';
+    // Re-translate unitName on every fetch so language changes are reflected
+    const items = mockBasket.items.map(item => ({
+        ...item,
+        unitName: translateUnitCode(item.unitCode, lang),
+    }));
+    return { ...mockBasket, items };
 };
 
 export const mockAddToBasket = async (req: AddToBasketRequest): Promise<Basket> => {
@@ -27,6 +34,7 @@ export const mockAddToBasket = async (req: AddToBasketRequest): Promise<Basket> 
     if (existingItemIndex >= 0) {
         mockBasket.items[existingItemIndex].quantity += req.quantity;
     } else {
+        const lang = i18next.language?.split('-')[0] ?? 'tr';
         mockBasket.items.push({
             productId: product.id,
             productName: product.name,
@@ -34,7 +42,8 @@ export const mockAddToBasket = async (req: AddToBasketRequest): Promise<Basket> 
             currency: product.currency,
             quantity: req.quantity,
             imageUrl: product.imageUrl,
-            unitName: product.unitName,
+            unitCode: product.unitCode,
+            unitName: translateUnitCode(product.unitCode, lang),
         });
     }
 
@@ -68,5 +77,5 @@ export const mockUpdateBasketItem = async (req: UpdateBasketItemRequest): Promis
 };
 
 export const mockClearBasket = (): void => {
-    mockBasket = { items: [], totalAmount: 0, currency: 'TRY' };
+    mockBasket = { items: [], totalAmount: 0, currency: 'USD' };
 };

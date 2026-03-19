@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { X, Search } from 'lucide-react';
 import { useAddressSchema, type AddressFormData } from '@/lib/validations/admin.schema';
 import { getUsers, type AdminAddress, type AdminUser } from '../api/adminApi';
+import { useTranslation } from 'react-i18next';
 
 interface AddressFormModalProps {
     open: boolean;
@@ -20,6 +21,7 @@ export default function AddressFormModal({
     address,
     loading,
 }: AddressFormModalProps) {
+    const { t } = useTranslation('admin');
     const [users, setUsers] = useState<AdminUser[]>([]);
     const [usersLoading, setUsersLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -42,7 +44,7 @@ export default function AddressFormModal({
             addressLine2: '',
             city: '',
             postalCode: '',
-            country: 'Türkiye',
+            country: t('forms.labels.defaultCountry'),
             isActive: true,
         },
     });
@@ -92,14 +94,20 @@ export default function AddressFormModal({
     }, [address, open, reset]);
 
     const filteredUsers = searchTerm.trim()
-        ? users.filter(u => 
-            u.fullName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        ? users.filter(u =>
+            u.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             u.email.toLowerCase().includes(searchTerm.toLowerCase())
         ).slice(0, 10)
         : [];
 
 
     if (!open) return null;
+
+    const modalTitle = address?.isDeleted
+        ? t('modals.address.titleRestore')
+        : isEdit
+        ? t('modals.address.titleEdit')
+        : t('modals.address.titleAdd');
 
     const inputClass = (hasError: boolean) =>
         `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm transition-colors bg-background text-foreground ${
@@ -125,11 +133,9 @@ export default function AddressFormModal({
                 {/* Header */}
                 <div
                     className="flex items-center justify-between px-6 py-4"
-                    style={{ background: 'var(--brand-primary)', color: 'white' }}
+                    style={{ background: 'var(--brand-surface)', color: 'white' }}
                 >
-                    <h2 className="text-lg font-semibold">
-                        {address?.isDeleted ? 'Adresi Geri Yükle ve Düzenle' : (isEdit ? 'Adresi Düzenle' : 'Yeni Adres Ekle')}
-                    </h2>
+                    <h2 className="text-lg font-semibold">{modalTitle}</h2>
                     <button
                         onClick={onClose}
                         className="p-1 rounded-full hover:bg-white/20 transition-colors"
@@ -142,7 +148,7 @@ export default function AddressFormModal({
                 <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4" noValidate>
                     {!isEdit && (
                         <div className="space-y-2 p-3 bg-gray-50 dark:bg-white/10 rounded-lg border border-border">
-                            <label className="block text-sm font-semibold text-foreground">Kullanıcı Seçimi *</label>
+                            <label className="block text-sm font-semibold text-foreground">{t('forms.labels.userSelect')} *</label>
 
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -188,72 +194,72 @@ export default function AddressFormModal({
                     )}
 
                     <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">Adres Başlığı *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">{t('forms.labels.addressTitle')} *</label>
                         <input
                             {...register('title')}
                             className={inputClass(!!errors.title)}
-                            placeholder="Örn: Ev Adresim"
+                            placeholder={t('forms.placeholders.addressTitle')}
                         />
                         {errorMsg(errors.title?.message)}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">Ad Soyad *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">{t('forms.labels.fullName')} *</label>
                         <input
                             {...register('fullName')}
                             className={inputClass(!!errors.fullName)}
-                            placeholder="Alıcı ad soyad"
+                            placeholder={t('forms.placeholders.fullName')}
                         />
                         {errorMsg(errors.fullName?.message)}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">Adres Satırı 1 *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">{t('forms.labels.line1')} *</label>
                         <input
                             {...register('addressLine1')}
                             className={inputClass(!!errors.addressLine1)}
-                            placeholder="Mahalle, sokak, no..."
+                            placeholder={t('forms.placeholders.line1')}
                         />
                         {errorMsg(errors.addressLine1?.message)}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">Adres Satırı 2</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">{t('forms.labels.line2')}</label>
                         <input
                             {...register('addressLine2')}
                             className={inputClass(!!errors.addressLine2)}
-                            placeholder="Daire, kat, site adı..."
+                            placeholder={t('forms.placeholders.line2')}
                         />
                         {errorMsg(errors.addressLine2?.message)}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-foreground mb-1">Şehir *</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">{t('forms.labels.city')} *</label>
                             <input
                                 {...register('city')}
                                 className={inputClass(!!errors.city)}
-                                placeholder="Şehir"
+                                placeholder={t('forms.placeholders.city')}
                             />
                             {errorMsg(errors.city?.message)}
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-foreground mb-1">Posta Kodu *</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">{t('forms.labels.postalCode')} *</label>
                             <input
                                 {...register('postalCode')}
                                 className={inputClass(!!errors.postalCode)}
-                                placeholder="Posta kodu"
+                                placeholder={t('forms.placeholders.postalCode')}
                             />
                             {errorMsg(errors.postalCode?.message)}
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">Ülke *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">{t('forms.labels.country')} *</label>
                         <input
                             {...register('country')}
                             className={inputClass(!!errors.country)}
-                            placeholder="Ülke"
+                            placeholder={t('forms.placeholders.country')}
                         />
                         {errorMsg(errors.country?.message)}
                     </div>
@@ -268,8 +274,8 @@ export default function AddressFormModal({
                             <div className="w-11 h-6 bg-gray-200 dark:bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--brand-primary)]"></div>
                         </label>
                         <div>
-                            <span className="block text-sm font-semibold text-foreground">Adres Aktif</span>
-                            <span className="block text-xs text-muted-foreground">Bu adres sistemde aktif olarak kullanılabilir mi?</span>
+                            <span className="block text-sm font-semibold text-foreground">{t('forms.labels.isActive')}</span>
+                            <span className="block text-xs text-muted-foreground">{t('forms.labels.isActiveHint')}</span>
                         </div>
                     </div>
 
@@ -280,7 +286,7 @@ export default function AddressFormModal({
                             onClick={onClose}
                             className="px-4 py-2 text-sm font-medium text-foreground bg-accent hover:bg-accent/80 rounded-lg transition-colors"
                         >
-                            İptal
+                            {t('modals.orderStatus.cancel')}
                         </button>
                         <button
                             type="submit"
@@ -288,7 +294,7 @@ export default function AddressFormModal({
                             className="px-5 py-2 text-sm font-medium text-white rounded-lg transition-colors disabled:opacity-50"
                             style={{ background: 'var(--brand-primary)' }}
                         >
-                            {loading ? 'Kaydediliyor...' : isEdit ? 'Güncelle' : 'Ekle'}
+                            {loading ? t('buttons.saving') : isEdit ? t('modals.orderStatus.confirm') : t('common:add')}
                         </button>
                     </div>
                 </form>

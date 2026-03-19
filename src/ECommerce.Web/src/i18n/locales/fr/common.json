@@ -21,7 +21,15 @@
     "back": "Retour",
     "loading": "Chargement...",
     "continue": "Continuer",
-    "continueAsGuest": "Continuer en tant qu'invité"
+    "continueAsGuest": "Continuer en tant qu'invité",
+    "restore": "Restaurer",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "close": "Fermer",
+    "update": "Mettre à jour",
+    "search": "Rechercher",
+    "reset": "Réinitialiser",
+    "apply": "Appliquer"
   },
   "status": {
     "loading": "Chargement...",
@@ -37,7 +45,13 @@
     "es": "Espagnol",
     "ru": "Russe",
     "ar": "Arabe",
+    "all": "Toutes les langues",
     "changeLanguage": "Changer de langue"
+  },
+  "theme": {
+    "light": "Thème clair",
+    "dark": "Thème sombre",
+    "toggle": "Changer de thème"
   },
   "header": {
     "login": "Connexion",
@@ -68,5 +82,14 @@
   "table": {
     "total": "Total : {{count}} entrées",
     "showing": "Affichage : {{count}} entrées"
-  }
+  },
+  "updatedAt": "Date de mise à jour",
+  "updatedBy": "Mis à jour par",
+  "deletedAt": "Date de suppression",
+  "active": "Actif",
+  "passive": "Passif",
+  "deleted": "Supprimé",
+  "totalRecords": "Total des enregistrements : {{count}}",
+  "showing": "Affichés : {{count}} enregistrements",
+  "add": "Ajouter"
 }

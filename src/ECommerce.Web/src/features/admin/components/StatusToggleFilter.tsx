@@ -1,8 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useGridFilter } from 'ag-grid-react';
 import type { CustomFloatingFilterProps, IRowNode } from 'ag-grid-react';
+import { useTranslation } from 'react-i18next';
 
 const StatusToggleFilter = ({ onModelChange, model }: CustomFloatingFilterProps) => {
+    const { t } = useTranslation('admin');
     // Initial state: all ON as requested
     const [filterState, setFilterState] = useState(model || {
         active: true,
@@ -78,19 +80,19 @@ const StatusToggleFilter = ({ onModelChange, model }: CustomFloatingFilterProps)
     return (
         <div className="flex items-center justify-around w-full h-full px-1 py-1 bg-white/50 backdrop-blur-sm">
             <ToggleSwitch
-                label="Aktif"
+                label={t('filter.active')}
                 isOn={filterState.active}
                 onClick={() => toggle('active')}
                 activeColor="#16a34a"
             />
             <ToggleSwitch
-                label="Pasif"
+                label={t('filter.passive')}
                 isOn={filterState.passive}
                 onClick={() => toggle('passive')}
                 activeColor="#ca8a04"
             />
             <ToggleSwitch
-                label="Silinmiş"
+                label={t('filter.deleted')}
                 isOn={filterState.deleted}
                 onClick={() => toggle('deleted')}
                 activeColor="#dc2626"

@@ -2,31 +2,27 @@ import { useState, useCallback, useEffect } from 'react';
 import { useGridFilter } from 'ag-grid-react';
 import type { CustomFilterProps, CustomFloatingFilterProps } from 'ag-grid-react';
 import type { OrderStatus } from '../../ordering/types/order';
+import { useTranslation } from 'react-i18next';
 
 interface StatusOption {
     key: OrderStatus | 'Deleted';
-    label: string;
     color: string;
 }
 
-const statusOptions: StatusOption[] = [
-    { key: 'Pending', label: 'Beklemede', color: '#6b7280' },
-    { key: 'Processing', label: 'İşleniyor', color: '#ca8a04' },
-    { key: 'Paid', label: 'Ödendi', color: '#2563eb' },
-    { key: 'Shipped', label: 'Kargoda', color: '#7c3aed' },
-    { key: 'Delivered', label: 'Teslim Edildi', color: '#16a34a' },
-    { key: 'Cancelled', label: 'İptal', color: '#dc2626' },
-    { key: 'Refunded', label: 'İade', color: '#ea580c' },
-    { key: 'Deleted', label: 'Silinmiş', color: '#991b1b' },
+const statusOptionDefs: StatusOption[] = [
+    { key: 'Pending', color: '#6b7280' },
+    { key: 'Processing', color: '#ca8a04' },
+    { key: 'Paid', color: '#2563eb' },
+    { key: 'Shipped', color: '#7c3aed' },
+    { key: 'Delivered', color: '#16a34a' },
+    { key: 'Cancelled', color: '#dc2626' },
+    { key: 'Refunded', color: '#ea580c' },
+    { key: 'Deleted', color: '#991b1b' },
 ];
-
-const statusLabelMap: Record<string, string> = Object.fromEntries(
-    statusOptions.map(s => [s.key, s.label])
-);
 
 export interface OrderStatusFilterModel {
     searchText: string;
-    checkedStatuses: string[] | null; // null = Tümü (show all)
+    checkedStatuses: string[] | null; // null = All (show all)
 }
 
 const DEFAULT_MODEL: OrderStatusFilterModel = { searchText: '', checkedStatuses: null };
@@ -37,7 +33,19 @@ function hasActiveFilter(m: OrderStatusFilterModel): boolean {
 
 // ── Parent Filter — Checkbox Popup ──
 export const OrderStatusFilter = ({ model, onModelChange }: CustomFilterProps) => {
+    const { t } = useTranslation('admin');
     const [filterModel, setFilterModel] = useState<OrderStatusFilterModel>(model ?? DEFAULT_MODEL);
+
+    const statusLabelMap: Record<string, string> = {
+        Pending: t('status.Pending'),
+        Processing: t('status.Processing'),
+        Paid: t('status.Paid'),
+        Shipped: t('status.Shipped'),
+        Delivered: t('status.Delivered'),
+        Cancelled: t('status.Cancelled'),
+        Refunded: t('status.Refunded'),
+        Deleted: t('filter.deleted'),
+    };
 
     useEffect(() => {
         setFilterModel(model ?? DEFAULT_MODEL);
@@ -53,8 +61,8 @@ export const OrderStatusFilter = ({ model, onModelChange }: CustomFilterProps) =
 
             // Text search
             if (filterModel.searchText) {
-                const search = filterModel.searchText.toLocaleLowerCase('tr-TR');
-                const label = rowLabel.toLocaleLowerCase('tr-TR');
+                const search = filterModel.searchText.toLocaleLowerCase();
+                const label = rowLabel.toLocaleLowerCase();
                 if (!label.includes(search)) return false;
             }
 
@@ -66,6 +74,7 @@ export const OrderStatusFilter = ({ model, onModelChange }: CustomFilterProps) =
 
             return true;
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [filterModel],
     );
 
@@ -87,7 +96,7 @@ export const OrderStatusFilter = ({ model, onModelChange }: CustomFilterProps) =
             update({ ...filterModel, checkedStatuses: remaining.length === 0 ? null : remaining });
         } else {
             const next = [...filterModel.checkedStatuses!, key];
-            update({ ...filterModel, checkedStatuses: next.length === statusOptions.length ? null : next });
+            update({ ...filterModel, checkedStatuses: next.length === statusOptionDefs.length ? null : next });
         }
     };
 
@@ -96,8 +105,8 @@ export const OrderStatusFilter = ({ model, onModelChange }: CustomFilterProps) =
     };
 
     return (
-        <div style={{ padding: '10px 12px', minWidth: '190px', fontFamily: 'inherit' }}>
-            {statusOptions.map((opt) => {
+        <div className="bg-popover text-popover-foreground" style={{ padding: '10px 12px', minWidth: '190px', fontFamily: 'inherit' }}>
+            {statusOptionDefs.map((opt) => {
                 const isChecked = !isTumu && checkedSet.has(opt.key);
                 return (
                     <label
@@ -112,12 +121,12 @@ export const OrderStatusFilter = ({ model, onModelChange }: CustomFilterProps) =
                         />
                         <span
                             style={{
-                                color: isChecked ? opt.color : '#374151',
+                                color: isChecked ? opt.color : undefined,
                                 fontWeight: isChecked ? 600 : 400,
                                 fontSize: '13px',
                             }}
                         >
-                            {opt.label}
+                            {statusLabelMap[opt.key]}
                         </span>
                     </label>
                 );
@@ -125,14 +134,14 @@ export const OrderStatusFilter = ({ model, onModelChange }: CustomFilterProps) =
 
             <hr className="my-2 border-border" />
 
-            <label className="flex items-center gap-2 px-1 py-[5px] rounded cursor-pointer hover:bg-green-50 transition-colors">
+            <label className="flex items-center gap-2 px-1 py-[5px] rounded cursor-pointer hover:bg-accent transition-colors">
                 <input
                     type="checkbox"
                     checked={isTumu}
                     onChange={handleTumu}
                     style={{ accentColor: 'var(--brand-primary)', width: 14, height: 14, cursor: 'pointer' }}
                 />
-                <span style={{ color: 'var(--brand-primary)', fontWeight: 600, fontSize: '13px' }}>Tümü</span>
+                <span style={{ color: 'var(--brand-primary)', fontWeight: 600, fontSize: '13px' }}>{t('filter.all')}</span>
             </label>
         </div>
     );
@@ -154,20 +163,8 @@ export const OrderStatusFloatingFilter = ({ model, onModelChange }: CustomFloati
                 type="text"
                 value={current.searchText}
                 onChange={handleChange}
-                placeholder="Durum ara..."
-                className="ag-input-field-input ag-text-field-input"
-                style={{
-                    width: '100%',
-                    height: '24px',
-                    fontSize: '12px',
-                    padding: '0 6px',
-                    border: '1px solid #babfc7',
-                    borderRadius: '3px',
-                    outline: 'none',
-                    backgroundColor: 'white',
-                }}
-                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--brand-primary)'; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = '#babfc7'; }}
+                placeholder="..."
+                className="ag-input-field-input ag-text-field-input w-full h-6 text-xs px-1.5 rounded-sm outline-none bg-transparent border border-border text-foreground placeholder:text-muted-foreground focus:border-[var(--brand-primary)]"
             />
         </div>
     );

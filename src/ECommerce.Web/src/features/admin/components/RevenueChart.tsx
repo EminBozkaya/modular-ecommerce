@@ -1,26 +1,27 @@
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, type TooltipProps } from 'recharts';
 import type { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
+import { useTranslation } from 'react-i18next';
 import type { RevenueDataPoint } from '../types/dashboard';
 import { formatPrice } from '../../../utils/formatters';
 import { useStoreSettings } from '@/context/StoreSettingsContext';
+import { SUPPORTED_LANGUAGES } from '@/i18n/languages';
 
 interface RevenueChartProps {
     data: RevenueDataPoint[];
 }
 
-function formatDateLabel(dateStr: string): string {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
-}
-
 export function RevenueChart({ data }: RevenueChartProps) {
-    // SVG presentation attributes (stopColor, stroke) do not support CSS variables;
-    // read the live brand color directly from context instead.
+    const { t, i18n } = useTranslation('admin');
     const { primaryColor } = useStoreSettings();
+
+    const currentLocale = SUPPORTED_LANGUAGES.find(l => l.code === i18n.language)?.locale ?? 'tr-TR';
+
+    const formatDateLabel = (dateStr: string) =>
+        new Date(dateStr).toLocaleDateString(currentLocale, { day: 'numeric', month: 'short' });
 
     return (
         <div className="bg-card rounded-xl shadow-sm border border-border p-5">
-            <h3 className="text-base font-semibold text-foreground mb-4">Gelir Grafiği (Son 30 Gün)</h3>
+            <h3 className="text-base font-semibold text-foreground mb-4">{t('dashboard.revenueTitle')}</h3>
             <div style={{ width: '100%', height: 300 }}>
                 <ResponsiveContainer>
                     <AreaChart data={data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
@@ -45,7 +46,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
                             tickLine={false}
                         />
                         <Tooltip
-                            formatter={(value: ValueType, _name: NameType) => [formatPrice(Number(value), 'TRY'), 'Gelir']}
+                            formatter={(value: ValueType, _name: NameType) => [formatPrice(Number(value), 'TRY'), t('dashboard.revenueTooltipLabel')]}
                             labelFormatter={(label: string) => formatDateLabel(label)}
                             contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13 }}
                         />

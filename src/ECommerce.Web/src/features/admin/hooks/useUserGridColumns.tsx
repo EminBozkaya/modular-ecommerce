@@ -7,6 +7,7 @@ import {
 import { Edit2, Trash2, RotateCcw } from 'lucide-react';
 import type { AdminUser } from '../types/adminUser';
 import { useTranslation } from 'react-i18next';
+import { formatDateByLocale } from '@/utils/agGridLocales';
 
 export const localeTextTr: Record<string, string> = {
     filterOoo: 'Filtrele...',
@@ -78,8 +79,8 @@ export function useUserGridColumns({ onEdit, onDelete, onRestore }: UseUserGridC
             sortable: true,
             minWidth: 100,
             cellRenderer: (params: ICellRendererParams<AdminUser, boolean>) => {
-                if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>{t('common.deleted')}</span>;
-                return params.value ? <span style={{ color: '#16a34a', fontWeight: '600' }}>{t('common.active')}</span> : <span style={{ color: '#ca8a04', fontWeight: '600' }}>{t('common.passive')}</span>;
+                if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>{t('common:deleted')}</span>;
+                return params.value ? <span style={{ color: '#16a34a', fontWeight: '600' }}>{t('common:active')}</span> : <span style={{ color: '#ca8a04', fontWeight: '600' }}>{t('common:passive')}</span>;
             },
         },
         { headerName: t('users.grid.fullName'), field: 'fullName', filter: 'agTextColumnFilter', sortable: true, minWidth: 180 },

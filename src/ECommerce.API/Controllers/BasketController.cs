@@ -17,7 +17,11 @@ public class BasketController : ControllerBase
     public async Task<IActionResult> Get(CancellationToken ct)
     {
         var (userId, sessionId) = GetIdentifiers();
-        var result = await _mediator.Send(new GetBasketQuery(userId, sessionId), ct);
+        var lang = Request.GetTypedHeaders().AcceptLanguage
+            .OrderByDescending(l => l.Quality ?? 1)
+            .Select(l => l.Value.Value?.Split('-')[0])
+            .FirstOrDefault(l => !string.IsNullOrEmpty(l)) ?? "tr";
+        var result = await _mediator.Send(new GetBasketQuery(userId, sessionId, lang), ct);
         return result is null ? Ok(new { items = Array.Empty<object>() }) : Ok(result);
     }
 

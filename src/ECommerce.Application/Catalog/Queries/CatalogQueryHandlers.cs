@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace ECommerce.Application.Catalog.Queries;
 
+
 public class GetProductsHandler : IRequestHandler<GetProductsQuery, PagedResult<ProductDto>>
 {
     private readonly IProductRepository _products;
@@ -46,7 +47,9 @@ public class GetProductsHandler : IRequestHandler<GetProductsQuery, PagedResult<
                 p.ImageUrl,
                 p.Price.Amount, p.Price.Currency.ToString(), p.Stock.Value, p.IsActive,
                 p.CategoryId, catT?.Name ?? catDefaultT?.Name ?? p.Category?.Name,
-                p.UnitId, p.Unit?.Name,
+                p.UnitId,
+                UnitNameResolver.Resolve(p.Unit, q.Language, _defaultLanguage),
+                p.Unit?.Code,
                 p.CreatedAt, !string.IsNullOrEmpty(p.CreatedBy) && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
                 p.UpdatedAt, !string.IsNullOrEmpty(p.UpdatedBy) && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
                 p.DeletedAt, p.IsDeleted);
@@ -87,7 +90,9 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, Produc
             p.ImageUrl,
             p.Price.Amount, p.Price.Currency.ToString(), p.Stock.Value, p.IsActive,
             p.CategoryId, catT?.Name ?? catDefaultT?.Name ?? p.Category?.Name,
-            p.UnitId, p.Unit?.Name,
+            p.UnitId,
+            UnitNameResolver.Resolve(p.Unit, q.Language, _defaultLanguage),
+            p.Unit?.Code,
             p.CreatedAt, !string.IsNullOrEmpty(p.CreatedBy) && userMap.TryGetValue(p.CreatedBy, out var cb) ? cb : p.CreatedBy,
             p.UpdatedAt, !string.IsNullOrEmpty(p.UpdatedBy) && userMap.TryGetValue(p.UpdatedBy, out var ub) ? ub : p.UpdatedBy,
             p.DeletedAt, p.IsDeleted);
@@ -134,16 +139,21 @@ public class GetCategoriesHandler : IRequestHandler<GetCategoriesQuery, IReadOnl
 public class GetUnitsHandler : IRequestHandler<GetUnitsQuery, IReadOnlyList<UnitDto>>
 {
     private readonly IUnitRepository _units;
+    private readonly string _defaultLanguage;
 
-    public GetUnitsHandler(IUnitRepository units)
+    public GetUnitsHandler(IUnitRepository units, IOptions<LocalizationOptions> locOptions)
     {
         _units = units;
+        _defaultLanguage = locOptions.Value.DefaultLanguage;
     }
 
     public async Task<IReadOnlyList<UnitDto>> Handle(GetUnitsQuery q, CancellationToken ct)
     {
         var units = await _units.GetAllAsync(ct);
-        return units.Select(u => new UnitDto(u.Id, u.Name, u.Code)).ToList();
+        return units.Select(u => new UnitDto(
+            u.Id,
+            UnitNameResolver.Resolve(u, q.Language, _defaultLanguage),
+            u.Code)).ToList();
     }
 }
 
@@ -181,6 +191,25 @@ public class GetCategoryTranslationsHandler : IRequestHandler<GetCategoryTransla
             ?? throw new KeyNotFoundException($"Category {q.CategoryId} not found.");
         return category.Translations
             .Select(t => new TranslationDto(t.LanguageCode, t.Name, t.Description))
+            .ToList();
+    }
+}
+
+public class GetUnitTranslationsHandler : IRequestHandler<GetUnitTranslationsQuery, IReadOnlyList<UnitTranslationDto>>
+{
+    private readonly IUnitRepository _units;
+
+    public GetUnitTranslationsHandler(IUnitRepository units)
+    {
+        _units = units;
+    }
+
+    public async Task<IReadOnlyList<UnitTranslationDto>> Handle(GetUnitTranslationsQuery q, CancellationToken ct)
+    {
+        var unit = await _units.GetByIdAsync(q.UnitId, ct)
+            ?? throw new KeyNotFoundException($"Unit {q.UnitId} not found.");
+        return unit.Translations
+            .Select(t => new UnitTranslationDto(t.LanguageCode, t.Name))
             .ToList();
     }
 }

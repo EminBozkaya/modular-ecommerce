@@ -14,5 +14,11 @@
   "summary": {
     "products": "Produkte ({{count}})",
     "total": "Gesamt"
+  },
+  "page": {
+    "title": "Mein Warenkorb",
+    "titleWithCount": "Mein Warenkorb ({{count}} Artikel)",
+    "browseProducts": "Produkte durchsuchen",
+    "loadError": "Warenkorb konnte nicht geladen werden."
   }
 }

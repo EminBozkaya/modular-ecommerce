@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay, EffectFade, EffectCoverflow, EffectFlip } from 'swiper/modules';
 import 'swiper/css';
@@ -24,16 +26,16 @@ import { queryKeys } from '@/utils/queryKeys';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function newSlide(): HeroSlideDto {
+function newSlide(t: TFunction): HeroSlideDto {
     return {
         id: crypto.randomUUID(),
-        title: 'Yeni Slayt',
+        title: t('design.hero.slideTitle'),
         subtitle: '',
         description: '',
         textColor: '#FFFFFF',
         overlayColor: '#2C3E50',
         overlayOpacity: 80,
-        buttonText: 'Daha Fazla',
+        buttonText: t('design.hero.defaultButtonText'),
         buttonLink: '/products',
         buttonVisible: true,
     };
@@ -97,17 +99,20 @@ function LabelRow({ label, description, children }: { label: string; description
 
 type Effect = HeroCarouselDto['effect'];
 
-const EFFECTS: { value: Effect; label: string }[] = [
-    { value: 'slide', label: 'Slayt' },
-    { value: 'fade', label: 'Solma' },
-    { value: 'coverflow', label: 'Kapak Akışı' },
-    { value: 'flip', label: 'Çevirme' },
-];
+function getEffects(t: TFunction): { value: Effect; label: string }[] {
+    return [
+        { value: 'slide', label: t('design.hero.effects.slide') },
+        { value: 'fade', label: t('design.hero.effects.fade') },
+        { value: 'coverflow', label: t('design.hero.effects.coverFlow') },
+        { value: 'flip', label: t('design.hero.effects.flip') },
+    ];
+}
 
-function EffectSelector({ value, onChange }: { value: Effect; onChange: (v: Effect) => void }) {
+function EffectSelector({ value, onChange, t }: { value: Effect; onChange: (v: Effect) => void; t: TFunction }) {
+    const effects = getEffects(t);
     return (
         <div className="flex gap-2 flex-wrap">
-            {EFFECTS.map((e) => (
+            {effects.map((e) => (
                 <button
                     key={e.value}
                     type="button"
@@ -159,6 +164,7 @@ function SlideEditorCard({
     onMoveUp,
     onMoveDown,
     onDelete,
+    t,
 }: {
     slide: HeroSlideDto;
     index: number;
@@ -167,6 +173,7 @@ function SlideEditorCard({
     onMoveUp: () => void;
     onMoveDown: () => void;
     onDelete: () => void;
+    t: TFunction;
 }) {
     const [expanded, setExpanded] = useState(index === 0);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -197,7 +204,7 @@ function SlideEditorCard({
                     {index + 1}
                 </span>
                 <span className="flex-1 text-sm font-medium text-foreground truncate">
-                    {slide.title || 'Başlıksız Slayt'}
+                    {slide.title || t('design.hero.slideTitle')}
                 </span>
                 <div className="flex items-center gap-1 flex-shrink-0">
                     <button
@@ -205,7 +212,7 @@ function SlideEditorCard({
                         onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
                         disabled={index === 0}
                         className="p-1 rounded hover:bg-accent disabled:opacity-30 transition-colors"
-                        aria-label="Yukarı taşı"
+                        aria-label={t('design.common.moveUp')}
                     >
                         <ChevronUp className="h-4 w-4 text-muted-foreground" />
                     </button>
@@ -214,7 +221,7 @@ function SlideEditorCard({
                         onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
                         disabled={index === total - 1}
                         className="p-1 rounded hover:bg-accent disabled:opacity-30 transition-colors"
-                        aria-label="Aşağı taşı"
+                        aria-label={t('design.common.moveDown')}
                     >
                         <ChevronDown className="h-4 w-4 text-muted-foreground" />
                     </button>
@@ -223,7 +230,7 @@ function SlideEditorCard({
                         onClick={(e) => { e.stopPropagation(); onDelete(); }}
                         disabled={total <= 1}
                         className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/20 disabled:opacity-30 transition-colors ml-1"
-                        aria-label="Slaytı sil"
+                        aria-label={t('design.hero.deleteSlide')}
                     >
                         <Trash2 className="h-4 w-4 text-red-400" />
                     </button>
@@ -238,7 +245,7 @@ function SlideEditorCard({
                 <div className="px-4 py-4 space-y-4 bg-card">
                     {/* Image */}
                     <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Arka Plan Görseli</p>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">{t('design.hero.bgImage')}</p>
                         <div className="flex gap-2 items-start">
                             <div
                                 className="w-20 h-14 rounded-lg border border-border flex items-center justify-center flex-shrink-0 overflow-hidden"
@@ -273,7 +280,7 @@ function SlideEditorCard({
                                     className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border rounded-lg hover:bg-accent transition-colors text-foreground"
                                 >
                                     <ImageIcon className="h-3.5 w-3.5" />
-                                    Görsel Yükle
+                                    {t('design.common.uploadImage')}
                                 </button>
                                 {(slide.imageBase64 ?? slide.imageUrl) && (
                                     <button
@@ -282,11 +289,11 @@ function SlideEditorCard({
                                         className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-500 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
                                     >
                                         <X className="h-3.5 w-3.5" />
-                                        Kaldır
+                                        {t('design.common.remove')}
                                     </button>
                                 )}
                                 <div>
-                                    <p className="text-xs text-muted-foreground mb-1">veya URL girin</p>
+                                    <p className="text-xs text-muted-foreground mb-1">{t('design.common.orEnterUrl')}</p>
                                     <input
                                         type="url"
                                         value={slide.imageUrl ?? ''}
@@ -301,36 +308,36 @@ function SlideEditorCard({
 
                     {/* Text Content */}
                     <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">İçerik</p>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">{t('design.hero.content')}</p>
                         <div className="space-y-2">
                             <div>
-                                <label className="text-xs text-muted-foreground block mb-1">Başlık</label>
+                                <label className="text-xs text-muted-foreground block mb-1">{t('design.hero.titleLabel')}</label>
                                 <input
                                     type="text"
                                     value={slide.title}
                                     onChange={(e) => update('title', e.target.value)}
                                     className="w-full text-sm border border-border rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)] bg-background text-foreground"
-                                    placeholder="Ana başlık"
+                                    placeholder={t('design.hero.titlePlaceholder')}
                                 />
                             </div>
                             <div>
-                                <label className="text-xs text-muted-foreground block mb-1">Alt Başlık</label>
+                                <label className="text-xs text-muted-foreground block mb-1">{t('design.hero.subtitleLabel')}</label>
                                 <input
                                     type="text"
                                     value={slide.subtitle}
                                     onChange={(e) => update('subtitle', e.target.value)}
                                     className="w-full text-sm border border-border rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)] bg-background text-foreground"
-                                    placeholder="Alt başlık"
+                                    placeholder={t('design.hero.subtitleLabel')}
                                 />
                             </div>
                             <div>
-                                <label className="text-xs text-muted-foreground block mb-1">Açıklama</label>
+                                <label className="text-xs text-muted-foreground block mb-1">{t('design.hero.descLabel')}</label>
                                 <textarea
                                     value={slide.description}
                                     onChange={(e) => update('description', e.target.value)}
                                     rows={2}
                                     className="w-full text-sm border border-border rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)] resize-none bg-background text-foreground"
-                                    placeholder="Kısa açıklama metni"
+                                    placeholder={t('design.hero.descLabel')}
                                 />
                             </div>
                         </div>
@@ -338,19 +345,19 @@ function SlideEditorCard({
 
                     {/* Colors */}
                     <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Renkler</p>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">{t('design.hero.colors')}</p>
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-muted-foreground">Metin Rengi</span>
+                                <span className="text-sm text-muted-foreground">{t('design.hero.textColor')}</span>
                                 <ColorInput value={slide.textColor} onChange={(v) => update('textColor', v)} />
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-muted-foreground">Kaplama Rengi</span>
+                                <span className="text-sm text-muted-foreground">{t('design.hero.overlayColor')}</span>
                                 <ColorInput value={slide.overlayColor} onChange={(v) => update('overlayColor', v)} />
                             </div>
                             <div>
                                 <div className="flex items-center justify-between mb-1">
-                                    <span className="text-sm text-muted-foreground">Kaplama Opaklığı</span>
+                                    <span className="text-sm text-muted-foreground">{t('design.hero.overlayOpacity')}</span>
                                     <span className="text-sm font-medium text-foreground">{slide.overlayOpacity}%</span>
                                 </div>
                                 <input
@@ -368,7 +375,7 @@ function SlideEditorCard({
                     {/* CTA Button */}
                     <div>
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Buton</p>
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t('design.hero.button')}</p>
                             <Toggle
                                 checked={slide.buttonVisible}
                                 onChange={(v) => update('buttonVisible', v)}
@@ -377,17 +384,17 @@ function SlideEditorCard({
                         {slide.buttonVisible && (
                             <div className="space-y-2">
                                 <div>
-                                    <label className="text-xs text-muted-foreground block mb-1">Buton Metni</label>
+                                    <label className="text-xs text-muted-foreground block mb-1">{t('design.hero.buttonText')}</label>
                                     <input
                                         type="text"
                                         value={slide.buttonText}
                                         onChange={(e) => update('buttonText', e.target.value)}
                                         className="w-full text-sm border border-border rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)] bg-background text-foreground"
-                                        placeholder="Buton yazısı"
+                                        placeholder={t('design.hero.buttonTextPlaceholder')}
                                     />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-muted-foreground block mb-1">Buton Linki</label>
+                                    <label className="text-xs text-muted-foreground block mb-1">{t('design.hero.buttonLink')}</label>
                                     <input
                                         type="text"
                                         value={slide.buttonLink}
@@ -452,6 +459,7 @@ function PreviewSlide({ slide, height }: { slide: HeroSlideDto; height: number }
 // ── Main Page ────────────────────────────────────────────────────────────────
 
 export default function AdminHeroCarouselPage() {
+    const { t } = useTranslation('admin');
     const queryClient = useQueryClient();
 
     const { data: settings, isLoading } = useQuery({
@@ -497,7 +505,7 @@ export default function AdminHeroCarouselPage() {
     function addSlide() {
         setDraft((prev) => {
             if (!prev || prev.slides.length >= 8) return prev;
-            return { ...prev, slides: [...prev.slides, newSlide()] };
+            return { ...prev, slides: [...prev.slides, newSlide(t)] };
         });
     }
 
@@ -534,7 +542,7 @@ export default function AdminHeroCarouselPage() {
     if (isLoading || !draft) {
         return (
             <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">
-                Yükleniyor…
+                {t('design.common.loading')}
             </div>
         );
     }
@@ -546,9 +554,9 @@ export default function AdminHeroCarouselPage() {
             {/* Page header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-xl font-bold text-foreground">Hero Karosel</h1>
+                    <h1 className="text-xl font-bold text-foreground">{t('design.hero.title')}</h1>
                     <p className="text-sm text-muted-foreground mt-0.5">
-                        Ana sayfanın üst kısmında gösterilen karosel slaytlarını yönetin
+                        {t('design.hero.subtitle')}
                     </p>
                 </div>
                 <button
@@ -559,19 +567,19 @@ export default function AdminHeroCarouselPage() {
                     style={{ backgroundColor: 'var(--brand-primary)' }}
                 >
                     <Save className="h-4 w-4" />
-                    {mutation.isPending ? 'Kaydediliyor…' : 'Değişiklikleri Kaydet'}
+                    {mutation.isPending ? t('design.common.saving') : t('design.common.saveChanges')}
                 </button>
             </div>
 
             {mutation.isSuccess && (
                 <div className="mb-4 px-4 py-2.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-400 rounded-lg text-sm">
-                    ✓ Değişiklikler başarıyla kaydedildi.
+                    {t('design.common.saveSuccess')}
                 </div>
             )}
 
             {mutation.isError && (
                 <div className="mb-4 px-4 py-2.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-400 rounded-lg text-sm">
-                    Kaydedilemedi. Lütfen tekrar deneyin.
+                    {t('design.common.saveError')}
                 </div>
             )}
 
@@ -580,26 +588,27 @@ export default function AdminHeroCarouselPage() {
                 <div className="space-y-0">
 
                     {/* Global settings */}
-                    <SectionCard title="Genel Ayarlar">
+                    <SectionCard title={t('design.hero.generalSettings')}>
                         <div className="divide-y divide-border/50">
                             <LabelRow
-                                label="Karosel Aktif"
-                                description="Kapatınca ana sayfada karosel görünmez"
+                                label={t('design.hero.carouselActive')}
+                                description={t('design.hero.carouselActiveDesc')}
                             >
                                 <Toggle checked={draft.enabled} onChange={(v) => updateDraft('enabled', v)} />
                             </LabelRow>
 
                             <div className="py-3">
-                                <p className="text-sm font-medium text-foreground mb-2">Geçiş Efekti</p>
+                                <p className="text-sm font-medium text-foreground mb-2">{t('design.hero.transition')}</p>
                                 <EffectSelector
                                     value={draft.effect}
                                     onChange={(v) => updateDraft('effect', v)}
+                                    t={t}
                                 />
                             </div>
 
                             <div className="py-3">
                                 <div className="flex items-center justify-between mb-1">
-                                    <p className="text-sm font-medium text-foreground">Karosel Yüksekliği</p>
+                                    <p className="text-sm font-medium text-foreground">{t('design.hero.height')}</p>
                                     <span className="text-sm font-medium text-foreground">{draft.height} px</span>
                                 </div>
                                 <input
@@ -612,21 +621,21 @@ export default function AdminHeroCarouselPage() {
                                     className="w-full accent-[var(--brand-primary)]"
                                 />
                                 <div className="flex justify-between text-xs text-muted-foreground mt-0.5">
-                                    <span>300 px</span>
-                                    <span>800 px</span>
+                                    <span>{t('design.hero.heightMin')}</span>
+                                    <span>{t('design.hero.heightMax')}</span>
                                 </div>
                             </div>
 
-                            <LabelRow label="Otomatik Oynatma" description="Slaytlar otomatik geçer">
+                            <LabelRow label={t('design.hero.autoplay')} description={t('design.hero.autoplayDesc')}>
                                 <Toggle checked={draft.autoPlay} onChange={(v) => updateDraft('autoPlay', v)} />
                             </LabelRow>
 
                             {draft.autoPlay && (
                                 <div className="py-3">
                                     <div className="flex items-center justify-between mb-1">
-                                        <p className="text-sm font-medium text-foreground">Geçiş Süresi</p>
+                                        <p className="text-sm font-medium text-foreground">{t('design.hero.interval')}</p>
                                         <span className="text-sm font-medium text-foreground">
-                                            {(draft.autoPlayInterval / 1000).toFixed(1)} sn
+                                            {(draft.autoPlayInterval / 1000).toFixed(1)} s
                                         </span>
                                     </div>
                                     <input
@@ -639,28 +648,28 @@ export default function AdminHeroCarouselPage() {
                                         className="w-full accent-[var(--brand-primary)]"
                                     />
                                     <div className="flex justify-between text-xs text-muted-foreground mt-0.5">
-                                        <span>2 sn</span>
-                                        <span>12 sn</span>
+                                        <span>{t('design.hero.intervalMin')}</span>
+                                        <span>{t('design.hero.intervalMax')}</span>
                                     </div>
                                 </div>
                             )}
 
-                            <LabelRow label="Döngü" description="Son slayttan sonra başa döner">
+                            <LabelRow label={t('design.hero.loop')} description={t('design.hero.loopDesc')}>
                                 <Toggle checked={draft.loop} onChange={(v) => updateDraft('loop', v)} />
                             </LabelRow>
 
-                            <LabelRow label="Ok Düğmeleri" description="Sol/sağ gezinme okları">
+                            <LabelRow label={t('design.hero.arrows')} description={t('design.hero.arrowsDesc')}>
                                 <Toggle checked={draft.showArrows} onChange={(v) => updateDraft('showArrows', v)} />
                             </LabelRow>
 
-                            <LabelRow label="Nokta Göstergesi" description="Alt kısmındaki slayt noktaları">
+                            <LabelRow label={t('design.hero.dots')} description={t('design.hero.dotsDesc')}>
                                 <Toggle checked={draft.showDots} onChange={(v) => updateDraft('showDots', v)} />
                             </LabelRow>
                         </div>
                     </SectionCard>
 
                     {/* Slides */}
-                    <SectionCard title={`Slaytlar (${draft.slides.length}/8)`}>
+                    <SectionCard title={t('design.hero.slides', { count: draft.slides.length })}>
                         {draft.slides.map((slide, index) => (
                             <SlideEditorCard
                                 key={slide.id}
@@ -671,6 +680,7 @@ export default function AdminHeroCarouselPage() {
                                 onMoveUp={() => moveSlide(index, 'up')}
                                 onMoveDown={() => moveSlide(index, 'down')}
                                 onDelete={() => deleteSlide(index)}
+                                t={t}
                             />
                         ))}
 
@@ -681,7 +691,7 @@ export default function AdminHeroCarouselPage() {
                             className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-border rounded-xl text-sm font-medium text-muted-foreground hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             <Plus className="h-4 w-4" />
-                            Slayt Ekle
+                            {t('design.hero.addSlide')}
                         </button>
                     </SectionCard>
                 </div>
@@ -691,10 +701,10 @@ export default function AdminHeroCarouselPage() {
                     <div className="bg-card rounded-xl shadow-sm border border-border p-5">
                         <div className="flex items-center gap-2 mb-3">
                             <Eye className="h-4 w-4 text-[var(--brand-primary)]" />
-                            <h3 className="text-base font-semibold text-foreground">Canlı Önizleme</h3>
+                            <h3 className="text-base font-semibold text-foreground">{t('design.common.preview')}</h3>
                         </div>
                         <p className="text-xs text-muted-foreground mb-4">
-                            Değişiklikler kaydedilene kadar siteye yansımaz.
+                            {t('design.common.previewNote')}
                         </p>
 
                         {/* Preview carousel */}
@@ -736,12 +746,12 @@ export default function AdminHeroCarouselPage() {
                                 style={{ height: PREVIEW_HEIGHT }}
                             >
                                 <Eye className="h-8 w-8 opacity-30" />
-                                <span>Karosel devre dışı</span>
+                                <span>{t('design.hero.carouselDisabled')}</span>
                             </div>
                         )}
 
                         <p className="text-xs text-muted-foreground mt-3 text-center">
-                            Önizleme yaklaşık %55 ölçeğinde gösterilmektedir
+                            {t('design.common.previewScale')}
                         </p>
                     </div>
                 </div>

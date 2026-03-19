@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { Product } from '../../catalog/types/product';
 
 interface LowStockTableProps {
@@ -6,21 +7,22 @@ interface LowStockTableProps {
 }
 
 export function LowStockTable({ products }: LowStockTableProps) {
+    const { t } = useTranslation('admin');
     const navigate = useNavigate();
 
     return (
         <div className="bg-card rounded-xl shadow-sm border border-border p-5">
-            <h3 className="text-base font-semibold text-foreground mb-4">Düşük Stok Uyarıları</h3>
+            <h3 className="text-base font-semibold text-foreground mb-4">{t('dashboard.lowStockTitle')}</h3>
             {products.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Düşük stoklu ürün bulunmuyor.</p>
+                <p className="text-sm text-muted-foreground">{t('dashboard.lowStockEmpty')}</p>
             ) : (
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-border">
-                                <th className="text-left py-2 px-3 text-muted-foreground font-medium">Ürün</th>
-                                <th className="text-left py-2 px-3 text-muted-foreground font-medium">Kategori</th>
-                                <th className="text-right py-2 px-3 text-muted-foreground font-medium">Stok</th>
+                                <th className="text-left py-2 px-3 text-muted-foreground font-medium">{t('dashboard.lowStockColumns.product')}</th>
+                                <th className="text-left py-2 px-3 text-muted-foreground font-medium">{t('dashboard.lowStockColumns.category')}</th>
+                                <th className="text-right py-2 px-3 text-muted-foreground font-medium">{t('dashboard.lowStockColumns.stock')}</th>
                             </tr>
                         </thead>
                         <tbody>

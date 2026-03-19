@@ -10,7 +10,7 @@ public record ProductDto(
     decimal PriceAmount, string PriceCurrency,
     decimal StockQuantity, bool IsActive,
     Guid CategoryId, string? CategoryName,
-    Guid UnitId, string? UnitName,
+    Guid UnitId, string? UnitName, string? UnitCode,
     DateTime CreatedAt, string? CreatedBy,
     DateTime? UpdatedAt, string? UpdatedBy,
     DateTime? DeletedAt, bool IsDeleted);
@@ -49,11 +49,13 @@ public record GetCategoriesQuery(bool OnlyMain = false, bool IncludeDeleted = fa
     public TimeSpan? Expiration => TimeSpan.FromHours(1);
 }
 public record TranslationDto(string LanguageCode, string Name, string? Description);
+public record UnitTranslationDto(string LanguageCode, string Name);
 public record GetProductTranslationsQuery(Guid ProductId) : IRequest<IReadOnlyList<TranslationDto>>;
 public record GetCategoryTranslationsQuery(Guid CategoryId) : IRequest<IReadOnlyList<TranslationDto>>;
+public record GetUnitTranslationsQuery(Guid UnitId) : IRequest<IReadOnlyList<UnitTranslationDto>>;
 
-public record GetUnitsQuery() : IRequest<IReadOnlyList<UnitDto>>, ICacheableQuery
+public record GetUnitsQuery(string Language = "tr") : IRequest<IReadOnlyList<UnitDto>>, ICacheableQuery
 {
-    public string CacheKey => "catalog:units";
+    public string CacheKey => $"catalog:units:lang:{Language}";
     public TimeSpan? Expiration => TimeSpan.FromHours(24);
 }

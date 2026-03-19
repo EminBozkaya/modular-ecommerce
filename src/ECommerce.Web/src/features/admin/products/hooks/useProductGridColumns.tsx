@@ -7,6 +7,7 @@ import {
 import { Edit2, Trash2, RotateCcw } from 'lucide-react';
 import type { Product } from '../../../catalog/types/product';
 import { useTranslation } from 'react-i18next';
+import { formatDateByLocale } from '@/utils/agGridLocales';
 
 export const localeTextTr: Record<string, string> = {
     filterOoo: 'Filtrele...',
@@ -85,13 +86,9 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
     const { t, i18n } = useTranslation('admin');
 
     return useMemo<ColDef<Product>[]>(() => {
-        const formatDateCell = (params: ValueFormatterParams<Product, string>) => {
-            if (!params.value) return '';
-            return new Intl.DateTimeFormat(i18n.language === 'tr' ? 'tr-TR' : 'en-US', {
-                year: 'numeric', month: '2-digit', day: '2-digit',
-                hour: '2-digit', minute: '2-digit',
-            }).format(new Date(params.value));
-        };
+        const intlLocale = { tr:'tr-TR', en:'en-US', de:'de-DE', fr:'fr-FR', es:'es-ES', ru:'ru-RU', ar:'ar-SA' }[i18n.language?.split('-')[0] ?? 'tr'] ?? 'tr-TR';
+        const formatDateCell = (params: ValueFormatterParams<Product, string>) =>
+            formatDateByLocale(params.value, intlLocale);
 
         return [
         {
@@ -104,8 +101,8 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
             sortable: true,
             minWidth: 100,
             cellRenderer: (params: ICellRendererParams<Product, boolean>) => {
-                if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>{t('common.deleted')}</span>;
-                return params.value ? <span style={{ color: '#16a34a', fontWeight: '600' }}>{t('common.active')}</span> : <span style={{ color: '#ca8a04', fontWeight: '600' }}>{t('common.passive')}</span>;
+                if (params.data?.isDeleted) return <span style={{ color: '#dc2626', fontWeight: '600' }}>{t('common:deleted')}</span>;
+                return params.value ? <span style={{ color: '#16a34a', fontWeight: '600' }}>{t('common:active')}</span> : <span style={{ color: '#ca8a04', fontWeight: '600' }}>{t('common:passive')}</span>;
             },
         },
         { headerName: t('products.grid.name'), field: 'name', filter: 'agTextColumnFilter', sortable: true, minWidth: 160 },
@@ -134,9 +131,9 @@ export function useProductGridColumns({ onEdit, onDelete, onRestore }: UseProduc
         { headerName: t('products.mobile.description'), field: 'description', filter: 'agTextColumnFilter', sortable: true, minWidth: 160 },
         { headerName: t('products.grid.createdAt'), field: 'createdAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, minWidth: 180, valueFormatter: formatDateCell },
         { headerName: t('products.grid.createdBy'), field: 'createdBy', sortable: true, filter: 'agTextColumnFilter', minWidth: 120 },
-        { headerName: t('common.updatedAt', 'Güncellenme Tarihi'), field: 'updatedAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, minWidth: 180, valueFormatter: formatDateCell },
-        { headerName: t('common.updatedBy', 'Güncelleyen'), field: 'updatedBy', sortable: true, filter: 'agTextColumnFilter', minWidth: 120 },
-        { headerName: t('common.deletedAt', 'Silinme Tarihi'), field: 'deletedAt', sortable: true, filter: false, minWidth: 180, hide: true, valueFormatter: formatDateCell },
+        { headerName: t('common:updatedAt'), field: 'updatedAt', sortable: true, filter: 'agDateColumnFilter', filterParams: { comparator: dateComparator }, minWidth: 180, valueFormatter: formatDateCell },
+        { headerName: t('common:updatedBy'), field: 'updatedBy', sortable: true, filter: 'agTextColumnFilter', minWidth: 120 },
+        { headerName: t('common:deletedAt'), field: 'deletedAt', sortable: true, filter: false, minWidth: 180, hide: true, valueFormatter: formatDateCell },
         {
             headerName: t('products.grid.actions'),
             field: 'id',

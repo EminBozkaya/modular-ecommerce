@@ -9,15 +9,20 @@ import CategoryFormModal from '../components/CategoryFormModal';
 import ConfirmModal from '../../components/ConfirmModal';
 import AgGridDatePicker from '../../components/AgGridDatePicker';
 import { EntityStatusFilter, EntityStatusFloatingFilter } from '../../components/EntityStatusFilter';
-import { useCategoryGridColumns, localeTextTr } from '../hooks/useCategoryGridColumns';
+import { useCategoryGridColumns } from '../hooks/useCategoryGridColumns';
 import { useCategoryActions, defaultModalSettings, type ModalSettings } from '../hooks/useCategoryActions';
 import { exportCategoriesToExcel, exportCategoriesToPDF } from '../utils/categoryExport';
 import excelIcon from '../../../../assets/excel_download_icon.png';
 import pdfIcon from '../../../../assets/pdf_download_icon.png';
-import { useThemeStore } from '@/store/themeStore';
+import { useAgGridTheme, useRowStyleColors } from '../../utils/agGridTheme';
+import { useTranslation } from 'react-i18next';
+import { useAgGridLocale } from '@/hooks/useAgGridLocale';
 ModuleRegistry.registerModules([AllCommunityModule]);
 export default function AdminCategoriesPage() {
-    const { resolved: theme } = useThemeStore();
+    const { t } = useTranslation('admin');
+    const { localeText } = useAgGridLocale();
+    const agGridTheme = useAgGridTheme();
+    const rowColors = useRowStyleColors();
     const gridRef = useRef<AgGridReact>(null);
     const [categories, setCategories] = useState<Category[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
@@ -96,7 +101,7 @@ export default function AdminCategoriesPage() {
 
     const fullWidthCellRenderer = useMemo(() => (params: any) => {
         const c = params.data as Category;
-        const status = c.isDeleted ? 'Silinmiş' : (c.isActive ? 'Aktif' : 'Pasif');
+        const status = c.isDeleted ? t('filter.deleted') : (c.isActive ? t('filter.active') : t('filter.passive'));
         const statusColor = c.isDeleted ? '#dc2626' : (c.isActive ? '#16a34a' : '#ca8a04');
         const nodeId = params.node.id as string;
 
@@ -129,15 +134,15 @@ export default function AdminCategoriesPage() {
                 
                 <div className="grid grid-cols-1 gap-3">
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Üst Kategori</span>
-                        <span className="mobile-detail-value font-medium">{c.parentCategoryName || 'Ana Kategori'}</span>
+                        <span className="mobile-detail-label">{t('categories.mobile.parent')}</span>
+                        <span className="mobile-detail-value font-medium">{c.parentCategoryName || t('categories.mobile.noParent')}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Oluşturan</span>
+                        <span className="mobile-detail-label">{t('categories.mobile.createdBy')}</span>
                         <span className="mobile-detail-value">{c.createdBy}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Tarih</span>
+                        <span className="mobile-detail-label">{t('categories.mobile.date')}</span>
                         <span className="mobile-detail-value">{new Date(c.createdAt).toLocaleDateString('tr-TR')}</span>
                     </div>
                 </div>
@@ -145,11 +150,11 @@ export default function AdminCategoriesPage() {
                 <div className="flex gap-2 mt-3 pt-3 border-t border-border">
                     {!c.isDeleted ? (
                         <>
-                            <button onClick={(e) => { e.stopPropagation(); handleEdit(c); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">DÜZENLE</button>
-                            <button onClick={(e) => { e.stopPropagation(); handleDelete(c.id); }} className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm border border-red-100">SİL</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleEdit(c); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">{t('categories.mobile.edit')}</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleDelete(c.id); }} className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm border border-red-100">{t('categories.mobile.delete')}</button>
                         </>
                     ) : (
-                        <button onClick={(e) => { e.stopPropagation(); handleRestore(c.id); }} className="flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm border border-blue-100">GERİ YÜKLE</button>
+                        <button onClick={(e) => { e.stopPropagation(); handleRestore(c.id); }} className="flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm border border-blue-100">{t('categories.mobile.restore')}</button>
                     )}
                 </div>
             </div>
@@ -166,7 +171,7 @@ export default function AdminCategoriesPage() {
                         <FolderTree className="h-5 w-5" style={{ color: 'var(--brand-primary)' }} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>Kategoriler</h1>
+                        <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>{t('categories.title')}</h1>
                     </div>
                 </div>
                 <div className="flex items-center gap-4 self-end sm:self-auto">
@@ -181,7 +186,7 @@ export default function AdminCategoriesPage() {
                         <span className="hidden xs:inline text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Excel</span>
                     </button>
                     <button
-                        onClick={() => exportCategoriesToPDF(categories).catch(() => alert('PDF hatasi.'))}
+                        onClick={() => exportCategoriesToPDF(categories).catch(() => alert(t('errors.pdfExport')))}
                         className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group"
                         title="PDF'e Aktar"
                     >
@@ -195,7 +200,7 @@ export default function AdminCategoriesPage() {
                             onClick={() => { setEditingCategory(null); setModalOpen(true); }}
                             className="flex items-center justify-center w-14 h-14 text-white rounded-xl transition-all duration-200 shadow-sm hover:shadow-md shrink-0"
                             style={{ background: 'var(--brand-primary)' }}
-                            title="Yeni Kategori Ekle"
+                            title={t('categories.addTooltip')}
                             onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = 'var(--brand-primary-dark)')}
                             onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = 'var(--brand-primary)')}
                         >
@@ -209,6 +214,7 @@ export default function AdminCategoriesPage() {
             <div className="bg-card rounded-xl shadow-sm overflow-x-auto border border-border">
                 <div style={{ minWidth: 'fit-content' }}>
                     <AgGridReact<Category>
+                        theme={agGridTheme}
                         suppressHorizontalScroll={false}
                         suppressColumnVirtualisation={true}
                         tooltipShowDelay={300}
@@ -267,10 +273,9 @@ export default function AdminCategoriesPage() {
                         domLayout="autoHeight"
                         animateRows={true}
                         getRowStyle={(params) => {
-                            const isDark = theme === 'dark';
-                            if (params.data?.isDeleted) return { backgroundColor: isDark ? 'rgba(239,68,68,0.15)' : '#fef2f2' };
-                            if (params.data?.isActive === false) return { backgroundColor: isDark ? 'rgba(100,116,139,0.15)' : '#f1f5f9' };
-                            if (params.data?.isActive === true) return { backgroundColor: isDark ? 'rgba(34,197,94,0.12)' : '#f0fdf4' };
+                            if (params.data?.isDeleted) return { backgroundColor: rowColors.deleted };
+                            if (params.data?.isActive === false) return { backgroundColor: rowColors.inactive };
+                            if (params.data?.isActive === true) return { backgroundColor: rowColors.active };
                             return undefined;
                         }}
                         defaultColDef={{
@@ -284,7 +289,7 @@ export default function AdminCategoriesPage() {
                         autoSizeStrategy={{
                             type: 'fitCellContents'
                         }}
-                        localeText={localeTextTr}
+                        localeText={localeText}
                         overlayNoRowsTemplate="<span style='padding:10px;color:#6b7280'>Henuz kategori bulunamadi.</span>"
                         overlayLoadingTemplate="<span style='padding:10px;color:var(--brand-primary)'>Kategoriler yukleniyor...</span>"
                     />
@@ -292,8 +297,8 @@ export default function AdminCategoriesPage() {
             </div>
 
             <div className="flex items-center justify-between mt-3 px-1 text-xs text-muted-foreground">
-                <span>Toplam kayit: {categories.length}</span>
-                <span>Gosterilen: {gridApi?.getDisplayedRowCount() ?? categories.length} kayit</span>
+                <span>{t('common:totalRecords', { count: categories.length })}</span>
+                <span>{t('common:showing', { count: gridApi?.getDisplayedRowCount() ?? categories.length })}</span>
             </div>
             <CategoryFormModal open={modalOpen} onClose={() => { setModalOpen(false); setEditingCategory(null); }} onSubmit={(data: CategoryFormData) => handleFormSubmit(data, editingCategory)} category={editingCategory} categories={categories} loading={saving} />
             <ConfirmModal open={modalSettings.open} title={modalSettings.title} message={modalSettings.message} variant={modalSettings.variant} confirmText={modalSettings.confirmText} showConfirm={modalSettings.showConfirm} onConfirm={() => handleConfirmDelete(modalSettings)} onClose={() => setModalSettings(prev => ({ ...prev, open: false }))} loading={deleting} />

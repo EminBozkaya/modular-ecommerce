@@ -2,79 +2,69 @@ export type UnitStepConfig = {
     step: number;
     min: number;
     decimals: number;
-    formatValue: (value: number) => string;
+    /** formatValue uses the translated displayName passed in, not a hardcoded string */
+    formatValue: (value: number, displayName: string) => string;
     displayName: string;
 };
 
-export function getUnitConfig(unitName: string): UnitStepConfig {
-    const lower = unitName.toLowerCase().trim();
+/**
+ * Returns quantity input behaviour config based on the language-neutral unit CODE.
+ * Always pass `product.unitCode` (e.g. "kg", "g", "adet") — NOT the translated name.
+ * Pass `displayName` as the translated `product.unitName` for correct localised display.
+ */
+export function getUnitConfig(unitCode: string | null | undefined, displayName?: string): UnitStepConfig {
+    const code = (unitCode ?? '').toLowerCase().trim();
+    const name = displayName ?? unitCode ?? '';
 
-    if (lower.includes('kg') || lower.includes('kilogram')) {
-        return {
-            step: 0.05,
-            min: 0.05,
-            decimals: 2,
-            displayName: 'Kilogram',
-            formatValue: (v) => `${v.toFixed(2)} kg`,
-        };
+    switch (code) {
+        case 'kg':
+            return {
+                step: 0.05,
+                min: 0.05,
+                decimals: 2,
+                displayName: name,
+                formatValue: (v, n) => `${v.toFixed(2)} ${n}`,
+            };
+
+        case 'g':
+            return {
+                step: 100,
+                min: 100,
+                decimals: 0,
+                displayName: name,
+                formatValue: (v, n) => `${v.toFixed(0)} ${n}`,
+            };
+
+        case 'lt':
+            return {
+                step: 0.1,
+                min: 0.1,
+                decimals: 1,
+                displayName: name,
+                formatValue: (v, n) => `${v.toFixed(1)} ${n}`,
+            };
+
+        case 'adet':
+        case 'paket':
+        case 'deste':
+        case 'koli':
+        case 'kit':
+            return {
+                step: 1,
+                min: 1,
+                decimals: 0,
+                displayName: name,
+                formatValue: (v, n) => `${v.toFixed(0)} ${n}`,
+            };
+
+        default:
+            // Unknown code — safe integer default, show whatever name was passed
+            return {
+                step: 1,
+                min: 1,
+                decimals: 0,
+                displayName: name,
+                formatValue: (v, n) => `${v.toFixed(0)} ${n}`,
+            };
     }
-
-    if (lower.includes('litre') || lower.includes('liter') || lower === 'l') {
-        return {
-            step: 0.1,
-            min: 0.1,
-            decimals: 1,
-            displayName: 'Litre',
-            formatValue: (v) => `${v.toFixed(1)} L`,
-        };
-    }
-
-    // 'g' check must come after 'kg' check to avoid false match
-    if (lower.includes('gram') || lower === 'g') {
-        return {
-            step: 100,
-            min: 100,
-            decimals: 0,
-            displayName: 'Gram',
-            formatValue: (v) => `${v.toFixed(0)} g`,
-        };
-    }
-
-    if (
-        lower.includes('koli') ||
-        lower.includes('deste') ||
-        lower.includes('düzine') ||
-        lower.includes('dozen')
-    ) {
-        return {
-            step: 1,
-            min: 1,
-            decimals: 0,
-            displayName: unitName,
-            formatValue: (v) => `${v.toFixed(0)} ${lower.includes('koli') ? 'koli' : lower.includes('deste') ? 'deste' : 'düzine'}`,
-        };
-    }
-
-    if (
-        lower.includes('adet') ||
-        lower.includes('piece') ||
-        lower.includes('pcs')
-    ) {
-        return {
-            step: 1,
-            min: 1,
-            decimals: 0,
-            displayName: 'Adet',
-            formatValue: (v) => `${v.toFixed(0)} adet`,
-        };
-    }
-
-    // Safe default for unrecognized units
-    return {
-        step: 1,
-        min: 1,
-        decimals: 0,
-        displayName: unitName,
-        formatValue: (v) => `${v.toFixed(0)} ${unitName}`,
-    };
 }

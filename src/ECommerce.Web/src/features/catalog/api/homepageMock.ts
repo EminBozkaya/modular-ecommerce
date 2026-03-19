@@ -37,109 +37,109 @@ export interface Testimonial {
 
 export const heroSlides: HeroSlide[] = [
     {
-        title: "50 Yılı Aşkın Aile Geleneği",
-        subtitle: "Yeni Şubemiz Açıldı!",
-        description: "Ebrar Kuruyemiş olarak 50 yılı aşkın tecrübemizle en taze ve kaliteli ürünleri güvenle sunuyoruz.",
+        title: "Mağazamıza Hoş Geldiniz",
+        subtitle: "Kaliteli Ürünler, Hızlı Teslimat",
+        description: "Geniş ürün yelpazemiz ve güvenilir hizmetimizle alışverişin keyfini çıkarın.",
         buttonText: "KEŞFET",
         buttonLink: "/products",
-        image: "https://images.unsplash.com/photo-1606567595334-d39972c85dfd?w=1920&h=800&fit=crop",
+        image: "https://picsum.photos/seed/hero-1/1920/800",
     },
     {
-        title: "Premium Kalite Kuruyemiş",
-        subtitle: "Çiftlikten Sofranıza",
-        description: "Dünyanın dört bir yanından titizlikle seçilmiş en kaliteli kuruyemişleri sizlere sunuyoruz.",
+        title: "Özel Fırsatlar",
+        subtitle: "En İyi Fiyat Garantisi",
+        description: "Seçili ürünlerde kaçırılmayacak indirimler sizi bekliyor.",
         buttonText: "ALIŞVERİŞE BAŞLA",
         buttonLink: "/products",
-        image: "https://images.unsplash.com/photo-1608797178974-15b35a64ede9?w=1920&h=800&fit=crop",
+        image: "https://picsum.photos/seed/hero-2/1920/800",
     },
     {
-        title: "Özel Hediye Koleksiyonu",
-        subtitle: "Hediye Kutuları Hazır",
-        description: "Sevdikleriniz için özenle hazırlanmış premium kuruyemiş ve kuru meyve hediye kutularını keşfedin.",
-        buttonText: "HEDİYELERİ GÖR",
+        title: "Yeni Koleksiyon",
+        subtitle: "Sezon Ürünleri",
+        description: "En yeni ürünlerimizi keşfedin ve koleksiyonunuzu tamamlayın.",
+        buttonText: "YENİLERİ GÖR",
         buttonLink: "/products",
-        image: "https://images.unsplash.com/photo-1574570173583-a65fc27484be?w=1920&h=800&fit=crop",
+        image: "https://picsum.photos/seed/hero-3/1920/800",
     },
 ];
 
 export const mainCategories: FeaturedCategory[] = [
     {
-        name: "KURU MEYVE",
-        image: "https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?w=400&h=300&fit=crop",
-        link: "/products?categoryId=4",
-    },
-    {
-        name: "KURUYEMİŞ",
-        image: "https://images.unsplash.com/photo-1608797178974-15b35a64ede9?w=400&h=300&fit=crop",
+        name: "KATEGORİ-A",
+        image: "https://picsum.photos/seed/cat-a/400/300",
         link: "/products?categoryId=1",
     },
     {
-        name: "ATIŞTIYRMALIK & MİX",
-        image: "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=400&h=300&fit=crop",
-        link: "/products?categoryId=5",
+        name: "KATEGORİ-B",
+        image: "https://picsum.photos/seed/cat-b/400/300",
+        link: "/products?categoryId=2",
+    },
+    {
+        name: "KATEGORİ-C",
+        image: "https://picsum.photos/seed/cat-c/400/300",
+        link: "/products?categoryId=3",
     },
 ];
 
 export const featuredProducts: FeaturedProduct[] = [
     {
         title: "HAFTANIN FIRSATI",
-        subtitle: "Türk Kayısısı & Çekirdekli Hurma",
+        subtitle: "Seçili ürünlerde özel indirim fırsatı.",
         badge: "İndirimli",
         buttonText: "ALIŞVERİŞ YAP",
         buttonLink: "/products",
-        image: "https://images.unsplash.com/photo-1590005354167-6da97870c757?w=400&h=500&fit=crop",
+        image: "https://picsum.photos/seed/featured-1/400/500",
         large: true,
     },
     {
-        title: "ÜYELİK KULÜBÜ",
-        subtitle: "Her ay kapınıza özel seçilmiş kuruyemiş paketi.",
-        buttonText: "KATIL",
+        title: "YENİ GELENLER",
+        subtitle: "En son eklenen ürünleri keşfedin.",
+        buttonText: "İNCELE",
         buttonLink: "/products",
-        image: "https://images.unsplash.com/photo-1574570173583-a65fc27484be?w=400&h=300&fit=crop",
+        image: "https://picsum.photos/seed/featured-2/400/300",
     },
     {
-        title: "TOHUMLAR",
-        subtitle: "Çeşit Çeşit Tohumlar",
+        title: "ÇOK SATANLAR",
+        subtitle: "En popüler ürünlerimiz.",
         buttonText: "ALIŞVERİŞ YAP",
         buttonLink: "/products",
-        image: "https://images.unsplash.com/photo-1606567595334-d39972c85dfd?w=400&h=200&fit=crop",
+        image: "https://picsum.photos/seed/featured-3/400/200",
     },
     {
         title: "HEDİYELER",
-        subtitle: "Hediye için ihtiyacınız olan her şey!",
+        subtitle: "Sevdikleriniz için hediye fikirleri!",
         buttonText: "ALIŞVERİŞ YAP",
         buttonLink: "/products",
-        image: "https://images.unsplash.com/photo-1513135065346-a098a63a71ee?w=400&h=200&fit=crop",
+        image: "https://picsum.photos/seed/featured-4/400/200",
     },
 ];
 
 export const newsItems: NewsItem[] = [
     {
-        title: "ŞİMDİ İNDİRİMDE!",
-        description: "Kuru Kayısı & Çekirdekli Hurma'da özel indirim – Sınırlı süre! Premium kalite ürünlerimizi kaçırmayın...",
-        image: "https://images.unsplash.com/photo-1590005354167-6da97870c757?w=200&h=200&fit=crop",
+        title: "İNDİRİM KAMPANYASI",
+        description: "Seçili ürünlerde sınırlı süreli özel indirimler devam ediyor. Fırsatları kaçırmayın!",
+        image: "https://picsum.photos/seed/news-1/200/200",
     },
     {
-        title: "YENİ ŞUBE",
-        description: "Yeni şubemizi ziyaret edin! Daha geniş ürün yelpazesi ve kolay erişim ile hizmetinizdeyiz...",
-        image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop",
+        title: "YENİ KOLEKSİYON",
+        description: "Bu sezonun en yeni ürünleri mağazamızda. Geniş ürün yelpazesiyle hizmetinizdeyiz.",
+        image: "https://picsum.photos/seed/news-2/200/200",
     },
 ];
 
 export const testimonials: Testimonial[] = [
     {
-        quote: "Harika ürünler. Zamanında teslim edildi. Hediye kutusunu çok beğendik! Teşekkürler!",
-        author: "Ayşe Y.",
-        location: "İstanbul",
+        quote: "Harika ürünler ve hızlı teslimat. Çok memnun kaldım, teşekkürler!",
+        author: "Alex M.",
+        location: "Berlin",
     },
     {
-        quote: "İlk kez sipariş verdim ve artık sürekli müşteriyim! Mango dilimleri muhteşem.",
-        author: "Mehmet K.",
-        location: "Ankara",
+        quote: "Ürün kalitesi beklentimin çok üzerindeydi. Kesinlikle tekrar sipariş vereceğim.",
+        author: "Sarah L.",
+        location: "London",
     },
     {
-        quote: "Yıl boyunca kabuklu kuruyemiş bulabilmek harika. Kuruyemişlerinizi çok seviyorum, TEŞEKKÜRLER!",
-        author: "Fatma C.",
-        location: "İzmir",
+        quote: "Müşteri hizmetleri çok ilgili. Ürünler tam zamanında ve sorunsuz ulaştı.",
+        author: "Yuki T.",
+        location: "Tokyo",
     },
 ];

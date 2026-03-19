@@ -27,9 +27,10 @@ public class ProductsWithFiltersSpecification : BaseSpecification<Product>
         )
     {
         if (includeDeleted) ApplyIgnoreQueryFilters();
-        AddInclude(x => x.Category!);
-        AddInclude(x => x.Unit!);
         AddInclude(x => x.Translations);
+        // String-path includes load nested collections (ThenInclude equivalent)
+        AddInclude("Category.Translations");
+        AddInclude("Unit.Translations");
 
         if (!string.IsNullOrEmpty(sortBy))
         {

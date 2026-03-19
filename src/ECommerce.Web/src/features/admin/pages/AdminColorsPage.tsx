@@ -1,20 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Palette } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getAdminStoreSettings, updateStoreSettings } from '../api/storeSettingsApi';
 import type { StoreSettingsDto } from '../api/storeSettingsApi';
 import { queryKeys } from '@/utils/queryKeys';
-import { useStoreSettings } from '@/context/StoreSettingsContext';
-
-// ── helpers ────────────────────────────────────────────────────────────────
-
-function hexToRgba(hex: string, alpha: number): string {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r},${g},${b},${alpha})`;
-}
-
 // ── System fonts — cross-browser safe ──────────────────────────────────────
 
 const SYSTEM_FONTS: { value: string; label: string }[] = [
@@ -97,12 +87,14 @@ function TextStyleRow({
     fontValue,
     onColorChange,
     onFontChange,
+    pickColorTitle,
 }: {
     label: string;
     colorValue: string;
     fontValue: string;
     onColorChange: (v: string) => void;
     onFontChange: (v: string) => void;
+    pickColorTitle: string;
 }) {
     return (
         <div className="flex items-center gap-3 py-2.5 border-b border-border/50 last:border-0">
@@ -113,7 +105,7 @@ function TextStyleRow({
                     value={colorValue}
                     onChange={(e) => onColorChange(e.target.value)}
                     className="w-8 h-8 rounded-lg border border-border cursor-pointer p-0.5"
-                    title="Renk seç"
+                    title={pickColorTitle}
                 />
                 <input
                     type="text"
@@ -132,8 +124,8 @@ function TextStyleRow({
 // ── Main page ──────────────────────────────────────────────────────────────
 
 export default function AdminColorsPage() {
+    const { t } = useTranslation('admin');
     const queryClient = useQueryClient();
-    const settings = useStoreSettings();
 
     const { data, isLoading, isError } = useQuery({
         queryKey: queryKeys.admin.settings.store,
@@ -156,13 +148,13 @@ export default function AdminColorsPage() {
             <div className="flex items-center justify-center py-24">
                 <div
                     className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
-                    style={{ borderColor: settings.primaryColor, borderTopColor: 'transparent' }}
+                    style={{ borderColor: 'var(--brand-primary)', borderTopColor: 'transparent' }}
                 />
             </div>
         );
     }
     if (isError) {
-        return <div className="py-24 text-center text-red-600">Ayarlar yüklenemedi.</div>;
+        return <div className="py-24 text-center text-red-600">{t('design.common.loading')}</div>;
     }
 
     const set = <K extends keyof StoreSettingsDto>(key: K, value: StoreSettingsDto[K]) =>
@@ -178,16 +170,16 @@ export default function AdminColorsPage() {
             <div className="flex items-center gap-3 mb-8">
                 <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: hexToRgba(settings.primaryColor, 0.1) }}
+                    style={{ background: 'var(--brand-primary-light)' }}
                 >
-                    <Palette className="w-5 h-5" style={{ color: settings.primaryColor }} />
+                    <Palette className="w-5 h-5" style={{ color: 'var(--brand-primary)' }} />
                 </div>
                 <div>
-                    <h1 className="text-xl font-bold" style={{ color: settings.primaryColor }}>
-                        Renk &amp; Font
+                    <h1 className="text-xl font-bold" style={{ color: 'var(--brand-primary)' }}>
+                        {t('design.colors.title')}
                     </h1>
                     <p className="text-sm" style={{ color: '#6b7280' }}>
-                        Alan renkleri, metin renkleri ve yazı tipi ayarları
+                        {t('design.colors.subtitle')}
                     </p>
                 </div>
             </div>
@@ -196,9 +188,9 @@ export default function AdminColorsPage() {
                 onSubmit={(e) => { e.preventDefault(); if (form) mutate(form); }}
                 className="space-y-8"
                 style={{
-                    '--primary': settings.primaryColor,
-                    '--tw-ring-color': settings.primaryColor,
-                    accentColor: settings.primaryColor,
+                    '--primary': 'var(--brand-primary)',
+                    '--tw-ring-color': 'var(--brand-primary)',
+                    accentColor: 'var(--brand-primary)',
                 } as React.CSSProperties}
             >
                 {/* ══════════════════════════════════════════════════
@@ -206,52 +198,52 @@ export default function AdminColorsPage() {
                 ══════════════════════════════════════════════════ */}
                 <section className="bg-card rounded-2xl border border-border shadow-sm p-6 space-y-6">
                     <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: '#9ca3af' }}>
-                        Kısım Renkleri
+                        {t('design.colors.sectionArea')}
                     </h2>
                     <p className="text-xs -mt-2" style={{ color: '#9ca3af' }}>
-                        Her alanın arka plan / dolgu rengi
+                        {t('design.colors.sectionAreaDesc')}
                     </p>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <ColorPicker
-                            label="Marka Ana Rengi"
-                            description="Butonlar, odak halkası, admin aksan rengi"
+                            label={t('design.colors.brandPrimary')}
+                            description={t('design.colors.brandPrimaryDesc')}
                             value={form.primaryColor}
                             onChange={(v) => set('primaryColor', v)}
                         />
                         <ColorPicker
-                            label="Header Arka Plan Rengi"
-                            description="Üst navigasyon çubuğunun zemin rengi"
+                            label={t('design.colors.headerBg')}
+                            description={t('design.colors.headerBgDesc')}
                             value={form.headerBackgroundColor}
                             onChange={(v) => set('headerBackgroundColor', v)}
                         />
                         <ColorPicker
-                            label="Banner (Kayan Yazı) Arka Planı"
-                            description="Ücretsiz kargo bandının zemin rengi"
+                            label={t('design.colors.bannerBg')}
+                            description={t('design.colors.bannerBgDesc')}
                             value={form.bannerBackgroundColor}
                             onChange={(v) => set('bannerBackgroundColor', v)}
                         />
                         <ColorPicker
-                            label="Ana Sayfa Arka Plan Rengi"
-                            description="Storefront genel zemin rengi"
+                            label={t('design.colors.pageBg')}
+                            description={t('design.colors.pageBgDesc')}
                             value={form.backgroundColor}
                             onChange={(v) => set('backgroundColor', v)}
                         />
                         <ColorPicker
-                            label="Footer Arka Plan Rengi"
-                            description="Alt bilgi bölümünün zemin rengi"
+                            label={t('design.colors.footerBg')}
+                            description={t('design.colors.footerBgDesc')}
                             value={form.footer.backgroundColor ?? '#1F2937'}
                             onChange={setFooterBg}
                         />
                         <ColorPicker
-                            label="Admin SideBar Arka Plan Rengi"
-                            description="Admin paneli sol kenar çubuğu"
+                            label={t('design.colors.adminSidebarBg')}
+                            description={t('design.colors.adminSidebarBgDesc')}
                             value={form.adminSidebarBackgroundColor}
                             onChange={(v) => set('adminSidebarBackgroundColor', v)}
                         />
                         <ColorPicker
-                            label="Admin Sayfaları Arka Plan Rengi"
-                            description="Admin içerik alanının zemin rengi"
+                            label={t('design.colors.adminPageBg')}
+                            description={t('design.colors.adminPageBgDesc')}
                             value={form.adminPageBackgroundColor}
                             onChange={(v) => set('adminPageBackgroundColor', v)}
                         />
@@ -263,165 +255,180 @@ export default function AdminColorsPage() {
                 ══════════════════════════════════════════════════ */}
                 <section className="bg-card rounded-2xl border border-border shadow-sm p-6 space-y-1">
                     <h2 className="text-sm font-bold uppercase tracking-wider mb-1" style={{ color: '#9ca3af' }}>
-                        Metin Renkleri &amp; Fontları
+                        {t('design.colors.sectionText')}
                     </h2>
                     <p className="text-xs mb-4" style={{ color: '#9ca3af' }}>
-                        Her metin alanı için renk ve yazı tipi. Fontlar tüm tarayıcılarda sorunsuz çalışır.
+                        {t('design.colors.sectionTextDesc')}
                     </p>
 
                     {/* Table header */}
                     <div className="flex items-center gap-3 py-1.5 mb-1 border-b border-border">
-                        <span className="flex-1 text-xs font-bold uppercase tracking-wide" style={{ color: '#9ca3af' }}>Alan</span>
-                        <span className="text-xs font-bold uppercase tracking-wide flex-shrink-0" style={{ color: '#9ca3af', minWidth: 128 }}>Renk</span>
-                        <span className="text-xs font-bold uppercase tracking-wide flex-shrink-0" style={{ color: '#9ca3af', minWidth: 140 }}>Font</span>
+                        <span className="flex-1 text-xs font-bold uppercase tracking-wide" style={{ color: '#9ca3af' }}>{t('design.colors.colArea')}</span>
+                        <span className="text-xs font-bold uppercase tracking-wide flex-shrink-0" style={{ color: '#9ca3af', minWidth: 128 }}>{t('design.colors.colColor')}</span>
+                        <span className="text-xs font-bold uppercase tracking-wide flex-shrink-0" style={{ color: '#9ca3af', minWidth: 140 }}>{t('design.colors.colFont')}</span>
                     </div>
 
-                    {/* ── Header / Navbar grubu ── */}
+                    {/* ── Header / Navbar group ── */}
                     <div className="pt-3 pb-1">
                         <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#d1d5db' }}>
-                            Header &amp; Navigasyon
+                            {t('design.colors.groupHeader')}
                         </span>
                     </div>
 
                     <TextStyleRow
-                        label="Mağaza Adı"
+                        label={t('design.colors.storeName')}
                         colorValue={form.storeNameColor}
                         fontValue={form.storeNameFont}
                         onColorChange={(v) => set('storeNameColor', v)}
                         onFontChange={(v) => set('storeNameFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
                     <TextStyleRow
-                        label="Avatar İç Metin (AY)"
+                        label={t('design.colors.avatarText')}
                         colorValue={form.avatarTextColor}
                         fontValue={form.avatarTextFont}
                         onColorChange={(v) => set('avatarTextColor', v)}
                         onFontChange={(v) => set('avatarTextFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
                     <TextStyleRow
-                        label="Header İcon Alt Yazıları (Favori, Sepet…)"
+                        label={t('design.colors.headerIconLabels')}
                         colorValue={form.headerIconTextColor}
                         fontValue={form.headerIconTextFont}
                         onColorChange={(v) => set('headerIconTextColor', v)}
                         onFontChange={(v) => set('headerIconTextFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
                     <TextStyleRow
-                        label="Navbar Menü Buton Metin"
+                        label={t('design.colors.navbarMenu')}
                         colorValue={form.navbarMenuTextColor}
                         fontValue={form.navbarMenuTextFont}
                         onColorChange={(v) => set('navbarMenuTextColor', v)}
                         onFontChange={(v) => set('navbarMenuTextFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
 
                     {/* ── Banner ── */}
                     <div className="pt-4 pb-1">
                         <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#d1d5db' }}>
-                            Kayan Yazı Bandı
+                            {t('design.colors.groupBanner')}
                         </span>
                     </div>
                     <TextStyleRow
-                        label="Banner Metin"
+                        label={t('design.colors.bannerText')}
                         colorValue={form.bannerTextColor}
                         fontValue={form.bannerTextFont}
                         onColorChange={(v) => set('bannerTextColor', v)}
                         onFontChange={(v) => set('bannerTextFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
 
-                    {/* ── Sayfa geneli ── */}
+                    {/* ── Page-wide ── */}
                     <div className="pt-4 pb-1">
                         <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#d1d5db' }}>
-                            Sayfa Geneli
+                            {t('design.colors.groupPage')}
                         </span>
                     </div>
                     <TextStyleRow
-                        label="Sayfa Başlıkları"
+                        label={t('design.colors.pageTitles')}
                         colorValue={form.pageTitleColor}
                         fontValue={form.pageTitleFont}
                         onColorChange={(v) => set('pageTitleColor', v)}
                         onFontChange={(v) => set('pageTitleFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
 
-                    {/* ── Ürün Kartı ── */}
+                    {/* ── Product Card ── */}
                     <div className="pt-4 pb-1">
                         <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#d1d5db' }}>
-                            Ürün Kartı
+                            {t('design.colors.groupCard')}
                         </span>
                     </div>
                     <TextStyleRow
-                        label="Kategori Etiketi"
+                        label={t('design.colors.categoryLabel')}
                         colorValue={form.productCardCategoryColor}
                         fontValue={form.productCardCategoryFont}
                         onColorChange={(v) => set('productCardCategoryColor', v)}
                         onFontChange={(v) => set('productCardCategoryFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
                     <TextStyleRow
-                        label="Ürün Adı"
+                        label={t('design.colors.productName')}
                         colorValue={form.productCardNameColor}
                         fontValue={form.productCardNameFont}
                         onColorChange={(v) => set('productCardNameColor', v)}
                         onFontChange={(v) => set('productCardNameFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
                     <TextStyleRow
-                        label="Adet"
+                        label={t('design.colors.quantity')}
                         colorValue={form.productCardQuantityColor}
                         fontValue={form.productCardQuantityFont}
                         onColorChange={(v) => set('productCardQuantityColor', v)}
                         onFontChange={(v) => set('productCardQuantityFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
                     <TextStyleRow
-                        label="Tutar (alt toplam)"
+                        label={t('design.colors.subtotal')}
                         colorValue={form.productCardTotalColor}
                         fontValue={form.productCardTotalFont}
                         onColorChange={(v) => set('productCardTotalColor', v)}
                         onFontChange={(v) => set('productCardTotalFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
                     <TextStyleRow
-                        label="Kart İçi Fiyat"
+                        label={t('design.colors.cardPrice')}
                         colorValue={form.productCardPriceColor}
                         fontValue={form.productCardPriceFont}
                         onColorChange={(v) => set('productCardPriceColor', v)}
                         onFontChange={(v) => set('productCardPriceFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
                     <TextStyleRow
-                        label="Sepete Ekle / Çıkar Butonu"
+                        label={t('design.colors.addToCartBtn')}
                         colorValue={form.productCardButtonColor}
                         fontValue={form.productCardButtonFont}
                         onColorChange={(v) => set('productCardButtonColor', v)}
                         onFontChange={(v) => set('productCardButtonFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
 
                     {/* ── Admin Panel ── */}
                     <div className="pt-4 pb-1">
                         <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#d1d5db' }}>
-                            Admin Paneli
+                            {t('design.colors.groupAdmin')}
                         </span>
                     </div>
                     <TextStyleRow
-                        label="Admin SideBar Metin"
+                        label={t('design.colors.adminSidebar')}
                         colorValue={form.adminSidebarTextColor}
                         fontValue={form.adminSidebarTextFont}
                         onColorChange={(v) => set('adminSidebarTextColor', v)}
                         onFontChange={(v) => set('adminSidebarTextFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
                     <TextStyleRow
-                        label="Admin Sayfa Başlıkları"
+                        label={t('design.colors.adminTitles')}
                         colorValue={form.adminPageTitleColor}
                         fontValue={form.adminPageTitleFont}
                         onColorChange={(v) => set('adminPageTitleColor', v)}
                         onFontChange={(v) => set('adminPageTitleFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
 
                     {/* ── Footer ── */}
                     <div className="pt-4 pb-1">
                         <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#d1d5db' }}>
-                            Footer
+                            {t('design.colors.groupFooter')}
                         </span>
                     </div>
                     <TextStyleRow
-                        label="Footer Metin"
+                        label={t('design.colors.footerText')}
                         colorValue={form.footerTextColor}
                         fontValue={form.footerTextFont}
                         onColorChange={(v) => set('footerTextColor', v)}
                         onFontChange={(v) => set('footerTextFont', v)}
+                        pickColorTitle={t('design.colors.pickColor')}
                     />
                 </section>
 
@@ -430,7 +437,7 @@ export default function AdminColorsPage() {
                 ══════════════════════════════════════════════════ */}
                 <section className="bg-card rounded-2xl border border-border shadow-sm p-6 space-y-4">
                     <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: '#9ca3af' }}>
-                        Canlı Önizleme
+                        {t('design.colors.previewTitle')}
                     </h2>
 
                     <div className="rounded-xl overflow-hidden border border-border">
@@ -500,13 +507,13 @@ export default function AdminColorsPage() {
                                     className="text-xs mb-0.5"
                                     style={{ color: form.productCardCategoryColor, fontFamily: form.productCardCategoryFont }}
                                 >
-                                    Kuruyemiş
+                                    Category
                                 </p>
                                 <p
                                     className="text-xs font-semibold mb-1"
                                     style={{ color: form.productCardNameColor, fontFamily: form.productCardNameFont }}
                                 >
-                                    Antep Fıstığı
+                                    Product Name
                                 </p>
                                 <p
                                     className="text-xs font-bold mb-2"
@@ -547,8 +554,8 @@ export default function AdminColorsPage() {
                 {/* ── Submit ── */}
                 <div className="flex items-center justify-between">
                     {isSuccess && (
-                        <span className="text-sm font-medium" style={{ color: settings.primaryColor }}>
-                            Kaydedildi.
+                        <span className="text-sm font-medium" style={{ color: 'var(--brand-primary)' }}>
+                            {t('design.common.saved')}
                         </span>
                     )}
                     <div className="ml-auto">
@@ -556,9 +563,9 @@ export default function AdminColorsPage() {
                             type="submit"
                             disabled={isPending}
                             className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-60"
-                            style={{ background: settings.primaryColor }}
+                            style={{ backgroundColor: 'var(--brand-primary)' }}
                         >
-                            {isPending ? 'Kaydediliyor…' : 'Kaydet'}
+                            {isPending ? t('design.common.saving') : t('design.common.save')}
                         </button>
                     </div>
                 </div>

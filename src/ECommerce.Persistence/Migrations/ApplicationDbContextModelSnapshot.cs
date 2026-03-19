@@ -332,6 +332,52 @@ namespace ECommerce.Persistence.Migrations
                     b.ToTable("Units", (string)null);
                 });
 
+            modelBuilder.Entity("ECommerce.Domain.Catalog.Entities.UnitTranslation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LanguageCode")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("UnitId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UnitId", "LanguageCode")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
+
+                    b.ToTable("UnitTranslations", (string)null);
+                });
+
             modelBuilder.Entity("ECommerce.Domain.Identity.Entities.AppUser", b =>
                 {
                     b.Property<Guid>("Id")
@@ -7392,7 +7438,7 @@ namespace ECommerce.Persistence.Migrations
 
                             b1.HasKey("BasketItemId");
 
-                            b1.ToTable("BasketItems", (string)null);
+                            b1.ToTable("BasketItems");
 
                             b1.WithOwner()
                                 .HasForeignKey("BasketItemId");
@@ -7457,7 +7503,7 @@ namespace ECommerce.Persistence.Migrations
 
                             b1.HasKey("ProductId");
 
-                            b1.ToTable("Products", (string)null);
+                            b1.ToTable("Products");
 
                             b1.WithOwner()
                                 .HasForeignKey("ProductId");
@@ -7475,7 +7521,7 @@ namespace ECommerce.Persistence.Migrations
 
                             b1.HasKey("ProductId");
 
-                            b1.ToTable("Products", (string)null);
+                            b1.ToTable("Products");
 
                             b1.WithOwner()
                                 .HasForeignKey("ProductId");
@@ -7501,6 +7547,17 @@ namespace ECommerce.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ECommerce.Domain.Catalog.Entities.UnitTranslation", b =>
+                {
+                    b.HasOne("ECommerce.Domain.Catalog.Entities.Unit", "Unit")
+                        .WithMany("Translations")
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Unit");
                 });
 
             modelBuilder.Entity("ECommerce.Domain.Identity.Entities.City", b =>
@@ -7593,7 +7650,7 @@ namespace ECommerce.Persistence.Migrations
 
                             b1.HasKey("OrderItemId");
 
-                            b1.ToTable("OrderItems", (string)null);
+                            b1.ToTable("OrderItems");
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderItemId");
@@ -7623,7 +7680,7 @@ namespace ECommerce.Persistence.Migrations
 
                             b1.HasKey("PaymentRecordId");
 
-                            b1.ToTable("PaymentRecords", (string)null);
+                            b1.ToTable("PaymentRecords");
 
                             b1.WithOwner()
                                 .HasForeignKey("PaymentRecordId");
@@ -7648,6 +7705,11 @@ namespace ECommerce.Persistence.Migrations
                 });
 
             modelBuilder.Entity("ECommerce.Domain.Catalog.Entities.Product", b =>
+                {
+                    b.Navigation("Translations");
+                });
+
+            modelBuilder.Entity("ECommerce.Domain.Catalog.Entities.Unit", b =>
                 {
                     b.Navigation("Translations");
                 });

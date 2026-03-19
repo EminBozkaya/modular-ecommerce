@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useProducts } from '@/features/catalog/hooks/useProducts';
 
 export function HeaderSearchAutocomplete() {
+    const { t } = useTranslation('catalog');
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -67,7 +69,7 @@ export function HeaderSearchAutocomplete() {
                 <div className="flex items-center border border-border rounded-md overflow-hidden bg-background shadow-sm relative z-10 transition-colors focus-within:ring-2 focus-within:ring-[var(--brand-primary)] focus-within:border-[var(--brand-primary)]">
                     <input
                         type="text"
-                        placeholder="Premium ürünlerimizde arayın..."
+                        placeholder={t('list.searchPlaceholder')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onFocus={() => {

@@ -1,25 +1,28 @@
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Settings } from 'lucide-react';
 
 /**
- * Genel amaçlı placeholder — her settings route'u için
- * URL path'ten sayfa başlığını otomatik türetir.
+ * General-purpose placeholder — auto-derives page title from URL path.
  */
 
-const titleMap: Record<string, string> = {
-    payment: 'Ödeme Ayarları',
-    shipping: 'Kargo Ayarları',
-    logo: 'Marka & Logo',
-    colors: 'Renk Paleti',
-    hero: 'Hero Carousel',
-    nav: 'Navigasyon',
-    banners: 'Bannerlar',
-};
-
 export default function AdminSettingsPlaceholderPage() {
+    const { t } = useTranslation('admin');
     const { pathname } = useLocation();
     const lastSegment = pathname.split('/').filter(Boolean).pop() ?? '';
-    const title = titleMap[lastSegment] ?? 'Ayarlar';
+
+    const titleKeyMap: Record<string, string> = {
+        payment: 'nav.payment',
+        shipping: 'nav.shipping',
+        logo: 'nav.logo',
+        colors: 'nav.colors',
+        hero: 'nav.hero',
+        nav: 'nav.navOrder',
+        banners: 'nav.banners',
+    };
+
+    const titleKey = titleKeyMap[lastSegment];
+    const title = titleKey ? t(titleKey) : t('nav.settings');
 
     return (
         <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -33,8 +36,7 @@ export default function AdminSettingsPlaceholderPage() {
                 {title}
             </h1>
             <p className="text-sm max-w-md" style={{ color: '#6b7280' }}>
-                Bu sayfa henüz yapım aşamasındadır. Yakında buradan{' '}
-                <strong>{title.toLowerCase()}</strong> yönetimi yapabileceksiniz.
+                {t('design.common.placeholderDesc', { title: title.toLowerCase() })}
             </p>
         </div>
     );

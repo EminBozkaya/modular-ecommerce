@@ -4,7 +4,11 @@
     "loading": "Chargement des produits...",
     "loadError": "Une erreur s'est produite. Veuillez réessayer.",
     "empty": "Aucun produit trouvé",
-    "emptyDesc": "Aucun produit ne correspond à votre recherche ou à la catégorie sélectionnée."
+    "emptyDesc": "Aucun produit ne correspond à votre recherche ou à la catégorie sélectionnée.",
+    "searchPlaceholder": "Rechercher dans nos produits premium...",
+    "searchAriaLabel": "Rechercher des produits",
+    "categorySearchPlaceholder": "Rechercher dans les groupes de produits...",
+    "showingCount": "Affichage de {{count}} sur {{total}} produits"
   },
   "detail": {
     "loading": "Chargement du produit...",

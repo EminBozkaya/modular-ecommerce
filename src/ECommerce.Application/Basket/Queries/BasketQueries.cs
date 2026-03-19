@@ -18,4 +18,4 @@ public record BasketItemDto(
     string? ImageUrl,
     string? UnitName);
 
-public record GetBasketQuery(Guid? UserId, string? SessionId) : IRequest<BasketDto?>;
+public record GetBasketQuery(Guid? UserId, string? SessionId, string Language = "tr") : IRequest<BasketDto?>;

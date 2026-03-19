@@ -27,10 +27,13 @@ import {
     Megaphone,
 } from 'lucide-react';
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LanguageToggle } from '@/components/shared/LanguageToggle';
 import { ThemeToggle } from '@/components/shared/ThemeToggle';
+import { useThemeStore } from '@/store/themeStore';
 import { UserMenu } from '@/components/layouts/header/UserMenu';
 import { useStoreSettings } from '@/context/StoreSettingsContext';
+import { SUPPORTED_LANGUAGES } from '@/i18n/languages';
 
 /* ─── Tip Yardımcıları ──────────────────────────────────────────────────── */
 
@@ -48,37 +51,6 @@ type SubAccordionItem = {
 };
 
 type SettingsItem = LeafItem | SubAccordionItem;
-
-/* ─── Navigasyon Verisi ─────────────────────────────────────────────────── */
-
-const navLinks = [
-    { to: '/admin', label: 'Kontrol Paneli', icon: LayoutDashboard, exact: true },
-    { to: '/admin/products', label: 'Ürünler', icon: Package, exact: false },
-    { to: '/admin/categories', label: 'Kategoriler', icon: FolderTree, exact: false },
-    { to: '/admin/orders', label: 'Siparişler', icon: ShoppingBag, exact: false },
-    { to: '/admin/users', label: 'Müşteriler', icon: Users, exact: false },
-    { to: '/admin/addresses', label: 'Adresler', icon: MapPin, exact: false },
-];
-
-const settingsItems: SettingsItem[] = [
-    { to: '/admin/settings/payment', label: 'Ödeme Ayarları', icon: CreditCard },
-    { to: '/admin/settings/shipping', label: 'Kargo Ayarları', icon: Truck },
-    {
-        kind: 'sub-accordion',
-        label: 'Tasarım Ayarları',
-        icon: Paintbrush,
-        items: [
-            { to: '/admin/settings/design/logo', label: 'Marka & Logo', icon: Image },
-            { to: '/admin/settings/design/background', label: 'Arka Plan', icon: Layers },
-            { to: '/admin/settings/design/banner', label: 'Kayan Yazı', icon: Megaphone },
-            { to: '/admin/settings/design/colors', label: 'Renk & Font', icon: Palette },
-            { to: '/admin/settings/design/hero', label: 'Hero Carousel', icon: SlidersHorizontal },
-            { to: '/admin/settings/design/nav', label: 'Navigasyon', icon: Navigation },
-            { to: '/admin/settings/design/banners', label: 'Vitrin Yönetimi', icon: LayoutGrid },
-            { to: '/admin/settings/design/footer', label: 'Altbilgi', icon: PanelBottom },
-        ],
-    },
-];
 
 /* ─── Stil Yardımcıları ─────────────────────────────────────────────────── */
 
@@ -162,7 +134,6 @@ function SidebarSubAccordion({
     }, [forceOpen, hasActiveChild]);
 
     if (isCollapsed) {
-        // Collapsed modda sadece ikon göster; hover'la birinci child'a git
         return (
             <div className="relative group">
                 <button
@@ -195,7 +166,6 @@ function SidebarSubAccordion({
                 />
             </button>
 
-            {/* Açılır panel */}
             <div
                 className="overflow-hidden transition-all duration-200"
                 style={{ maxHeight: open ? `${item.items.length * 46}px` : '0px' }}
@@ -224,11 +194,13 @@ function SidebarSettingsAccordion({
     pathname,
     items,
     forceOpen,
+    label,
 }: {
     isCollapsed: boolean;
     pathname: string;
     items: SettingsItem[];
     forceOpen?: boolean;
+    label: string;
 }) {
     const hasActiveChild = pathname.startsWith('/admin/settings');
     const [open, setOpen] = useState(hasActiveChild);
@@ -244,7 +216,7 @@ function SidebarSettingsAccordion({
         return (
             <button
                 className="flex items-center justify-center w-full px-3 py-2 rounded-lg transition-all duration-200"
-                title="Ayarlar"
+                title={label}
                 style={hasActiveChild ? ACTIVE_STYLE : INACTIVE_STYLE}
                 onMouseEnter={(e) => HOVER_ON(e, hasActiveChild)}
                 onMouseLeave={(e) => HOVER_OFF(e, hasActiveChild)}
@@ -257,7 +229,6 @@ function SidebarSettingsAccordion({
 
     return (
         <div>
-            {/* Grup başlığı */}
             <button
                 className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap"
                 style={hasActiveChild ? ACTIVE_STYLE : INACTIVE_STYLE}
@@ -266,19 +237,15 @@ function SidebarSettingsAccordion({
                 onClick={() => setOpen((o) => !o)}
             >
                 <Settings className="h-[18px] w-[18px] flex-shrink-0" />
-                <span className="flex-1 text-left">Ayarlar</span>
+                <span className="flex-1 text-left">{label}</span>
                 <ChevronDown
                     className={`h-3.5 w-3.5 flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
                 />
             </button>
 
-            {/* Açılır içerik */}
             <div
                 className="overflow-hidden transition-all duration-200"
-                style={{
-                    // Her item ~40px; sub-accordion en fazla 5 child açıksa ~5*40=200 ekstra
-                    maxHeight: open ? '600px' : '0px',
-                }}
+                style={{ maxHeight: open ? '600px' : '0px' }}
             >
                 <div className="mt-0.5 flex flex-col gap-0.5 pl-2">
                     {items.map((item, idx) => {
@@ -314,53 +281,88 @@ function SidebarSettingsAccordion({
 /* ─── Ana Layout ────────────────────────────────────────────────────────── */
 
 export function AdminLayout() {
+    const { t, i18n } = useTranslation('admin');
     const location = useLocation();
     const settings = useStoreSettings();
+    const { resolved: theme } = useThemeStore();
+    const isDark = theme === 'dark';
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
+    const currentLocale = SUPPORTED_LANGUAGES.find(l => l.code === i18n.language)?.locale ?? 'tr-TR';
 
     const isActive = (to: string, exact: boolean) =>
         exact ? location.pathname === to : location.pathname.startsWith(to);
 
+    // Nav links defined inside component so they can use t()
+    const navLinks = useMemo(() => [
+        { to: '/admin', label: t('nav.dashboard'), icon: LayoutDashboard, exact: true },
+        { to: '/admin/products', label: t('nav.products'), icon: Package, exact: false },
+        { to: '/admin/categories', label: t('nav.categories'), icon: FolderTree, exact: false },
+        { to: '/admin/orders', label: t('nav.orders'), icon: ShoppingBag, exact: false },
+        { to: '/admin/users', label: t('nav.users'), icon: Users, exact: false },
+        { to: '/admin/addresses', label: t('nav.addresses'), icon: MapPin, exact: false },
+    ], [t]);
+
+    const settingsItems: SettingsItem[] = useMemo(() => [
+        { to: '/admin/settings/payment', label: t('nav.payment'), icon: CreditCard },
+        { to: '/admin/settings/shipping', label: t('nav.shipping'), icon: Truck },
+        {
+            kind: 'sub-accordion' as const,
+            label: t('nav.design'),
+            icon: Paintbrush,
+            items: [
+                { to: '/admin/settings/design/logo', label: t('nav.logo'), icon: Image },
+                { to: '/admin/settings/design/background', label: t('nav.background'), icon: Layers },
+                { to: '/admin/settings/design/banner', label: t('nav.banner'), icon: Megaphone },
+                { to: '/admin/settings/design/colors', label: t('nav.colors'), icon: Palette },
+                { to: '/admin/settings/design/hero', label: t('nav.hero'), icon: SlidersHorizontal },
+                { to: '/admin/settings/design/nav', label: t('nav.navOrder'), icon: Navigation },
+                { to: '/admin/settings/design/banners', label: t('nav.banners'), icon: LayoutGrid },
+                { to: '/admin/settings/design/footer', label: t('nav.footer'), icon: PanelBottom },
+            ],
+        },
+    ], [t]);
+
     const filteredNavLinks = useMemo(() => {
         if (!searchQuery) return navLinks;
-        const lowerQ = searchQuery.toLocaleLowerCase('tr-TR');
-        return navLinks.filter(link => link.label.toLocaleLowerCase('tr-TR').includes(lowerQ));
-    }, [searchQuery]);
+        const lowerQ = searchQuery.toLocaleLowerCase(currentLocale);
+        return navLinks.filter(link => link.label.toLocaleLowerCase(currentLocale).includes(lowerQ));
+    }, [searchQuery, navLinks, currentLocale]);
 
     const filteredSettingsItems = useMemo(() => {
         if (!searchQuery) return settingsItems;
-        const lowerQ = searchQuery.toLocaleLowerCase('tr-TR');
+        const lowerQ = searchQuery.toLocaleLowerCase(currentLocale);
         return settingsItems.map(item => {
             if ('kind' in item && item.kind === 'sub-accordion') {
-                const childMatches = item.items.filter(child => child.label.toLocaleLowerCase('tr-TR').includes(lowerQ));
-                if (item.label.toLocaleLowerCase('tr-TR').includes(lowerQ) || childMatches.length > 0) {
+                const childMatches = item.items.filter(child => child.label.toLocaleLowerCase(currentLocale).includes(lowerQ));
+                if (item.label.toLocaleLowerCase(currentLocale).includes(lowerQ) || childMatches.length > 0) {
                     return {
                         ...item,
-                        items: item.label.toLocaleLowerCase('tr-TR').includes(lowerQ) ? item.items : childMatches
+                        items: item.label.toLocaleLowerCase(currentLocale).includes(lowerQ) ? item.items : childMatches
                     };
                 }
                 return null;
             } else {
                 const leaf = item as LeafItem;
-                if (leaf.label.toLocaleLowerCase('tr-TR').includes(lowerQ)) return leaf;
+                if (leaf.label.toLocaleLowerCase(currentLocale).includes(lowerQ)) return leaf;
                 return null;
             }
         }).filter(Boolean) as SettingsItem[];
-    }, [searchQuery]);
+    }, [searchQuery, settingsItems, currentLocale]);
 
     return (
         <div className="h-screen flex overflow-hidden bg-background">
             {/* ── Sidebar ── */}
             <aside
                 className={`${isCollapsed ? 'w-20' : 'w-64'} flex-shrink-0 flex flex-col shadow-xl transition-all duration-300 ease-in-out relative`}
-                style={{ background: settings.primaryColor }}
+                style={{ background: isDark ? 'var(--brand-tinted-dark-bg)' : settings.primaryColor }}
             >
                 {/* Toggle Button */}
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
                     className="absolute -right-3 top-20 bg-card rounded-full p-1 shadow-md hover:bg-accent transition-colors z-50"
-                    style={{ color: settings.primaryColor, border: '1px solid #e5e7eb' }}
+                    style={{ color: 'var(--brand-primary)', border: `1px solid ${isDark ? 'hsl(var(--border))' : '#e5e7eb'}` }}
                 >
                     {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
                 </button>
@@ -385,12 +387,12 @@ export function AdminLayout() {
                                             {settings.storeName}
                                         </div>
                                         <div className="text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                                            Yönetim Paneli
+                                            {t('nav.panel')}
                                         </div>
                                     </>
                                 ) : (
                                     <div className="text-white font-bold text-base leading-tight">
-                                        Yönetim Paneli
+                                        {t('nav.panel')}
                                     </div>
                                 )}
                             </div>
@@ -403,7 +405,7 @@ export function AdminLayout() {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60 pointer-events-none" />
                             <input
                                 type="text"
-                                placeholder="Menüde ara..."
+                                placeholder={t('nav.searchPlaceholder')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full bg-white/10 hover:bg-white/15 focus:bg-white/20 text-white placeholder:text-white/60 text-sm rounded-lg pl-9 pr-3 py-2 outline-none transition-colors"
@@ -414,7 +416,6 @@ export function AdminLayout() {
 
                 {/* Navigation */}
                 <nav className="flex-1 px-3 py-4 flex flex-col gap-1 overflow-y-auto custom-scrollbar">
-                    {/* Mevcut nav linkleri */}
                     {filteredNavLinks.map((link) => {
                         const active = isActive(link.to, link.exact);
                         const Icon = link.icon;
@@ -459,6 +460,7 @@ export function AdminLayout() {
                         pathname={location.pathname}
                         items={filteredSettingsItems}
                         forceOpen={searchQuery.length > 0}
+                        label={t('nav.settings')}
                     />
 
                     {/* ── Separator ── */}
@@ -470,7 +472,7 @@ export function AdminLayout() {
                     <Link
                         to="/"
                         className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap`}
-                        title={isCollapsed ? 'Mağazaya Dön' : ''}
+                        title={isCollapsed ? t('nav.backToStore') : ''}
                         style={{ color: 'rgba(255,255,255,0.6)' }}
                         onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
                             e.currentTarget.style.color = '#ffffff';
@@ -482,7 +484,7 @@ export function AdminLayout() {
                         }}
                     >
                         <ArrowLeft className="h-[18px] w-[18px] flex-shrink-0" />
-                        {!isCollapsed && <span>Mağazaya Dön</span>}
+                        {!isCollapsed && <span>{t('nav.backToStore')}</span>}
                     </Link>
                 </nav>
             </aside>
@@ -493,28 +495,28 @@ export function AdminLayout() {
                     className="h-16 bg-card px-6 flex items-center justify-between flex-shrink-0 border-b border-border"
                     style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
                 >
-                    <div className="text-base sm:text-lg font-semibold" style={{ color: settings.primaryColor }}>
-                        Yönetim
+                    <div className="text-base sm:text-lg font-semibold" style={{ color: 'var(--brand-primary)' }}>
+                        {t('nav.management')}
                     </div>
 
                     {/* Sağ Üst Aksiyonlar */}
                     <div className="flex items-center gap-3 sm:gap-4">
                         <div
                             className="flex flex-col items-center group relative"
-                            style={{ '--primary': settings.primaryColor } as React.CSSProperties}
+                            style={{ '--primary': 'var(--brand-primary)' } as React.CSSProperties}
                         >
                             <Link
                                 to="/"
                                 className="flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-accent text-muted-foreground transition-all duration-300 shadow-sm border border-transparent outline-none group-hover:text-[var(--primary)] group-hover:bg-accent group-hover:border-border"
-                                title="Mağazaya Dön"
+                                title={t('nav.backToStore')}
                             >
                                 <Store className="w-[18px] h-[18px] sm:w-[22px] sm:h-[22px] transition-transform duration-300 group-hover:scale-110" />
                             </Link>
                             <span className="text-[11px] sm:text-[11px] font-bold text-muted-foreground group-hover:text-[var(--primary)] mt-[2px] sm:mt-1 transition-colors capitalize">
-                                Mağaza
+                                {t('nav.store')}
                             </span>
                         </div>
-                        
+
                         <div className="w-px h-6 bg-border hidden sm:block"></div>
 
                         <ThemeToggle />
@@ -522,7 +524,7 @@ export function AdminLayout() {
                         <div className="w-px h-6 bg-border hidden sm:block"></div>
 
                         <LanguageToggle />
-                        
+
                         <div className="border-l border-border pl-3 sm:pl-4 flex items-center">
                             <UserMenu />
                         </div>

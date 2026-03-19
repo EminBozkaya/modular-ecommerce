@@ -9,7 +9,7 @@ import { queryKeys } from '../../../utils/queryKeys';
 import { useAuthStore } from '../../../store/authStore';
 import { useState, useEffect } from 'react';
 
-const GUEST_WISHLIST_KEY = 'ebrar_guest_wishlist';
+const GUEST_WISHLIST_KEY = 'guest_wishlist';
 
 const getGuestWishlist = (): string[] => {
     const stored = localStorage.getItem(GUEST_WISHLIST_KEY);

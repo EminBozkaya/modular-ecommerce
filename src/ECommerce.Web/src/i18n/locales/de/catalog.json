@@ -4,7 +4,11 @@
     "loading": "Produkte werden geladen...",
     "loadError": "Beim Laden der Produkte ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
     "empty": "Keine Produkte gefunden",
-    "emptyDesc": "Keine Produkte passend zu Ihren Suchkriterien oder der gewählten Kategorie."
+    "emptyDesc": "Keine Produkte passend zu Ihren Suchkriterien oder der gewählten Kategorie.",
+    "searchPlaceholder": "Unsere Premium-Produkte durchsuchen...",
+    "searchAriaLabel": "Produkte suchen",
+    "categorySearchPlaceholder": "Produktgruppen durchsuchen...",
+    "showingCount": "{{count}} von {{total}} Produkten werden angezeigt"
   },
   "detail": {
     "loading": "Produktdetails werden geladen...",

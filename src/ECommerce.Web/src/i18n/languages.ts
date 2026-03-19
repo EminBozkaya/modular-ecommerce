@@ -1,3 +1,5 @@
+// dir field is metadata only — it is NOT applied to <html dir="...">
+// Layout stays LTR for all languages; Arabic/Hebrew text flows RTL via Unicode bidi naturally.
 export const SUPPORTED_LANGUAGES = [
   { code: 'tr', label: 'Türkçe',    locale: 'tr-TR', flag: '🇹🇷', dir: 'ltr' as const },
   { code: 'en', label: 'English',   locale: 'en-US', flag: '🇺🇸', dir: 'ltr' as const },

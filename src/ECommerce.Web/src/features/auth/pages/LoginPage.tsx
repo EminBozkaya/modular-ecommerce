@@ -39,7 +39,7 @@ export default function LoginPage() {
             <Link to="/" className="mb-8 block transition-transform hover:scale-105 duration-300">
                 <img
                     src={resolvedLogo}
-                    alt={settings.storeName || "Ebrar Kuruyemiş"}
+                    alt={settings.storeName || "Store"}
                     className="h-24 sm:h-32 w-auto object-contain"
                 />
             </Link>

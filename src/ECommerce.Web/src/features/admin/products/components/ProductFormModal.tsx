@@ -6,6 +6,7 @@ import { X, Globe } from 'lucide-react';
 import { useProductSchema, type ProductFormData } from '@/lib/validations/admin.schema';
 import { getProductTranslations, upsertProductTranslation, type TranslationData } from '../../api/adminApi';
 import { useLanguageConfig } from '@/hooks/useLanguageConfig';
+import { useTranslation } from 'react-i18next';
 
 interface ProductFormModalProps {
     open: boolean;
@@ -33,6 +34,7 @@ export default function ProductFormModal({
     units,
     loading,
 }: ProductFormModalProps) {
+    const { t } = useTranslation('admin');
     const { languages } = useLanguageConfig();
     const nonDefaultLangs = useMemo(
         () => languages.filter(l => l.code !== DEFAULT_LANG_CODE),
@@ -144,7 +146,7 @@ export default function ProductFormModal({
             setTranslationSaved(true);
             setTimeout(() => setTranslationSaved(false), 3000);
         } catch {
-            setTranslationError('Çeviriler kaydedilirken bir hata oluştu.');
+            setTranslationError(t('forms.errors.translationSave'));
         } finally {
             setTranslationSaving(false);
         }
@@ -184,7 +186,7 @@ export default function ProductFormModal({
                 {/* Header */}
                 <div
                     className="flex items-center justify-between px-6 py-4"
-                    style={{ background: 'var(--brand-primary)', color: 'white' }}
+                    style={{ background: 'var(--brand-surface)', color: 'white' }}
                 >
                     <h2 className="text-lg font-semibold">
                         {product?.isDeleted ? 'Ürünü Geri Yükle ve Düzenle' : (isEdit ? 'Ürünü Düzenle' : 'Yeni Ürün Ekle')}
@@ -208,7 +210,7 @@ export default function ProductFormModal({
                                 : 'border-transparent text-muted-foreground hover:text-foreground'
                         }`}
                     >
-                        Genel
+                        {t('forms.tabs.general')}
                     </button>
                     <button
                         type="button"
@@ -220,7 +222,7 @@ export default function ProductFormModal({
                         }`}
                     >
                         <Globe className="h-4 w-4" />
-                        Çeviriler
+                        {t('forms.tabs.translations')}
                     </button>
                 </div>
 

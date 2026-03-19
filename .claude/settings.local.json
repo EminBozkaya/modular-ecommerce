@@ -17,7 +17,8 @@
       "Bash(rmdir /Users/wingman/.claire/projects/-Users-wingman-Projects-EbrarKuruyemis)",
       "Bash(rmdir /Users/wingman/.claire/projects)",
       "Bash(rmdir /Users/wingman/.claire)",
-      "Bash(dotnet clean:*)"
+      "Bash(dotnet clean:*)",
+      "Bash(git -C /Users/wingman/Projects/EbrarKuruyemis worktree list)"
     ]
   }
 }

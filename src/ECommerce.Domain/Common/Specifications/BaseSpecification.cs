@@ -6,6 +6,8 @@ public abstract class BaseSpecification<T> : ISpecification<T>
 {
     public Expression<Func<T, bool>>? Criteria { get; }
     public List<Expression<Func<T, object>>> Includes { get; } = new();
+    /// <inheritdoc cref="ISpecification{T}.IncludeStrings"/>
+    public List<string> IncludeStrings { get; } = new();
     public Expression<Func<T, object>>? OrderBy { get; private set; }
     public Expression<Func<T, object>>? OrderByDescending { get; private set; }
 
@@ -26,6 +28,12 @@ public abstract class BaseSpecification<T> : ISpecification<T>
     protected void AddInclude(Expression<Func<T, object>> includeExpression)
     {
         Includes.Add(includeExpression);
+    }
+
+    /// <summary>Adds a string-path include that supports nested navigation, e.g. "Unit.Translations"</summary>
+    protected void AddInclude(string includeString)
+    {
+        IncludeStrings.Add(includeString);
     }
 
     protected void ApplyPaging(int skip, int take)

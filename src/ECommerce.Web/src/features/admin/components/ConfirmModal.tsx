@@ -1,11 +1,12 @@
 import { AlertTriangle, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ConfirmModalProps {
     open: boolean;
     title: string;
     message: string;
-    confirmText?: string;
-    cancelText?: string;
+    confirmText?: string;   // defaults to t('buttons.confirm')
+    cancelText?: string;    // defaults to t('buttons.cancel')
     onConfirm: () => void;
     onClose: () => void;
     loading?: boolean;
@@ -17,14 +18,18 @@ export default function ConfirmModal({
     open,
     title,
     message,
-    confirmText = 'Onayla',
-    cancelText = 'İptal',
+    confirmText,
+    cancelText,
     onConfirm,
     onClose,
     loading = false,
     variant = 'danger',
     showConfirm = true
 }: ConfirmModalProps) {
+    const { t } = useTranslation('common');
+    const resolvedConfirmText = confirmText ?? t('buttons.confirm');
+    const resolvedCancelText = cancelText ?? t('buttons.cancel');
+
     if (!open) return null;
 
     const variantStyles = {
@@ -75,7 +80,7 @@ export default function ConfirmModal({
                             onClick={onConfirm}
                             className={`px-4 py-2 text-sm font-semibold text-white rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none ${variantStyles.buttonBg} ${variantStyles.buttonHover}`}
                         >
-                            {loading ? 'İşleniyor...' : confirmText}
+                            {loading ? t('buttons.loading') : resolvedConfirmText}
                         </button>
                     )}
                     <button
@@ -83,7 +88,7 @@ export default function ConfirmModal({
                         onClick={onClose}
                         className="px-4 py-2 text-sm font-semibold text-foreground bg-card border border-border rounded-lg hover:bg-accent transition-all active:scale-95"
                     >
-                        {showConfirm ? cancelText : 'Tamam'}
+                        {showConfirm ? resolvedCancelText : t('buttons.confirm')}
                     </button>
                 </div>
             </div>

@@ -8,17 +8,22 @@ import { OrderStatusUpdateModal } from '../../components/OrderStatusUpdateModal'
 import ConfirmModal from '../../components/ConfirmModal';
 import AgGridDatePicker from '../../components/AgGridDatePicker';
 import { OrderStatusFilter, OrderStatusFloatingFilter } from '../../components/OrderStatusFilter';
-import { useOrderGridColumns, localeTextTr, statusColors, statusLabels } from '../hooks/useOrderGridColumns';
+import { useOrderGridColumns, statusColors, statusLabels } from '../hooks/useOrderGridColumns';
 import { useOrderActions, defaultOrderModalSettings, type OrderModalSettings } from '../hooks/useOrderActions';
 import { exportOrdersToExcel, exportOrdersToPDF } from '../utils/orderExport';
 import excelIcon from '../../../../assets/excel_download_icon.png';
 import pdfIcon from '../../../../assets/pdf_download_icon.png';
-import { useThemeStore } from '@/store/themeStore';
+import { useAgGridTheme, useRowStyleColors } from '../../utils/agGridTheme';
+import { useTranslation } from 'react-i18next';
+import { useAgGridLocale } from '@/hooks/useAgGridLocale';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 export default function AdminOrdersPage() {
-    const { resolved: theme } = useThemeStore();
+    const { t } = useTranslation('admin');
+    const { localeText } = useAgGridLocale();
+    const agGridTheme = useAgGridTheme();
+    const rowColors = useRowStyleColors();
     const gridRef = useRef<AgGridReact>(null);
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
@@ -102,7 +107,7 @@ export default function AdminOrdersPage() {
     const fullWidthCellRenderer = useMemo(() => (params: any) => {
         const o = params.data as Order;
         const stLabels = statusLabels as any;
-        const statusText = o.isDeleted ? 'Silinmiş' : (stLabels[o.status] || o.status);
+        const statusText = o.isDeleted ? t('filter.deleted') : (stLabels[o.status] || o.status);
         const statusCols = statusColors as any;
         const colors = o.isDeleted ? { text: '#dc2626', bg: '#fef2f2' } : (statusCols[o.status] || { text: '#000', bg: '#fff' });
         const nodeId = params.node.id as string;
@@ -130,29 +135,29 @@ export default function AdminOrdersPage() {
                 }, 0);
             }}>
                 <div className="flex justify-between items-start border-b border-border pb-2 mb-2">
-                   <div className="font-bold text-[var(--brand-primary)] text-sm break-all pr-2">Sipariş: #{o.id}</div>
+                   <div className="font-bold text-[var(--brand-primary)] text-sm break-all pr-2">{t('orders.mobile.orderId')} #{o.id}</div>
                    <div style={{ color: colors.text, backgroundColor: colors.bg, padding: '2px 8px', borderRadius: '9999px', fontSize: '10px', fontWeight: '700' }}>{statusText}</div>
                 </div>
                 
                 <div className="grid grid-cols-1 gap-2">
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Müşteri</span>
+                        <span className="mobile-detail-label">{t('orders.mobile.customer')}</span>
                         <span className="mobile-detail-value font-medium">{o.shippingAddress.fullName}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Tutar</span>
+                        <span className="mobile-detail-label">{t('orders.mobile.amount')}</span>
                         <span className="mobile-detail-value font-bold text-lg">TL{o.totalAmount.toFixed(2)}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Ürünler</span>
+                        <span className="mobile-detail-label">{t('orders.mobile.products')}</span>
                         <span className="mobile-detail-value text-sm">{o.items.map(i => `${i.quantity}x ${i.productName}`).join(', ')}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Adres</span>
+                        <span className="mobile-detail-label">{t('orders.mobile.address')}</span>
                         <span className="mobile-detail-value text-xs">{o.shippingAddress.addressLine1}, {o.shippingAddress.city}/{o.shippingAddress.country}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Tarih</span>
+                        <span className="mobile-detail-label">{t('orders.mobile.date')}</span>
                         <span className="mobile-detail-value">{new Date(o.createdAt).toLocaleDateString('tr-TR')}</span>
                     </div>
                 </div>
@@ -160,11 +165,11 @@ export default function AdminOrdersPage() {
                 <div className="flex gap-2 mt-3 pt-3 border-t border-border">
                     {!o.isDeleted ? (
                         <>
-                            <button onClick={(e) => { e.stopPropagation(); handleEdit(o); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">DURUM GÜNCELLE</button>
-                            <button onClick={(e) => { e.stopPropagation(); handleDelete(o.id); }} className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm border border-red-100">SİL</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleEdit(o); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">{t('orders.mobile.updateStatus')}</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleDelete(o.id); }} className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm border border-red-100">{t('orders.mobile.delete')}</button>
                         </>
                     ) : (
-                        <button onClick={(e) => { e.stopPropagation(); handleRestore(o.id); }} className="flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm border border-blue-100">GERİ YÜKLE</button>
+                        <button onClick={(e) => { e.stopPropagation(); handleRestore(o.id); }} className="flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm border border-blue-100">{t('orders.mobile.restore')}</button>
                     )}
                 </div>
             </div>
@@ -183,7 +188,7 @@ export default function AdminOrdersPage() {
                         <ShoppingBag className="h-5 w-5" style={{ color: 'var(--brand-primary)' }} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>Siparişler</h1>
+                        <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>{t('orders.title')}</h1>
                     </div>
                 </div>
                 <div className="flex items-center gap-4 self-end sm:self-auto">
@@ -198,7 +203,7 @@ export default function AdminOrdersPage() {
                         <span className="hidden xs:inline text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Excel</span>
                     </button>
                     <button
-                        onClick={() => exportOrdersToPDF(orders).catch(() => alert('PDF hatasi.'))}
+                        onClick={() => exportOrdersToPDF(orders).catch(() => alert(t('errors.pdfExport')))}
                         className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group"
                         title="PDF'e Aktar"
                     >
@@ -212,6 +217,7 @@ export default function AdminOrdersPage() {
             <div className="bg-card rounded-xl shadow-sm overflow-x-auto border border-border">
                 <div style={{ minWidth: 'fit-content' }}>
                     <AgGridReact<Order>
+                        theme={agGridTheme}
                         suppressHorizontalScroll={false}
                         suppressColumnVirtualisation={true}
                         tooltipShowDelay={300}
@@ -269,14 +275,11 @@ export default function AdminOrdersPage() {
                         loading={loading}
                         domLayout="autoHeight"
                         animateRows={true}
-                        localeText={localeTextTr}
+                        localeText={localeText}
                         getRowStyle={(params) => {
                             if (!params.data) return undefined;
-                            const isDark = theme === 'dark';
-                            if (params.data.isDeleted) return { backgroundColor: isDark ? 'rgba(239,68,68,0.15)' : '#fef2f2' };
-                            if (isDark) return undefined;
-                            const colors = statusColors[params.data.status];
-                            return colors ? { backgroundColor: colors.bg } : undefined;
+                            if (params.data.isDeleted) return { backgroundColor: rowColors.deleted };
+                            return undefined;
                         }}
                         defaultColDef={{
                             resizable: true,
@@ -297,8 +300,8 @@ export default function AdminOrdersPage() {
 
 
             <div className="flex items-center justify-between mt-3 px-1 text-xs text-muted-foreground">
-                <span>Toplam kayit: {orders.length}</span>
-                <span>Gosterilen: {gridApi?.getDisplayedRowCount() ?? orders.length} kayit</span>
+                <span>{t('common:totalRecords', { count: orders.length })}</span>
+                <span>{t('common:showing', { count: gridApi?.getDisplayedRowCount() ?? orders.length })}</span>
             </div>
 
             {

@@ -14,5 +14,11 @@
   "summary": {
     "products": "Produits ({{count}})",
     "total": "Total"
+  },
+  "page": {
+    "title": "Mon panier",
+    "titleWithCount": "Mon panier ({{count}} articles)",
+    "browseProducts": "Parcourir les produits",
+    "loadError": "Impossible de charger le panier."
   }
 }

@@ -7,6 +7,8 @@ export interface BasketItem {
     lineTotal: number;
     imageUrl: string | null;
     unitName?: string;
+    /** Unit code (e.g. "kg") — used by mock to re-translate on language change */
+    unitCode?: string;
 }
 
 export interface Basket {

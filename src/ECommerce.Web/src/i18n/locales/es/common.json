@@ -21,7 +21,15 @@
     "back": "Volver",
     "loading": "Cargando...",
     "continue": "Continuar",
-    "continueAsGuest": "Continuar como invitado"
+    "continueAsGuest": "Continuar como invitado",
+    "restore": "Restaurar",
+    "filter": "Filtrar",
+    "export": "Exportar",
+    "close": "Cerrar",
+    "update": "Actualizar",
+    "search": "Buscar",
+    "reset": "Restablecer",
+    "apply": "Aplicar"
   },
   "status": {
     "loading": "Cargando...",
@@ -37,7 +45,13 @@
     "es": "Español",
     "ru": "Ruso",
     "ar": "Árabe",
+    "all": "Todos los idiomas",
     "changeLanguage": "Cambiar idioma"
+  },
+  "theme": {
+    "light": "Tema claro",
+    "dark": "Tema oscuro",
+    "toggle": "Cambiar tema"
   },
   "header": {
     "login": "Iniciar sesión",
@@ -68,5 +82,14 @@
   "table": {
     "total": "Total: {{count}} registros",
     "showing": "Mostrando: {{count}} registros"
-  }
+  },
+  "updatedAt": "Fecha de actualización",
+  "updatedBy": "Actualizado por",
+  "deletedAt": "Fecha de eliminación",
+  "active": "Activo",
+  "passive": "Pasivo",
+  "deleted": "Eliminado",
+  "totalRecords": "Total de registros: {{count}}",
+  "showing": "Mostrando: {{count}} registros",
+  "add": "Agregar"
 }

@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
     DndContext,
     closestCenter,
@@ -24,7 +26,6 @@ import {
     Trash2,
     ChevronDown,
     Eye,
-    ChevronUp,
     Link as LinkIcon,
     Phone,
     Users,
@@ -45,12 +46,12 @@ import { Footer } from '@/features/catalog/components/Footer';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function newColumn(type: FooterColumnType, order: number): FooterColumnDto {
+function newColumn(type: FooterColumnType, order: number, t: TFunction): FooterColumnDto {
     const titles: Record<FooterColumnType, string> = {
-        links: 'Bağlantılar',
-        contact: 'İletişim',
-        social: 'Sosyal Medya',
-        about: 'Hakkımızda',
+        links: t('design.footer.colLinks'),
+        contact: t('design.footer.colContact'),
+        social: t('design.footer.colSocial'),
+        about: t('design.footer.colAbout'),
     };
     return {
         id: crypto.randomUUID(),
@@ -63,16 +64,16 @@ function newColumn(type: FooterColumnType, order: number): FooterColumnDto {
     };
 }
 
-function newLink(): FooterLinkDto {
-    return { id: crypto.randomUUID(), label: 'Yeni Bağlantı', url: '#', order: 0 };
+function newLink(t: TFunction): FooterLinkDto {
+    return { id: crypto.randomUUID(), label: t('design.footer.defaultLink'), url: '#', order: 0 };
 }
 
 function newSocialLink(): FooterSocialLinkDto {
     return { id: crypto.randomUUID(), platform: 'instagram', url: '#' };
 }
 
-function newBottomLink(): FooterBottomLinkDto {
-    return { id: crypto.randomUUID(), label: 'Yeni Link', url: '#', order: 0 };
+function newBottomLink(t: TFunction): FooterBottomLinkDto {
+    return { id: crypto.randomUUID(), label: t('design.footer.defaultBottomLink'), url: '#', order: 0 };
 }
 
 // ── Shared sub-components ─────────────────────────────────────────────────────
@@ -130,19 +131,21 @@ const SOCIAL_PLATFORMS: { value: SocialPlatform; label: string }[] = [
     { value: 'whatsapp', label: 'WhatsApp' },
 ];
 
-const TYPE_LABELS: Record<FooterColumnType, string> = {
-    links: 'Bağlantılar',
-    contact: 'İletişim',
-    social: 'Sosyal Medya',
-    about: 'Hakkımızda',
-};
-
 const TYPE_ICONS: Record<FooterColumnType, React.ComponentType<{ className?: string }>> = {
     links: LinkIcon,
     contact: Phone,
     social: Users,
     about: Info,
 };
+
+function getTypeLabels(t: TFunction): Record<FooterColumnType, string> {
+    return {
+        links: t('design.footer.colLinks'),
+        contact: t('design.footer.colContact'),
+        social: t('design.footer.colSocial'),
+        about: t('design.footer.colAbout'),
+    };
+}
 
 // ── Column Editor ─────────────────────────────────────────────────────────────
 
@@ -151,9 +154,10 @@ interface ColumnEditorProps {
     onChange: (updated: FooterColumnDto) => void;
     onDelete: () => void;
     canDelete: boolean;
+    t: TFunction;
 }
 
-function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps) {
+function ColumnEditor({ col, onChange, onDelete, canDelete, t }: ColumnEditorProps) {
     const [expanded, setExpanded] = useState(false);
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
         useSortable({ id: col.id });
@@ -168,6 +172,7 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
         onChange({ ...col, [key]: value });
 
     const TypeIcon = TYPE_ICONS[col.type];
+    const typeLabels = getTypeLabels(t);
 
     return (
         <div ref={setNodeRef} style={style} className="bg-card rounded-xl shadow-sm border border-border mb-3 overflow-hidden">
@@ -178,7 +183,7 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
                     className="cursor-grab text-muted-foreground hover:text-foreground p-1 flex-shrink-0"
                     {...attributes}
                     {...listeners}
-                    aria-label="Sürükle"
+                    aria-label={t('design.navOrder.dragHint')}
                 >
                     <GripVertical className="h-5 w-5" />
                 </button>
@@ -186,11 +191,11 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
                 <TypeIcon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
 
                 <span className="flex-1 text-sm font-medium text-foreground truncate">
-                    {col.title || TYPE_LABELS[col.type]}
+                    {col.title || typeLabels[col.type]}
                 </span>
 
                 <span className="text-xs px-2 py-0.5 rounded-full bg-accent text-muted-foreground">
-                    {TYPE_LABELS[col.type]}
+                    {typeLabels[col.type]}
                 </span>
 
                 <Toggle checked={col.enabled} onChange={(v) => set('enabled', v)} />
@@ -199,7 +204,7 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
                     type="button"
                     onClick={() => setExpanded(!expanded)}
                     className="p-1 text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label={expanded ? 'Kapat' : 'Aç'}
+                    aria-label={expanded ? t('design.navOrder.dragHint') : t('design.common.add')}
                 >
                     <ChevronDown className={`h-4 w-4 transition-transform ${expanded ? 'rotate-180' : ''}`} />
                 </button>
@@ -209,7 +214,7 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
                     onClick={onDelete}
                     disabled={!canDelete}
                     className="p-1 text-red-400 hover:text-red-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                    aria-label="Sil"
+                    aria-label={t('design.common.delete')}
                 >
                     <Trash2 className="h-4 w-4" />
                 </button>
@@ -221,7 +226,9 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
                     {/* Title + Type */}
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-xs font-medium text-muted-foreground mb-1">Başlık</label>
+                            <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                {t('design.footer.columnTitle')}
+                            </label>
                             <input
                                 type="text"
                                 value={col.title}
@@ -230,16 +237,18 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-medium text-muted-foreground mb-1">Sütun Tipi</label>
+                            <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                {t('design.footer.selectType').replace(':', '')}
+                            </label>
                             <div className="flex gap-1 flex-wrap">
-                                {(['links', 'contact', 'social', 'about'] as FooterColumnType[]).map((t) => (
+                                {(['links', 'contact', 'social', 'about'] as FooterColumnType[]).map((type) => (
                                     <button
-                                        key={t}
+                                        key={type}
                                         type="button"
-                                        onClick={() => set('type', t)}
-                                        className={`px-2 py-1 text-xs rounded-md border transition-colors ${col.type === t ? 'bg-[var(--brand-primary)] text-white border-[var(--brand-primary)]' : 'bg-card text-muted-foreground border-border hover:border-[var(--brand-primary)]'}`}
+                                        onClick={() => set('type', type)}
+                                        className={`px-2 py-1 text-xs rounded-md border transition-colors ${col.type === type ? 'bg-[var(--brand-primary)] text-white border-[var(--brand-primary)]' : 'bg-card text-muted-foreground border-border hover:border-[var(--brand-primary)]'}`}
                                     >
-                                        {TYPE_LABELS[t]}
+                                        {typeLabels[type]}
                                     </button>
                                 ))}
                             </div>
@@ -249,7 +258,9 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
                     {/* type=links */}
                     {col.type === 'links' && (
                         <div>
-                            <label className="block text-xs font-medium text-muted-foreground mb-2">Bağlantılar</label>
+                            <label className="block text-xs font-medium text-muted-foreground mb-2">
+                                {t('design.footer.linksTitle')}
+                            </label>
                             <div className="space-y-2">
                                 {(col.links ?? []).map((link, idx) => (
                                     <div key={link.id} className="flex gap-2 items-center">
@@ -261,7 +272,7 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
                                                 updated[idx] = { ...link, label: e.target.value };
                                                 set('links', updated);
                                             }}
-                                            placeholder="Etiket"
+                                            placeholder={t('design.footer.linkLabel')}
                                             className="flex-1 border border-border rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary)]/40 bg-background text-foreground"
                                         />
                                         <input
@@ -272,7 +283,7 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
                                                 updated[idx] = { ...link, url: e.target.value };
                                                 set('links', updated);
                                             }}
-                                            placeholder="URL"
+                                            placeholder={t('design.footer.linkUrl')}
                                             className="flex-1 border border-border rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary)]/40 bg-background text-foreground"
                                         />
                                         <button
@@ -290,10 +301,10 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
                             </div>
                             <button
                                 type="button"
-                                onClick={() => set('links', [...(col.links ?? []), { ...newLink(), order: (col.links ?? []).length }])}
+                                onClick={() => set('links', [...(col.links ?? []), { ...newLink(t), order: (col.links ?? []).length }])}
                                 className="mt-2 flex items-center gap-1 text-xs text-[var(--brand-primary)] hover:underline"
                             >
-                                <Plus className="h-3.5 w-3.5" /> Bağlantı Ekle
+                                <Plus className="h-3.5 w-3.5" /> {t('design.footer.addLink')}
                             </button>
                         </div>
                     )}
@@ -302,32 +313,38 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
                     {col.type === 'contact' && (
                         <div className="space-y-3">
                             <div>
-                                <label className="block text-xs font-medium text-muted-foreground mb-1">Telefon</label>
+                                <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                    {t('design.footer.phone')}
+                                </label>
                                 <input
                                     type="text"
                                     value={col.phone ?? ''}
                                     onChange={(e) => set('phone', e.target.value || undefined)}
-                                    placeholder="0212 555 00 00"
+                                    placeholder={t('design.footer.phonePlaceholder')}
                                     className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 bg-background text-foreground"
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-muted-foreground mb-1">E-Posta</label>
+                                <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                    {t('design.footer.email')}
+                                </label>
                                 <input
                                     type="email"
                                     value={col.email ?? ''}
                                     onChange={(e) => set('email', e.target.value || undefined)}
-                                    placeholder="info@magaza.com"
+                                    placeholder={t('design.footer.emailPlaceholder')}
                                     className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 bg-background text-foreground"
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-muted-foreground mb-1">Adres</label>
+                                <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                    {t('design.footer.address')}
+                                </label>
                                 <textarea
                                     value={col.address ?? ''}
                                     onChange={(e) => set('address', e.target.value || undefined)}
                                     rows={2}
-                                    placeholder="Atatürk Caddesi No: 42&#10;İstanbul, Türkiye"
+                                    placeholder={t('design.footer.addressPlaceholder')}
                                     className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 resize-none bg-background text-foreground"
                                 />
                             </div>
@@ -338,17 +355,21 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
                     {col.type === 'social' && (
                         <div className="space-y-3">
                             <div>
-                                <label className="block text-xs font-medium text-muted-foreground mb-1">Metin (opsiyonel)</label>
+                                <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                    {t('design.footer.socialText')}
+                                </label>
                                 <input
                                     type="text"
                                     value={col.followText ?? ''}
                                     onChange={(e) => set('followText', e.target.value || undefined)}
-                                    placeholder="Bizi takip edin:"
+                                    placeholder={t('design.footer.socialTextPlaceholder')}
                                     className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 bg-background text-foreground"
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-muted-foreground mb-2">Hesaplar</label>
+                                <label className="block text-xs font-medium text-muted-foreground mb-2">
+                                    {t('design.footer.accounts')}
+                                </label>
                                 <div className="space-y-2">
                                     {(col.socialLinks ?? []).map((sl, idx) => (
                                         <div key={sl.id} className="flex gap-2 items-center">
@@ -394,7 +415,7 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
                                     onClick={() => set('socialLinks', [...(col.socialLinks ?? []), newSocialLink()])}
                                     className="mt-2 flex items-center gap-1 text-xs text-[var(--brand-primary)] hover:underline"
                                 >
-                                    <Plus className="h-3.5 w-3.5" /> Hesap Ekle
+                                    <Plus className="h-3.5 w-3.5" /> {t('design.footer.addAccount')}
                                 </button>
                             </div>
                         </div>
@@ -404,19 +425,21 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
                     {col.type === 'about' && (
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-muted-foreground">Logo Göster</span>
+                                <span className="text-sm text-muted-foreground">{t('design.footer.showLogo')}</span>
                                 <Toggle
                                     checked={col.showLogo ?? false}
                                     onChange={(v) => set('showLogo', v)}
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-muted-foreground mb-1">Açıklama</label>
+                                <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                    {t('design.footer.aboutDesc')}
+                                </label>
                                 <textarea
                                     value={col.description ?? ''}
                                     onChange={(e) => set('description', e.target.value || undefined)}
                                     rows={3}
-                                    placeholder="Mağazanız hakkında kısa bir açıklama..."
+                                    placeholder={t('design.footer.aboutDescPlaceholder')}
                                     className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 resize-none bg-background text-foreground"
                                 />
                             </div>
@@ -430,21 +453,51 @@ function ColumnEditor({ col, onChange, onDelete, canDelete }: ColumnEditorProps)
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
+const USE_MOCK = import.meta.env.VITE_USE_MOCK_API === 'true';
+
 export default function AdminFooterPage() {
+    const { t, i18n } = useTranslation('admin');
     const queryClient = useQueryClient();
     const [draft, setDraft] = useState<FooterSettingsDto | null>(null);
     const [previewOpen, setPreviewOpen] = useState(false);
+    const initializedRef = useRef(false);
 
     const { data: settings, isLoading } = useQuery({
         queryKey: queryKeys.admin.settings.store,
         queryFn: getAdminStoreSettings,
     });
 
+    // In mock mode, invalidate settings cache when language changes
     useEffect(() => {
-        if (settings?.footer && !draft) {
-            setDraft(settings.footer);
+        if (USE_MOCK) {
+            void queryClient.invalidateQueries({ queryKey: queryKeys.admin.settings.store });
         }
-    }, [settings, draft]);
+    }, [i18n.language, queryClient]);
+
+    useEffect(() => {
+        if (!settings?.footer) return;
+
+        if (!initializedRef.current) {
+            initializedRef.current = true;
+            setDraft(settings.footer);
+        } else {
+            // Language changed: update column titles and bottom link labels only
+            setDraft(prev => {
+                if (!prev) return settings.footer;
+                return {
+                    ...prev,
+                    columns: prev.columns.map(col => {
+                        const updated = settings.footer.columns.find(c => c.id === col.id);
+                        return updated ? { ...col, title: updated.title } : col;
+                    }),
+                    bottomLinks: prev.bottomLinks.map(link => {
+                        const updated = settings.footer.bottomLinks.find(l => l.id === link.id);
+                        return updated ? { ...link, label: updated.label } : link;
+                    }),
+                };
+            });
+        }
+    }, [settings]);
 
     const mutation = useMutation({
         mutationFn: async (footer: FooterSettingsDto) => {
@@ -466,7 +519,7 @@ export default function AdminFooterPage() {
         return (
             <div className="p-8 text-center text-muted-foreground">
                 <div className="animate-spin h-8 w-8 border-2 border-[var(--brand-primary)] border-t-transparent rounded-full mx-auto mb-3" />
-                Yükleniyor…
+                {t('design.common.loading')}
             </div>
         );
     }
@@ -481,7 +534,7 @@ export default function AdminFooterPage() {
 
     const addColumn = (type: FooterColumnType) => {
         if (draft.columns.length >= 4) return;
-        const col = newColumn(type, draft.columns.length);
+        const col = newColumn(type, draft.columns.length, t);
         setDraft((d) => d ? { ...d, columns: [...d.columns, col] } : d);
     };
 
@@ -501,21 +554,27 @@ export default function AdminFooterPage() {
     const sortedCols = [...draft.columns].sort((a, b) => a.order - b.order);
     const canAdd = draft.columns.length < 4;
 
+    const alignOptions: { value: FooterSettingsDto['bottomBarAlignment']; labelKey: string }[] = [
+        { value: 'left', labelKey: 'design.footer.alignLeft' },
+        { value: 'center', labelKey: 'design.footer.alignCenter' },
+        { value: 'between', labelKey: 'design.footer.alignSpaceBetween' },
+    ];
+
     return (
         <div className="min-h-screen bg-background">
             {/* Page Header */}
             <div className="bg-card border-b border-border px-6 py-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-xl font-bold text-foreground">Altbilgi Yönetimi</h1>
-                        <p className="text-sm text-muted-foreground mt-0.5">Sitenizin alt kısmını düzenleyin</p>
+                        <h1 className="text-xl font-bold text-foreground">{t('design.footer.title')}</h1>
+                        <p className="text-sm text-muted-foreground mt-0.5">{t('design.footer.subtitle')}</p>
                     </div>
                     <div className="flex items-center gap-3">
                         {mutation.isSuccess && (
-                            <span className="text-sm text-green-600 font-medium">✓ Kaydedildi</span>
+                            <span className="text-sm text-green-600 font-medium">{t('design.footer.saveSuccess')}</span>
                         )}
                         {mutation.isError && (
-                            <span className="text-sm text-red-600 font-medium">Hata oluştu</span>
+                            <span className="text-sm text-red-600 font-medium">{t('design.footer.saveError')}</span>
                         )}
                         <button
                             type="button"
@@ -524,7 +583,7 @@ export default function AdminFooterPage() {
                             className="flex items-center gap-2 px-4 py-2 bg-[var(--brand-primary)] text-white text-sm font-semibold rounded-lg hover:bg-[var(--brand-primary-dark)] transition-colors disabled:opacity-60"
                         >
                             <Save className="h-4 w-4" />
-                            {mutation.isPending ? 'Kaydediliyor…' : 'Değişiklikleri Kaydet'}
+                            {mutation.isPending ? t('design.common.saving') : t('design.common.saveChanges')}
                         </button>
                     </div>
                 </div>
@@ -536,12 +595,14 @@ export default function AdminFooterPage() {
 
                     {/* Global settings */}
                     <div className="bg-card rounded-xl shadow-sm border border-border p-5">
-                        <h3 className="text-base font-semibold text-foreground mb-4 pb-3 border-b border-border">Genel Ayarlar</h3>
+                        <h3 className="text-base font-semibold text-foreground mb-4 pb-3 border-b border-border">
+                            {t('design.footer.generalSettings')}
+                        </h3>
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-foreground">Arka Plan Rengi</span>
+                                <span className="text-sm text-foreground">{t('design.footer.bgColor')}</span>
                                 <div className="flex items-center gap-3">
-                                    <span className="text-xs text-muted-foreground">(boş = marka rengi)</span>
+                                    <span className="text-xs text-muted-foreground">{t('design.footer.bgColorHint')}</span>
                                     <ColorInput
                                         value={draft.backgroundColor ?? '#2C3E50'}
                                         onChange={(v) => setGlobal('backgroundColor', v)}
@@ -549,9 +610,9 @@ export default function AdminFooterPage() {
                                 </div>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-foreground">Metin Rengi</span>
+                                <span className="text-sm text-foreground">{t('design.footer.textColor')}</span>
                                 <div className="flex items-center gap-3">
-                                    <span className="text-xs text-muted-foreground">(boş = beyaz)</span>
+                                    <span className="text-xs text-muted-foreground">{t('design.footer.textColorHint')}</span>
                                     <ColorInput
                                         value={draft.textColor ?? '#FFFFFF'}
                                         onChange={(v) => setGlobal('textColor', v)}
@@ -559,31 +620,27 @@ export default function AdminFooterPage() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm text-foreground mb-1">Telif Hakkı Metni</label>
+                                <label className="block text-sm text-foreground mb-1">{t('design.footer.copyright')}</label>
                                 <input
                                     type="text"
                                     value={draft.copyrightText}
                                     onChange={(e) => setGlobal('copyrightText', e.target.value)}
-                                    placeholder="Tüm hakları saklıdır."
+                                    placeholder={t('design.footer.copyrightHint')}
                                     className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 bg-background text-foreground"
                                 />
-                                <p className="text-xs text-muted-foreground mt-1">Yıl ve mağaza adı otomatik eklenir: © 2025 Mağazam. <em>[metin buraya]</em></p>
+                                <p className="text-xs text-muted-foreground mt-1">{t('design.footer.copyrightDesc')}</p>
                             </div>
                             <div>
-                                <label className="block text-sm text-foreground mb-1">Alt Çizgi Hizalama</label>
+                                <label className="block text-sm text-foreground mb-1">{t('design.footer.bottomAlign')}</label>
                                 <div className="flex gap-2">
-                                    {[
-                                        { value: 'left', label: 'Sol' },
-                                        { value: 'center', label: 'Orta' },
-                                        { value: 'between', label: 'Karşılıklı' },
-                                    ].map((opt) => (
+                                    {alignOptions.map((opt) => (
                                         <button
-                                            key={opt.value}
+                                            key={opt.value as string}
                                             type="button"
-                                            onClick={() => setGlobal('bottomBarAlignment', opt.value as FooterSettingsDto['bottomBarAlignment'])}
+                                            onClick={() => setGlobal('bottomBarAlignment', opt.value)}
                                             className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${draft.bottomBarAlignment === opt.value ? 'bg-[var(--brand-primary)] text-white border-[var(--brand-primary)]' : 'bg-card text-muted-foreground border-border hover:border-[var(--brand-primary)]'}`}
                                         >
-                                            {opt.label}
+                                            {t(opt.labelKey as Parameters<TFunction>[0])}
                                         </button>
                                     ))}
                                 </div>
@@ -594,7 +651,7 @@ export default function AdminFooterPage() {
                     {/* Columns */}
                     <div className="bg-card rounded-xl shadow-sm border border-border p-5">
                         <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
-                            <h3 className="text-base font-semibold text-foreground">Sütunlar</h3>
+                            <h3 className="text-base font-semibold text-foreground">{t('design.footer.columns')}</h3>
                             <span className="text-xs text-muted-foreground">{draft.columns.length} / 4</span>
                         </div>
 
@@ -614,6 +671,7 @@ export default function AdminFooterPage() {
                                         onChange={(updated) => updateColumn(col.id, updated)}
                                         onDelete={() => deleteColumn(col.id)}
                                         canDelete={draft.columns.length > 1}
+                                        t={t}
                                     />
                                 ))}
                             </SortableContext>
@@ -622,36 +680,38 @@ export default function AdminFooterPage() {
                         {/* Add column */}
                         {canAdd ? (
                             <div className="mt-3">
-                                <p className="text-xs font-medium text-muted-foreground mb-2">Sütun Tipi Seç:</p>
+                                <p className="text-xs font-medium text-muted-foreground mb-2">{t('design.footer.selectType')}</p>
                                 <div className="flex gap-2 flex-wrap">
-                                    {(['links', 'contact', 'social', 'about'] as FooterColumnType[]).map((t) => {
-                                        const Icon = TYPE_ICONS[t];
+                                    {(['links', 'contact', 'social', 'about'] as FooterColumnType[]).map((type) => {
+                                        const Icon = TYPE_ICONS[type];
                                         return (
                                             <button
-                                                key={t}
+                                                key={type}
                                                 type="button"
-                                                onClick={() => addColumn(t)}
+                                                onClick={() => addColumn(type)}
                                                 className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-dashed border-border text-muted-foreground hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)] transition-colors"
                                             >
                                                 <Plus className="h-3.5 w-3.5" />
                                                 <Icon className="h-3.5 w-3.5" />
-                                                {TYPE_LABELS[t]}
+                                                {getTypeLabels(t)[type]}
                                             </button>
                                         );
                                     })}
                                 </div>
                             </div>
                         ) : (
-                            <p className="mt-3 text-xs text-muted-foreground text-center">Maksimum 4 sütun kullanılabilir</p>
+                            <p className="mt-3 text-xs text-muted-foreground text-center">
+                                {t('design.footer.maxColumns')}
+                            </p>
                         )}
                     </div>
 
                     {/* Bottom bar links */}
                     <div className="bg-card rounded-xl shadow-sm border border-border p-5">
                         <h3 className="text-base font-semibold text-foreground mb-4 pb-3 border-b border-border">
-                            Alt Çizgi Bağlantıları
+                            {t('design.footer.bottomLinks')}
                         </h3>
-                        <p className="text-xs text-muted-foreground mb-3">Gizlilik politikası, kullanım şartları gibi yasal bağlantılar</p>
+                        <p className="text-xs text-muted-foreground mb-3">{t('design.footer.bottomLinksDesc')}</p>
                         <div className="space-y-2">
                             {draft.bottomLinks.map((link, idx) => (
                                 <div key={link.id} className="flex gap-2 items-center">
@@ -663,7 +723,7 @@ export default function AdminFooterPage() {
                                             updated[idx] = { ...link, label: e.target.value };
                                             setGlobal('bottomLinks', updated);
                                         }}
-                                        placeholder="Etiket"
+                                        placeholder={t('design.footer.linkLabel')}
                                         className="flex-1 border border-border rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary)]/40 bg-background text-foreground"
                                     />
                                     <input
@@ -674,7 +734,7 @@ export default function AdminFooterPage() {
                                             updated[idx] = { ...link, url: e.target.value };
                                             setGlobal('bottomLinks', updated);
                                         }}
-                                        placeholder="URL"
+                                        placeholder={t('design.footer.linkUrl')}
                                         className="flex-1 border border-border rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary)]/40 bg-background text-foreground"
                                     />
                                     <button
@@ -689,10 +749,10 @@ export default function AdminFooterPage() {
                         </div>
                         <button
                             type="button"
-                            onClick={() => setGlobal('bottomLinks', [...draft.bottomLinks, { ...newBottomLink(), order: draft.bottomLinks.length }])}
+                            onClick={() => setGlobal('bottomLinks', [...draft.bottomLinks, { ...newBottomLink(t), order: draft.bottomLinks.length }])}
                             className="mt-3 flex items-center gap-1 text-xs text-[var(--brand-primary)] hover:underline"
                         >
-                            <Plus className="h-3.5 w-3.5" /> Bağlantı Ekle
+                            <Plus className="h-3.5 w-3.5" /> {t('design.footer.addLink')}
                         </button>
                     </div>
                 </div>
@@ -707,7 +767,7 @@ export default function AdminFooterPage() {
                     >
                         <span className="flex items-center gap-2">
                             <Eye className="h-4 w-4 text-[var(--brand-primary)]" />
-                            Canlı Önizleme
+                            {t('design.footer.previewTitle')}
                         </span>
                         <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${previewOpen ? 'rotate-180' : ''}`} />
                     </button>
@@ -717,9 +777,9 @@ export default function AdminFooterPage() {
                             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
                                 <span className="text-sm font-medium text-foreground flex items-center gap-2">
                                     <Eye className="h-4 w-4 text-[var(--brand-primary)]" />
-                                    Canlı Önizleme
+                                    {t('design.footer.previewTitle')}
                                 </span>
-                                <span className="text-xs text-muted-foreground">Kaydetmeden önce önizleme</span>
+                                <span className="text-xs text-muted-foreground">{t('design.footer.previewNote')}</span>
                             </div>
 
                             {/* Scaled preview */}

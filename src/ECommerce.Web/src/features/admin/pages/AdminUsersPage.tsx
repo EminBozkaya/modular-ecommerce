@@ -9,15 +9,20 @@ import UserFormModal from '../components/UserFormModal';
 import ConfirmModal from '../components/ConfirmModal';
 import AgGridDatePicker from '../components/AgGridDatePicker';
 import { EntityStatusFilter, EntityStatusFloatingFilter } from '../components/EntityStatusFilter';
-import { useUserGridColumns, localeTextTr } from '../hooks/useUserGridColumns';
+import { useUserGridColumns } from '../hooks/useUserGridColumns';
 import { useUserActions, defaultUserModalSettings, type UserModalSettings } from '../hooks/useUserActions';
 import { exportUsersToExcel, exportUsersToPDF } from '../utils/userExport';
 import excelIcon from '../../../assets/excel_download_icon.png';
 import pdfIcon from '../../../assets/pdf_download_icon.png';
-import { useThemeStore } from '@/store/themeStore';
+import { useAgGridTheme, useRowStyleColors } from '../utils/agGridTheme';
+import { useTranslation } from 'react-i18next';
+import { useAgGridLocale } from '@/hooks/useAgGridLocale';
 ModuleRegistry.registerModules([AllCommunityModule]);
 export default function AdminUsersPage() {
-    const { resolved: theme } = useThemeStore();
+    const { t } = useTranslation('admin');
+    const { localeText } = useAgGridLocale();
+    const agGridTheme = useAgGridTheme();
+    const rowColors = useRowStyleColors();
     const gridRef = useRef<AgGridReact>(null);
     const [users, setUsers] = useState<AdminUser[]>([]);
     const [loading, setLoading] = useState(true);
@@ -94,7 +99,7 @@ export default function AdminUsersPage() {
 
     const fullWidthCellRenderer = useMemo(() => (params: any) => {
         const u = params.data as AdminUser;
-        const status = u.isDeleted ? 'Silinmiş' : (u.isActive ? 'Aktif' : 'Pasif');
+        const status = u.isDeleted ? t('filter.deleted') : (u.isActive ? t('filter.active') : t('filter.passive'));
         const statusColor = u.isDeleted ? '#dc2626' : (u.isActive ? '#16a34a' : '#ca8a04');
         const nodeId = params.node.id as string;
 
@@ -127,19 +132,19 @@ export default function AdminUsersPage() {
                 
                 <div className="grid grid-cols-1 gap-3">
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">E-posta</span>
+                        <span className="mobile-detail-label">{t('users.mobile.email')}</span>
                         <span className="mobile-detail-value font-medium">{u.email}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Rol</span>
-                        <span className="mobile-detail-value">{u.role === 'Admin' ? 'Yönetici' : 'Müşteri'}</span>
+                        <span className="mobile-detail-label">{t('users.mobile.role')}</span>
+                        <span className="mobile-detail-value">{u.role === 'Admin' ? t('forms.labels.roleAdmin') : t('forms.labels.roleCustomer')}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">E-posta Onayı</span>
-                        <span className="mobile-detail-value text-sm">{u.isEmailConfirmed ? '✅ Onaylı' : '❌ Onaysız'}</span>
+                        <span className="mobile-detail-label">{t('users.mobile.emailConfirmed')}</span>
+                        <span className="mobile-detail-value text-sm">{u.isEmailConfirmed ? t('users.mobile.confirmed') : t('users.mobile.notConfirmed')}</span>
                     </div>
                     <div className="mobile-detail-item">
-                        <span className="mobile-detail-label">Kayıt Tarihi</span>
+                        <span className="mobile-detail-label">{t('users.mobile.date')}</span>
                         <span className="mobile-detail-value">{new Date(u.createdAt).toLocaleDateString('tr-TR')}</span>
                     </div>
                 </div>
@@ -147,11 +152,11 @@ export default function AdminUsersPage() {
                 <div className="flex gap-2 mt-3 pt-3 border-t border-border">
                     {!u.isDeleted ? (
                         <>
-                            <button onClick={(e) => { e.stopPropagation(); handleEdit(u); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">DÜZENLE</button>
-                            <button onClick={(e) => { e.stopPropagation(); handleDelete(u.id, u.fullName); }} className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm border border-red-100">SİL</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleEdit(u); }} className="flex-1 bg-green-50 text-[var(--brand-primary)] py-2 rounded-lg font-bold text-sm border border-green-100">{t('users.mobile.edit')}</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleDelete(u.id, u.fullName); }} className="flex-1 bg-red-50 text-red-600 py-2 rounded-lg font-bold text-sm border border-red-100">{t('users.mobile.delete')}</button>
                         </>
                     ) : (
-                        <button onClick={(e) => { e.stopPropagation(); handleRestore(u.id); }} className="flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm border border-blue-100">GERİ YÜKLE</button>
+                        <button onClick={(e) => { e.stopPropagation(); handleRestore(u.id); }} className="flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm border border-blue-100">{t('users.mobile.restore')}</button>
                     )}
                 </div>
             </div>
@@ -168,7 +173,7 @@ export default function AdminUsersPage() {
                         <Users className="h-5 w-5" style={{ color: 'var(--brand-primary)' }} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>Müşteriler</h1>
+                        <h1 className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>{t('users.title')}</h1>
                     </div>
                 </div>
                 <div className="flex items-center gap-4 self-end sm:self-auto">
@@ -183,7 +188,7 @@ export default function AdminUsersPage() {
                         <span className="hidden xs:inline text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Excel</span>
                     </button>
                     <button
-                        onClick={() => exportUsersToPDF(users).catch(() => alert('PDF hatasi.'))}
+                        onClick={() => exportUsersToPDF(users).catch(() => alert(t('errors.pdfExport')))}
                         className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group"
                         title="PDF'e Aktar"
                     >
@@ -197,7 +202,7 @@ export default function AdminUsersPage() {
                             onClick={() => { setEditingUser(null); setModalOpen(true); }}
                             className="flex items-center justify-center w-14 h-14 text-white rounded-xl transition-all duration-200 shadow-sm hover:shadow-md shrink-0"
                             style={{ background: 'var(--brand-primary)' }}
-                            title="Yeni Müşteri Ekle"
+                            title={t('users.addTooltip')}
                             onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = 'var(--brand-primary-dark)')}
                             onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = 'var(--brand-primary)')}
                         >
@@ -211,6 +216,7 @@ export default function AdminUsersPage() {
             <div className="bg-card rounded-xl shadow-sm overflow-x-auto border border-border">
                 <div style={{ minWidth: 'fit-content' }}>
                     <AgGridReact<AdminUser>
+                        theme={agGridTheme}
                         suppressHorizontalScroll={false}
                         suppressColumnVirtualisation={true}
                         tooltipShowDelay={300}
@@ -268,12 +274,11 @@ export default function AdminUsersPage() {
                         loading={loading}
                         domLayout="autoHeight"
                         animateRows={true}
-                        localeText={localeTextTr}
+                        localeText={localeText}
                         getRowStyle={(params) => {
-                            const isDark = theme === 'dark';
-                            if (params.data?.isDeleted) return { backgroundColor: isDark ? 'rgba(239,68,68,0.15)' : '#fef2f2' };
-                            if (params.data?.isActive === false) return { backgroundColor: isDark ? 'rgba(100,116,139,0.15)' : '#f1f5f9' };
-                            if (params.data?.isActive === true) return { backgroundColor: isDark ? 'rgba(34,197,94,0.12)' : '#f0fdf4' };
+                            if (params.data?.isDeleted) return { backgroundColor: rowColors.deleted };
+                            if (params.data?.isActive === false) return { backgroundColor: rowColors.inactive };
+                            if (params.data?.isActive === true) return { backgroundColor: rowColors.active };
                             return undefined;
                         }}
                         defaultColDef={{
@@ -294,8 +299,8 @@ export default function AdminUsersPage() {
             </div>
 
             <div className="flex items-center justify-between mt-3 px-1 text-xs text-muted-foreground">
-                <span>Toplam kayit: {users.length}</span>
-                <span>Gosterilen: {gridApi?.getDisplayedRowCount() ?? users.length} kayit</span>
+                <span>{t('common:totalRecords', { count: users.length })}</span>
+                <span>{t('common:showing', { count: gridApi?.getDisplayedRowCount() ?? users.length })}</span>
             </div>
             <UserFormModal open={modalOpen} onClose={() => { setModalOpen(false); setEditingUser(null); }} onSubmit={(data: UserFormData) => handleFormSubmit(data, editingUser)} user={editingUser} loading={saving} />
             <ConfirmModal open={modalSettings.open} title={modalSettings.title} message={modalSettings.message} variant={modalSettings.variant} confirmText={modalSettings.confirmText} showConfirm={modalSettings.showConfirm} onConfirm={() => handleConfirmAction(modalSettings)} onClose={() => setModalSettings(prev => ({ ...prev, open: false }))} loading={deleting} />

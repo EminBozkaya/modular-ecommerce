@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import type { Order, OrderStatus } from '../../ordering/types/order';
 import { OrderStatusBadge } from '../../ordering/components/OrderStatusBadge';
 import { useUpdateOrderStatus } from '../hooks/useAdminOrders';
+import { useTranslation } from 'react-i18next';
 
 interface OrderStatusUpdateModalProps {
     order: Order;
@@ -10,17 +11,18 @@ interface OrderStatusUpdateModalProps {
     onClose: () => void;
 }
 
-const statusOptions: { value: OrderStatus; label: string }[] = [
-    { value: 'Pending', label: 'Beklemede' },
-    { value: 'Processing', label: 'İşleniyor' },
-    { value: 'Paid', label: 'Ödendi' },
-    { value: 'Shipped', label: 'Kargoya Verildi' },
-    { value: 'Delivered', label: 'Teslim Edildi' },
-    { value: 'Cancelled', label: 'İptal Edildi' },
-    { value: 'Refunded', label: 'İade Edildi' },
+const statusValues: OrderStatus[] = [
+    'Pending',
+    'Processing',
+    'Paid',
+    'Shipped',
+    'Delivered',
+    'Cancelled',
+    'Refunded',
 ];
 
 export function OrderStatusUpdateModal({ order, isOpen, onClose }: OrderStatusUpdateModalProps) {
+    const { t } = useTranslation('admin');
     const [newStatus, setNewStatus] = useState<OrderStatus>(order.status);
     const mutation = useUpdateOrderStatus();
 
@@ -45,25 +47,25 @@ export function OrderStatusUpdateModal({ order, isOpen, onClose }: OrderStatusUp
             <div className="bg-card rounded-xl shadow-xl w-full max-w-md overflow-hidden">
                 <div className="p-6">
                     <div className="flex items-center justify-between mb-5">
-                        <h3 className="text-lg font-bold text-foreground">Sipariş Durumunu Güncelle</h3>
+                        <h3 className="text-lg font-bold text-foreground">{t('modals.orderStatus.title')}</h3>
                         <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
                             <X className="h-5 w-5" />
                         </button>
                     </div>
 
                     <div className="mb-4">
-                        <p className="text-sm text-muted-foreground mb-1">Sipariş No</p>
+                        <p className="text-sm text-muted-foreground mb-1">{t('modals.orderStatus.orderNo')}</p>
                         <p className="text-sm font-mono text-foreground">{order.id}</p>
                     </div>
 
                     <div className="mb-4">
-                        <p className="text-sm text-muted-foreground mb-1">Mevcut Durum</p>
+                        <p className="text-sm text-muted-foreground mb-1">{t('modals.orderStatus.currentStatus')}</p>
                         <OrderStatusBadge status={order.status} />
                     </div>
 
                     <div className="mb-2">
                         <label htmlFor="newStatus" className="block text-sm text-muted-foreground mb-1">
-                            Yeni Durum
+                            {t('modals.orderStatus.newStatus')}
                         </label>
                         <select
                             id="newStatus"
@@ -71,14 +73,14 @@ export function OrderStatusUpdateModal({ order, isOpen, onClose }: OrderStatusUp
                             onChange={(e) => setNewStatus(e.target.value as OrderStatus)}
                             className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]"
                         >
-                            {statusOptions.map((opt) => (
-                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            {statusValues.map((val) => (
+                                <option key={val} value={val}>{t(`status.${val}`)}</option>
                             ))}
                         </select>
                     </div>
 
                     {mutation.isError && (
-                        <p className="text-sm text-red-600 mt-2">Durum güncellenirken bir hata oluştu.</p>
+                        <p className="text-sm text-red-600 mt-2">{t('modals.orderStatus.error')}</p>
                     )}
                 </div>
 
@@ -89,14 +91,14 @@ export function OrderStatusUpdateModal({ order, isOpen, onClose }: OrderStatusUp
                         className="px-4 py-2 text-sm font-semibold text-white rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
                         style={{ background: 'var(--brand-primary)' }}
                     >
-                        {mutation.isPending ? 'Güncelleniyor...' : 'Onayla'}
+                        {mutation.isPending ? t('buttons.updating') : t('modals.orderStatus.confirm')}
                     </button>
                     <button
                         disabled={mutation.isPending}
                         onClick={onClose}
                         className="px-4 py-2 text-sm font-semibold text-foreground bg-card border border-border rounded-lg hover:bg-accent transition-all active:scale-95"
                     >
-                        İptal
+                        {t('modals.orderStatus.cancel')}
                     </button>
                 </div>
             </div>

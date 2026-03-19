@@ -14,5 +14,11 @@
   "summary": {
     "products": "المنتجات ({{count}})",
     "total": "الإجمالي"
+  },
+  "page": {
+    "title": "سلتي",
+    "titleWithCount": "سلتي ({{count}} منتجات)",
+    "browseProducts": "تصفح المنتجات",
+    "loadError": "فشل تحميل السلة."
   }
 }

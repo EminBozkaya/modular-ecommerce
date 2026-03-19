@@ -4,6 +4,7 @@ import {
     Phone, MapPin, Mail, Clock,
 } from 'lucide-react';
 import { useStoreSettings } from '@/context/StoreSettingsContext';
+import { useThemeStore } from '@/store/themeStore';
 import type {
     FooterSettingsDto,
     FooterColumnDto,
@@ -150,9 +151,13 @@ function FooterColumn({ col, textColor, storeName, resolvedLogo }: {
 
 export function Footer({ override }: FooterProps) {
     const settings = useStoreSettings();
+    const { resolved: theme } = useThemeStore();
+    const isDark = theme === 'dark';
     const footer = override ?? settings.footer;
 
-    const bgColor = footer.backgroundColor ?? settings.primaryColor;
+    const bgColor = isDark
+        ? 'var(--brand-tinted-dark-bg)'
+        : (footer.backgroundColor ?? settings.primaryColor);
     const textColor = footer.textColor ?? '#FFFFFF';
 
     const enabledCols = [...footer.columns]

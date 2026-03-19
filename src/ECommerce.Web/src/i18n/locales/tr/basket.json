@@ -14,5 +14,11 @@
   "summary": {
     "products": "Ürünler ({{count}})",
     "total": "Toplam"
+  },
+  "page": {
+    "title": "Sepetim",
+    "titleWithCount": "Sepetim ({{count}} ürün)",
+    "browseProducts": "Ürünlere Göz At",
+    "loadError": "Sepet yüklenirken bir hata oluştu."
   }
 }

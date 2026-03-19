@@ -21,7 +21,15 @@
     "back": "رجوع",
     "loading": "جارٍ التحميل...",
     "continue": "متابعة",
-    "continueAsGuest": "متابعة كضيف"
+    "continueAsGuest": "متابعة كضيف",
+    "restore": "استعادة",
+    "filter": "تصفية",
+    "export": "تصدير",
+    "close": "إغلاق",
+    "update": "تحديث",
+    "search": "بحث",
+    "reset": "إعادة تعيين",
+    "apply": "تطبيق"
   },
   "status": {
     "loading": "جارٍ التحميل...",
@@ -37,7 +45,13 @@
     "es": "الإسبانية",
     "ru": "الروسية",
     "ar": "العربية",
+    "all": "كل اللغات",
     "changeLanguage": "تغيير اللغة"
+  },
+  "theme": {
+    "light": "المظهر الفاتح",
+    "dark": "المظهر الداكن",
+    "toggle": "تبديل المظهر"
   },
   "header": {
     "login": "تسجيل الدخول",
@@ -68,5 +82,14 @@
   "table": {
     "total": "الإجمالي: {{count}}",
     "showing": "معروض: {{count}}"
-  }
+  },
+  "updatedAt": "تاريخ التحديث",
+  "updatedBy": "حُدِّث بواسطة",
+  "deletedAt": "تاريخ الحذف",
+  "active": "نشط",
+  "passive": "غير نشط",
+  "deleted": "محذوف",
+  "totalRecords": "إجمالي السجلات: {{count}}",
+  "showing": "معروض: {{count}} سجل",
+  "add": "إضافة"
 }

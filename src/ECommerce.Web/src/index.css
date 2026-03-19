@@ -127,27 +127,8 @@ body {
   font-family: var(--font-sans);
 }
 
-  /* ── AG Grid — Brand-Aware Theme ── */
-.ag-theme-alpine,
-.ag-root-wrapper {
-  --ag-alpine-active-color: var(--brand-primary, #2C3E50);
-  --ag-selected-row-background-color: hsl(var(--accent));
-  --ag-row-hover-color: hsl(var(--accent));
-  --ag-header-background-color: hsl(var(--card));
-  --ag-header-foreground-color: var(--brand-primary, #2C3E50);
-  --ag-border-color: hsl(var(--border));
-  --ag-font-size: 13px;
-  --ag-font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  --ag-range-selection-border-color: var(--brand-primary, #2C3E50);
-  --ag-checkbox-checked-color: var(--brand-primary, #2C3E50);
-  --ag-input-focus-border-color: var(--brand-primary, #2C3E50);
-}
-
-/* Fix browser default selection highlight to brand primary */
-.ag-theme-alpine ::selection {
-  background-color: var(--brand-primary, #2C3E50) !important;
-  color: white !important;
-}
+  /* ── AG Grid — Supplementary Styles ── */
+/* (Theme colors are handled by AG Grid v35 Theme API in agGridTheme.ts) */
 
 /* Row selection styles */
 .ag-row {
@@ -215,59 +196,6 @@ body {
 
 .ag-paging-button:hover {
   background-color: var(--brand-primary-light, rgba(44,62,80,0.10)) !important;
-}
-
-/* ── AG Grid — Dark Mode Overrides ── */
-.dark .ag-theme-alpine,
-.dark .ag-root-wrapper {
-  --ag-background-color: hsl(var(--card));
-  --ag-odd-row-background-color: hsl(var(--card));
-  --ag-header-background-color: hsl(var(--card));
-  --ag-header-foreground-color: hsl(var(--foreground));
-  --ag-foreground-color: hsl(var(--foreground));
-  --ag-secondary-foreground-color: hsl(var(--muted-foreground));
-  --ag-border-color: hsl(var(--border));
-  --ag-row-border-color: hsl(var(--border));
-  --ag-row-hover-color: hsl(var(--accent));
-  --ag-selected-row-background-color: hsl(var(--accent));
-  --ag-modal-overlay-background-color: rgba(0,0,0,0.6);
-  --ag-control-panel-background-color: hsl(var(--card));
-  --ag-subheader-background-color: hsl(var(--muted));
-  --ag-input-disabled-background-color: hsl(var(--muted));
-}
-
-/* Filter inputs in dark mode */
-.dark .ag-theme-alpine .ag-text-field-input,
-.dark .ag-theme-alpine .ag-number-field-input,
-.dark .ag-theme-alpine .ag-floating-filter-input {
-  background-color: hsl(var(--background)) !important;
-  color: hsl(var(--foreground)) !important;
-  border-color: hsl(var(--border)) !important;
-}
-
-.dark .ag-theme-alpine input[class*="ag-"]::-webkit-input-placeholder,
-.dark .ag-theme-alpine input[class*="ag-"]::placeholder {
-  color: hsl(var(--muted-foreground)) !important;
-  opacity: 1;
-}
-
-/* Header cells & column separators */
-.dark .ag-theme-alpine .ag-header-cell,
-.dark .ag-theme-alpine .ag-header-group-cell {
-  color: hsl(var(--foreground));
-  background-color: hsl(var(--card));
-}
-
-/* Cell text */
-.dark .ag-theme-alpine .ag-cell {
-  color: hsl(var(--foreground));
-}
-
-/* Pager panel */
-.dark .ag-theme-alpine .ag-paging-panel {
-  background-color: hsl(var(--card));
-  color: hsl(var(--muted-foreground));
-  border-color: hsl(var(--border));
 }
 
 /* ── Marquee (scrolling banner text) ── */

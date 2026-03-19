@@ -15,16 +15,16 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product?> GetByIdAsync(Guid id, CancellationToken ct = default)
         => await _ctx.Products.IgnoreQueryFilters()
-            .Include(p => p.Category)
-            .Include(p => p.Unit)
             .Include(p => p.Translations)
+            .Include(p => p.Category).ThenInclude(c => c!.Translations)
+            .Include(p => p.Unit).ThenInclude(u => u!.Translations)
             .FirstOrDefaultAsync(p => p.Id == id, ct);
 
     public async Task<Product?> GetByIdAsNoTrackingAsync(Guid id, CancellationToken ct = default)
         => await _ctx.Products.AsNoTracking().IgnoreQueryFilters()
-            .Include(p => p.Category)
-            .Include(p => p.Unit)
             .Include(p => p.Translations)
+            .Include(p => p.Category).ThenInclude(c => c!.Translations)
+            .Include(p => p.Unit).ThenInclude(u => u!.Translations)
             .FirstOrDefaultAsync(p => p.Id == id, ct);
 
     public async Task<IReadOnlyList<Product>> GetAllActiveAsync(CancellationToken ct = default)

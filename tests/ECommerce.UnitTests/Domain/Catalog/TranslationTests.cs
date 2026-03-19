@@ -83,9 +83,9 @@ public class TranslationTests
     [Fact]
     public void Category_UpsertTranslation_DefaultLanguage_AddsRow()
     {
-        var category = Category.Create("Kuruyemiş");
+        var category = Category.Create("Kategori-A");
 
-        category.UpsertTranslation("tr", "Kuruyemiş", null);
+        category.UpsertTranslation("tr", "Kategori-A", null);
 
         category.Translations.Should().ContainSingle(t => t.LanguageCode == "tr");
     }
@@ -93,11 +93,11 @@ public class TranslationTests
     [Fact]
     public void Category_UpsertTranslation_MultipleLanguages_AllPresent()
     {
-        var category = Category.Create("Kuruyemiş");
+        var category = Category.Create("Kategori-A");
 
-        category.UpsertTranslation("tr", "Kuruyemiş", null);
-        category.UpsertTranslation("en", "Nuts & Seeds", null);
-        category.UpsertTranslation("de", "Nüsse & Samen", null);
+        category.UpsertTranslation("tr", "Kategori-A", null);
+        category.UpsertTranslation("en", "Category-A", null);
+        category.UpsertTranslation("de", "Kategorie-A", null);
 
         category.Translations.Should().HaveCount(3);
     }

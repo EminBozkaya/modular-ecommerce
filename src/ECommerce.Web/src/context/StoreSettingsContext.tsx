@@ -1,14 +1,19 @@
 import { createContext, useContext, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { getPublicStoreSettings, defaultHomepageSections, defaultFooterSettings } from '@/features/admin/api/storeSettingsApi';
 import type { StoreSettingsDto } from '@/features/admin/api/storeSettingsApi';
 import { queryKeys } from '@/utils/queryKeys';
+import { useThemeStore } from '@/store/themeStore';
+import { hexToRgb, adjustPrimaryForDark, adjustDarkVariant, brandTintedDarkBg } from '@/utils/colorUtils';
+
+const USE_MOCK = import.meta.env.VITE_USE_MOCK_API === 'true';
 
 // White-label neutral defaults — shown while the query is in flight or on error.
 // Matches the backend _defaults palette so there is no flash of wrong color.
 const defaults: StoreSettingsDto = {
     imageBase64: undefined,
-    storeName: 'Mağazam',
+    storeName: 'Demo Store',
     showStoreNameInHeader: true,
     // area bg colors
     primaryColor: '#2C3E50',
@@ -18,7 +23,7 @@ const defaults: StoreSettingsDto = {
     adminSidebarBackgroundColor: '#2C3E50',
     adminPageBackgroundColor: '#F4F6F8',
     // banner
-    freeShippingBannerText: 'Hızlı ve güvenli teslimat garantisiyle alışveriş yapın!',
+    freeShippingBannerText: 'FREE SHIPPING ON ORDERS OVER $100!',
     freeShippingBannerVisible: false,
     freeShippingBannerMarquee: false,
     freeShippingBannerMarqueeSpeed: 5,
@@ -70,25 +75,25 @@ const defaults: StoreSettingsDto = {
         slides: [
             {
                 id: 'default-slide-1',
-                title: 'Hoş Geldiniz',
-                subtitle: 'Mağazamıza hoş geldiniz',
-                description: 'En kaliteli ürünleri uygun fiyatlarla sunuyoruz.',
+                title: 'Welcome',
+                subtitle: 'Welcome to our store',
+                description: 'We offer the finest products at great prices.',
                 textColor: '#FFFFFF',
                 overlayColor: '#2C3E50',
                 overlayOpacity: 85,
-                buttonText: 'Alışverişe Başla',
+                buttonText: 'Start Shopping',
                 buttonLink: '/products',
                 buttonVisible: true,
             },
             {
                 id: 'default-slide-2',
-                title: 'Özel Kampanyalar',
-                subtitle: 'Seçili ürünlerde fırsatlar',
-                description: 'Kaçırmayın, sınırlı süre geçerlidir.',
+                title: 'Special Offers',
+                subtitle: 'Deals on selected products',
+                description: "Don't miss out — limited time only.",
                 textColor: '#FFFFFF',
                 overlayColor: '#1A252F',
                 overlayOpacity: 80,
-                buttonText: 'Fırsatları Keşfet',
+                buttonText: 'Explore Deals',
                 buttonLink: '/products',
                 buttonVisible: true,
             },
@@ -99,40 +104,56 @@ const defaults: StoreSettingsDto = {
 };
 
 /**
- * Parse a #RRGGBB hex string to [r, g, b].
- * Falls back to white-label defaults on any parse error.
- */
-function hexToRgb(hex: string): [number, number, number] {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return [r, g, b];
-}
-
-/**
  * Apply brand CSS variables to :root so every component in the tree — including
  * those that cannot call useStoreSettings() (AG Grid theme, DatePicker overrides,
  * global focus-ring CSS) — automatically reflects the store's primary colour.
  *
+ * In dark mode the primary colour is automatically adjusted for visibility:
+ * lightness is lifted into the 50-65 % range while keeping the original hue,
+ * so brand identity is preserved regardless of the admin-chosen hex.
+ *
  * Variables set:
- *   --brand-primary         : the hex value itself
- *   --brand-primary-light   : 10 % opacity rgba  (icon badge bg, grid hover)
- *   --brand-primary-subtle  : 5 % opacity rgba   (calendar day hover bg)
- *   --brand-primary-shadow  : 20 % opacity rgba  (datepicker selected shadow)
+ *   --brand-primary         : hex (adjusted for dark mode when active)
+ *   --brand-primary-dark    : pressed / 3-D border tone
+ *   --brand-primary-light   : 10-15 % opacity rgba  (icon badge bg, grid hover)
+ *   --brand-primary-subtle  :  5-8 % opacity rgba   (calendar day hover bg)
+ *   --brand-primary-shadow  : 20-25 % opacity rgba  (datepicker selected shadow)
+ *   --brand-tinted-dark-bg  : brand-hue-tinted dark bg for sidebar/footer
+ *   --brand-surface         : large surface bg (modal headers, panels)
+ *                             dark → tinted dark bg, light → primaryColor
  */
-function applyBrandCssVars(primaryColor: string): void {
+function applyBrandCssVars(primaryColor: string, isDark: boolean): void {
     const el = document.documentElement;
     try {
-        const [r, g, b] = hexToRgb(primaryColor);
-        // 75 % brightness for the "pressed" / 3-D-button border-bottom dark tone
-        const dr = Math.round(r * 0.75);
-        const dg = Math.round(g * 0.75);
-        const db = Math.round(b * 0.75);
-        el.style.setProperty('--brand-primary', primaryColor);
-        el.style.setProperty('--brand-primary-dark', `rgb(${dr},${dg},${db})`);
-        el.style.setProperty('--brand-primary-light', `rgba(${r},${g},${b},0.10)`);
-        el.style.setProperty('--brand-primary-subtle', `rgba(${r},${g},${b},0.05)`);
-        el.style.setProperty('--brand-primary-shadow', `rgba(${r},${g},${b},0.20)`);
+        if (isDark) {
+            // Adjust primary for visibility on dark backgrounds
+            const adjusted = adjustPrimaryForDark(primaryColor);
+            const [ar, ag, ab] = hexToRgb(adjusted);
+            const darkVariant = adjustDarkVariant(adjusted);
+            const tintedBg = brandTintedDarkBg(primaryColor);
+
+            el.style.setProperty('--brand-primary', adjusted);
+            el.style.setProperty('--brand-primary-dark', darkVariant);
+            el.style.setProperty('--brand-primary-light', `rgba(${ar},${ag},${ab},0.15)`);
+            el.style.setProperty('--brand-primary-subtle', `rgba(${ar},${ag},${ab},0.08)`);
+            el.style.setProperty('--brand-primary-shadow', `rgba(${ar},${ag},${ab},0.25)`);
+            el.style.setProperty('--brand-tinted-dark-bg', tintedBg);
+            el.style.setProperty('--brand-surface', tintedBg);
+        } else {
+            const [r, g, b] = hexToRgb(primaryColor);
+            // 75 % brightness for the "pressed" / 3-D-button border-bottom dark tone
+            const dr = Math.round(r * 0.75);
+            const dg = Math.round(g * 0.75);
+            const db = Math.round(b * 0.75);
+
+            el.style.setProperty('--brand-primary', primaryColor);
+            el.style.setProperty('--brand-primary-dark', `rgb(${dr},${dg},${db})`);
+            el.style.setProperty('--brand-primary-light', `rgba(${r},${g},${b},0.10)`);
+            el.style.setProperty('--brand-primary-subtle', `rgba(${r},${g},${b},0.05)`);
+            el.style.setProperty('--brand-primary-shadow', `rgba(${r},${g},${b},0.20)`);
+            el.style.setProperty('--brand-tinted-dark-bg', primaryColor);
+            el.style.setProperty('--brand-surface', primaryColor);
+        }
     } catch {
         // Malformed hex — fall back to white-label default
         el.style.setProperty('--brand-primary', defaults.primaryColor);
@@ -140,16 +161,24 @@ function applyBrandCssVars(primaryColor: string): void {
         el.style.setProperty('--brand-primary-light', 'rgba(44,62,80,0.10)');
         el.style.setProperty('--brand-primary-subtle', 'rgba(44,62,80,0.05)');
         el.style.setProperty('--brand-primary-shadow', 'rgba(44,62,80,0.20)');
+        el.style.setProperty('--brand-tinted-dark-bg', defaults.primaryColor);
+        el.style.setProperty('--brand-surface', defaults.primaryColor);
     }
 }
 
 // Apply defaults immediately — before first React render — so there is no
 // flash of unstyled AG Grids, DatePickers, or focus rings on page load.
-applyBrandCssVars(defaults.primaryColor);
+applyBrandCssVars(
+    defaults.primaryColor,
+    document.documentElement.classList.contains('dark'),
+);
 
 const StoreSettingsContext = createContext<StoreSettingsDto>(defaults);
 
 export function StoreSettingsProvider({ children }: { children: React.ReactNode }) {
+    const { i18n } = useTranslation();
+    const queryClient = useQueryClient();
+
     const { data } = useQuery({
         queryKey: queryKeys.store.settings,
         queryFn: getPublicStoreSettings,
@@ -157,10 +186,22 @@ export function StoreSettingsProvider({ children }: { children: React.ReactNode 
         retry: 1,
     });
 
-    // Keep CSS variables in sync whenever the DB value arrives or changes.
+    const { resolved: theme } = useThemeStore();
+    const isDark = theme === 'dark';
+
+    // In mock mode, invalidate all settings caches when language changes so
+    // slide content and section titles reflect the new language.
     useEffect(() => {
-        applyBrandCssVars(data?.primaryColor ?? defaults.primaryColor);
-    }, [data?.primaryColor]);
+        if (USE_MOCK) {
+            void queryClient.invalidateQueries({ queryKey: queryKeys.store.settings });
+            void queryClient.invalidateQueries({ queryKey: queryKeys.admin.settings.store });
+        }
+    }, [i18n.language, queryClient]);
+
+    // Keep CSS variables in sync whenever the DB value or theme changes.
+    useEffect(() => {
+        applyBrandCssVars(data?.primaryColor ?? defaults.primaryColor, isDark);
+    }, [data?.primaryColor, isDark]);
 
     return (
         <StoreSettingsContext.Provider value={data ?? defaults}>

@@ -224,7 +224,7 @@ API            <- Application, Persistence, Infrastructure
 ```bash
 # 1. Clone the repository
 git clone <repo-url>
-cd EbrarKuruyemis
+cd ECommerce
 
 # 2. Update connection string
 #    src/ECommerce.API/appsettings.Development.json

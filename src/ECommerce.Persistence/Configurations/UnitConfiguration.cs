@@ -20,5 +20,10 @@ public class UnitConfiguration : IEntityTypeConfiguration<Unit>
 
         builder.HasIndex(u => u.Name).IsUnique();
         builder.HasIndex(u => u.Code).IsUnique().HasFilter("\"Code\" IS NOT NULL");
+
+        builder.HasMany(u => u.Translations)
+            .WithOne(t => t.Unit)
+            .HasForeignKey(t => t.UnitId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

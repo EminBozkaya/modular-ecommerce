@@ -21,7 +21,15 @@
     "back": "Back",
     "loading": "Loading...",
     "continue": "Continue",
-    "continueAsGuest": "Continue as Guest"
+    "continueAsGuest": "Continue as Guest",
+    "restore": "Restore",
+    "filter": "Filter",
+    "export": "Export",
+    "close": "Close",
+    "update": "Update",
+    "search": "Search",
+    "reset": "Reset",
+    "apply": "Apply"
   },
   "status": {
     "loading": "Loading...",
@@ -32,7 +40,18 @@
   "language": {
     "tr": "Türkçe",
     "en": "English",
+    "de": "German",
+    "fr": "French",
+    "es": "Spanish",
+    "ru": "Russian",
+    "ar": "Arabic",
+    "all": "All Languages",
     "changeLanguage": "Change language"
+  },
+  "theme": {
+    "light": "Light Theme",
+    "dark": "Dark Theme",
+    "toggle": "Toggle Theme"
   },
   "header": {
     "login": "Login",
@@ -63,5 +82,14 @@
   "table": {
     "total": "Total records: {{count}}",
     "showing": "Showing: {{count}} records"
-  }
+  },
+  "updatedAt": "Updated At",
+  "updatedBy": "Updated By",
+  "deletedAt": "Deleted At",
+  "active": "Active",
+  "passive": "Passive",
+  "deleted": "Deleted",
+  "totalRecords": "Total records: {{count}}",
+  "showing": "Showing: {{count}} records",
+  "add": "Add"
 }
