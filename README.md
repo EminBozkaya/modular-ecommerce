@@ -1,4 +1,14 @@
 <p align="center">
+  <a href="README.tr.md"><img src="https://flagcdn.com/w40/tr.png" width="32" alt="Türkçe" /></a>&nbsp;&nbsp;&nbsp;
+  <a href="README.md"><img src="https://flagcdn.com/w40/gb.png" width="32" alt="English" /></a>&nbsp;&nbsp;&nbsp;
+  <a href="README.de.md"><img src="https://flagcdn.com/w40/de.png" width="32" alt="Deutsch" /></a>&nbsp;&nbsp;&nbsp;
+  <a href="README.fr.md"><img src="https://flagcdn.com/w40/fr.png" width="32" alt="Français" /></a>&nbsp;&nbsp;&nbsp;
+  <a href="README.es.md"><img src="https://flagcdn.com/w40/es.png" width="32" alt="Español" /></a>&nbsp;&nbsp;&nbsp;
+  <a href="README.ru.md"><img src="https://flagcdn.com/w40/ru.png" width="32" alt="Русский" /></a>&nbsp;&nbsp;&nbsp;
+  <a href="README.ar.md"><img src="https://flagcdn.com/w40/sa.png" width="32" alt="العربية" /></a>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
   <img src="https://img.shields.io/badge/C%23-14-239120?style=for-the-badge&logo=csharp&logoColor=white" />
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
@@ -24,6 +34,17 @@
   <a href="#-security">Security</a> &bull;
   <a href="#-roadmap">Roadmap</a>
 </p>
+
+---
+
+## ✨ What Sets This Platform Apart?
+
+This project isn't just another e-commerce template; it's a **fully customizable, white-label platform** engineered to provide maximum UI/UX flexibility directly from the Admin Panel. 
+
+* **Complete Design Control:** Admins can seamlessly modify the visual identity without touching the codebase. You can instantly swap logos, update the global color palette, and adjust text fonts to align perfectly with any brand identity.
+* **Flexible Layouts:** Storefront menus can be freely reordered. The Header and Footer sections are highly configurable, and promotional Banners can be toggled between scrolling marquees or fixed static blocks based on your preference.
+* **Storefront Customization:** The homepage and storefront are entirely modular. Sections like main categories, customer testimonials, and newsletter blocks can be dynamically enabled, disabled, or fully customized.
+* **Deep Multi-Language Support (7 Languages):** Every single design customization mentioned above, alongside all product and category data, functions dynamically across 7 integrated languages. Whenever a new product or category is added, administrators can effortlessly publish translations for any of these 7 languages natively from the admin panel, ensuring a seamless shopping experience for a global audience.
 
 ---
 
@@ -207,88 +228,87 @@ API            <- Application, Persistence, Infrastructure
 
 ---
 
-## Getting Started
+## 🚀 How to Set Up & Run
+
+We offer two straightforward ways to run this project. If you simply want to examine the UI, design features, and frontend flow (ideal for quick portfolio reviews), use the **Mock Data** approach. If you intend to test the full backend architecture, use the **Full Stack** version.
 
 ### Prerequisites
 
-| Tool | Version |
-|------|---------|
-| [.NET SDK](https://dotnet.microsoft.com/download) | 10.0+ |
-| [Node.js](https://nodejs.org/) | 18+ (for frontend) |
-| [PostgreSQL](https://www.postgresql.org/) | 14+ |
-| [Redis](https://redis.io/) | 6+ |
-| [Docker](https://www.docker.com/) | Optional |
+| Tool | Version | Requirement |
+|------|---------|-------------|
+| [Node.js](https://nodejs.org/) | 18+ | Required for Frontend & Mock Data |
+| [.NET SDK](https://dotnet.microsoft.com/download) | 10.0+ | Required for Full Stack API |
+| [Docker](https://www.docker.com/) | Latest | Highly recommended for Full Stack databases |
 
-### Backend
+---
+
+### Option 1: Run with Mock Data (Quickest & Easiest) ⚡
+This mode runs **only the React SPA (Frontend)**. The backend is entirely mocked locally, allowing you to instantly experience the UI/UX, catalog browsing, cart operations, design elements, and 7-language support without setting up databases.
 
 ```bash
-# 1. Clone the repository
+# 1. Clone the repository and navigate to the frontend
 git clone <repo-url>
-cd ECommerce
+cd ECommerce/src/ECommerce.Web
 
-# 2. Update connection string
-#    src/ECommerce.API/appsettings.Development.json
-
-# 3. (Optional) Set default language for this deployment
-#    src/ECommerce.API/appsettings.json:
-#    "DefaultLanguage": "tr"   <-- change to "en", "de", etc. for other locales
-
-# 4. Apply migrations
-dotnet ef database update \
-  --project src/ECommerce.Persistence \
-  --startup-project src/ECommerce.API
-
-# 5. Run the API
-dotnet run --project src/ECommerce.API
-
-# 6. Run tests
-dotnet test ECommerce.sln
-
-# Swagger UI: https://localhost:5001/swagger
-```
-
-### Frontend
-
-```bash
-cd src/ECommerce.Web
-
-# 1. Install dependencies
+# 2. Install dependencies
 npm install
 
-# 2. Configure environment
-#    .env.development.local:
-#    VITE_API_BASE_URL=https://localhost:5001
-#    VITE_USE_MOCK_API=true
+# 3. Ensure your environment is set to Mock API
+# Check .env.development.local and ensure you have:
+# VITE_USE_MOCK_API=true
 
-# 3. Start dev server
+# 4. Start the development server
 npm run dev
-
-# 4. Type check
-npx tsc --noEmit
-
-# 5. Production build
-npm run build
 ```
 
-> Set `VITE_USE_MOCK_API=true` to run the frontend with mock data (no backend required).
-> Set `VITE_USE_MOCK_API=false` to connect to the real .NET API.
+*That's it!* Open the Local URL provided by Vite in your browser to explore the fully functional e-commerce UI instantly.
 
-### Docker (PostgreSQL & Redis)
+---
 
+### Option 2: Run Full Stack (Real Database & Redis) 🏗️
+This mode runs the fully functional .NET 10 API locally, connected to PostgreSQL and Redis databases, along with the React frontend pointing to your real API.
+
+#### Step A: Run Infrastructure (Docker)
+First, spin up PostgreSQL and Redis using Docker:
 ```bash
-docker run -d \
-  --name ecommerce-db \
-  -e POSTGRES_USER=postgresUser \
-  -e POSTGRES_PASSWORD=postgresPassword \
-  -e POSTGRES_DB=ECommerceDb \
-  -p 5432:5432 \
-  postgres:16-alpine
+# Start PostgreSQL container
+docker run -d --name ecommerce-db -e POSTGRES_USER=postgresUser -e POSTGRES_PASSWORD=postgresPassword -e POSTGRES_DB=ECommerceDb -p 5432:5432 postgres:16-alpine
 
-docker run -d \
-  --name ecommerce-redis \
-  -p 6379:6379 \
-  redis:7-alpine
+# Start Redis container
+docker run -d --name ecommerce-redis -p 6379:6379 redis:7-alpine
 ```
+
+#### Step B: Run the .NET API
+```bash
+# Open a new terminal and go to the solution root directory
+cd ECommerce
+
+# Apply Entity Framework migrations to build the database schema
+dotnet ef database update --project src/ECommerce.Persistence --startup-project src/ECommerce.API
+
+# Run the backend API
+dotnet run --project src/ECommerce.API
+```
+*The API will start running and can be explored via Swagger at `https://localhost:5001/swagger`*
+
+#### Step C: Run the Frontend
+In a new terminal window:
+```bash
+cd ECommerce/src/ECommerce.Web
+
+# Install dependencies if you haven't already
+npm install
+
+# Ensure your environment points to the real API
+# In .env.development.local, configure the following:
+# VITE_USE_MOCK_API=false
+# VITE_API_BASE_URL=https://localhost:5001
+
+# Start the frontend
+npm run dev
+```
+
+*🎉 Congratulations! You are now running the complete Modular Monolith architecture end-to-end!*
 
 ---
 
@@ -454,20 +474,20 @@ docker run -d \
 - [x] Admin user management (customer list, search)
 - [x] Mock/real API toggle (zero-code switch via env var)
 - [x] Multi-language support (TR/EN/DE) with Accept-Language header pipeline, Redis cache keyed by language, cross-language full-text search
+- [x] Translation architecture refactor — migrated to fully language-agnostic all-in-translations-table model
+- [x] Admin translation UI — tab-based translation editor for products & categories
 
 ### In Progress
 
-- [ ] **Translation architecture refactor** — migrating from TR-default hybrid model to fully language-agnostic all-in-translations-table model (prerequisite for global white-label deployments)
-- [ ] **Admin translation UI** — tab-based translation editor for products & categories
+- [ ] **AI-powered Translation API** — automatic AI-assisted translation for newly added categories and products
 
 ### Upcoming
 
-- [ ] Order & Checkout flow (M5)
 - [ ] Real payment provider integration (Iyzico / Stripe)
 - [ ] Email confirmation flow
 - [ ] Integration tests
-- [ ] Docker Compose for full-stack local development
-- [ ] CI/CD pipeline — Azure DevOps (M7)
+- [ ] Docker Compose for full-stack local containerization
+- [ ] CI/CD pipeline — GitHub Actions / Azure DevOps
 - [ ] Azure Container Apps deployment
 - [ ] Azure Key Vault for secrets management
 

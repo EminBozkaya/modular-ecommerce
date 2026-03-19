@@ -53,6 +53,7 @@ Backend: WishlistItem entity (BaseAuditableEntity), IWishlistRepository, AddToWi
 - CORS: whitelist policy with credentials support
 - Serilog structured logging
 - Database seeding (DbInitializer)
+- Dynamic Multi-language architecture — language-agnostic per-entity translations mapped via Accept-Language header
 
 ### Tests ✅
 - **Unit tests:** MoneyTests, StockQuantityTests, ProductTests, BasketTests, OrderTests, PaymentRecordTests, CreateOrderHandlerTests, ProcessPaymentHandlerTests, AddToBasketHandlerTests
@@ -61,11 +62,14 @@ Backend: WishlistItem entity (BaseAuditableEntity), IWishlistRepository, AddToWi
 
 ## Upcoming
 
-### M7 — Azure DevOps + CI/CD
+### AI-Powered Dynamic Translation
+- Auto-translate new categories and products via an AI-powered API integration
+
+### M7 — CI/CD & Docker Containerization
+- Docker Compose for full-stack local application containerization
+- CI/CD pipeline via GitHub Actions / Azure DevOps (build → test → deploy)
 - Azure Container Apps deployment
-- GitHub Actions pipeline (build → test → deploy)
-- Azure Key Vault for secrets
-- Docker Compose for local full-stack
+- Azure Key Vault for secrets management
 - Database migrations before deployment
 - Rollback strategy
 
