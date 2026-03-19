@@ -16,6 +16,12 @@ import { CategoryNavDropdownItem } from './CategoryNavDropdownItem';
 import { MobileCategoryDrawer } from './MobileCategoryDrawer';
 import { useStoreSettings } from '@/context/StoreSettingsContext';
 import { useThemeStore } from '@/store/themeStore';
+import type { Category } from '@/features/catalog/types/product';
+
+interface CategoryTreeNode {
+    category: Category;
+    subCategories: CategoryTreeNode[];
+}
 
 export function AppHeader() {
     const { t } = useTranslation('common');
@@ -95,7 +101,7 @@ export function AppHeader() {
     // Kategori ağacını kur: sonsuz derinlikte alt-kategori desteği
     const categoryTree = useMemo(() => {
         if (!allCategories) return [];
-        const buildTree = (parentId: string | null): unknown[] => {
+        const buildTree = (parentId: string | null): CategoryTreeNode[] => {
             return allCategories
                 .filter((c) => c.parentCategoryId === parentId && c.isActive && !c.isDeleted)
                 .map((c) => ({
@@ -126,26 +132,33 @@ export function AppHeader() {
                     <div className="flex flex-row items-center justify-between gap-4 xl:gap-6 min-h-[70px] md:min-h-[85px]">
 
                         {/* Logo Column */}
-                        {/* Menü duvarımız (sol hizalama) buraya bağlı: md'de 220px, xl'de 320px. (Padding değil width ile) */}
-                        <div className="flex items-center justify-between w-full md:w-[220px] xl:w-[320px] flex-shrink-0 relative">
-                            <Link to="/" className="flex-shrink-0 group flex items-center gap-2 md:gap-3 py-1 md:py-0 md:relative md:z-[60] md:-mb-10 xl:-mb-14 transition-all">
-                                {/* Square container: normalizes any logo aspect ratio. h-N drives size, aspect-square keeps width=height. */}
-                                <div className="h-16 sm:h-20 md:h-24 xl:h-32 aspect-square flex-shrink-0">
-                                    <img
-                                        src={resolvedLogo}
-                                        alt={settings.storeName}
-                                        className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
-                                    />
-                                </div>
+                        {/* Menü duvarımız (sol hizalama) buraya bağlı: md'de 260px, xl'de 400px. (Padding değil width ile) */}
+                        <div className="flex items-center justify-between w-full md:w-[260px] xl:w-[400px] flex-shrink-0 relative">
+                            <div className="flex items-center gap-2 md:gap-3 lg:gap-4 flex-shrink-0">
+                                <Link to="/" className="flex-shrink-0 group md:relative md:z-[60] md:-mb-14 xl:-mb-20 transition-all">
+                                    {/* Logo container: bounds all logo aspect ratios with a "safe zone" (padding). */}
+                                    <div className="h-12 sm:h-14 md:h-20 xl:h-28 flex items-center justify-center p-1 flex-shrink-0">
+                                        <img
+                                            src={resolvedLogo}
+                                            alt={settings.storeName || "Store"}
+                                            className="h-auto max-h-full w-auto max-w-[100px] sm:max-w-[130px] md:max-w-[180px] xl:max-w-[260px] object-contain transition-transform duration-300 group-hover:scale-110"
+                                        />
+                                    </div>
+                                </Link>
                                 {settings.showStoreNameInHeader && settings.storeName && (
-                                    <span
-                                        className="hidden md:block text-base lg:text-xl font-bold tracking-tight whitespace-nowrap transition-transform duration-300 group-hover:scale-105"
-                                        style={{ color: 'var(--brand-primary)' }}
+                                    <Link 
+                                        to="/" 
+                                        className="hidden lg:block pr-4 transition-all duration-300 hover:opacity-80 active:scale-95"
                                     >
-                                        {settings.storeName}
-                                    </span>
+                                        <span
+                                            className="text-base lg:text-xl font-bold tracking-tight whitespace-nowrap"
+                                            style={{ color: 'var(--brand-primary)' }}
+                                        >
+                                            {settings.storeName}
+                                        </span>
+                                    </Link>
                                 )}
-                            </Link>
+                            </div>
 
                             {/* Mobile Actions (Icons visible only on mobile) */}
                             <div className="flex md:hidden items-center gap-2 sm:gap-4 flex-shrink-0">
@@ -250,7 +263,7 @@ export function AppHeader() {
                     <div
                         className={cn(
                             'absolute top-0 h-full flex items-center transition-all duration-300 z-20',
-                            !isStuck ? 'left-[220px] xl:left-[320px]' : 'left-0',
+                            !isStuck ? 'left-[260px] xl:left-[400px]' : 'left-0',
                             canScrollLeft ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
                         )}
                     >
@@ -279,7 +292,7 @@ export function AppHeader() {
                             'flex items-center min-h-[50px] overflow-x-auto scroll-smooth w-full',
                             '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
                             !isStuck
-                                ? 'px-4 md:px-0 md:ml-[236px] xl:ml-[336px] md:pr-10'
+                                ? 'px-4 md:px-0 md:ml-[276px] xl:ml-[416px] md:pr-10'
                                 : 'px-4'
                         )}
                     >

@@ -11,10 +11,10 @@ export function FavoriteButton() {
         <div className="flex flex-col items-center group">
             <Link
                 to="/favoriler"
-                className="relative flex items-center justify-center w-11 h-11 rounded-full bg-gray-50 dark:bg-white/10 text-muted-foreground group-hover:text-[var(--brand-primary)] group-hover:bg-[var(--brand-primary-subtle)] transition-all duration-300 shadow-sm"
+                className="relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gray-50 dark:bg-white/10 text-muted-foreground group-hover:text-[var(--brand-primary)] group-hover:bg-[var(--brand-primary-subtle)] transition-all duration-300 shadow-sm"
                 title={t('header.favoritesTitle')}
             >
-                <svg viewBox="0 0 24 24" className={`h-6 w-6 transition-transform duration-300 group-hover:scale-110 ${favoriteCount > 0 ? 'text-red-500' : 'text-gray-400'}`}>
+                <svg viewBox="0 0 24 24" className="h-5 w-5 transition-transform duration-300 group-hover:scale-110 text-[var(--brand-primary)]">
                     <path
                         fill="currentColor"
                         d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"

@@ -14,11 +14,11 @@ export function BasketButton() {
         <div className="flex flex-col items-center group">
             <button
                 onClick={() => navigate('/basket')}
-                className="relative flex items-center justify-center w-11 h-11 rounded-full bg-gray-50 dark:bg-white/10 text-muted-foreground group-hover:text-[var(--brand-primary)] group-hover:bg-[var(--brand-primary-subtle)] transition-all duration-300 shadow-sm"
+                className="relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gray-50 dark:bg-white/10 text-muted-foreground group-hover:text-[var(--brand-primary)] group-hover:bg-[var(--brand-primary-subtle)] transition-all duration-300 shadow-sm"
                 aria-label={t('header.openBasket')}
                 title={t('header.basketTitle')}
             >
-                <svg viewBox="0 0 24 24" className="h-6 w-6 transition-transform duration-300 group-hover:scale-110 text-[var(--brand-primary)]">
+                <svg viewBox="0 0 24 24" className="h-5 w-5 transition-transform duration-300 group-hover:scale-110 text-[var(--brand-primary)]">
                     <path
                         fill="currentColor"
                         d="M17 18a2 2 0 110 4 2 2 0 010-4zM7 18a2 2 0 110 4 2 2 0 010-4z"

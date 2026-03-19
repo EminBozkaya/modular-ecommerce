@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { useLogout } from '@/features/auth/hooks/useLogout';
 import {
-    LogOut, Settings, LayoutDashboard, UserCircle,
+    LogOut, /* Settings, */ LayoutDashboard, UserCircle,
     MapPin as MapPinIcon, ShoppingBag,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -107,13 +107,13 @@ export function UserMenu() {
                             <MapPinIcon className="h-4 w-4 text-muted-foreground" />
                             {t('userMenu.addresses')}
                         </button>
-                        <button
-                            onClick={() => setIsOpen(false)}
-                            className="w-full flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors text-left"
-                        >
-                            <Settings className="h-4 w-4 text-muted-foreground" />
-                            {t('userMenu.settings')}
-                        </button>
+{/* <button
+    onClick={() => setIsOpen(false)}
+    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors text-left"
+>
+    <Settings className="h-4 w-4 text-muted-foreground" />
+    {t('userMenu.settings')}
+</button> */}
                     </div>
                     <div className="mt-1 pt-1 border-t border-border">
                         <button

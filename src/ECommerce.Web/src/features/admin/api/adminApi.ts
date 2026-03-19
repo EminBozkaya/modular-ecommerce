@@ -20,8 +20,15 @@ import {
     mockUpdateUser,
     mockDeleteUser,
     mockRestoreUser,
+    mockGetAddresses,
+    mockCreateAddress,
+    mockUpdateAddress,
+    mockDeleteAddress,
+    mockRestoreAddress,
 } from './mock';
 import type { CreateUserData, UpdateUserData } from './mock';
+import type { AdminAddress, UpdateAddressData } from '../types/adminAddress';
+export type { AdminAddress, UpdateAddressData };
 
 // ── Product CRUD ──
 
@@ -194,59 +201,31 @@ export async function restoreUser(id: string): Promise<void> {
 
 export type { AdminUser };
 
-// ── Admin Addresses ──
-
-export interface AdminAddress {
-    id: string;
-    userId: string;
-    title: string;
-    fullName: string;
-    addressLine1: string;
-    addressLine2?: string;
-    city: string;
-    postalCode: string;
-    country: string;
-    isDefault: boolean;
-    isActive: boolean;
-    isDeleted: boolean;
-    createdAt: string;
-    createdBy?: string;
-    updatedAt?: string;
-    updatedBy?: string;
-    userFullName?: string;
-}
-
-export interface UpdateAddressData {
-    id: string;
-    title: string;
-    fullName: string;
-    addressLine1: string;
-    addressLine2?: string;
-    city: string;
-    postalCode: string;
-    country: string;
-    isActive: boolean;
-}
 
 export async function getAddresses(): Promise<AdminAddress[]> {
+    if (isMock) return mockGetAddresses();
     const response = await apiClient.get<AdminAddress[]>('/api/admin/addresses');
     return response.data;
 }
 
 export async function createAddress(data: AddressFormData): Promise<string> {
+    if (isMock) return mockCreateAddress(data);
     const response = await apiClient.post<{ id: string }>('/api/admin/addresses', data);
     return response.data.id;
 }
 
 export async function updateAddress(data: UpdateAddressData): Promise<void> {
+    if (isMock) return mockUpdateAddress(data);
     await apiClient.put('/api/admin/addresses', data);
 }
 
 export async function deleteAddress(id: string): Promise<void> {
+    if (isMock) return mockDeleteAddress(id);
     await apiClient.delete(`/api/admin/addresses/${id}`);
 }
 
 export async function restoreAddress(id: string): Promise<void> {
+    if (isMock) return mockRestoreAddress(id);
     await apiClient.post(`/api/admin/addresses/restore/${id}`);
 }
 

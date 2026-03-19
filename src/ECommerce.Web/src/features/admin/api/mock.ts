@@ -4,6 +4,8 @@ import type { AdminUser } from '../types/adminUser';
 import type { Order, OrderStatus } from '../../ordering/types/order';
 import type { Product } from '../../catalog/types/product';
 import type { PaginatedResult } from '../../../types/api';
+import type { AdminAddress, UpdateAddressData } from '../types/adminAddress';
+import type { AddressFormData } from '@/lib/validations/admin.schema';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -352,4 +354,145 @@ export async function mockRestoreUser(id: string): Promise<void> {
     const user = mockUsers.find(u => u.id === id);
     if (!user) throw { response: { status: 404, data: { message: 'Kullanıcı bulunamadı' } } };
     user.isDeleted = false;
+}
+
+// ── Addresses Mock Data ──
+
+const mockAddresses: AdminAddress[] = [
+    {
+        id: 'addr-01',
+        userId: 'u1',
+        userFullName: 'John Smith',
+        title: 'Ev Adresi',
+        fullName: 'John Smith',
+        addressLine1: 'Atatürk Cad. No:123',
+        addressLine2: 'Daire: 4',
+        city: 'İstanbul',
+        postalCode: '34400',
+        country: 'Türkiye',
+        isDefault: true,
+        isActive: true,
+        isDeleted: false,
+        createdAt: '2026-03-09T09:15:00Z',
+    },
+    {
+        id: 'addr-02',
+        userId: 'u2',
+        userFullName: 'Marie Dupont',
+        title: 'Work Address',
+        fullName: 'Marie Dupont',
+        addressLine1: '15 Rue de Rivoli',
+        city: 'Paris',
+        postalCode: '75001',
+        country: 'France',
+        isDefault: true,
+        isActive: true,
+        isDeleted: false,
+        createdAt: '2026-03-08T14:30:00Z',
+    },
+    {
+        id: 'addr-03',
+        userId: 'u3',
+        userFullName: 'Hans Mueller',
+        title: 'Zuhause',
+        fullName: 'Hans Mueller',
+        addressLine1: 'Berliner Str. 42',
+        city: 'Berlin',
+        postalCode: '10115',
+        country: 'Germany',
+        isDefault: true,
+        isActive: true,
+        isDeleted: false,
+        createdAt: '2026-03-07T11:00:00Z',
+    },
+    {
+        id: 'addr-04',
+        userId: 'u4',
+        userFullName: 'Carlos Garcia',
+        title: 'Oficina',
+        fullName: 'Carlos Garcia',
+        addressLine1: 'Calle Gran Vía 28',
+        city: 'Madrid',
+        postalCode: '28013',
+        country: 'Spain',
+        isDefault: true,
+        isActive: false,
+        isDeleted: false,
+        createdAt: '2026-03-05T16:20:00Z',
+    },
+    {
+        id: 'addr-05',
+        userId: 'u5',
+        userFullName: 'Emma Brown',
+        title: 'Home',
+        fullName: 'Emma Brown',
+        addressLine1: '22 Baker Street',
+        city: 'London',
+        postalCode: 'W1U 3BW',
+        country: 'United Kingdom',
+        isDefault: true,
+        isActive: true,
+        isDeleted: true,
+        createdAt: '2026-03-04T08:45:00Z',
+    },
+];
+
+export async function mockGetAddresses(): Promise<AdminAddress[]> {
+    await delay(400);
+    return mockAddresses.map(a => ({ ...a }));
+}
+
+let addressIdCounter = 6;
+
+export async function mockCreateAddress(data: AddressFormData): Promise<string> {
+    await delay(400);
+    const id = `addr-${addressIdCounter++ < 10 ? '0' : ''}${addressIdCounter-1}`;
+    mockAddresses.push({
+        id,
+        userId: 'u1', // Default to first user for mock
+        userFullName: 'John Smith',
+        title: data.title,
+        fullName: data.fullName,
+        addressLine1: data.addressLine1,
+        addressLine2: data.addressLine2 || undefined,
+        city: data.city,
+        postalCode: data.postalCode,
+        country: data.country,
+        isDefault: false,
+        isActive: true,
+        isDeleted: false,
+        createdAt: new Date().toISOString(),
+    });
+    return id;
+}
+
+export async function mockUpdateAddress(data: UpdateAddressData): Promise<void> {
+    await delay(400);
+    const addr = mockAddresses.find(a => a.id === data.id);
+    if (!addr) throw { response: { status: 404, data: { message: 'Adres bulunamadı' } } };
+    
+    addr.title = data.title;
+    addr.fullName = data.fullName;
+    addr.addressLine1 = data.addressLine1;
+    addr.addressLine2 = data.addressLine2;
+    addr.city = data.city;
+    addr.postalCode = data.postalCode;
+    addr.country = data.country;
+    addr.isActive = data.isActive;
+    addr.updatedAt = new Date().toISOString();
+}
+
+export async function mockDeleteAddress(id: string): Promise<void> {
+    await delay(400);
+    const addr = mockAddresses.find(a => a.id === id);
+    if (!addr) throw { response: { status: 404, data: { message: 'Adres bulunamadı' } } };
+    addr.isDeleted = true;
+}
+
+export async function mockRestoreAddress(id: string): Promise<void> {
+    await delay(400);
+    const addr = mockAddresses.find(a => a.id === id);
+    if (!addr) throw { response: { status: 404, data: { message: 'Adres bulunamadı' } } };
+    addr.isDeleted = false;
+    addr.isActive = true;
 }

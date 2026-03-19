@@ -74,4 +74,3 @@ Backend: WishlistItem entity (BaseAuditableEntity), IWishlistRepository, AddToWi
 - Email confirmation flow
 - Integration tests (currently placeholder)
 - `AdminCategoriesPage_new.tsx` exists alongside `AdminCategoriesPage.tsx` — likely needs cleanup
-- `WeatherForecastController.cs` scaffold artifact — can be removed

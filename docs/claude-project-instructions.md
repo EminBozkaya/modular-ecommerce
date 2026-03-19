@@ -150,7 +150,6 @@ Request → ValidationBehavior (FluentValidation) → LoggingBehavior (Serilog) 
 - AuthController — POST register, POST login, GET me, POST refresh, POST logout
 - WishlistController — GET, GET product-ids, POST {productId}, DELETE {productId}, DELETE (clear)
 - AdminController [Authorize(Roles="Admin")] — Products CRUD + restore + stock, Categories CRUD + restore, Users list, Orders list + detail + status update + delete + restore, Dashboard (summary, revenue, recent-orders, low-stock)
-- WeatherForecastController — Scaffold artifact (can be removed)
 
 ### Middleware and Config:
 - ExceptionHandlingMiddleware (global, 4xx/5xx distinction)
@@ -236,7 +235,6 @@ Each follows: api/ (mock+real toggle) then hooks/ (React Query) then components/
 - Email confirmation flow — not implemented
 - Integration tests — placeholder only
 - AdminCategoriesPage_new.tsx exists alongside AdminCategoriesPage.tsx — likely needs cleanup
-- WeatherForecastController.cs scaffold artifact — can be removed
 - Docker Compose for full-stack local dev — not yet created
 
 ---
