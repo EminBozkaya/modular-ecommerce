@@ -81,7 +81,12 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ECommerce.Persistence.Context.ApplicationDbContext>();
     await context.Database.MigrateAsync();
-    await DbInitializer.SeedAsync(context, app.Environment.ContentRootPath);
+    
+    // Seed only if 'SeedData' is true in settings (Development default: true)
+    if (app.Configuration.GetValue<bool>("SeedData", defaultValue: true))
+    {
+        await DbInitializer.SeedAsync(context, app.Environment.ContentRootPath);
+    }
 }
 
 // ── Middleware pipeline ──
