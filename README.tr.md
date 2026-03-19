@@ -12,6 +12,16 @@
   </table>
 </div>
 
+<br/>
+
+> "Bu proje; Clean Architecture (Temiz Mimari) ve Domain-Driven Design (Alan Odaklı Tasarım) prensiplerindeki deneyimlerimi somut bir projeye dönüştürmek ve aynı zamanda yapay zeka destekli modern kodlama asistanlarıyla (AI Agents) bu geliştirme sürecine maksimum ivme kazandırmak amacıyla hayata geçirilmiştir.
+>
+> Geliştirme sürecinin altyapısını, **Anti-Gravity** editörüyle tam entegre çalışabilmesi için özel olarak yapılandırdığım `.agent` dizini oluşturmaktadır. Bu klasör altında tanımladığım `Rules` (Kurallar), `Workflows` (İş Akışları) ve `Skills` (Yetenekler) dosyaları aracılığıyla projenin mimari temeli ve asistan talimatları güvence altına alınmıştır. Başta **Claude** olmak üzere, gelişmiş dil modellerinin de projeye yön vermesiyle birlikte, çekirdek unsurları çok daha modüler, hatasız ve ölçeklenebilir bir mimaride inşa etmeye devam edeceğiz.
+> 
+> Hızla gelişen modern teknolojiler ışığında; yapay zeka destekli araçların ve asistanların yazılım süreçlerine entegrasyonu konusunda yolun henüz başında olan veya kendini bu alanda geliştirmek isteyen diğer meslektaşlarıma da bu projenin kılavuzluk etmesini ve ilham vermesini umut ediyorum."
+
+<br/>
+
 <p align="center">
   <img src="https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
   <img src="https://img.shields.io/badge/C%23-14-239120?style=for-the-badge&logo=csharp&logoColor=white" />

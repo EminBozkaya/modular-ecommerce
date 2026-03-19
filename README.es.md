@@ -12,6 +12,16 @@
   </table>
 </div>
 
+<br/>
+
+> "Este proyecto se inició con el objetivo de poner en práctica mi experiencia con la Arquitectura Limpia (Clean Architecture) y el Diseño Impulsado por el Dominio (Domain-Driven Design), al mismo tiempo que se acelera el proceso de desarrollo a su máximo potencial utilizando los modernos asistentes de codificación basados en IA de la actualidad.
+>
+> La base del proceso de desarrollo se construye sobre el directorio `.agent`, que estructuré específicamente para funcionar en total integración con el editor **Anti-Gravity**. Al definir archivos personalizados de `Rules` (Reglas), `Workflows` (Flujos de trabajo) y `Skills` (Habilidades) bajo este directorio, se han asegurado el esqueleto arquitectónico del proyecto y las instrucciones del asistente. Sobre esta sólida base, y guiados por modelos de lenguaje avanzados como **Claude**, continuaremos construyendo y desarrollando los elementos centrales del proyecto de una manera altamente modular, libre de errores y escalable.
+>
+> A la luz de los rápidos avances de las tecnologías modernas, tengo la sincera esperanza de que este proyecto sirva como guía e inspiración para otros desarrolladores que recién comienzan a integrar herramientas y asistentes basados en IA en sus procesos de desarrollo de software, o que simplemente desean mejorar en este campo en constante evolución."
+
+<br/>
+
 <p align="center">
   <img src="https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
   <img src="https://img.shields.io/badge/C%23-14-239120?style=for-the-badge&logo=csharp&logoColor=white" />

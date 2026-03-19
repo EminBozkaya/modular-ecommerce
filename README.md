@@ -12,6 +12,16 @@
   </table>
 </div>
 
+<br/>
+
+> "This project was initiated with the aim of putting my practical experience in Clean Architecture and Domain-Driven Design into practice, while simultaneously accelerating the development process to its maximum potential using today's modern AI-powered coding assistants.
+>
+> The foundation of the development process is built upon the `.agent` directory, which I specifically structured to work in full integration with the **Anti-Gravity** editor. By defining custom `Rules`, `Workflows`, and `Skills` files under this directory, the project's architectural skeleton and agent instructions have been secured. Building on this solid foundation, and guided by advanced language models like **Claude**, we will continue to construct and develop the core elements of the project in a highly modular, error-free, and scalable manner.
+>
+> In light of rapidly advancing modern technologies, it is my sincere hope that this project will serve as a guide and inspiration for other developers who are just beginning to integrate AI-powered tools and assistants into their software development processes, or who wish to improve themselves in this evolving field."
+
+<br/>
+
 <p align="center">
   <img src="https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
   <img src="https://img.shields.io/badge/C%23-14-239120?style=for-the-badge&logo=csharp&logoColor=white" />

@@ -52,7 +52,6 @@ nunit-agent.*
 *.v12.suo
 
 # Project-specific overrides
-/.agent
 
 # Entity Framework 6+ (e.g. EF Core)
 *.Migrations.cs

@@ -12,6 +12,16 @@
   </table>
 </div>
 
+<br/>
+
+> "Dieses Projekt wurde mit dem Ziel ins Leben gerufen, meine praktischen Erfahrungen in Clean Architecture und Domain-Driven Design in die Praxis umzusetzen und gleichzeitig den Entwicklungsprozess mit den modernen, KI-gestützten Coding-Assistenten von heute auf ein Maximum zu beschleunigen.
+>
+> Das Fundament des Entwicklungsprozesses bildet das Verzeichnis `.agent`, das ich speziell für die vollständige Integration mit dem **Anti-Gravity**-Editor strukturiert habe. Durch die Definition benutzerdefinierter `Rules`- (Regeln), `Workflows`- (Arbeitsabläufe) und `Skills`-Dateien (Fähigkeiten) in diesem Verzeichnis wurden das architektonische Gerüst des Projekts und die Anweisungen für den Assistenten gesichert. Auf diesem soliden Fundament aufbauend und geleitet von fortschrittlichen Sprachmodellen wie **Claude** werden wir die Kernelemente des Projekts weiterhin hochgradig modular, fehlerfrei und skalierbar aufbauen und entwickeln.
+>
+> Angesichts der rasant fortschreitenden modernen Technologien ist es meine aufrichtige Hoffnung, dass dieses Projekt als Leitfaden und Inspiration für andere Entwickler dienen wird, die gerade erst damit beginnen, KI-gestützte Tools und Assistenten in ihre Softwareentwicklungsprozesse zu integrieren, oder die sich in diesem sich entwickelnden Bereich weiterentwickeln möchten."
+
+<br/>
+
 <p align="center">
   <img src="https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
   <img src="https://img.shields.io/badge/C%23-14-239120?style=for-the-badge&logo=csharp&logoColor=white" />
