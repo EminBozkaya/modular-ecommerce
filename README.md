@@ -1,12 +1,16 @@
-<p align="center">
-  <a href="README.tr.md"><img src="https://flagcdn.com/w40/tr.png" width="32" alt="Türkçe" /></a>&nbsp;&nbsp;&nbsp;
-  <a href="README.md"><img src="https://flagcdn.com/w40/gb.png" width="32" alt="English" /></a>&nbsp;&nbsp;&nbsp;
-  <a href="README.de.md"><img src="https://flagcdn.com/w40/de.png" width="32" alt="Deutsch" /></a>&nbsp;&nbsp;&nbsp;
-  <a href="README.fr.md"><img src="https://flagcdn.com/w40/fr.png" width="32" alt="Français" /></a>&nbsp;&nbsp;&nbsp;
-  <a href="README.es.md"><img src="https://flagcdn.com/w40/es.png" width="32" alt="Español" /></a>&nbsp;&nbsp;&nbsp;
-  <a href="README.ru.md"><img src="https://flagcdn.com/w40/ru.png" width="32" alt="Русский" /></a>&nbsp;&nbsp;&nbsp;
-  <a href="README.ar.md"><img src="https://flagcdn.com/w40/sa.png" width="32" alt="العربية" /></a>
-</p>
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="100"><a href="README.tr.md"><img src="https://flagcdn.com/w40/tr.png" height="18" alt="TR" /><br/><b>TR</b><br/>Türkçe</a></td>
+      <td align="center" width="100" bgcolor="#e5e7eb"><b><a href="README.md"><img src="https://flagcdn.com/w40/gb.png" height="18" alt="EN" /><br/>EN<br/>English 🟢</a></b></td>
+      <td align="center" width="100"><a href="README.de.md"><img src="https://flagcdn.com/w40/de.png" height="18" alt="DE" /><br/><b>DE</b><br/>Deutsch</a></td>
+      <td align="center" width="100"><a href="README.fr.md"><img src="https://flagcdn.com/w40/fr.png" height="18" alt="FR" /><br/><b>FR</b><br/>Français</a></td>
+      <td align="center" width="100"><a href="README.es.md"><img src="https://flagcdn.com/w40/es.png" height="18" alt="ES" /><br/><b>ES</b><br/>Español</a></td>
+      <td align="center" width="100"><a href="README.ru.md"><img src="https://flagcdn.com/w40/ru.png" height="18" alt="RU" /><br/><b>RU</b><br/>Русский</a></td>
+      <td align="center" width="100"><a href="README.ar.md"><img src="https://flagcdn.com/w40/sa.png" height="18" alt="AR" /><br/><b>AR</b><br/>العربية</a></td>
+    </tr>
+  </table>
+</div>
 
 <p align="center">
   <img src="https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
