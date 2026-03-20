@@ -45,7 +45,9 @@ export async function getProducts(params: ProductListParams): Promise<PaginatedR
         return { ...paginated, items: paginated.items.map(applyMockTranslations) };
     }
 
+    console.log('🛰️ [CATALOG-API] Fetching products from API...');
     const response = await apiClient.get<PaginatedResult<Product> | { value: PaginatedResult<Product> }>('/api/catalog/products', { params });
+    console.log('✅ [CATALOG-API] API Response:', response.data);
 
 
     let result: PaginatedResult<Product>;

@@ -11,6 +11,11 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load local overrides if they exist
+if (File.Exists("appsettings.Local.json"))
+{
+    builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+}
 // ── Serilog — backend-rules §4 ──
 builder.Host.UseSerilog((ctx, cfg) => cfg
     .ReadFrom.Configuration(ctx.Configuration)
@@ -76,19 +81,38 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
+Log.Information("🚀 [STARTUP] SeedData: {SeedData}", app.Configuration.GetValue<bool>("SeedData", true));
+
 // ── Automatic Database Migration ──
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ECommerce.Persistence.Context.ApplicationDbContext>();
-    await context.Database.MigrateAsync();
-    
-    // Seed only if 'SeedData' is true in settings (Development default: true)
-    if (app.Configuration.GetValue<bool>("SeedData", defaultValue: true))
+
+    var dbConnection = context.Database.GetDbConnection();
+
+    Log.Information("🚀 DB: {Database}", dbConnection.Database);
+    Log.Information("🌐 Host: {Host}", dbConnection.DataSource);
+
+    if (app.Environment.IsDevelopment())
     {
-        await DbInitializer.SeedAsync(context, app.Environment.ContentRootPath);
+        await context.Database.MigrateAsync();
+
+        var seedEnabled = app.Configuration.GetValue<bool>("SeedData", false);
+
+        if (seedEnabled && !context.Users.Any())
+        {
+            await DbInitializer.SeedAsync(context, app.Environment.ContentRootPath);
+        }
+    }
+    else
+    {
+        // PROD SAFETY
+        if (!await context.Database.CanConnectAsync())
+        {
+            throw new Exception("❌ Cannot connect to database!");
+        }
     }
 }
-
 // ── Middleware pipeline ──
 if (app.Environment.IsDevelopment())
 {

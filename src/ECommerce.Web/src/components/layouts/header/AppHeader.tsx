@@ -103,7 +103,7 @@ export function AppHeader() {
         if (!allCategories) return [];
         const buildTree = (parentId: string | null): CategoryTreeNode[] => {
             return allCategories
-                .filter((c) => c.parentCategoryId === parentId && c.isActive && !c.isDeleted)
+                .filter((c) => (c.parentCategoryId ?? null) === parentId && c.isActive && !c.isDeleted)
                 .map((c) => ({
                     category: c,
                     subCategories: buildTree(c.id),
