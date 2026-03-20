@@ -56,7 +56,7 @@ function FlyoutSubMenu({ node, level, closeAll }: { node: CategoryTreeNode; leve
                 <Link
                     to={`/products?categoryId=${node.category.id}`}
                     onClick={closeAll}
-                    className="block mx-1.5 px-3 py-2.5 text-[13px] text-foreground hover:bg-gray-100 hover:text-[var(--brand-primary)] transition-colors rounded-lg"
+                    className="block mx-1.5 px-3 py-2.5 text-[13px] text-foreground hover:bg-accent hover:text-[var(--brand-primary)] transition-colors rounded-lg"
                 >
                     {node.category.name}
                 </Link>
@@ -80,7 +80,7 @@ function FlyoutSubMenu({ node, level, closeAll }: { node: CategoryTreeNode; leve
                 }}
                 className={cn(
                     "w-full flex items-center justify-between mx-1.5 w-[calc(100%-12px)] px-3 py-2.5 cursor-pointer group transition-colors text-left rounded-lg",
-                    isOpen ? "bg-gray-50" : "hover:bg-gray-100"
+                    isOpen ? "bg-accent/50" : "hover:bg-accent"
                 )}
             >
                 <span className={cn(
@@ -97,7 +97,7 @@ function FlyoutSubMenu({ node, level, closeAll }: { node: CategoryTreeNode; leve
 
             {isOpen && (
                 <ul className={cn(
-                    "absolute top-[34px] min-w-[220px] bg-white border border-border/60 shadow-lg py-1.5 rounded-xl z-50 animate-in fade-in duration-200",
+                    "absolute top-[34px] min-w-[220px] bg-background border border-border/60 shadow-lg py-1.5 rounded-xl z-50 animate-in fade-in duration-200",
                     openDirection === 'right' ? "left-full ml-1 slide-in-from-left-2" : "right-full mr-1 slide-in-from-right-2"
                 )}>
                     {node.subCategories.map((childNode) => (
@@ -245,7 +245,7 @@ export function CategoryNavDropdownItem({ node, isStuck }: Props) {
                     }}
                     className="z-[200] pt-1" // Düğmenin 1px altına
                 >
-                    <ul className="min-w-[220px] rounded-xl border border-border/60 bg-white shadow-xl py-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <ul className="min-w-[220px] rounded-xl border border-border/60 bg-background shadow-xl py-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
                         {node.subCategories.map((childNode) => (
                             <FlyoutSubMenu key={childNode.category.id} node={childNode} level={1} closeAll={closeAll} />
                         ))}

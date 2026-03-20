@@ -9,7 +9,6 @@ import {
 import type { StoreSettingsDto } from '../api/storeSettingsApi';
 import { queryKeys } from '@/utils/queryKeys';
 /** Normalize any uploaded logo to a 400×400 square PNG (object-contain, transparent bg). */
-const LOGO_CANVAS_SIZE = 400;
 
 function normalizeLogoImage(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -18,15 +17,19 @@ function normalizeLogoImage(file: File): Promise<string> {
         img.onload = () => {
             URL.revokeObjectURL(url);
             const canvas = document.createElement('canvas');
-            canvas.width = LOGO_CANVAS_SIZE;
-            canvas.height = LOGO_CANVAS_SIZE;
+            
+            // Resize proportionally to fit within MAX_DIM while maintaining aspect ratio (NO padding)
+            const MAX_DIM = 800;
+            const scale = Math.min(MAX_DIM / img.naturalWidth, MAX_DIM / img.naturalHeight, 1);
+            
+            canvas.width = img.naturalWidth * scale;
+            canvas.height = img.naturalHeight * scale;
+            
             const ctx = canvas.getContext('2d');
             if (!ctx) { reject(new Error('Canvas not supported')); return; }
-            ctx.clearRect(0, 0, LOGO_CANVAS_SIZE, LOGO_CANVAS_SIZE);
-            const scale = Math.min(LOGO_CANVAS_SIZE / img.naturalWidth, LOGO_CANVAS_SIZE / img.naturalHeight);
-            const w = img.naturalWidth * scale;
-            const h = img.naturalHeight * scale;
-            ctx.drawImage(img, (LOGO_CANVAS_SIZE - w) / 2, (LOGO_CANVAS_SIZE - h) / 2, w, h);
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             resolve(canvas.toDataURL('image/png'));
         };
         img.onerror = reject;

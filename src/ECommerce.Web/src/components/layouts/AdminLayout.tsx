@@ -20,7 +20,6 @@ import {
     Navigation,
     PanelBottom,
     LayoutGrid,
-    MonitorCog,
     Store,
     Search,
     Layers,
@@ -32,6 +31,7 @@ import { LanguageToggle } from '@/components/shared/LanguageToggle';
 import { ThemeToggle } from '@/components/shared/ThemeToggle';
 import { useThemeStore } from '@/store/themeStore';
 import { UserMenu } from '@/components/layouts/header/UserMenu';
+import { StoreLogo } from '@/components/shared/StoreLogo';
 import { useStoreSettings } from '@/context/StoreSettingsContext';
 import { SUPPORTED_LANGUAGES } from '@/i18n/languages';
 
@@ -374,10 +374,10 @@ export function AdminLayout() {
                 >
                     <div className="flex items-center gap-3">
                         <div
-                            className="w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center"
+                            className="w-11 h-11 rounded-lg flex-shrink-0 flex items-center justify-center p-1"
                             style={{ background: 'rgba(255,255,255,0.15)' }}
                         >
-                            <MonitorCog className="h-5 w-5 text-white" />
+                            <StoreLogo className="h-full w-full" />
                         </div>
                         {!isCollapsed && (
                             <div className="transition-opacity duration-300 min-w-0">

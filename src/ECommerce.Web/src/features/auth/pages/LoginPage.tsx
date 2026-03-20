@@ -4,16 +4,13 @@ import { Link } from 'react-router-dom';
 import { useLogin } from '@/features/auth/hooks/useLogin';
 import { useLoginSchema, type LoginFormData } from '@/lib/validations/auth.schema';
 import { applyServerErrors } from '@/utils/formErrors';
-import logoImg from '@/assets/LOGO.png';
+import { StoreLogo } from '@/components/shared/StoreLogo';
 import { useTranslation } from 'react-i18next';
-import { useStoreSettings } from '@/context/StoreSettingsContext';
 import { SocialLogin } from '../components/SocialLogin';
 
 export default function LoginPage() {
     const { mutate: login, isPending } = useLogin();
     const { t } = useTranslation('auth');
-    const settings = useStoreSettings();
-    const resolvedLogo = settings.imageBase64 ?? logoImg;
 
     const loginSchema = useLoginSchema();
 
@@ -37,11 +34,7 @@ export default function LoginPage() {
     return (
         <div className="flex min-h-screen flex-col items-center justify-center p-4">
             <Link to="/" className="mb-8 block transition-transform hover:scale-105 duration-300">
-                <img
-                    src={resolvedLogo}
-                    alt={settings.storeName || "Store"}
-                    className="h-24 sm:h-32 w-auto object-contain"
-                />
+                <StoreLogo className="h-48 w-48" />
             </Link>
 
             <div className="w-full max-w-md space-y-8 rounded-2xl bg-card p-8 shadow-2xl shadow-black/5 border border-border relative overflow-hidden">

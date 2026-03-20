@@ -2,7 +2,7 @@ import { useRef, useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { UserCircle, ChevronLeft, ChevronRight } from 'lucide-react';
-import logoImg from '@/assets/LOGO.png';
+import { StoreLogo } from '@/components/shared/StoreLogo';
 import { HeaderSearchAutocomplete } from '@/features/catalog/components/HeaderSearchAutocomplete';
 import { FavoriteButton } from './FavoriteButton';
 import { BasketButton } from './BasketButton';
@@ -29,8 +29,6 @@ export function AppHeader() {
     const settings = useStoreSettings();
     const { resolved: theme } = useThemeStore();
 
-    // Resolve dynamic logo: uploaded base64 takes precedence over bundled asset
-    const resolvedLogo = settings.imageBase64 ?? logoImg;
 
     // Tüm kategorileri çek — ağaç kurmak için
     const { data: allCategories, isLoading: isCategoriesLoading } = useCategories();
@@ -132,18 +130,15 @@ export function AppHeader() {
                     <div className="flex flex-row items-center justify-between gap-4 xl:gap-6 min-h-[70px] md:min-h-[85px]">
 
                         {/* Logo Column */}
-                        {/* Menü duvarımız (sol hizalama) buraya bağlı: md'de 260px, xl'de 400px. (Padding değil width ile) */}
-                        <div className="flex items-center justify-between w-full md:w-[260px] xl:w-[400px] flex-shrink-0 relative">
+                        {/* Menü duvarımız (sol hizalama) buraya bağlı: md'de 150px, xl'de 220px. (Sabit genişlik ile hizalama sağlıyoruz) */}
+                        <div className="flex items-center justify-between w-full md:w-[150px] xl:w-[220px] flex-shrink-0 relative">
                             <div className="flex items-center gap-2 md:gap-3 lg:gap-4 flex-shrink-0">
-                                <Link to="/" className="flex-shrink-0 group md:relative md:z-[60] md:-mb-14 xl:-mb-20 transition-all">
-                                    {/* Logo container: bounds all logo aspect ratios with a "safe zone" (padding). */}
-                                    <div className="h-12 sm:h-14 md:h-20 xl:h-28 flex items-center justify-center p-1 flex-shrink-0">
-                                        <img
-                                            src={resolvedLogo}
-                                            alt={settings.storeName || "Store"}
-                                            className="h-auto max-h-full w-auto max-w-[100px] sm:max-w-[130px] md:max-w-[180px] xl:max-w-[260px] object-contain transition-transform duration-300 group-hover:scale-110"
-                                        />
-                                    </div>
+                                    <Link to="/" className="flex-shrink-0 group md:relative md:z-[60] md:-mt-3 xl:-mt-5 md:-mb-14 xl:-mb-20 transition-all">
+                                    {/* Logo container: defines a square "safe zone" for the logo. p-2 ensures hover scaling doesn't hit the edge. */}
+                                    <StoreLogo 
+                                        className="h-16 w-16 sm:h-24 sm:w-24 md:h-32 md:w-32 xl:h-48 xl:w-48 p-0 md:p-2 -ml-4 md:ml-0"
+                                        imgClassName="group-hover:scale-110 object-left md:object-center"
+                                    />
                                 </Link>
                                 {settings.showStoreNameInHeader && settings.storeName && (
                                     <Link 
@@ -256,14 +251,17 @@ export function AppHeader() {
                 style={{ backgroundColor: navBg }}
             >
                 <div className={cn(
-                    'relative w-full mx-auto flex items-center',
-                    !isStuck && 'border-t border-border mt-1'
+                    'relative w-full mx-auto flex items-center mt-1',
                 )}>
+                    {/* Responsive divider implementation: starts after the logo area */}
+                    {!isStuck && (
+                        <div className="absolute top-0 left-[150px] xl:left-[220px] right-0 border-t border-border hidden md:block" />
+                    )}
                     {/* Sol Kaydırma Oku & Gradient */}
                     <div
                         className={cn(
                             'absolute top-0 h-full flex items-center transition-all duration-300 z-20',
-                            !isStuck ? 'left-[260px] xl:left-[400px]' : 'left-0',
+                            !isStuck ? 'left-[150px] xl:left-[220px]' : 'left-0',
                             canScrollLeft ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
                         )}
                     >
@@ -292,7 +290,7 @@ export function AppHeader() {
                             'flex items-center min-h-[50px] overflow-x-auto scroll-smooth w-full',
                             '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
                             !isStuck
-                                ? 'px-4 md:px-0 md:ml-[276px] xl:ml-[416px] md:pr-10'
+                                ? 'px-4 md:px-0 md:ml-[166px] xl:ml-[236px] md:pr-10'
                                 : 'px-4'
                         )}
                     >

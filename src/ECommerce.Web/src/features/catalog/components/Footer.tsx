@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import {
     Instagram, Facebook, Twitter, Youtube, Linkedin,
-    Phone, MapPin, Mail, Clock,
+    Phone, MapPin, Mail,
 } from 'lucide-react';
 import { useStoreSettings } from '@/context/StoreSettingsContext';
 import { useThemeStore } from '@/store/themeStore';
@@ -10,7 +10,7 @@ import type {
     FooterColumnDto,
     SocialPlatform,
 } from '@/features/admin/api/storeSettingsApi';
-import logoImg from '@/assets/LOGO.png';
+import { StoreLogo } from '@/components/shared/StoreLogo';
 
 interface FooterProps {
     /** When provided, renders this instead of settings.footer — used by admin preview */
@@ -35,11 +35,9 @@ const SOCIAL_ICONS: Record<SocialPlatform, React.ComponentType<{ className?: str
     ),
 };
 
-function FooterColumn({ col, textColor, storeName, resolvedLogo }: {
+function FooterColumn({ col, textColor }: {
     col: FooterColumnDto;
     textColor: string;
-    storeName: string;
-    resolvedLogo: string;
 }) {
     const tc = textColor;
     const tcMuted = `${tc}B3`; // 70% opacity approximation via hex — falls back gracefully
@@ -132,11 +130,7 @@ function FooterColumn({ col, textColor, storeName, resolvedLogo }: {
             {col.type === 'about' && (
                 <div className="space-y-3">
                     {col.showLogo && (
-                        <img
-                            src={resolvedLogo}
-                            alt={storeName}
-                            className="h-12 w-auto object-contain"
-                        />
+                        <StoreLogo className="h-16 w-16" />
                     )}
                     {col.description && (
                         <p className="text-sm leading-relaxed" style={{ color: tcMuted }}>
@@ -172,7 +166,6 @@ export function Footer({ override }: FooterProps) {
         4: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
     };
 
-    const resolvedLogo = settings.imageBase64 ?? logoImg;
     const year = new Date().getFullYear();
 
     const sortedBottomLinks = [...footer.bottomLinks].sort((a, b) => a.order - b.order);
@@ -194,8 +187,6 @@ export function Footer({ override }: FooterProps) {
                             key={col.id}
                             col={col}
                             textColor={textColor}
-                            storeName={settings.storeName}
-                            resolvedLogo={resolvedLogo}
                         />
                     ))}
                 </div>
