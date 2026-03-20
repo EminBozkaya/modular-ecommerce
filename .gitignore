@@ -82,3 +82,4 @@ Thumbs.db
 
 # CLAUDE
 .claude/settings.local.json
+.env.local
