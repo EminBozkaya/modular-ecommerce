@@ -45,7 +45,7 @@ export function useCheckout() {
                     orderId: orderResponse.orderId,
                     providerName,
                     idempotencyKey,
-                    returnUrl: `${window.location.origin}/payment/waiting`,
+                    returnUrl: `${window.location.origin}/api/payment/callback/${providerName.toLowerCase()}`,
                 };
 
                 const paymentResponse = await initializePaymentMutation.mutateAsync(paymentReq);

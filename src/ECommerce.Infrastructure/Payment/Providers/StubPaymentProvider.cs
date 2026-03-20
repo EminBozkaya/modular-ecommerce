@@ -52,8 +52,7 @@ public sealed class StubPaymentProvider : IPaymentProvider
         }
 
         var providerReference = $"stub-ref-{Guid.NewGuid():N}";
-        // Return URL redirect simülasyonu (gerçek 3D Secure sayfası yok)
-        var redirectUrl = $"{request.ReturnUrl}?orderId={request.OrderId}&providerRef={providerReference}";
+        var redirectUrl = request.ReturnUrl + (request.ReturnUrl.Contains('?') ? "&" : "?") + $"orderId={request.OrderId}&providerRef={providerReference}";
 
         _logger.LogInformation("Stub payment initialized. OrderId={OrderId}, ProviderRef={Ref}", request.OrderId, providerReference);
 

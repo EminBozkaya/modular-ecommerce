@@ -3,6 +3,7 @@ using ECommerce.Application.Payment.GetPaymentReturnStatus;
 using ECommerce.Application.Payment.InitializePayment;
 using ECommerce.Application.Payment.RefundPayment;
 using ECommerce.Application.Payment.VerifyPaymentWebhook;
+using ECommerce.Application.Payment.VerifyPaymentCallback;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -82,14 +83,17 @@ public class PaymentController : ControllerBase
     }
 
     /// <summary>
-    /// User browser return after 3D Secure — UX redirect only, not payment confirmation.
-    /// Redirects to appropriate frontend page based on payment status.
+    /// User browser return after 3D Secure / Payment Form. Handles both GET (Stub, Stripe return) and POST (Iyzico callback).
+    /// Redirects to appropriate frontend page based on verified payment status.
     /// </summary>
-    [HttpGet("return/{provider}")]
+    [HttpGet("callback/{provider}")]
+    [HttpPost("callback/{provider}")]
     [AllowAnonymous]
-    public async Task<IActionResult> Return(
+    public async Task<IActionResult> Callback(
         string provider,
         [FromQuery] string orderId,
+        [FromForm] string? token,
+        [FromQuery] string? providerRef,
         CancellationToken ct)
     {
         var frontendBaseUrl = _config["Frontend:BaseUrl"] ?? "http://localhost:5173";
@@ -97,22 +101,17 @@ public class PaymentController : ControllerBase
         if (!Guid.TryParse(orderId, out var orderGuid))
             return Redirect($"{frontendBaseUrl}/checkout?error=invalid_order");
 
-        var userId = GetCurrentUserId();
+        var headers = Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString(), StringComparer.OrdinalIgnoreCase);
+
+        // Verify the payment provider response
+        var command = new VerifyPaymentCallbackCommand(orderGuid, provider, token ?? providerRef, headers);
+        var result = await _mediator.Send(command, ct);
 
         try
         {
-            var query = new GetPaymentReturnStatusQuery(orderGuid, userId);
-            var status = await _mediator.Send(query, ct);
-
-            var redirectUrl = status.Status switch
-            {
-                "Completed" =>
-                    $"{frontendBaseUrl}/orders/{orderId}/confirmation",
-                "Processing" =>
-                    $"{frontendBaseUrl}/payment/waiting?orderId={orderId}",
-                _ =>
-                    $"{frontendBaseUrl}/checkout?error=payment_failed&orderId={orderId}"
-            };
+            var redirectUrl = result.IsSuccess 
+                ? $"{frontendBaseUrl}/payment/waiting?orderId={orderId}" // Next step confirms it's fully paid
+                : $"{frontendBaseUrl}/checkout?error=payment_failed&orderId={orderId}";
 
             return Redirect(redirectUrl);
         }

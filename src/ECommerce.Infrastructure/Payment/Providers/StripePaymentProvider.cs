@@ -53,8 +53,8 @@ public sealed class StripePaymentProvider : IPaymentProvider
             var formParams = new List<KeyValuePair<string, string>>
             {
                 new("mode", "payment"),
-                new("success_url", $"{request.ReturnUrl}?orderId={request.OrderId}&session_id={{CHECKOUT_SESSION_ID}}"),
-                new("cancel_url", $"{request.ReturnUrl}?orderId={request.OrderId}&status=cancelled"),
+                new("success_url", request.ReturnUrl + (request.ReturnUrl.Contains('?') ? "&" : "?") + $"orderId={request.OrderId}&session_id={{CHECKOUT_SESSION_ID}}"),
+                new("cancel_url", request.ReturnUrl + (request.ReturnUrl.Contains('?') ? "&" : "?") + $"orderId={request.OrderId}&status=cancelled"),
                 new("customer_email", request.CustomerEmail),
                 new("payment_intent_data[metadata][order_id]", request.OrderId),
                 new("payment_intent_data[metadata][idempotency_key]", request.IdempotencyKey),
