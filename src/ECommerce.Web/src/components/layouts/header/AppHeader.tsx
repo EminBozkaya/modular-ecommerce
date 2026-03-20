@@ -253,9 +253,11 @@ export function AppHeader() {
                 <div className={cn(
                     'relative w-full mx-auto flex items-center mt-1',
                 )}>
-                    {/* Responsive divider implementation: starts after the logo area */}
+                    {/* Responsive divider implementation: fades in from the logo area to avoid sharp cuts */}
                     {!isStuck && (
-                        <div className="absolute top-0 left-[150px] xl:left-[220px] right-0 border-t border-border hidden md:block" />
+                        <div 
+                            className="absolute top-0 left-[100px] xl:left-[160px] right-0 h-[1px] hidden md:block bg-gradient-to-r from-transparent via-border/20 via-10% to-border transition-all duration-300" 
+                        />
                     )}
                     {/* Sol Kaydırma Oku & Gradient */}
                     <div
