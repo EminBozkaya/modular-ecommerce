@@ -21,6 +21,8 @@ export async function mockGetWishlist(): Promise<WishlistItem[]> {
                 categoryName: product.categoryName,
                 stockQuantity: product.stockQuantity,
                 isActive: product.isActive,
+                unitName: product.unitName,
+                unitCode: product.unitCode,
                 addedAt: new Date().toISOString(),
             } satisfies WishlistItem;
         })

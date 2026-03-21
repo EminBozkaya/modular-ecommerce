@@ -12,6 +12,8 @@ public record WishlistItemDto(
     string CategoryName,
     decimal StockQuantity,
     bool IsActive,
+    string? UnitName,
+    string? UnitCode,
     DateTime AddedAt);
 
 public record GetWishlistQuery(Guid UserId) : IRequest<IReadOnlyList<WishlistItemDto>>;

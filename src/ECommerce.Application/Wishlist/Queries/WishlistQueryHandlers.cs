@@ -36,6 +36,8 @@ public class GetWishlistHandler : IRequestHandler<GetWishlistQuery, IReadOnlyLis
                 product.Category?.Name ?? "",
                 product.Stock.Value,
                 product.IsActive,
+                product.Unit?.Name,
+                product.Unit?.Code,
                 item.CreatedAt));
         }
 

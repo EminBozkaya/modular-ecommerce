@@ -8,5 +8,7 @@ export interface WishlistItem {
     categoryName: string;
     stockQuantity: number;
     isActive: boolean;
+    unitName: string;
+    unitCode: string | null;
     addedAt: string;
 }

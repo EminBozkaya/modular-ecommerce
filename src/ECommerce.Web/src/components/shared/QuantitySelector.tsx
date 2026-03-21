@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { getUnitConfig } from '../../utils/unitConfig';
 
@@ -10,6 +10,14 @@ interface QuantitySelectorProps {
     disabled?: boolean;
     size?: 'sm' | 'md' | 'lg';
 }
+
+// Long-press acceleration thresholds
+const LONG_PRESS_INITIAL_DELAY_MS = 500;   // delay before auto-repeat begins
+const SPEED_TIER_1_MS = 300;               // repeat interval during slow phase (0.5s – 1.5s)
+const SPEED_TIER_2_MS = 150;               // repeat interval during medium phase (1.5s – 3s)
+const SPEED_TIER_3_MS = 80;               // repeat interval during fast phase (3s+)
+const TIER_2_THRESHOLD_MS = 1500;          // when to switch to medium speed
+const TIER_3_THRESHOLD_MS = 3000;          // when to switch to fast speed + bigStep
 
 export function QuantitySelector({
     unitCode,
@@ -24,6 +32,17 @@ export function QuantitySelector({
     const [isFocused, setIsFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
+    // Long-press state
+    const pressStartRef = useRef<number>(0);
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const currentValueRef = useRef(value);
+
+    // Keep currentValueRef in sync so interval callbacks always read fresh value
+    useEffect(() => {
+        currentValueRef.current = value;
+    }, [value]);
+
     // Sync external value changes when not editing
     useEffect(() => {
         if (!isFocused) {
@@ -31,17 +50,103 @@ export function QuantitySelector({
         }
     }, [value, config.decimals, isFocused]);
 
-    const handleDecrement = () => {
-        const next = parseFloat((value - config.step).toFixed(config.decimals + 1));
-        if (next >= config.min) {
-            onChange(next);
+    const stopAutoRepeat = useCallback(() => {
+        if (intervalRef.current !== null) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
         }
-    };
+        if (timeoutRef.current !== null) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+    }, []);
 
-    const handleIncrement = () => {
-        const next = parseFloat((value + config.step).toFixed(config.decimals + 1));
+    // Clean up on unmount
+    useEffect(() => () => stopAutoRepeat(), [stopAutoRepeat]);
+
+    /** Compute a new value clamped to min, rounded to config precision. */
+    const computeStep = useCallback(
+        (current: number, direction: 1 | -1, useBigStep: boolean): number => {
+            const step = useBigStep ? config.bigStep : config.step;
+            const raw = current + direction * step;
+            const rounded = parseFloat(raw.toFixed(config.decimals + 1));
+            return direction === -1 ? Math.max(rounded, config.min) : rounded;
+        },
+        [config],
+    );
+
+    const handleDecrement = useCallback(() => {
+        const next = computeStep(currentValueRef.current, -1, false);
+        if (next >= config.min) onChange(next);
+    }, [computeStep, config.min, onChange]);
+
+    const handleIncrement = useCallback(() => {
+        const next = computeStep(currentValueRef.current, 1, false);
         onChange(next);
-    };
+    }, [computeStep, onChange]);
+
+    /** Start the auto-repeat loop after the initial delay. */
+    const startAutoRepeat = useCallback(
+        (direction: 1 | -1) => {
+            pressStartRef.current = Date.now();
+
+            const tick = () => {
+                const elapsed = Date.now() - pressStartRef.current;
+                const useBigStep = elapsed >= TIER_3_THRESHOLD_MS;
+                const next = computeStep(currentValueRef.current, direction, useBigStep);
+                if (direction === -1 && currentValueRef.current <= config.min) return;
+                onChange(next);
+
+                // Adjust interval speed based on elapsed time
+                const targetInterval =
+                    elapsed >= TIER_3_THRESHOLD_MS
+                        ? SPEED_TIER_3_MS
+                        : elapsed >= TIER_2_THRESHOLD_MS
+                          ? SPEED_TIER_2_MS
+                          : SPEED_TIER_1_MS;
+
+                if (intervalRef.current !== null) {
+                    clearInterval(intervalRef.current);
+                    intervalRef.current = setInterval(tick, targetInterval);
+                }
+            };
+
+            timeoutRef.current = setTimeout(() => {
+                // First auto-repeat at slow speed
+                intervalRef.current = setInterval(tick, SPEED_TIER_1_MS);
+            }, LONG_PRESS_INITIAL_DELAY_MS);
+        },
+        [computeStep, config.min, onChange],
+    );
+
+    const handleMouseDown = useCallback(
+        (direction: 1 | -1) => (e: React.MouseEvent) => {
+            e.preventDefault();
+            if (disabled) return;
+            // Immediate single step on press
+            if (direction === 1) {
+                handleIncrement();
+            } else {
+                handleDecrement();
+            }
+            startAutoRepeat(direction);
+        },
+        [disabled, handleIncrement, handleDecrement, startAutoRepeat],
+    );
+
+    const handleTouchStart = useCallback(
+        (direction: 1 | -1) => (e: React.TouchEvent) => {
+            e.preventDefault(); // prevent ghost click
+            if (disabled) return;
+            if (direction === 1) {
+                handleIncrement();
+            } else {
+                handleDecrement();
+            }
+            startAutoRepeat(direction);
+        },
+        [disabled, handleIncrement, handleDecrement, startAutoRepeat],
+    );
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         // Allow: digits, dot, backspace, delete, tab, arrows, enter
@@ -130,10 +235,14 @@ export function QuantitySelector({
         >
             <button
                 type="button"
-                onClick={handleDecrement}
+                onMouseDown={handleMouseDown(-1)}
+                onMouseUp={stopAutoRepeat}
+                onMouseLeave={stopAutoRepeat}
+                onTouchStart={handleTouchStart(-1)}
+                onTouchEnd={stopAutoRepeat}
                 disabled={disabled || isAtMin}
                 aria-label="Miktarı azalt"
-                className={`${cls.btn} flex items-center justify-center bg-gray-50 dark:bg-white/5 text-muted-foreground hover:text-white hover:bg-[var(--brand-primary)] active:bg-[var(--brand-primary-dark)] transition-all duration-150 disabled:text-muted-foreground/40 disabled:hover:bg-gray-50 dark:disabled:hover:bg-white/5 border-r border-border cursor-pointer`}
+                className={`${cls.btn} flex items-center justify-center bg-gray-50 dark:bg-white/5 text-muted-foreground hover:text-white hover:bg-[var(--brand-primary)] active:bg-[var(--brand-primary-dark)] transition-all duration-150 disabled:text-muted-foreground/40 disabled:hover:bg-gray-50 dark:disabled:hover:bg-white/5 border-r border-border cursor-pointer select-none`}
             >
                 <Minus className={cls.icon} strokeWidth={2.5} />
             </button>
@@ -151,15 +260,19 @@ export function QuantitySelector({
                 }}
                 onBlur={commitValue}
                 disabled={disabled}
-                className={`${cls.input} text-center font-bold tabular-nums bg-transparent outline-none text-foreground`}
+                className={`${cls.input} text-center font-bold tabular-nums bg-transparent outline-none text-foreground cursor-text`}
             />
 
             <button
                 type="button"
-                onClick={handleIncrement}
+                onMouseDown={handleMouseDown(1)}
+                onMouseUp={stopAutoRepeat}
+                onMouseLeave={stopAutoRepeat}
+                onTouchStart={handleTouchStart(1)}
+                onTouchEnd={stopAutoRepeat}
                 disabled={disabled}
                 aria-label="Miktarı artır"
-                className={`${cls.btn} flex items-center justify-center bg-gray-50 dark:bg-white/5 text-muted-foreground hover:text-white hover:bg-[var(--brand-primary)] active:bg-[var(--brand-primary-dark)] transition-all duration-150 disabled:text-muted-foreground/40 disabled:hover:bg-gray-50 dark:disabled:hover:bg-white/5 border-l border-border cursor-pointer`}
+                className={`${cls.btn} flex items-center justify-center bg-gray-50 dark:bg-white/5 text-muted-foreground hover:text-white hover:bg-[var(--brand-primary)] active:bg-[var(--brand-primary-dark)] transition-all duration-150 disabled:text-muted-foreground/40 disabled:hover:bg-gray-50 dark:disabled:hover:bg-white/5 border-l border-border cursor-pointer select-none`}
             >
                 <Plus className={cls.icon} strokeWidth={2.5} />
             </button>

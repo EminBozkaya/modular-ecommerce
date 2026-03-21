@@ -1,5 +1,7 @@
 export type UnitStepConfig = {
     step: number;
+    /** bigStep is used when long-pressing past the acceleration threshold (~3s) */
+    bigStep: number;
     min: number;
     decimals: number;
     /** formatValue uses the translated displayName passed in, not a hardcoded string */
@@ -25,6 +27,7 @@ export function getUnitConfig(unitCode: string | null | undefined, displayName?:
     if (isKg) {
         return {
             step: 0.05,
+            bigStep: 0.25,
             min: 0.05,
             decimals: 2,
             displayName: name,
@@ -35,6 +38,7 @@ export function getUnitConfig(unitCode: string | null | undefined, displayName?:
     if (isGram) {
         return {
             step: 100,
+            bigStep: 500,
             min: 100,
             decimals: 0,
             displayName: name,
@@ -45,6 +49,7 @@ export function getUnitConfig(unitCode: string | null | undefined, displayName?:
     if (isLiter) {
         return {
             step: 0.1,
+            bigStep: 0.5,
             min: 0.1,
             decimals: 1,
             displayName: name,
@@ -61,6 +66,7 @@ export function getUnitConfig(unitCode: string | null | undefined, displayName?:
         case 'kit':
             return {
                 step: 1,
+                bigStep: 5,
                 min: 1,
                 decimals: 0,
                 displayName: name,
@@ -71,6 +77,7 @@ export function getUnitConfig(unitCode: string | null | undefined, displayName?:
             // Unknown code — safe integer default, show whatever name was passed
             return {
                 step: 1,
+                bigStep: 5,
                 min: 1,
                 decimals: 0,
                 displayName: name,
