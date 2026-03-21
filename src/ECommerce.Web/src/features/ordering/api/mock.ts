@@ -13,7 +13,6 @@ const mockOrders: Order[] = [
                 productId: 'p1',
                 productName: 'Ürün-A1',
                 unitPrice: 12.99,
-                currency: 'USD',
                 quantity: 2,
                 lineTotal: 25.98,
             },
@@ -21,13 +20,11 @@ const mockOrders: Order[] = [
                 productId: 'p3',
                 productName: 'Ürün-A3',
                 unitPrice: 24.99,
-                currency: 'USD',
                 quantity: 1,
                 lineTotal: 24.99,
             },
         ],
         totalAmount: 50.97,
-        currency: 'USD',
         createdAt: '2026-02-15T14:30:00Z',
         shippingAddress: {
             fullName: 'John Smith',
@@ -45,13 +42,11 @@ const mockOrders: Order[] = [
                 productId: 'p4',
                 productName: 'Ürün-B1',
                 unitPrice: 9.99,
-                currency: 'USD',
                 quantity: 3,
                 lineTotal: 29.97,
             },
         ],
         totalAmount: 29.97,
-        currency: 'USD',
         createdAt: '2026-03-01T10:00:00Z',
         shippingAddress: {
             fullName: 'Jane Doe',
@@ -69,13 +64,11 @@ const mockOrders: Order[] = [
                 productId: 'p6',
                 productName: 'Ürün-C1',
                 unitPrice: 22.50,
-                currency: 'USD',
                 quantity: 1,
                 lineTotal: 22.50,
             },
         ],
         totalAmount: 22.50,
-        currency: 'USD',
         createdAt: '2026-03-08T16:45:00Z',
         shippingAddress: {
             fullName: 'Sam Wilson',
@@ -101,12 +94,10 @@ export async function mockCreateOrder(req: CreateOrderRequest): Promise<CreateOr
             productId: item.productId,
             productName: item.productName,
             unitPrice: item.unitPriceSnapshot,
-            currency: item.currency,
             quantity: item.quantity,
             lineTotal: item.unitPriceSnapshot * item.quantity,
         })),
         totalAmount: basket.totalAmount,
-        currency: basket.currency,
         createdAt: new Date().toISOString(),
         shippingAddress: req.shippingAddress,
     };
@@ -119,7 +110,6 @@ export async function mockCreateOrder(req: CreateOrderRequest): Promise<CreateOr
     return {
         orderId,
         totalAmount: basket.totalAmount,
-        currency: basket.currency,
     };
 }
 

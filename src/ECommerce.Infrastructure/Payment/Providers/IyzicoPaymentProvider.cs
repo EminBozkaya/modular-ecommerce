@@ -49,8 +49,6 @@ public sealed class IyzicoPaymentProvider : IPaymentProvider
             var secretKey = _config["Payment:Iyzico:SecretKey"]!;
             var baseUrl = _config["Payment:Iyzico:BaseUrl"]!;
 
-            var conversationId = request.IdempotencyKey;
-            var priceMajor = request.Amount.Amount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
             var currencyCode = request.Amount.Currency.ToString();
 
             var buyerName = request.CustomerName.Split(' ').FirstOrDefault() ?? "John";
@@ -61,10 +59,13 @@ public sealed class IyzicoPaymentProvider : IPaymentProvider
             var fullBuyerName = $"{buyerName} {buyerSurname}";
             var callbackUrl = request.ReturnUrl; // No query string - Iyzico sends token via POST
 
+            var conversationId = GetIyzicoConversationId(request.IdempotencyKey);
+            var priceMajor = request.Amount.Amount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+
             var body = new
             {
                 locale = "tr",
-                conversationId = conversationId.Replace("-", "").Substring(0, 30),
+                conversationId = conversationId,
                 price = priceMajor,
                 paidPrice = priceMajor,
                 currency = currencyCode,
@@ -75,46 +76,41 @@ public sealed class IyzicoPaymentProvider : IPaymentProvider
                 enabledInstallments = new[] { 1, 2, 3, 6, 9 },
                 buyer = new
                 {
-                    id = request.UserId,
+                    id = request.UserId.Replace("-", "").Substring(0, Math.Min(request.UserId.Replace("-", "").Length, 20)),
                     name = buyerName,
                     surname = buyerSurname,
-                    identityNumber = "11111111111", 
+                    identityNumber = "74434272186", // Common sandbox TC
                     email = request.CustomerEmail,
-                    registrationAddress = "Mimar Sinan Mah. Cavusdere Cad. No:99/1",
+                    registrationAddress = "Uskudar",
                     ip = requestIp,
                     city = "Istanbul",
                     country = "Turkey",
                     zipCode = "34672"
                 },
-                shippingAddress = new { contactName = fullBuyerName, city = "Istanbul", country = "Turkey", address = "Mimar Sinan Mah. Cavusdere Cad. No:99/1", zipCode = "34672" },
-                billingAddress = new { contactName = fullBuyerName, city = "Istanbul", country = "Turkey", address = "Mimar Sinan Mah. Cavusdere Cad. No:99/1", zipCode = "34672" },
+                shippingAddress = new { contactName = fullBuyerName, city = "Istanbul", country = "Turkey", address = "Uskudar", zipCode = "34672" },
+                billingAddress = new { contactName = fullBuyerName, city = "Istanbul", country = "Turkey", address = "Uskudar", zipCode = "34672" },
                 basketItems = request.Items.Select((item, i) => new
                 {
                     id = $"BI{i + 1}",
-                    name = "Product " + (i + 1), // ASCII only for debugging
-                    category1 = "Category", // ASCII only for debugging
+                    name = item.Name.Length > 50 ? item.Name.Substring(0, 50) : item.Name,
+                    category1 = "Collectibles",
                     itemType = "PHYSICAL",
                     price = (item.Price * item.Quantity).ToString("F2", System.Globalization.CultureInfo.InvariantCulture)
                 }).ToList()
             };
 
-            // Sign the exact same string we send
-            var serializeOptions = new JsonSerializerOptions 
-            { 
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping 
-            };
-            var serializedBody = JsonSerializer.Serialize(body, serializeOptions);
+            // Use standard escaping for broader compatibility with Iyzico API/WAF
+            var serializedBody = JsonSerializer.Serialize(body);
             _logger.LogInformation("Iyzico Initialize Request Body: {Body}", serializedBody);
 
-            var authHeader = GenerateIyzicoAuthHeader(apiKey, secretKey, "/payment/iyzipos/checkoutform/initialize", serializedBody);
+            var authHeader = GenerateIyzicoAuthHeader(apiKey, secretKey, "/payment/iyzipos/checkoutform/initialize/auth/ecom", serializedBody);
             var client = _httpClientFactory.CreateClient("Iyzico");
             client.BaseAddress = new Uri(baseUrl);
-            client.DefaultRequestHeaders.Clear(); // Ensure no leftover headers
+            client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Authorization", authHeader);
 
-            // Use correct Iyzico endpoint for checkout form
             var httpContent = new StringContent(serializedBody, Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("/payment/iyzipos/checkoutform/initialize", httpContent, ct);
+            var response = await client.PostAsync("/payment/iyzipos/checkoutform/initialize/auth/ecom", httpContent, ct);
             
             var content = await response.Content.ReadAsStringAsync(ct);
             _logger.LogInformation("Iyzico Initialize Response Body: {Response}", content);
@@ -142,7 +138,9 @@ public sealed class IyzicoPaymentProvider : IPaymentProvider
 
             _logger.LogWarning("Iyzico Initialize Failed: {Error} ({Code})", errorMessage, errorCode);
 
-            return new PaymentInitResult(false, null, null, errorCode, errorMessage, null);
+            // Include errorCode in the message to help user/dev identify the exact rule violation
+            var finalErrorMessage = errorCode != null ? $"Iyzico: {errorMessage} ({errorCode})" : errorMessage;
+            return new PaymentInitResult(false, null, null, errorCode, finalErrorMessage, null);
         }
         catch (Exception ex)
         {
@@ -160,14 +158,18 @@ public sealed class IyzicoPaymentProvider : IPaymentProvider
             var secretKey = _config["Payment:Iyzico:SecretKey"]!;
             var baseUrl = _config["Payment:Iyzico:BaseUrl"]!;
 
-            var body = new { locale = "tr", conversationId = request.OrderId, token = request.ProviderReference };
-            var authHeader = GenerateIyzicoAuthHeader(apiKey, secretKey, "/payment/iyzipos/checkoutform/auth/ecommerce/detail", JsonSerializer.Serialize(body));
+            var conversationId = GetIyzicoConversationId(request.OrderId);
+            var body = new { locale = "tr", conversationId = conversationId, token = request.ProviderReference };
+            var serializedBody = JsonSerializer.Serialize(body);
+            var authHeader = GenerateIyzicoAuthHeader(apiKey, secretKey, "/payment/iyzipos/checkoutform/auth/ecom/detail", serializedBody);
 
             var client = _httpClientFactory.CreateClient("Iyzico");
             client.BaseAddress = new Uri(baseUrl);
+            client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Authorization", authHeader);
 
-            var response = await client.PostAsJsonAsync("/payment/iyzipos/checkoutform/auth/ecommerce/detail", body, ct);
+            var httpContent = new StringContent(serializedBody, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync("/payment/iyzipos/checkoutform/auth/ecom/detail", httpContent, ct);
             var content = await response.Content.ReadAsStringAsync(ct);
 
             using var doc = JsonDocument.Parse(content);
@@ -188,7 +190,11 @@ public sealed class IyzicoPaymentProvider : IPaymentProvider
             }
 
             var errorMessage = root.TryGetProperty("errorMessage", out var errEl) ? errEl.GetString() : "Payment failed";
-            return new PaymentVerifyResult(false, null, null, "iyzico_verify_failed", errorMessage, PaymentStatus.Failed);
+            var errorCode = root.TryGetProperty("errorCode", out var codeEl) ? codeEl.GetString() : null;
+            
+            _logger.LogWarning("Iyzico Verify Failed: {Error} ({Code}). OrderId={OrderId}", errorMessage, errorCode, request.OrderId);
+            
+            return new PaymentVerifyResult(false, null, null, errorCode ?? "iyzico_verify_failed", errorMessage, PaymentStatus.Failed);
         }
         catch (Exception ex)
         {
@@ -243,9 +249,16 @@ public sealed class IyzicoPaymentProvider : IPaymentProvider
         }
     }
 
+    private string GetIyzicoConversationId(string input)
+    {
+        // Iyzico conversationId must be alphanumeric and limited in length
+        // We use the first 30 chars of ID without dashes
+        return input.Replace("-", "").Substring(0, Math.Min(input.Replace("-", "").Length, 30));
+    }
+
     private static string GenerateIyzicoAuthHeader(string apiKey, string secretKey, string uriPath, string requestBody)
     {
-        var randomString = DateTime.Now.ToString("ddMMyyyyhhmmssffff");
+        var randomString = DateTime.Now.ToString("ddMMyyyyHHmmssffff");
         var dataToEncrypt = randomString + uriPath + requestBody;
 
         using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secretKey));

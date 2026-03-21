@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { createOrder } from '../api/orderingApi';
 import { initializePayment } from '../api/paymentApi';
 import { generateIdempotencyKey } from '../../../utils/idempotency';
@@ -14,6 +15,20 @@ export function useCheckout() {
     const navigate = useNavigate();
     const [step, setStep] = useState<CheckoutStep>('idle');
     const [error, setError] = useState<string | null>(null);
+    const { t } = useTranslation('checkout');
+
+    // Check for payment errors in the URL (e.g., from a callback redirect)
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const errorParam = params.get('error');
+        const messageParam = params.get('message');
+
+        if (errorParam === 'payment_failed') {
+            setError(messageParam || t('errors.paymentFailed') || 'Ödeme başarısız.');
+            // Clear URL params to avoid persistent error UI on refresh
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+    }, [t]);
 
     const createOrderMutation = useMutation<CreateOrderResponse, ApiError, ShippingAddress>({
         mutationFn: (shippingAddress) => createOrder({ shippingAddress }),
@@ -45,7 +60,7 @@ export function useCheckout() {
                     orderId: orderResponse.orderId,
                     providerName,
                     idempotencyKey,
-                    returnUrl: `${window.location.origin}/api/payment/callback/${providerName.toLowerCase()}`,
+                    returnUrl: `${window.location.origin}/api/payment/callback/${providerName.toLowerCase()}?orderId=${orderResponse.orderId}`,
                 };
 
                 const paymentResponse = await initializePaymentMutation.mutateAsync(paymentReq);
@@ -72,7 +87,10 @@ export function useCheckout() {
                 const url = paymentResponse.redirectUrl;
                 // Same-origin relative paths: use React Router to stay in SPA
                 // External URLs (real providers like Stripe, Iyzico): hard navigate
-                if (url.startsWith('/') || url.startsWith(window.location.origin)) {
+                const isInternalSpa = (url.startsWith('/') || url.startsWith(window.location.origin)) 
+                                     && !url.includes('/api/');
+
+                if (isInternalSpa) {
                     const relativePath = url.startsWith(window.location.origin)
                         ? url.slice(window.location.origin.length)
                         : url;

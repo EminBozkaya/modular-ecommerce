@@ -83,18 +83,35 @@ public class PaymentController : ControllerBase
     }
 
     /// <summary>
-    /// User browser return after 3D Secure / Payment Form. Handles both GET (Stub, Stripe return) and POST (Iyzico callback).
-    /// Redirects to appropriate frontend page based on verified payment status.
+    /// User browser return after 3D Secure for GET-based providers (Stub, Stripe return).
     /// </summary>
     [HttpGet("callback/{provider}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> CallbackGet(
+        string provider,
+        [FromQuery] string orderId,
+        [FromQuery] string? providerRef,
+        CancellationToken ct)
+    {
+        return await HandleCallbackCoreAsync(provider, orderId, providerRef, ct);
+    }
+
+    /// <summary>
+    /// User browser return after 3D Secure / Payment Form for POST-based providers (Iyzico).
+    /// </summary>
     [HttpPost("callback/{provider}")]
     [AllowAnonymous]
-    public async Task<IActionResult> Callback(
+    [IgnoreAntiforgeryToken]
+    public async Task<IActionResult> CallbackPost(
         string provider,
         [FromQuery] string orderId,
         [FromForm] string? token,
-        [FromQuery] string? providerRef,
         CancellationToken ct)
+    {
+        return await HandleCallbackCoreAsync(provider, orderId, token, ct);
+    }
+
+    private async Task<IActionResult> HandleCallbackCoreAsync(string provider, string orderId, string? reference, CancellationToken ct)
     {
         var frontendBaseUrl = _config["Frontend:BaseUrl"] ?? "http://localhost:5173";
 
@@ -103,15 +120,14 @@ public class PaymentController : ControllerBase
 
         var headers = Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString(), StringComparer.OrdinalIgnoreCase);
 
-        // Verify the payment provider response
-        var command = new VerifyPaymentCallbackCommand(orderGuid, provider, token ?? providerRef, headers);
+        var command = new VerifyPaymentCallbackCommand(orderGuid, provider, reference, headers);
         var result = await _mediator.Send(command, ct);
 
         try
         {
             var redirectUrl = result.IsSuccess 
-                ? $"{frontendBaseUrl}/payment/waiting?orderId={orderId}" // Next step confirms it's fully paid
-                : $"{frontendBaseUrl}/checkout?error=payment_failed&orderId={orderId}";
+                ? $"{frontendBaseUrl}/payment/waiting?orderId={orderId}"
+                : $"{frontendBaseUrl}/checkout?error=payment_failed&orderId={orderId}&message={Uri.EscapeDataString(result.ErrorMessage ?? "")}";
 
             return Redirect(redirectUrl);
         }

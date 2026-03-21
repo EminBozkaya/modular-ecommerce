@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useBasket } from '../../basket/hooks/useBasket';
 import { useCheckout } from '../hooks/useCheckout';
@@ -12,7 +12,9 @@ import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import { EmptyState } from '../../../components/shared/EmptyState';
 import { generateIdempotencyKey } from '../../../utils/idempotency';
 import type { ShippingAddress } from '../types/order';
+import { usePaymentProviders } from '../hooks/usePaymentProviders';
 import { useTranslation } from 'react-i18next';
+import { Check } from 'lucide-react';
 
 const emptyAddress: ShippingAddress = {
     fullName: '',
@@ -36,6 +38,16 @@ export default function CheckoutPage() {
     const [shippingAddress, setShippingAddress] = useState<ShippingAddress>(emptyAddress);
     const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
     const [idempotencyKey, setIdempotencyKey] = useState(() => generateIdempotencyKey());
+    const [agreedTerms, setAgreedTerms] = useState(false);
+
+    const { data: providers } = usePaymentProviders();
+
+    // Auto-select provider if only one exists
+    useEffect(() => {
+        if (providers && providers.length === 1 && !selectedProvider) {
+            setSelectedProvider(providers[0].providerName);
+        }
+    }, [providers, selectedProvider]);
 
     // Auto-select default saved address
     const effectiveSelectedId =
@@ -198,9 +210,27 @@ export default function CheckoutPage() {
                         <div className="space-y-4">
                             <OrderSummary basket={basket} />
 
+                            {/* Terms and Conditions */}
+                            <div className="rounded-2xl border border-border bg-card p-5">
+                                <label className="flex items-start gap-3 cursor-pointer group">
+                                    <div className="relative flex items-center mt-0.5">
+                                        <input
+                                            type="checkbox"
+                                            checked={agreedTerms}
+                                            onChange={(e) => setAgreedTerms(e.target.checked)}
+                                            className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-border transition-all checked:bg-[var(--brand-primary)] checked:border-[var(--brand-primary)]"
+                                        />
+                                        <Check className="absolute h-3.5 w-3.5 text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-opacity" />
+                                    </div>
+                                    <span className="text-xs font-medium text-muted-foreground transition-colors group-hover:text-foreground">
+                                        Mesafeli Satış Sözleşmesi ve Ön Bilgilendirme Formu'nu okudum, kabul ediyorum.
+                                    </span>
+                                </label>
+                            </div>
+
                             <button
                                 type="submit"
-                                disabled={isLoading || !selectedProvider}
+                                disabled={isLoading || !selectedProvider || !agreedTerms}
                                 className="w-full rounded-2xl bg-[var(--brand-primary)] px-6 py-4 text-sm font-bold text-white shadow-lg shadow-black/5 transition-all hover:bg-[var(--brand-primary-dark)] disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
                             >
                                 {isLoading ? (
