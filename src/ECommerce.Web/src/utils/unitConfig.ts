@@ -15,34 +15,44 @@ export type UnitStepConfig = {
 export function getUnitConfig(unitCode: string | null | undefined, displayName?: string): UnitStepConfig {
     const code = (unitCode ?? '').toLowerCase().trim();
     const name = displayName ?? unitCode ?? '';
+    const nameLower = name.toLowerCase().trim();
+
+    // Match by code first, then fallback to common localized names
+    const isKg = code === 'kg' || nameLower === 'kilogram' || nameLower === 'kg';
+    const isGram = code === 'g' || nameLower === 'gram' || nameLower === 'g';
+    const isLiter = code === 'lt' || nameLower === 'litre' || nameLower === 'liter' || nameLower === 'lt';
+
+    if (isKg) {
+        return {
+            step: 0.05,
+            min: 0.05,
+            decimals: 2,
+            displayName: name,
+            formatValue: (v, n) => `${v.toFixed(2)} ${n}`,
+        };
+    }
+
+    if (isGram) {
+        return {
+            step: 100,
+            min: 100,
+            decimals: 0,
+            displayName: name,
+            formatValue: (v, n) => `${v.toFixed(0)} ${n}`,
+        };
+    }
+
+    if (isLiter) {
+        return {
+            step: 0.1,
+            min: 0.1,
+            decimals: 1,
+            displayName: name,
+            formatValue: (v, n) => `${v.toFixed(1)} ${n}`,
+        };
+    }
 
     switch (code) {
-        case 'kg':
-            return {
-                step: 0.05,
-                min: 0.05,
-                decimals: 2,
-                displayName: name,
-                formatValue: (v, n) => `${v.toFixed(2)} ${n}`,
-            };
-
-        case 'g':
-            return {
-                step: 100,
-                min: 100,
-                decimals: 0,
-                displayName: name,
-                formatValue: (v, n) => `${v.toFixed(0)} ${n}`,
-            };
-
-        case 'lt':
-            return {
-                step: 0.1,
-                min: 0.1,
-                decimals: 1,
-                displayName: name,
-                formatValue: (v, n) => `${v.toFixed(1)} ${n}`,
-            };
 
         case 'adet':
         case 'paket':

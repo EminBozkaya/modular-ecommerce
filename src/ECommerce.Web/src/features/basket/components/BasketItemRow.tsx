@@ -17,7 +17,7 @@ export const BasketItemRow = ({ item }: BasketItemRowProps) => {
     const { debouncedMutate: updateItem, isPending: isUpdating } = useUpdateBasketItem();
 
     const unitName = item.unitName ?? 'adet';
-    const unitConfig = getUnitConfig(unitName);
+    const unitConfig = getUnitConfig(item.unitCode, unitName);
 
     const handleQuantityChange = (newValue: number) => {
         if (newValue <= 0) {
@@ -50,6 +50,7 @@ export const BasketItemRow = ({ item }: BasketItemRowProps) => {
                 </span>
                 <div>
                     <QuantitySelector
+                        unitCode={item.unitCode}
                         unitName={unitName}
                         value={item.quantity}
                         onChange={handleQuantityChange}
