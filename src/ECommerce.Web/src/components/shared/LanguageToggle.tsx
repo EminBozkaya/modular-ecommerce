@@ -28,7 +28,7 @@ export function LanguageToggle() {
                     <button
                         id="language-dropdown-trigger"
                         className={cn(
-                            "relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gray-50 dark:bg-white/10 text-muted-foreground transition-all duration-300 shadow-sm border border-transparent outline-none",
+                            "relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gray-50 dark:bg-white/10 text-muted-foreground transition-all duration-300 shadow-sm border border-transparent outline-none cursor-pointer",
                             "group-hover:text-[var(--brand-primary)] group-hover:bg-[var(--brand-primary-subtle)] group-hover:border-[var(--brand-primary-light)]",
                             "focus:ring-2 focus:ring-[var(--brand-primary)]/20"
                         )}

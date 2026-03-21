@@ -199,7 +199,7 @@ export default function AdminAddressesPage() {
                 <div className="flex items-center gap-4 self-end sm:self-auto">
                     <button
                         onClick={() => exportAddressesToExcel(addresses)}
-                        className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group"
+                        className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group cursor-pointer"
                         title="Excel'e Aktar"
                     >
                         <div className="w-14 h-14 flex items-center justify-center">
@@ -209,7 +209,7 @@ export default function AdminAddressesPage() {
                     </button>
                     <button
                         onClick={() => exportAddressesToPDF(addresses).catch(() => alert(t('errors.pdfExport')))}
-                        className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group"
+                        className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group cursor-pointer"
                         title="PDF'e Aktar"
                     >
                         <div className="w-14 h-14 flex items-center justify-center">

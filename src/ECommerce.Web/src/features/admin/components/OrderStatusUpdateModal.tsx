@@ -48,7 +48,7 @@ export function OrderStatusUpdateModal({ order, isOpen, onClose }: OrderStatusUp
                 <div className="p-6">
                     <div className="flex items-center justify-between mb-5">
                         <h3 className="text-lg font-bold text-foreground">{t('modals.orderStatus.title')}</h3>
-                        <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
+                        <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                             <X className="h-5 w-5" />
                         </button>
                     </div>

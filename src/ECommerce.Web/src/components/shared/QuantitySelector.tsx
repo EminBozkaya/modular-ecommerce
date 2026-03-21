@@ -133,7 +133,7 @@ export function QuantitySelector({
                 onClick={handleDecrement}
                 disabled={disabled || isAtMin}
                 aria-label="Miktarı azalt"
-                className={`${cls.btn} flex items-center justify-center bg-gray-50 dark:bg-white/5 text-muted-foreground hover:text-white hover:bg-[var(--brand-primary)] active:bg-[var(--brand-primary-dark)] transition-all duration-150 disabled:text-muted-foreground/40 disabled:hover:bg-gray-50 dark:disabled:hover:bg-white/5 border-r border-border`}
+                className={`${cls.btn} flex items-center justify-center bg-gray-50 dark:bg-white/5 text-muted-foreground hover:text-white hover:bg-[var(--brand-primary)] active:bg-[var(--brand-primary-dark)] transition-all duration-150 disabled:text-muted-foreground/40 disabled:hover:bg-gray-50 dark:disabled:hover:bg-white/5 border-r border-border cursor-pointer`}
             >
                 <Minus className={cls.icon} strokeWidth={2.5} />
             </button>
@@ -159,7 +159,7 @@ export function QuantitySelector({
                 onClick={handleIncrement}
                 disabled={disabled}
                 aria-label="Miktarı artır"
-                className={`${cls.btn} flex items-center justify-center bg-gray-50 dark:bg-white/5 text-muted-foreground hover:text-white hover:bg-[var(--brand-primary)] active:bg-[var(--brand-primary-dark)] transition-all duration-150 disabled:text-muted-foreground/40 disabled:hover:bg-gray-50 dark:disabled:hover:bg-white/5 border-l border-border`}
+                className={`${cls.btn} flex items-center justify-center bg-gray-50 dark:bg-white/5 text-muted-foreground hover:text-white hover:bg-[var(--brand-primary)] active:bg-[var(--brand-primary-dark)] transition-all duration-150 disabled:text-muted-foreground/40 disabled:hover:bg-gray-50 dark:disabled:hover:bg-white/5 border-l border-border cursor-pointer`}
             >
                 <Plus className={cls.icon} strokeWidth={2.5} />
             </button>

@@ -14,7 +14,7 @@ export function BasketButton() {
         <div className="flex flex-col items-center group">
             <button
                 onClick={() => navigate('/basket')}
-                className="relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gray-50 dark:bg-white/10 text-muted-foreground group-hover:text-[var(--brand-primary)] group-hover:bg-[var(--brand-primary-subtle)] transition-all duration-300 shadow-sm"
+                className="relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gray-50 dark:bg-white/10 text-muted-foreground group-hover:text-[var(--brand-primary)] group-hover:bg-[var(--brand-primary-subtle)] transition-all duration-300 shadow-sm cursor-pointer"
                 aria-label={t('header.openBasket')}
                 title={t('header.basketTitle')}
             >

@@ -55,7 +55,7 @@ export function UserMenu() {
         <div className="flex flex-col items-center group relative" ref={menuRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[var(--brand-primary)] text-white font-bold text-[12px] sm:text-sm border-[1.5px] sm:border-2 border-background shadow-md hover:bg-[var(--brand-primary-dark)] transition-all duration-200"
+                className="flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[var(--brand-primary)] text-white font-bold text-[12px] sm:text-sm border-[1.5px] sm:border-2 border-background shadow-md hover:bg-[var(--brand-primary-dark)] transition-all duration-200 cursor-pointer"
                 title={user?.fullName}
             >
                 {userInitials}

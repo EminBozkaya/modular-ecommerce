@@ -49,7 +49,7 @@ export default function AdminDashboardPage() {
                                 key={opt.value}
                                 onClick={() => setPeriod(opt.value)}
                                 className={`
-                                    relative px-3 sm:px-5 py-2 text-sm font-medium rounded-lg transition-all duration-300 w-full sm:w-auto
+                                    relative px-3 sm:px-5 py-2 text-sm font-medium rounded-lg transition-all duration-300 w-full sm:w-auto cursor-pointer
                                     ${isActive
                                         ? 'bg-background text-[var(--brand-primary)] shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
                                         : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'}

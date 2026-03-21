@@ -85,7 +85,7 @@ export const SocialLogin = () => {
             title={social.name}
             disabled={loadingProvider !== null}
             onClick={() => handleSocialLogin(social.id)}
-            className={`group relative flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-2xl shadow-sm transition-all hover:shadow-xl hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:cursor-wait disabled:transform-none ${social.className}`}
+            className={`group relative flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-2xl shadow-sm transition-all hover:shadow-xl hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:cursor-wait disabled:transform-none cursor-pointer ${social.className}`}
           >
             {loadingProvider === social.id ? (
               <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">

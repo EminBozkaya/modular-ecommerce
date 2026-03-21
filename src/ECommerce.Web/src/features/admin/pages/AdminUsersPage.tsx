@@ -179,7 +179,7 @@ export default function AdminUsersPage() {
                 <div className="flex items-center gap-4 self-end sm:self-auto">
                     <button
                         onClick={() => exportUsersToExcel(users)}
-                        className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group"
+                        className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group cursor-pointer"
                         title="Excel'e Aktar"
                     >
                         <div className="w-14 h-14 flex items-center justify-center">
@@ -189,7 +189,7 @@ export default function AdminUsersPage() {
                     </button>
                     <button
                         onClick={() => exportUsersToPDF(users).catch(() => alert(t('errors.pdfExport')))}
-                        className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group"
+                        className="flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 active:scale-95 group cursor-pointer"
                         title="PDF'e Aktar"
                     >
                         <div className="w-14 h-14 flex items-center justify-center">
@@ -200,7 +200,7 @@ export default function AdminUsersPage() {
                     <div className="flex flex-col items-center gap-1">
                         <button
                             onClick={() => { setEditingUser(null); setModalOpen(true); }}
-                            className="flex items-center justify-center w-14 h-14 text-white rounded-xl transition-all duration-200 shadow-sm hover:shadow-md shrink-0"
+                            className="flex items-center justify-center w-14 h-14 text-white rounded-xl transition-all duration-200 shadow-sm hover:shadow-md shrink-0 cursor-pointer"
                             style={{ background: 'var(--brand-primary)' }}
                             title={t('users.addTooltip')}
                             onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.background = 'var(--brand-primary-dark)')}

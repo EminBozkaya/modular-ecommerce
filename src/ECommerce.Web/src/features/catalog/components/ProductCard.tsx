@@ -136,7 +136,7 @@ export function ProductCard({ product }: ProductCardProps) {
                             onClick={handleAddToBasket}
                             disabled={isAnyActionPending}
                             className={[
-                                'w-full py-2 px-3 text-sm font-bold text-white rounded-lg',
+                                'w-full py-2 px-3 text-sm font-bold text-white rounded-lg cursor-pointer',
                                 'transition-all duration-150 active:translate-y-0.5 active:border-b-0',
                                 isInBasket
                                     ? 'bg-red-600 border-b-3 border-red-800 hover:bg-red-700'

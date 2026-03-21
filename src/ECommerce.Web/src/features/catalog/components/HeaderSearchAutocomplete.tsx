@@ -79,7 +79,7 @@ export function HeaderSearchAutocomplete() {
                     />
                     <button
                         type="submit"
-                        className="flex-shrink-0 h-10 w-10 flex items-center justify-center bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-dark)] text-white transition-colors"
+                        className="flex-shrink-0 h-10 w-10 flex items-center justify-center bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-dark)] text-white transition-colors cursor-pointer"
                     >
                         {isLoading && debouncedQuery !== searchQuery ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
