@@ -17,6 +17,7 @@ public record BasketItemDto(
     decimal LineTotal,
     string? ImageUrl,
     string? UnitName,
-    string? UnitCode);
+    string? UnitCode,
+    decimal StockQuantity);
 
 public record GetBasketQuery(Guid? UserId, string? SessionId, string Language = "tr") : IRequest<BasketDto?>;

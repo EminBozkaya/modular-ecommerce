@@ -52,5 +52,9 @@
     "descError": "Sie können den Zahlungsstatus in Ihren Bestellungen prüfen.",
     "titleProcessing": "Zahlung wird überprüft...",
     "descProcessing": "Dieser Vorgang kann einige Sekunden dauern."
+  },
+  "errors": {
+    "insufficientStock": "Es ist nicht genügend Lagerbestand vorhanden, um diese Bestellung auszuführen. Bitte aktualisieren Sie Ihren Warenkorb und versuchen Sie es erneut.",
+    "paymentFailed": "Zahlung fehlgeschlagen."
   }
 }

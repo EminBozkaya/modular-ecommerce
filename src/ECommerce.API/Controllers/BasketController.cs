@@ -63,14 +63,19 @@ public class BasketController : ControllerBase
         if (sub is not null && Guid.TryParse(sub, out var userId))
             return (userId, null);
 
-        var sessionId = Request.Cookies["session_id"];
+        var sessionId = Request.Headers["X-Session-Id"].ToString();
+        
+        if (string.IsNullOrEmpty(sessionId))
+            sessionId = Request.Cookies["session_id"];
+
         if (string.IsNullOrEmpty(sessionId))
         {
             sessionId = Guid.NewGuid().ToString();
             Response.Cookies.Append("session_id", sessionId, new CookieOptions
             {
                 HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
+                Secure = true, // Browsers require this for SameSite=None
                 MaxAge = TimeSpan.FromDays(30)
             });
         }

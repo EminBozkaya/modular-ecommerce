@@ -37,6 +37,7 @@
     "outOfStock": "Stokta Yok",
     "addToFavorites": "Favorilere Ekle",
     "removeFromFavorites": "Favorilerden Kaldır",
-    "noImage": "Görsel bulunamadı"
+    "noImage": "Görsel bulunamadı",
+    "stockExceeded": "Stokta yalnızca {{stock}} {{unit}} mevcut"
   }
 }

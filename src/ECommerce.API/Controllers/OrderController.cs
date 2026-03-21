@@ -18,8 +18,7 @@ public class OrderController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateOrderRequest req, CancellationToken ct)
     {
-        var userId = GetUserId();
-        var sessionId = Request.Cookies["session_id"];
+        var (userId, sessionId) = GetIdentifiers();
 
         // Serialize structured ShippingAddress to JSON string for domain storage (Option A)
         var shippingAddressJson = JsonSerializer.Serialize(req.ShippingAddress);
@@ -49,6 +48,20 @@ public class OrderController : ControllerBase
         var userId = GetUserId();
         if (userId is null) return Unauthorized();
         return Ok(await _mediator.Send(new GetOrdersQuery(userId), ct));
+    }
+
+    private (Guid? userId, string? sessionId) GetIdentifiers()
+    {
+        var sub = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (sub is not null && Guid.TryParse(sub, out var userId))
+            return (userId, null);
+
+        var sessionId = Request.Headers["X-Session-Id"].ToString();
+        
+        if (string.IsNullOrEmpty(sessionId))
+            sessionId = Request.Cookies["session_id"];
+
+        return (null, sessionId);
     }
 
     private Guid? GetUserId()

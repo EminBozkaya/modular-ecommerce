@@ -128,6 +128,38 @@ export const router = createBrowserRouter([
                     </SuspenseWrapper>
                 ),
             },
+            {
+                path: 'checkout',
+                element: (
+                    <SuspenseWrapper>
+                        <CheckoutPage />
+                    </SuspenseWrapper>
+                ),
+            },
+            {
+                path: 'orders/:id',
+                element: (
+                    <SuspenseWrapper>
+                        <OrderDetailPage />
+                    </SuspenseWrapper>
+                ),
+            },
+            {
+                path: 'payment/iyzico',
+                element: (
+                    <SuspenseWrapper>
+                        <IyzicoPaymentPage />
+                    </SuspenseWrapper>
+                ),
+            },
+            {
+                path: 'orders/:id/confirmation',
+                element: (
+                    <SuspenseWrapper>
+                        <OrderConfirmationPage />
+                    </SuspenseWrapper>
+                ),
+            },
         ],
     },
     // Protected ordering routes
@@ -139,26 +171,10 @@ export const router = createBrowserRouter([
                 element: <MainLayout />,
                 children: [
                     {
-                        path: 'checkout',
-                        element: (
-                            <SuspenseWrapper>
-                                <CheckoutPage />
-                            </SuspenseWrapper>
-                        ),
-                    },
-                    {
                         path: 'orders',
                         element: (
                             <SuspenseWrapper>
                                 <OrderHistoryPage />
-                            </SuspenseWrapper>
-                        ),
-                    },
-                    {
-                        path: 'orders/:id',
-                        element: (
-                            <SuspenseWrapper>
-                                <OrderDetailPage />
                             </SuspenseWrapper>
                         ),
                     },
@@ -175,22 +191,6 @@ export const router = createBrowserRouter([
                         element: (
                             <SuspenseWrapper>
                                 <AddressesPage />
-                            </SuspenseWrapper>
-                        ),
-                    },
-                    {
-                        path: 'orders/:id/confirmation',
-                        element: (
-                            <SuspenseWrapper>
-                                <OrderConfirmationPage />
-                            </SuspenseWrapper>
-                        ),
-                    },
-                    {
-                        path: 'payment/iyzico',
-                        element: (
-                            <SuspenseWrapper>
-                                <IyzicoPaymentPage />
                             </SuspenseWrapper>
                         ),
                     },

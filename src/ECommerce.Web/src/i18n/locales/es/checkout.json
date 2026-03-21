@@ -52,5 +52,9 @@
     "descError": "Comprueba el estado desde tus pedidos.",
     "titleProcessing": "Verificando tu pago...",
     "descProcessing": "Este proceso puede tardar unos segundos."
+  },
+  "errors": {
+    "insufficientStock": "No hay suficiente stock para este pedido. Por favor, actualiza tu carrito e inténtalo de nuevo.",
+    "paymentFailed": "El pago falló."
   }
 }

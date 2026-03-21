@@ -30,8 +30,8 @@ export function useCheckout() {
         }
     }, [t]);
 
-    const createOrderMutation = useMutation<CreateOrderResponse, ApiError, ShippingAddress>({
-        mutationFn: (shippingAddress) => createOrder({ shippingAddress }),
+    const createOrderMutation = useMutation<CreateOrderResponse, ApiError, { shippingAddress: ShippingAddress; guestEmail?: string }>({
+        mutationFn: (req) => createOrder(req),
     });
 
     const initializePaymentMutation = useMutation<
@@ -47,12 +47,14 @@ export function useCheckout() {
             shippingAddress: ShippingAddress,
             providerName: string,
             idempotencyKey: string,
+            guestEmail?: string
         ): Promise<boolean> => {
             setStep('creating_order');
             setError(null);
 
+
             try {
-                const orderResponse = await createOrderMutation.mutateAsync(shippingAddress);
+                const orderResponse = await createOrderMutation.mutateAsync({ shippingAddress, guestEmail });
 
                 setStep('redirecting');
 
@@ -103,10 +105,17 @@ export function useCheckout() {
                 setStep('error');
                 // Axios errors have response.data.message; Error instances have .message
                 const axiosData = (err as { response?: { data?: { message?: string } } })?.response?.data;
-                const message =
+                const rawMessage =
                     axiosData?.message ??
-                    (err instanceof Error ? err.message : null) ??
-                    'Bir hata oluştu, lütfen tekrar deneyin.';
+                    (err instanceof Error ? err.message : null);
+                
+                let message = rawMessage ?? 'Bir hata oluştu, lütfen tekrar deneyin.';
+                
+                // Translate known backend error messages
+                if (rawMessage === 'Insufficient stock.') {
+                    message = t('errors.insufficientStock', { defaultValue: 'Yetersiz stok.' });
+                }
+                
                 setError(message);
                 return false;
             }

@@ -11,7 +11,9 @@
     "termsLink": "terms of service",
     "termsEnd": ".",
     "creatingOrder": "Creating your order...",
-    "redirecting": "Redirecting to payment page..."
+    "redirecting": "Redirecting to payment page...",
+    "returnToBasket": "Return to Basket",
+    "retry": "Retry"
   },
   "shipping": {
     "sectionTitle": "Delivery Address",
@@ -52,5 +54,9 @@
     "descError": "You can check payment status from your orders.",
     "titleProcessing": "Verifying your payment...",
     "descProcessing": "This process might take a few seconds."
+  },
+  "errors": {
+    "insufficientStock": "There is not enough stock to fulfill this order. Please update your basket and try again.",
+    "paymentFailed": "Payment failed."
   }
 }

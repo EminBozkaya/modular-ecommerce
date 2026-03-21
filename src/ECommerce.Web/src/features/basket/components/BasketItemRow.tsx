@@ -13,11 +13,14 @@ interface BasketItemRowProps {
 
 export const BasketItemRow = ({ item }: BasketItemRowProps) => {
     const { t } = useTranslation('basket');
+    const { t: tCatalog } = useTranslation('catalog');
     const { mutate: removeFromBasket, isPending: isRemoving } = useRemoveFromBasket();
     const { debouncedMutate: updateItem, isPending: isUpdating } = useUpdateBasketItem();
 
     const unitName = item.unitName ?? 'adet';
     const unitConfig = getUnitConfig(item.unitCode, unitName);
+
+    const exceedsStock = item.stockQuantity > 0 && item.quantity > item.stockQuantity;
 
     const handleQuantityChange = (newValue: number) => {
         if (newValue <= 0) {
@@ -57,6 +60,11 @@ export const BasketItemRow = ({ item }: BasketItemRowProps) => {
                         disabled={isDisabled}
                         size="sm"
                     />
+                    {exceedsStock && (
+                        <p className="text-xs font-bold text-red-500 mt-1">
+                            {tCatalog('product.stockExceeded', { stock: item.stockQuantity, unit: unitName })}
+                        </p>
+                    )}
                 </div>
                 <button
                     onClick={() => removeFromBasket(item.productId)}

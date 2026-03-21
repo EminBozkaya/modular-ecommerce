@@ -9,6 +9,9 @@ import { queryKeys } from '../../../utils/queryKeys';
 import { useAuthStore } from '../../../store/authStore';
 import { useState, useEffect } from 'react';
 
+import { getProductById } from '../../catalog/api/catalogApi';
+import type { WishlistItem } from '../types/favorite';
+
 const GUEST_WISHLIST_KEY = 'guest_wishlist';
 
 const getGuestWishlist = (): string[] => {
@@ -20,12 +23,39 @@ const setGuestWishlist = (ids: string[]) => {
     localStorage.setItem(GUEST_WISHLIST_KEY, JSON.stringify(ids));
 };
 
+const fetchGuestWishlist = async (): Promise<WishlistItem[]> => {
+    const ids = getGuestWishlist();
+    if (ids.length === 0) return [];
+
+    const items = await Promise.allSettled(ids.map(id => getProductById(id)));
+    const validItems: WishlistItem[] = [];
+
+    items.forEach(result => {
+        if (result.status === 'fulfilled' && result.value) {
+            const product = result.value;
+            validItems.push({
+                id: product.id,
+                productId: product.id,
+                productName: product.name,
+                price: product.price,
+                currency: product.currency,
+                imageUrl: product.imageUrl ?? null,
+                categoryName: product.categoryName ?? '',
+                stockQuantity: product.stockQuantity,
+                isActive: product.isActive,
+                addedAt: new Date().toISOString()
+            });
+        }
+    });
+
+    return validItems;
+};
+
 export const useWishlist = () => {
     const { isAuthenticated } = useAuthStore();
     return useQuery({
         queryKey: queryKeys.wishlist.items,
-        queryFn: getWishlist,
-        enabled: isAuthenticated,
+        queryFn: isAuthenticated ? getWishlist : fetchGuestWishlist,
         staleTime: 60 * 1000,
     });
 };
@@ -91,6 +121,7 @@ export const useToggleFavorite = () => {
             // Trigger local update
             window.dispatchEvent(new Event('storage'));
             queryClient.setQueryData(queryKeys.wishlist.productIds, updated);
+            queryClient.invalidateQueries({ queryKey: queryKeys.wishlist.items });
         }
     };
 

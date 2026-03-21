@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useBasket } from '../../basket/hooks/useBasket';
 import { useCheckout } from '../hooks/useCheckout';
 import { useAddresses } from '../../auth/hooks/useAddresses';
@@ -14,7 +14,8 @@ import { generateIdempotencyKey } from '../../../utils/idempotency';
 import type { ShippingAddress } from '../types/order';
 import { usePaymentProviders } from '../hooks/usePaymentProviders';
 import { useTranslation } from 'react-i18next';
-import { Check } from 'lucide-react';
+import { Check, Mail } from 'lucide-react';
+import { useAuthStore } from '../../../store/authStore';
 
 const emptyAddress: ShippingAddress = {
     fullName: '',
@@ -27,11 +28,14 @@ const emptyAddress: ShippingAddress = {
 
 export default function CheckoutPage() {
     const { t } = useTranslation('checkout');
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuthStore();
     const { data: basket, isLoading: isBasketLoading, error: basketError, refetch } = useBasket();
     const { data: savedAddresses } = useAddresses();
     const { submitCheckout, isLoading, error: checkoutError, step } = useCheckout();
+    const [guestEmail, setGuestEmail] = useState('');
 
-    const hasSaved = (savedAddresses?.length ?? 0) > 0;
+    const hasSaved = isAuthenticated && (savedAddresses?.length ?? 0) > 0;
 
     const [selectedSavedId, setSelectedSavedId] = useState<string | null>(null);
     const [useNewAddress, setUseNewAddress] = useState(false);
@@ -57,7 +61,7 @@ export default function CheckoutPage() {
 
     // Determine final address to submit
     const activeAddress: ShippingAddress = (() => {
-        if (!useNewAddress && effectiveSelectedId && savedAddresses) {
+        if (isAuthenticated && !useNewAddress && effectiveSelectedId && savedAddresses) {
             const found = savedAddresses.find((a) => a.id === effectiveSelectedId);
             if (found) {
                 return {
@@ -88,7 +92,10 @@ export default function CheckoutPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedProvider) return;
-        const success = await submitCheckout(activeAddress, selectedProvider, idempotencyKey);
+        if (!isAuthenticated && !guestEmail) {
+            return;
+        }
+        const success = await submitCheckout(activeAddress, selectedProvider, idempotencyKey, guestEmail);
         if (!success) {
             setIdempotencyKey(generateIdempotencyKey());
         }
@@ -150,7 +157,18 @@ export default function CheckoutPage() {
                     <div className="mb-6">
                         <ErrorMessage
                             message={checkoutError}
-                            onRetry={() => setIdempotencyKey(generateIdempotencyKey())}
+                            actionText={
+                                checkoutError === t('errors.insufficientStock')
+                                    ? t('page.returnToBasket', { defaultValue: 'Sepete Dön' })
+                                    : t('page.retry', { defaultValue: 'Tekrar Dene' })
+                            }
+                            onRetry={() => {
+                                if (checkoutError === t('errors.insufficientStock')) {
+                                    navigate('/basket');
+                                } else {
+                                    setIdempotencyKey(generateIdempotencyKey());
+                                }
+                            }}
                         />
                     </div>
                 )}
@@ -167,6 +185,39 @@ export default function CheckoutPage() {
                     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                         {/* Left: forms */}
                         <div className="space-y-4 lg:col-span-2">
+                            {/* Guest Email card */}
+                            {!isAuthenticated && (
+                                <div className="rounded-3xl border border-border bg-card p-6 shadow-xl shadow-black/5">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shrink-0 shadow-lg shadow-black/5">
+                                            <Mail className="h-4 w-4" />
+                                        </div>
+                                        <h2 className="text-base font-bold text-foreground">
+                                            İletişim Bilgileri
+                                        </h2>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5 ml-1">
+                                                E-Posta Adresiniz <span className="text-red-400">*</span>
+                                            </label>
+                                            <input
+                                                type="email"
+                                                value={guestEmail}
+                                                onChange={(e) => setGuestEmail(e.target.value)}
+                                                required
+                                                disabled={isLoading}
+                                                placeholder="örnek@eposta.com"
+                                                className="w-full rounded-xl border border-border bg-gray-50/50 dark:bg-white/10 px-4 py-2.5 text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/10"
+                                            />
+                                            <p className="mt-2 text-xs text-muted-foreground">
+                                                Sipariş onayınız bu adrese gönderilecektir.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Shipping address card */}
                             <div className="rounded-3xl border border-border bg-card p-6 shadow-xl shadow-black/5">
                                 <div className="flex items-center gap-3 mb-6">

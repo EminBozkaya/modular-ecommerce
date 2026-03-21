@@ -37,6 +37,7 @@
     "outOfStock": "غير متوفر",
     "addToFavorites": "إضافة للمفضلة",
     "removeFromFavorites": "إزالة من المفضلة",
-    "noImage": "لا توجد صورة"
+    "noImage": "لا توجد صورة",
+    "stockExceeded": "يتوفر {{stock}} {{unit}} فقط في المخزون"
   }
 }

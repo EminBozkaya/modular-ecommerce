@@ -7,9 +7,11 @@ import { EmptyState } from '../../../components/shared/EmptyState';
 import { formatPrice } from '../../../utils/formatters';
 import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '../../../store/authStore';
 
 export default function OrderDetailPage() {
     const { t, i18n } = useTranslation('orders');
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
     const { id } = useParams<{ id: string }>();
     const { data: order, isLoading, error, refetch } = useMyOrder(id || '');
 
@@ -50,13 +52,15 @@ export default function OrderDetailPage() {
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-2xl">
-            <Link
-                to="/orders"
-                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
-            >
-                <ArrowLeft className="h-4 w-4" />
-                {t('detail.backToOrders')}
-            </Link>
+            {isAuthenticated && (
+                <Link
+                    to="/orders"
+                    className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    {t('detail.backToOrders')}
+                </Link>
+            )}
 
             <div className="rounded-lg border border-border bg-card p-6 space-y-6">
                 {/* Header */}

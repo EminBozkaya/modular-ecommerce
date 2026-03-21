@@ -16,15 +16,13 @@ export async function mockLogin(req: LoginRequest): Promise<AuthResponse> {
         throw {
             response: {
                 status: 401,
-                data: {
-                    detail: 'Invalid email or password'
-                }
+                data: { detail: 'Invalid email or password' }
             }
         };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...authUser } = user;
+    sessionStorage.setItem('mock_user', JSON.stringify(authUser));
     return { user: authUser };
 }
 
@@ -36,38 +34,35 @@ export async function mockRegister(req: RegisterRequest): Promise<AuthResponse> 
         throw {
             response: {
                 status: 400,
-                data: {
-                    errors: {
-                        Email: ['Email is already in use']
-                    }
-                }
+                data: { errors: { Email: ['Email is already in use'] } }
             }
         };
     }
 
-    const newUser: AuthUser & { password: string } = {
+    const newUser = {
         id: String(mockUsers.length + 1),
         email: req.email,
         password: req.password,
         fullName: `${req.firstName} ${req.lastName}`,
-        role: 'Customer'
+        role: 'Customer' as const
     };
 
     mockUsers.push(newUser);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...authUser } = newUser;
+    sessionStorage.setItem('mock_user', JSON.stringify(authUser));
     return { user: authUser };
 }
 
 export async function mockLogout(): Promise<void> {
     await delay(400);
+    sessionStorage.removeItem('mock_user');
 }
 
 export async function mockGetMe(): Promise<AuthUser> {
     await delay(400);
-    // Return first mock user to simulate "already logged in" on refresh when mock is enabled
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...authUser } = mockUsers[0];
-    return authUser;
+    const stored = sessionStorage.getItem('mock_user');
+    if (!stored) {
+        throw { response: { status: 401 } };
+    }
+    return JSON.parse(stored);
 }

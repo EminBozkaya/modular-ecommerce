@@ -37,6 +37,7 @@
     "outOfStock": "Нет в наличии",
     "addToFavorites": "В избранное",
     "removeFromFavorites": "Убрать из избранного",
-    "noImage": "Изображение отсутствует"
+    "noImage": "Изображение отсутствует",
+    "stockExceeded": "На складе доступно только {{stock}} {{unit}}"
   }
 }

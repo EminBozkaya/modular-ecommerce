@@ -94,8 +94,27 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        Response.Cookies.Delete("access_token");
-        Response.Cookies.Delete("refresh_token");
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = !_env.IsDevelopment(),
+            SameSite = _env.IsDevelopment() ? SameSiteMode.Lax : SameSiteMode.Strict,
+            Expires = DateTime.UnixEpoch
+        };
+
+        Response.Cookies.Delete("access_token", cookieOptions);
+        
+        // Refresh token has a specific path, must match to delete
+        var refreshOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = !_env.IsDevelopment(),
+            SameSite = _env.IsDevelopment() ? SameSiteMode.Lax : SameSiteMode.Strict,
+            Path = "/api/auth/refresh",
+            Expires = DateTime.UnixEpoch
+        };
+        Response.Cookies.Delete("refresh_token", refreshOptions);
+
         return NoContent();
     }
 

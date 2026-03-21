@@ -52,5 +52,9 @@
     "descError": "Vérifiez le statut depuis vos commandes.",
     "titleProcessing": "Vérification du paiement...",
     "descProcessing": "Ce processus peut prendre quelques secondes."
+  },
+  "errors": {
+    "insufficientStock": "Il n'y a pas assez de stock pour compléter cette commande. Veuillez mettre à jour votre panier et réessayer.",
+    "paymentFailed": "Le paiement a échoué."
   }
 }

@@ -41,6 +41,9 @@ export function ProductCard({ product }: ProductCardProps) {
     const currentQuantity = isInBasket ? basketItem.quantity : quantity;
     const isAnyActionPending = isAdding || isRemoving || isUpdating;
 
+    // Stock validation — uses already-loaded product data, no extra API call
+    const exceedsStock = !isInBasket && product.stockQuantity > 0 && currentQuantity > product.stockQuantity;
+
     const handleToggleFavorite = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -132,9 +135,16 @@ export function ProductCard({ product }: ProductCardProps) {
                                 {calculateLinePrice(product.price, currentQuantity, product.currency)}
                             </span>
                         </div>
+                        {/* Stock warning */}
+                        {exceedsStock && (
+                            <p className="text-xs font-bold text-red-500 text-center -mt-1">
+                                {t('product.stockExceeded', { stock: product.stockQuantity, unit: product.unitName })}
+                            </p>
+                        )}
+
                         <button
                             onClick={handleAddToBasket}
-                            disabled={isAnyActionPending}
+                            disabled={isAnyActionPending || exceedsStock}
                             className={[
                                 'w-full py-2 px-3 text-sm font-bold text-white rounded-lg cursor-pointer',
                                 'transition-all duration-150 active:translate-y-0.5 active:border-b-0',

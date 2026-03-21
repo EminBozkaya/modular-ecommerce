@@ -41,7 +41,8 @@ public class GetBasketHandler : IRequestHandler<GetBasketQuery, BasketDto?>
                 i.LineTotalSnapshot.Amount,
                 product?.ImageUrl,
                 UnitNameResolver.Resolve(product?.Unit, q.Language, _defaultLanguage),
-                product?.Unit?.Code));
+                product?.Unit?.Code,
+                product?.Stock.Value ?? 0));
         }
 
         return new BasketDto(basket.Id, itemDtos, basket.Total.Amount, basket.Total.Currency.ToString());

@@ -11,7 +11,9 @@
     "termsLink": "kullanım şartlarını",
     "termsEnd": "kabul etmiş olursunuz.",
     "creatingOrder": "Siparişiniz oluşturuluyor...",
-    "redirecting": "Ödeme sayfasına yönlendiriliyor..."
+    "redirecting": "Ödeme sayfasına yönlendiriliyor...",
+    "returnToBasket": "Sepete Dön",
+    "retry": "Tekrar Dene"
   },
   "shipping": {
     "sectionTitle": "Teslimat Adresi",
@@ -52,5 +54,9 @@
     "descError": "Siparişlerinizden ödeme durumunu kontrol edebilirsiniz.",
     "titleProcessing": "Ödemeniz doğrulanıyor...",
     "descProcessing": "Bu işlem birkaç saniye sürebilir."
+  },
+  "errors": {
+    "insufficientStock": "Ödeme yapabilmek için yeterli stok bulunmuyor. Sepetinizi güncelleyip tekrar deneyiniz.",
+    "paymentFailed": "Ödeme işlemi başarısız oldu."
   }
 }

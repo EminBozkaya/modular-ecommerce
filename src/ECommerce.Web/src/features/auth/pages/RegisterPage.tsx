@@ -1,16 +1,20 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useRegister } from '@/features/auth/hooks/useRegister';
 import { useRegisterSchema, type RegisterFormData } from '@/lib/validations/auth.schema';
 import { applyServerErrors } from '@/utils/formErrors';
 import { StoreLogo } from '@/components/shared/StoreLogo';
 import { useTranslation } from 'react-i18next';
 import { SocialLogin } from '../components/SocialLogin';
+import { logout as logoutCall } from '@/features/auth/api/authApi';
+import { useAuthStore } from '@/store/authStore';
 
 export default function RegisterPage() {
     const { mutate: register, isPending } = useRegister();
     const { t } = useTranslation('auth');
+    const navigate = useNavigate();
+    const clearUser = useAuthStore((s: any) => s.clearUser);
 
     const registerSchema = useRegisterSchema();
 
@@ -24,7 +28,6 @@ export default function RegisterPage() {
     });
 
     const onSubmit = (data: RegisterFormData) => {
-        // confirmPassword backend'e gönderilmiyor
         const { confirmPassword: _, ...rest } = data;
         register(
             {
@@ -49,7 +52,6 @@ export default function RegisterPage() {
             </Link>
 
             <div className="w-full max-w-md space-y-8 rounded-2xl bg-card p-8 shadow-2xl shadow-black/5 border border-border relative overflow-hidden">
-                {/* Decorative background element */}
                 <div className="absolute top-0 left-0 -mt-4 -ml-4 h-24 w-24 rounded-full bg-[var(--brand-primary)]/10 blur-3xl" />
 
                 <div className="relative z-10 text-center">
@@ -66,7 +68,6 @@ export default function RegisterPage() {
 
                 <div className="relative z-10 mt-8 space-y-6">
                     <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-                        {/* Genel sunucu hatası */}
                         {errors.root && (
                             <div className="rounded-xl bg-red-50 dark:bg-red-900/20 p-4 border border-red-100 dark:border-red-900/30">
                                 <div className="text-xs font-bold text-red-700">{errors.root.message}</div>
@@ -173,12 +174,17 @@ export default function RegisterPage() {
                                 {isPending ? t('register.submitting') : t('register.submit')}
                             </button>
 
-                            <Link
-                                to="/"
-                                className="flex w-full justify-center rounded-xl bg-gray-50 dark:bg-white/10 px-4 py-3 text-sm font-bold text-muted-foreground border border-border hover:bg-accent transition-all active:scale-[0.98] text-center"
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    await logoutCall();
+                                    clearUser();
+                                    navigate('/');
+                                }}
+                                className="flex w-full justify-center rounded-xl bg-gray-50 dark:bg-white/10 px-4 py-3 text-sm font-bold text-muted-foreground border border-border hover:bg-accent transition-all active:scale-[0.98] text-center cursor-pointer"
                             >
                                 {t('register.continueAsGuest')}
-                            </Link>
+                            </button>
                         </div>
                     </form>
 

@@ -5,11 +5,21 @@ export const apiClient = axios.create({
     withCredentials: true,
 });
 
+const getGuestSessionId = () => {
+    let sessionId = localStorage.getItem('guest_session_id');
+    if (!sessionId) {
+        sessionId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
+        localStorage.setItem('guest_session_id', sessionId);
+    }
+    return sessionId;
+};
+
 // Send the user's selected language with every request so the backend
 // returns translated product/category names via Accept-Language.
 apiClient.interceptors.request.use((config) => {
     const lang = localStorage.getItem('language') ?? 'tr';
     config.headers['Accept-Language'] = lang;
+    config.headers['X-Session-Id'] = getGuestSessionId();
     return config;
 });
 
@@ -33,8 +43,8 @@ apiClient.interceptors.response.use(
                     console.log('Token refresh successful. Retrying request:', url);
                     return apiClient(originalRequest);
                 } catch (refreshError) {
-                    console.error('Token refresh failed. Redirecting to login...');
-                    window.location.href = '/login';
+                    console.warn('Token refresh failed. User remains unauthenticated for this request.');
+                    // No automatic redirect to login here. Let the UI components or ProtectedRoute handle navigation.
                 }
             }
         } else if (error.response?.status === 403) {

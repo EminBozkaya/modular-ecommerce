@@ -38,6 +38,7 @@ export interface Order {
 
 export interface CreateOrderRequest {
     shippingAddress: ShippingAddress;
+    guestEmail?: string;
 }
 
 export interface CreateOrderResponse {

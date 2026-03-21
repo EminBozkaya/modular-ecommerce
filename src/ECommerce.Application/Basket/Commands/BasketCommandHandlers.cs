@@ -64,7 +64,8 @@ public class AddToBasketHandler : IRequestHandler<AddToBasketCommand, BasketDto>
             i.LineTotalSnapshot.Amount,
             null,
             null,
-            null)).ToList();
+            null,
+            0)).ToList();
         return new BasketDto(basket.Id, items, basket.Total.Amount, basket.Total.Currency.ToString());
     }
 }
@@ -94,7 +95,8 @@ public class RemoveFromBasketHandler : IRequestHandler<RemoveFromBasketCommand, 
             i.LineTotalSnapshot.Amount,
             null,
             null,
-            null)).ToList();
+            null,
+            0)).ToList();
         return new BasketDto(basket.Id, items, basket.Total.Amount, basket.Total.Currency.ToString());
     }
 }
@@ -142,7 +144,8 @@ public class UpdateBasketItemHandler : IRequestHandler<UpdateBasketItemCommand, 
             i.LineTotalSnapshot.Amount,
             null,
             null,
-            null)).ToList();
+            null,
+            0)).ToList();
         return new BasketDto(basket.Id, items, basket.Total.Amount, basket.Total.Currency.ToString());
     }
 }

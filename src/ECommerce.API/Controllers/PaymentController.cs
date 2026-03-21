@@ -27,7 +27,7 @@ public class PaymentController : ControllerBase
 
     /// <summary>Returns all active payment providers for the checkout page.</summary>
     [HttpGet("providers")]
-    [Authorize]
+    [AllowAnonymous]
     public async Task<IActionResult> GetProviders(CancellationToken ct)
     {
         var result = await _mediator.Send(new GetActivePaymentProvidersQuery(), ct);
@@ -36,7 +36,7 @@ public class PaymentController : ControllerBase
 
     /// <summary>Initiates 3D Secure payment — returns RedirectUrl to provider page.</summary>
     [HttpPost("initialize")]
-    [Authorize]
+    [AllowAnonymous]
     [EnableRateLimiting("PaymentInitialize")]
     public async Task<IActionResult> InitializePayment(
         [FromBody] InitializePaymentRequest request,
@@ -51,7 +51,7 @@ public class PaymentController : ControllerBase
             IdempotencyKey: request.IdempotencyKey,
             ReturnUrl: request.ReturnUrl,
             UserId: userId,
-            GuestEmail: null,
+            GuestEmail: request.GuestEmail,
             CustomerIp: customerIp);
 
         var result = await _mediator.Send(command, ct);
@@ -187,6 +187,7 @@ public record InitializePaymentRequest(
     Guid OrderId,
     string ProviderName,
     string IdempotencyKey,
-    string ReturnUrl);
+    string ReturnUrl,
+    string? GuestEmail);
 
 public record RefundPaymentRequest(decimal? Amount);

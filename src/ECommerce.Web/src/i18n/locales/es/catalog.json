@@ -37,6 +37,7 @@
     "outOfStock": "Sin stock",
     "addToFavorites": "Añadir a favoritos",
     "removeFromFavorites": "Quitar de favoritos",
-    "noImage": "Imagen no disponible"
+    "noImage": "Imagen no disponible",
+    "stockExceeded": "Solo {{stock}} {{unit}} disponible en stock"
   }
 }

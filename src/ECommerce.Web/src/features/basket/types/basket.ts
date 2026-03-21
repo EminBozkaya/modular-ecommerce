@@ -9,6 +9,8 @@ export interface BasketItem {
     unitName?: string;
     /** Unit code (e.g. "kg") — used by mock to re-translate on language change */
     unitCode?: string;
+    /** Current stock quantity from backend — used for client-side validation */
+    stockQuantity: number;
 }
 
 export interface Basket {

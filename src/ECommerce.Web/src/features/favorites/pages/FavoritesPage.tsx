@@ -1,33 +1,13 @@
 import { Link } from 'react-router-dom';
 import { Heart, Trash2, ShoppingCart } from 'lucide-react';
 import { useWishlist, useToggleFavorite } from '../hooks/useFavorites';
-import { useAuthStore } from '../../../store/authStore';
 import { formatPrice } from '../../../utils/formatters';
 import { AddToBasketButton } from '../../basket/components/AddToBasketButton';
 import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
 
 export default function FavoritesPage() {
-    const { isAuthenticated } = useAuthStore();
     const { data: items, isLoading, isError } = useWishlist();
     const { toggle, isLoading: isToggling } = useToggleFavorite();
-
-    if (!isAuthenticated) {
-        return (
-            <div className="container mx-auto px-4 py-16 text-center">
-                <Heart className="h-16 w-16 mx-auto mb-4 text-muted-foreground/40" />
-                <h1 className="text-2xl font-bold text-foreground mb-2">Favorilerim</h1>
-                <p className="text-muted-foreground mb-6">
-                    Favori ürünlerinizi görmek için giriş yapmanız gerekmektedir.
-                </p>
-                <Link
-                    to="/login?redirect=/favoriler"
-                    className="inline-flex items-center px-6 py-3 text-sm font-semibold text-white bg-[var(--brand-primary)] rounded-lg hover:bg-[var(--brand-primary-dark)] transition-colors"
-                >
-                    Giriş Yap
-                </Link>
-            </div>
-        );
-    }
 
     if (isLoading) {
         return (
