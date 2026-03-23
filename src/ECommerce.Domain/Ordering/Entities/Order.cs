@@ -36,6 +36,7 @@ public class Order : BaseAuditableEntity
 
         var order = new Order
         {
+            Id = Guid.NewGuid(),
             OrderNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString()[..8].ToUpper()}",
             UserId = userId,
             GuestEmail = guestEmail,

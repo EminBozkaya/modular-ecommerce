@@ -17,6 +17,7 @@ public class Unit : BaseAuditableEntity
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         return new Unit
         {
+            Id = Guid.NewGuid(),
             Name = name,
             Code = code,
             CreatedAt = DateTime.UtcNow

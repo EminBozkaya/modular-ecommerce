@@ -28,6 +28,7 @@ public class Product : BaseAuditableEntity
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         return new Product
         {
+            Id = Guid.NewGuid(),
             Name = name,
             Description = description,
             ImageUrl = imageUrl,

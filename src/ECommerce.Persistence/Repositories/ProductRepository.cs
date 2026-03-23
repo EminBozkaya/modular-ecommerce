@@ -51,6 +51,20 @@ public class ProductRepository : IProductRepository
         return await SpecificationEvaluator<Product>.GetQuery(query, spec, evaluatePaging: false).CountAsync(ct);
     }
 
+    public async Task<IReadOnlyList<Product>> SearchAsync(ProductFilterCriteria criteria, CancellationToken ct = default)
+    {
+        var spec = new ProductsWithFiltersSpecification(criteria);
+        var query = _ctx.Products.AsNoTracking();
+        return await SpecificationEvaluator<Product>.GetQuery(query, spec).ToListAsync(ct);
+    }
+
+    public async Task<int> SearchCountAsync(ProductFilterCriteria criteria, CancellationToken ct = default)
+    {
+        var spec = new ProductsWithFiltersSpecification(criteria);
+        var query = _ctx.Products.AsNoTracking();
+        return await SpecificationEvaluator<Product>.GetQuery(query, spec, evaluatePaging: false).CountAsync(ct);
+    }
+
     public async Task AddAsync(Product product, CancellationToken ct = default)
         => await _ctx.Products.AddAsync(product, ct);
 

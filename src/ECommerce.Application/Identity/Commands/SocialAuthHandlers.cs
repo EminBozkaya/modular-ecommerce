@@ -25,7 +25,7 @@ public class GetSocialProvidersHandler : IRequestHandler<GetSocialProvidersQuery
     }
 }
 
-public class GetSocialAuthUrlHandler : IRequestHandler<GetSocialAuthUrlQuery, SocialAuthUrlResult>
+public class GetSocialAuthUrlHandler : IRequestHandler<GetSocialAuthUrlQuery, SocialAuthUrlResultDto>
 {
     private readonly IEnumerable<ISocialAuthProvider> _providers;
 
@@ -34,21 +34,22 @@ public class GetSocialAuthUrlHandler : IRequestHandler<GetSocialAuthUrlQuery, So
         _providers = providers;
     }
 
-    public async Task<SocialAuthUrlResult> Handle(GetSocialAuthUrlQuery request, CancellationToken ct)
+    public async Task<SocialAuthUrlResultDto> Handle(GetSocialAuthUrlQuery request, CancellationToken ct)
     {
-        var provider = _providers.FirstOrDefault(p => 
+        var provider = _providers.FirstOrDefault(p =>
             p.ProviderName.Equals(request.Provider, StringComparison.OrdinalIgnoreCase));
 
         if (provider is null)
-            return new SocialAuthUrlResult(false, null, null, $"Provider '{request.Provider}' not found.");
+            return new SocialAuthUrlResultDto(false, null, null, $"Provider '{request.Provider}' not found.");
 
         if (!provider.IsActive)
-            return new SocialAuthUrlResult(false, null, null, $"Provider '{request.Provider}' is not active.");
+            return new SocialAuthUrlResultDto(false, null, null, $"Provider '{request.Provider}' is not active.");
 
         // Generate a random state string for CSRF protection
         var state = Guid.NewGuid().ToString("N");
 
-        return await provider.GetAuthorizationUrlAsync(request.RedirectUri, state, ct);
+        var result = await provider.GetAuthorizationUrlAsync(request.RedirectUri, state, ct);
+        return new SocialAuthUrlResultDto(result.IsSuccess, result.AuthorizationUrl, result.State, result.ErrorMessage);
     }
 }
 

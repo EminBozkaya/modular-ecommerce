@@ -29,6 +29,7 @@ public class Category : BaseAuditableEntity
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         return new Category
         {
+            Id = Guid.NewGuid(),
             Name = name,
             Description = description,
             ImageUrl = imageUrl,
