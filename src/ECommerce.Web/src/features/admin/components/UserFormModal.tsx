@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminUser } from '../types/adminUser';
 import { X } from 'lucide-react';
@@ -32,7 +32,7 @@ export default function UserFormModal({
         reset,
         formState: { errors },
     } = useForm<AdminUserFormData>({
-        resolver: zodResolver(adminUserSchema),
+        resolver: zodResolver(adminUserSchema) as Resolver<AdminUserFormData>,
         defaultValues: {
             fullName: '',
             email: '',

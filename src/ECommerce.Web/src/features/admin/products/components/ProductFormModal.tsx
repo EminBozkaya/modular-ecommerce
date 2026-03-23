@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Product, Category, Unit } from '../../../catalog/types/product';
 import { X, Globe } from 'lucide-react';
@@ -48,7 +48,7 @@ export default function ProductFormModal({
         reset,
         formState: { errors },
     } = useForm<ProductFormData>({
-        resolver: zodResolver(productSchema),
+        resolver: zodResolver(productSchema) as Resolver<ProductFormData>,
         defaultValues: {
             name: '',
             description: '',

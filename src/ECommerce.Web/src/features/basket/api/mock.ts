@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import type { AddToBasketRequest, Basket, UpdateBasketItemRequest } from '../types/basket';
 import { mockProducts, translateUnitCode } from '../../catalog/api/mock';
 
-let mockBasket: Basket = { items: [], totalAmount: 0, currency: 'USD' };
+let mockBasket: Basket = { basketId: 'mock-basket', items: [], totalAmount: 0, currency: 'USD' };
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -41,8 +41,10 @@ export const mockAddToBasket = async (req: AddToBasketRequest): Promise<Basket> 
             unitPriceSnapshot: product.price,
             currency: product.currency,
             quantity: req.quantity,
+            lineTotal: product.price * req.quantity,
             imageUrl: product.imageUrl,
-            unitCode: product.unitCode,
+            stockQuantity: product.stockQuantity,
+            unitCode: product.unitCode ?? undefined,
             unitName: translateUnitCode(product.unitCode, lang),
         });
     }
@@ -77,5 +79,5 @@ export const mockUpdateBasketItem = async (req: UpdateBasketItemRequest): Promis
 };
 
 export const mockClearBasket = (): void => {
-    mockBasket = { items: [], totalAmount: 0, currency: 'USD' };
+    mockBasket = { basketId: 'mock-basket', items: [], totalAmount: 0, currency: 'USD' };
 };

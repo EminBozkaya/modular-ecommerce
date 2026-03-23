@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateBasketItem } from '../api/basketApi';
 import { queryKeys } from '@/utils/queryKeys';

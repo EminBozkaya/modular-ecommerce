@@ -149,8 +149,8 @@ export function useCategoryActions({
                     await updateCategory({
                         id: cat.id,
                         name: cat.name,
-                        description: cat.description,
-                        imageUrl: cat.imageUrl,
+                        description: cat.description ?? undefined,
+                        imageUrl: cat.imageUrl ?? undefined,
                         isActive: false,
                         parentCategoryId: cat.parentCategoryId,
                     });
