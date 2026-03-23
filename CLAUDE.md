@@ -27,7 +27,7 @@ ECommerce/
 ## Current Milestone Status
 - [x] M1 — Project scaffold
 - [x] M2 — Catalog (listing, detail, category filter, search, pagination)
-- [x] M2.5 — Multi-language support (TR/EN/DE): translation tables, Accept-Language pipeline, React Query cache keyed by language, i18n UI, cross-language search
+- [x] M2.5 — Multi-language support (TR/EN/DE/FR/ES/RU/AR): translation tables, Accept-Language pipeline, React Query cache keyed by language, i18n UI, cross-language search, RTL support (AR)
 - [x] M3 — Auth (login, register, session restore, route guard)
 - [x] M4 — Basket (guest+member, optimistic update, price snapshot)
 - [ ] M5 — Order & Checkout (partially built; needs end-to-end test + gap fill)
