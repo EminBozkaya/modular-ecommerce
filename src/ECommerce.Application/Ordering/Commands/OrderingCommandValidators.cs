@@ -12,7 +12,7 @@ public class CreateOrderCommandValidator : AbstractValidator<CreateOrderCommand>
 
         RuleFor(x => x.GuestEmail)
             .EmailAddress()
-            .When(x => x.GuestEmail is not null);
+            .When(x => !string.IsNullOrEmpty(x.GuestEmail));
 
         RuleFor(x => x.GuestEmail)
             .NotEmpty()

@@ -54,7 +54,7 @@ export function useCheckout() {
 
 
             try {
-                const orderResponse = await createOrderMutation.mutateAsync({ shippingAddress, guestEmail });
+                const orderResponse = await createOrderMutation.mutateAsync({ shippingAddress, guestEmail: guestEmail || undefined });
 
                 setStep('redirecting');
 
