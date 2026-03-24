@@ -62,7 +62,7 @@ export function useCheckout() {
                     orderId: orderResponse.orderId,
                     providerName,
                     idempotencyKey,
-                    returnUrl: `${window.location.origin}/api/payment/callback/${providerName.toLowerCase()}?orderId=${orderResponse.orderId}`,
+                    returnUrl: `${import.meta.env.VITE_API_BASE_URL}/api/payment/callback/${providerName.toLowerCase()}?orderId=${orderResponse.orderId}`,
                 };
 
                 const paymentResponse = await initializePaymentMutation.mutateAsync(paymentReq);
