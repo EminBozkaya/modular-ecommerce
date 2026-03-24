@@ -80,7 +80,7 @@ builder.Services.AddRateLimiter(options =>
 });
 
 var app = builder.Build();
-
+app.MapGet("/health", () => "OK");
 Log.Information("🚀 [STARTUP] SeedData: {SeedData}", app.Configuration.GetValue<bool>("SeedData", true));
 
 // ── Automatic Database Migration ──
