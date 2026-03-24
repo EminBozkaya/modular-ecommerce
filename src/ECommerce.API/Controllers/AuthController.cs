@@ -98,18 +98,18 @@ public class AuthController : ControllerBase
         {
             HttpOnly = true,
             Secure = !_env.IsDevelopment(),
-            SameSite = _env.IsDevelopment() ? SameSiteMode.Lax : SameSiteMode.Strict,
+            SameSite = _env.IsDevelopment() ? SameSiteMode.Lax : SameSiteMode.None,
             Expires = DateTime.UnixEpoch
         };
 
         Response.Cookies.Delete("access_token", cookieOptions);
-        
+
         // Refresh token has a specific path, must match to delete
         var refreshOptions = new CookieOptions
         {
             HttpOnly = true,
             Secure = !_env.IsDevelopment(),
-            SameSite = _env.IsDevelopment() ? SameSiteMode.Lax : SameSiteMode.Strict,
+            SameSite = _env.IsDevelopment() ? SameSiteMode.Lax : SameSiteMode.None,
             Path = "/api/auth/refresh",
             Expires = DateTime.UnixEpoch
         };
@@ -121,14 +121,15 @@ public class AuthController : ControllerBase
     /// <summary>
     /// Sets httpOnly auth cookies — security-rules: JWT via httpOnly cookies, no localStorage.
     /// Development: Secure=false, SameSite=Lax (Vite proxy makes frontend same-origin as backend).
-    /// Production: Secure=true, SameSite=Strict.
+    /// Production: Secure=true, SameSite=None (cross-origin — frontend and backend on different domains).
     /// </summary>
     private void SetAuthCookies(LoginResult result)
     {
         bool isDev = _env.IsDevelopment();
         // Dev'de her zaman secure=false — Vite proxy HTTP üzerinden iletir
         bool secure = !isDev;
-        var sameSite = isDev ? SameSiteMode.Lax : SameSiteMode.Strict;
+        // Production: SameSite=None required for cross-origin cookie sending (different domains)
+        var sameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None;
 
         Response.Cookies.Append("access_token", result.AccessToken, new CookieOptions
         {

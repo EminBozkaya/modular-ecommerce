@@ -40,10 +40,8 @@ export const useRegisterSchema = () => {
                 .email(t('email')),
             password: z
                 .string()
-                .min(8, t('minLength', { min: 8 }))
-                .max(100, t('maxLength', { max: 100 }))
-                .regex(/[A-Z]/, t('passwordWeak'))
-                .regex(/[0-9]/, t('passwordWeak')),
+                .min(4, t('minLength', { min: 4 }))
+                .max(100, t('maxLength', { max: 100 })),
             confirmPassword: z
                 .string()
                 .min(1, t('required')),

@@ -99,12 +99,13 @@ var redisHost = redisConnectionString.Contains("@")
     : redisConnectionString;
 Log.Information("🔴 Redis: {RedisHost}", redisHost);
 
+    // Run migrations automatically in all environments
+    Log.Information("Applying migrations...");
+    await context.Database.MigrateAsync();
+
     if (app.Environment.IsDevelopment())
     {
-        await context.Database.MigrateAsync();
-
         var seedEnabled = app.Configuration.GetValue<bool>("SeedData", false);
-
         if (seedEnabled && !context.Users.Any())
         {
             await DbInitializer.SeedAsync(context, app.Environment.ContentRootPath);
