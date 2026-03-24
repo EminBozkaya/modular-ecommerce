@@ -93,6 +93,13 @@ using (var scope = app.Services.CreateScope())
     Log.Information("🚀 DB: {Database}", dbConnection.Database);
     Log.Information("🌐 Host: {Host}", dbConnection.DataSource);
 
+    // Redis bağlantı bilgisi
+var redisConnectionString = app.Configuration.GetConnectionString("Redis") ?? "not configured";
+var redisHost = redisConnectionString.Contains("@")
+    ? redisConnectionString.Split("@").Last()
+    : redisConnectionString;
+Log.Information("🔴 Redis: {RedisHost}", redisHost);
+
     if (app.Environment.IsDevelopment())
     {
         await context.Database.MigrateAsync();
