@@ -99,7 +99,7 @@ var redisHost = redisConnectionString.Contains("@")
     : redisConnectionString;
 Log.Information("🔴 Redis: {RedisHost}", redisHost);
 
-    if (app.Environment.IsDevelopment())
+    if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
     {
         await context.Database.MigrateAsync();
 
@@ -120,7 +120,7 @@ Log.Information("🔴 Redis: {RedisHost}", redisHost);
     }
 }
 // ── Middleware pipeline ──
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
 {
     app.UseSwagger();
     app.UseSwaggerUI();

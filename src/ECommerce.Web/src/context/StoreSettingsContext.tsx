@@ -177,7 +177,7 @@ const StoreSettingsContext = createContext<StoreSettingsDto>(defaults);
 const StoreSettingsReadyContext = createContext<boolean>(false);
 
 // Max time to wait for store settings before falling back to defaults (ms).
-const SETTINGS_TIMEOUT_MS = 3000;
+const SETTINGS_TIMEOUT_MS = 5000;
 
 export function StoreSettingsProvider({ children }: { children: React.ReactNode }) {
     const { i18n } = useTranslation();

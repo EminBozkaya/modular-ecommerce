@@ -121,14 +121,14 @@ public class AuthController : ControllerBase
     /// <summary>
     /// Sets httpOnly auth cookies — security-rules: JWT via httpOnly cookies, no localStorage.
     /// Development: Secure=false, SameSite=Lax (Vite proxy makes frontend same-origin as backend).
-    /// Production: Secure=true, SameSite=None (cross-origin — frontend and backend on different domains).
+    /// Staging/Production: Secure=true, SameSite=None (cross-origin — frontend and backend on different domains).
     /// </summary>
     private void SetAuthCookies(LoginResult result)
     {
         bool isDev = _env.IsDevelopment();
-        // Dev'de her zaman secure=false — Vite proxy HTTP üzerinden iletir
+        // Only local dev uses insecure/Lax cookies — Vite proxy makes requests same-origin.
+        // Staging and Production are cross-origin, so they need Secure + SameSite=None.
         bool secure = !isDev;
-        // Production: SameSite=None required for cross-origin cookie sending (different domains)
         var sameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None;
 
         Response.Cookies.Append("access_token", result.AccessToken, new CookieOptions
