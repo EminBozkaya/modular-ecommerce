@@ -16,8 +16,16 @@ const queryClient = new QueryClient({
 import { useInitAuth } from '@/features/auth/hooks/useInitAuth';
 import { useAuthStore } from '@/store/authStore';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import { StoreSettingsProvider } from '@/context/StoreSettingsContext';
+import { StoreSettingsProvider, useStoreSettingsReady } from '@/context/StoreSettingsContext';
 import { useThemeStore } from '@/store/themeStore';
+
+// Blocks rendering until store settings are fetched (or 3-second timeout elapses).
+// Prevents the flash of default branding before real settings arrive.
+function StoreSettingsGate({ children }: { children: React.ReactNode }) {
+    const isReady = useStoreSettingsReady();
+    if (!isReady) return <LoadingSpinner size="lg" className="h-screen w-full flex items-center justify-center" />;
+    return <>{children}</>;
+}
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
     useInitAuth();
@@ -58,9 +66,11 @@ export function AppProviders() {
         <QueryClientProvider client={queryClient}>
             <SystemThemeListener />
             <StoreSettingsProvider>
-                <AuthInitializer>
-                    <RouterProvider router={router} />
-                </AuthInitializer>
+                <StoreSettingsGate>
+                    <AuthInitializer>
+                        <RouterProvider router={router} />
+                    </AuthInitializer>
+                </StoreSettingsGate>
             </StoreSettingsProvider>
         </QueryClientProvider>
     );

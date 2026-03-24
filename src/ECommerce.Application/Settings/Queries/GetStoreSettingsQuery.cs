@@ -1,11 +1,16 @@
 using System.Text.Json;
+using ECommerce.Application.Common.Caching;
 using ECommerce.Application.Settings.Dtos;
 using ECommerce.Domain.Settings;
 using MediatR;
 
 namespace ECommerce.Application.Settings.Queries;
 
-public record GetStoreSettingsQuery : IRequest<StoreSettingsDto>;
+public record GetStoreSettingsQuery : IRequest<StoreSettingsDto>, ICacheableQuery
+{
+    public string CacheKey => "store:settings";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(30);
+}
 
 public class GetStoreSettingsHandler : IRequestHandler<GetStoreSettingsQuery, StoreSettingsDto>
 {

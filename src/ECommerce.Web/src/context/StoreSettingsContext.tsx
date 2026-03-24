@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { getPublicStoreSettings, defaultHomepageSections, defaultFooterSettings } from '@/features/admin/api/storeSettingsApi';
@@ -174,17 +174,33 @@ applyBrandCssVars(
 );
 
 const StoreSettingsContext = createContext<StoreSettingsDto>(defaults);
+const StoreSettingsReadyContext = createContext<boolean>(false);
+
+// Max time to wait for store settings before falling back to defaults (ms).
+const SETTINGS_TIMEOUT_MS = 3000;
 
 export function StoreSettingsProvider({ children }: { children: React.ReactNode }) {
     const { i18n } = useTranslation();
     const queryClient = useQueryClient();
 
-    const { data } = useQuery({
+    const { data, isPending } = useQuery({
         queryKey: queryKeys.store.settings,
         queryFn: getPublicStoreSettings,
         staleTime: 5 * 60 * 1000, // 5 min — settings rarely change
         retry: 1,
     });
+
+    // Timeout safety-valve: if settings haven't arrived within SETTINGS_TIMEOUT_MS,
+    // mark as ready anyway so the app doesn't block indefinitely on a slow API.
+    const [timedOut, setTimedOut] = useState(false);
+    useEffect(() => {
+        if (!isPending) return;
+        const id = setTimeout(() => setTimedOut(true), SETTINGS_TIMEOUT_MS);
+        return () => clearTimeout(id);
+    }, [isPending]);
+
+    // isReady = data loaded OR timeout elapsed OR we're in mock mode (instant).
+    const isReady = !isPending || timedOut || USE_MOCK;
 
     const { resolved: theme } = useThemeStore();
     const isDark = theme === 'dark';
@@ -204,12 +220,19 @@ export function StoreSettingsProvider({ children }: { children: React.ReactNode 
     }, [data?.primaryColor, isDark]);
 
     return (
-        <StoreSettingsContext.Provider value={data ?? defaults}>
-            {children}
-        </StoreSettingsContext.Provider>
+        <StoreSettingsReadyContext.Provider value={isReady}>
+            <StoreSettingsContext.Provider value={data ?? defaults}>
+                {children}
+            </StoreSettingsContext.Provider>
+        </StoreSettingsReadyContext.Provider>
     );
 }
 
 export function useStoreSettings(): StoreSettingsDto {
     return useContext(StoreSettingsContext);
+}
+
+/** Returns true once store settings have been fetched (or timed out). */
+export function useStoreSettingsReady(): boolean {
+    return useContext(StoreSettingsReadyContext);
 }

@@ -18,5 +18,10 @@ public class StoreController : ControllerBase
 
     [HttpGet("settings")]
     public async Task<IActionResult> GetStoreSettings(CancellationToken ct)
-        => Ok(await _mediator.Send(new GetStoreSettingsQuery(), ct));
+    {
+        // Allow browsers/CDNs to cache store settings for 5 minutes.
+        // Redis on the backend caches for 30 minutes; this covers the client side.
+        Response.Headers.CacheControl = "public, max-age=300";
+        return Ok(await _mediator.Send(new GetStoreSettingsQuery(), ct));
+    }
 }
