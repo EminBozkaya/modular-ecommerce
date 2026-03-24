@@ -1,4 +1,8 @@
-MVP to Production Workflow
+---
+description: MVP'den production'a geçiş — basit başla, stabilize et, sağlamlaştır, ölçeklendir
+---
+
+# MVP to Production Workflow
 
 Step 1 — Identify MVP Scope
 

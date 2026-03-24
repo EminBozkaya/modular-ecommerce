@@ -1,59 +1,35 @@
-Architecture Workspace Rules
-Activation: Always On
+# Architecture Rules
 
-This file defines high-level architectural rules that apply to all backend, frontend, security, and DevOps work.
+## Approach
+- Architecture: Modular Monolith — microservices decomposition is FORBIDDEN
+- Patterns: Clean Architecture + CQRS + DDD — mandatory on all layers
+- Advanced patterns (Saga, Event Sourcing, Read Replicas): ONLY when explicitly requested
 
+## Layer Discipline
+- Domain: MUST NOT reference Infrastructure or EF Core attributes
+- Application: MUST NOT reference HTTP, DB, or cache concerns
+- API: MUST NOT contain business logic — orchestration only
+- Persistence depends ONLY on Domain — not on Application
 
-1. Architectural Approach
+## Dependency Flow (read-only reference)
+```
+Domain ← (zero dependencies)
+Application ← Domain
+Persistence ← Domain only
+Infrastructure ← Domain, Application
+API ← Application, Persistence, Infrastructure
+```
 
-- Initial architecture: Modular Monolith
+## Bounded Contexts
+| Context   | Responsibility |
+|-----------|----------------|
+| Catalog   | Products, categories, stock |
+| Basket    | Cart for guests and members |
+| Ordering  | Order lifecycle + state machine |
+| Payment   | Tokenized, idempotent processing |
+| Identity  | JWT auth, roles |
 
-- Clean Architecture + CQRS + DDD are mandatory
-
-- Early decomposition into microservices is FORBIDDEN
-
-
-2. MVP Discipline
-
-- Start with a working, testable MVP
-
-- Advanced patterns (Saga, Event Sourcing, Read Replicas, etc.):
-
-- ONLY when explicitly requested
-
-
-3. Layering Discipline
-
-Domain layer:
-
-- MUST NOT reference Infrastructure
-
-- MUST NOT use EF Core attributes
-
-Application layer:
-
-- MUST NOT be aware of HTTP, DB, or cache details
-
-API layer:
-
-- MUST NOT contain business logic
-
-
-4. Explanation Style
-
-Architectural decisions MUST be explained as:
-
-- Why this approach was chosen
-
-- Which alternatives were considered and why they were rejected
-
-
-5. Ambiguity Handling
-
-If requirements are incomplete:
-
-- The agent STOPS
-
-- Asks clarification questions
-
-- Does NOT proceed until clarified
+## Decision Protocol
+- Explain WHY an approach was chosen
+- State which alternatives were rejected and why
+- If requirements are incomplete: STOP and ask — do not proceed

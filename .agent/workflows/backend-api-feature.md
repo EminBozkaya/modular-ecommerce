@@ -1,4 +1,8 @@
-Backend API Feature Workflow
+---
+description: Backend API özelliği ekleme — Domain → Application → API katman sırası ile CQRS uyumlu endpoint
+---
+
+# Backend API Feature Workflow
 
 Step 1 — Scope Confirmation
 

@@ -1,4 +1,8 @@
-Admin Panel Feature Workflow
+---
+description: Admin panel özelliği ekleme workflow'u — yetkilendirme, backend endpoint, admin UI tasarımı
+---
+
+# Admin Panel Feature Workflow
 
 Step 1 — Access & Scope
 
