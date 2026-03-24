@@ -25,13 +25,13 @@ public class InstagramSocialAuthProvider : ISocialAuthProvider
 
     public Task<SocialAuthUrlResult> GetAuthorizationUrlAsync(string redirectUri, string state, CancellationToken ct = default)
     {
-        var appId = _config["SocialAuth:Instagram:AppId"];
-        if (string.IsNullOrEmpty(appId))
-            return Task.FromResult(new SocialAuthUrlResult(false, null, state, "Instagram AppId is missing."));
+        var clientId = _config["SocialAuth:Instagram:ClientId"];
+        if (string.IsNullOrEmpty(clientId))
+            return Task.FromResult(new SocialAuthUrlResult(false, null, state, "Instagram ClientId is missing."));
 
         // Instagram uses Facebook OAuth infrastructure
         var authUrl = $"https://api.instagram.com/oauth/authorize" +
-                      $"?client_id={appId}" +
+                      $"?client_id={clientId}" +
                       $"&redirect_uri={Uri.EscapeDataString(redirectUri)}" +
                       $"&scope=user_profile,user_media" +
                       $"&response_type=code" +
@@ -44,8 +44,8 @@ public class InstagramSocialAuthProvider : ISocialAuthProvider
     {
         try
         {
-            var appId = _config["SocialAuth:Instagram:AppId"];
-            var appSecret = _config["SocialAuth:Instagram:AppSecret"];
+            var appId = _config["SocialAuth:Instagram:ClientId"];
+            var appSecret = _config["SocialAuth:Instagram:ClientSecret"];
             var client = _httpClientFactory.CreateClient("InstagramSocialAuth");
 
             // 1. Token Exchange
