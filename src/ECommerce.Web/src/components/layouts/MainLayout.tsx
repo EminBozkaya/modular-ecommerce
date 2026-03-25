@@ -1,14 +1,37 @@
+import { useState, useLayoutEffect, useRef } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AppHeader } from './header/AppHeader';
 import { useStoreSettings } from '@/context/StoreSettingsContext';
 import { Footer } from '@/features/catalog/components/Footer';
 import { useThemeStore } from '@/store/themeStore';
+import { getLocalizedText } from '@/features/admin/api/storeSettingsApi';
 
 export function MainLayout() {
+    const { i18n } = useTranslation();
     const location = useLocation();
     const isAuthPage = ['/login', '/register'].includes(location.pathname);
     const settings = useStoreSettings();
     const { resolved } = useThemeStore();
+    const { i18n: i18n_obj } = useTranslation();
+
+    // Constant speed marquee logic
+    const [marqueeDuration, setMarqueeDuration] = useState(30);
+    const trackRef = useRef<HTMLDivElement>(null);
+
+    useLayoutEffect(() => {
+        if (settings.freeShippingBannerMarquee && trackRef.current) {
+            const updateDuration = () => {
+                const width = trackRef.current?.offsetWidth || 0;
+                const pixelsPerSecond = (settings.freeShippingBannerMarqueeSpeed * 20) + 40;
+                if (width > 0) setMarqueeDuration(width / pixelsPerSecond);
+            };
+            updateDuration();
+            const observer = new ResizeObserver(updateDuration);
+            observer.observe(trackRef.current);
+            return () => observer.disconnect();
+        }
+    }, [settings.freeShippingBannerMarquee, settings.freeShippingBannerMarqueeSpeed, settings.freeShippingBannerText, i18n_obj.language]);
 
     const bgPatternStyle = settings.backgroundPatternBase64
         ? {
@@ -43,14 +66,15 @@ export function MainLayout() {
                 >
                     {settings.freeShippingBannerMarquee ? (
                         <div
-                            className="animate-marquee-track text-sm font-medium text-white tracking-wide"
-                            style={{ animationDuration: `${(11 - settings.freeShippingBannerMarqueeSpeed) * 3}s` }}
+                            ref={trackRef}
+                            className={`animate-marquee-track text-sm font-medium text-white tracking-wide ${i18n_obj.language === 'ar' ? 'rtl' : ''}`}
+                            style={{ animationDuration: `${marqueeDuration}s` }}
                         >
-                            {settings.freeShippingBannerText}
+                            {getLocalizedText(settings, 'freeShippingBannerText', i18n.language)}
                         </div>
                     ) : (
                         <p className="text-center text-sm font-medium text-white tracking-wide">
-                            {settings.freeShippingBannerText}
+                            {getLocalizedText(settings, 'freeShippingBannerText', i18n.language)}
                         </p>
                     )}
                 </div>

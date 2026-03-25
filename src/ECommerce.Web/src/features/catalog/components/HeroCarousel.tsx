@@ -11,6 +11,8 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/effect-flip';
 import { useStoreSettings } from '@/context/StoreSettingsContext';
 import type { HeroCarouselDto, HeroSlideDto } from '../../../features/admin/api/storeSettingsApi';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedText } from '@/features/admin/api/storeSettingsApi';
 
 function hexToRgba(hex: string, opacity: number): string {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -20,6 +22,14 @@ function hexToRgba(hex: string, opacity: number): string {
 }
 
 function SlideContent({ slide, height }: { slide: HeroSlideDto; height: number }) {
+    const { i18n } = useTranslation();
+    const lang = i18n.language.split('-')[0].toLowerCase();
+    
+    const title = getLocalizedText(slide, 'title', lang);
+    const subtitle = getLocalizedText(slide, 'subtitle', lang);
+    const description = getLocalizedText(slide, 'description', lang);
+    const buttonText = getLocalizedText(slide, 'buttonText', lang);
+
     const hasImage = slide.imageBase64 ?? slide.imageUrl;
 
     return (
@@ -28,13 +38,13 @@ function SlideContent({ slide, height }: { slide: HeroSlideDto; height: number }
             {slide.imageBase64 ? (
                 <img
                     src={slide.imageBase64}
-                    alt={slide.title}
+                    alt={title}
                     className="absolute inset-0 w-full h-full object-cover"
                 />
             ) : slide.imageUrl ? (
                 <img
                     src={slide.imageUrl}
-                    alt={slide.title}
+                    alt={title}
                     className="absolute inset-0 w-full h-full object-cover"
                 />
             ) : (
@@ -59,31 +69,31 @@ function SlideContent({ slide, height }: { slide: HeroSlideDto; height: number }
             >
                 <div className="container mx-auto px-4">
                     <div className="max-w-lg">
-                        {slide.title && (
+                        {title && (
                             <h2 className="text-4xl md:text-5xl font-serif font-bold mb-2 leading-tight">
-                                {slide.title}
+                                {title}
                             </h2>
                         )}
-                        {slide.subtitle && (
+                        {subtitle && (
                             <h3
                                 className="text-2xl md:text-3xl font-serif mb-4"
                                 style={{ color: slide.textColor, opacity: 0.9 }}
                             >
-                                {slide.subtitle}
+                                {subtitle}
                             </h3>
                         )}
-                        {slide.description && (
+                        {description && (
                             <p className="mb-6 leading-relaxed" style={{ opacity: 0.85 }}>
-                                {slide.description}
+                                {description}
                             </p>
                         )}
-                        {slide.buttonVisible && slide.buttonText && (
+                        {slide.buttonVisible && buttonText && (
                             <Link
                                 to={slide.buttonLink || '/products'}
                                 className="inline-block px-8 py-3 text-sm font-semibold tracking-wider rounded-md transition-colors text-white"
                                 style={{ backgroundColor: 'var(--brand-primary)' }}
                             >
-                                {slide.buttonText}
+                                {buttonText}
                             </Link>
                         )}
                     </div>

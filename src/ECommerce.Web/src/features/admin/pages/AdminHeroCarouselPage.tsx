@@ -20,8 +20,9 @@ import {
     ImageIcon,
     X,
 } from 'lucide-react';
-import { getAdminStoreSettings, updateStoreSettings } from '../api/storeSettingsApi';
+import { getAdminStoreSettings, updateStoreSettings, getLocalizedText } from '../api/storeSettingsApi';
 import type { HeroCarouselDto, HeroSlideDto } from '../api/storeSettingsApi';
+import { TranslatableInput } from '../components/TranslatableInput';
 import { queryKeys } from '@/utils/queryKeys';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -193,6 +194,13 @@ function SlideEditorCard({
         reader.readAsDataURL(file);
     }
 
+    const updateTranslation = (lang: string, field: string, val: string) => {
+        const newTranslations = JSON.parse(JSON.stringify(slide.translations || {}));
+        if (!newTranslations[lang]) newTranslations[lang] = {};
+        newTranslations[lang][field] = val;
+        update('translations', newTranslations);
+    };
+
     return (
         <div className="border border-border rounded-xl overflow-hidden mb-3">
             {/* Header */}
@@ -309,37 +317,35 @@ function SlideEditorCard({
                     {/* Text Content */}
                     <div>
                         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">{t('design.hero.content')}</p>
-                        <div className="space-y-2">
-                            <div>
-                                <label className="text-xs text-muted-foreground block mb-1">{t('design.hero.titleLabel')}</label>
-                                <input
-                                    type="text"
-                                    value={slide.title}
-                                    onChange={(e) => update('title', e.target.value)}
-                                    className="w-full text-sm border border-border rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)] bg-background text-foreground"
-                                    placeholder={t('design.hero.titlePlaceholder')}
-                                />
-                            </div>
-                            <div>
-                                <label className="text-xs text-muted-foreground block mb-1">{t('design.hero.subtitleLabel')}</label>
-                                <input
-                                    type="text"
-                                    value={slide.subtitle}
-                                    onChange={(e) => update('subtitle', e.target.value)}
-                                    className="w-full text-sm border border-border rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)] bg-background text-foreground"
-                                    placeholder={t('design.hero.subtitleLabel')}
-                                />
-                            </div>
-                            <div>
-                                <label className="text-xs text-muted-foreground block mb-1">{t('design.hero.descLabel')}</label>
-                                <textarea
-                                    value={slide.description}
-                                    onChange={(e) => update('description', e.target.value)}
-                                    rows={2}
-                                    className="w-full text-sm border border-border rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)] resize-none bg-background text-foreground"
-                                    placeholder={t('design.hero.descLabel')}
-                                />
-                            </div>
+                        <div className="space-y-4">
+                            <TranslatableInput
+                                value={slide.title}
+                                onChange={(v) => update('title', v)}
+                                translations={slide.translations}
+                                field="title"
+                                onTranslationChange={updateTranslation}
+                                label={t('design.hero.titleLabel')}
+                                placeholder={t('design.hero.titlePlaceholder')}
+                            />
+                            <TranslatableInput
+                                value={slide.subtitle}
+                                onChange={(v) => update('subtitle', v)}
+                                translations={slide.translations}
+                                field="subtitle"
+                                onTranslationChange={updateTranslation}
+                                label={t('design.hero.subtitleLabel')}
+                                placeholder={t('design.hero.subtitleLabel')}
+                            />
+                            <TranslatableInput
+                                value={slide.description}
+                                onChange={(v) => update('description', v)}
+                                translations={slide.translations}
+                                field="description"
+                                onTranslationChange={updateTranslation}
+                                label={t('design.hero.descLabel')}
+                                placeholder={t('design.hero.descLabel')}
+                                textarea
+                            />
                         </div>
                     </div>
 
@@ -382,17 +388,16 @@ function SlideEditorCard({
                             />
                         </div>
                         {slide.buttonVisible && (
-                            <div className="space-y-2">
-                                <div>
-                                    <label className="text-xs text-muted-foreground block mb-1">{t('design.hero.buttonText')}</label>
-                                    <input
-                                        type="text"
-                                        value={slide.buttonText}
-                                        onChange={(e) => update('buttonText', e.target.value)}
-                                        className="w-full text-sm border border-border rounded-lg px-3 py-2 outline-none focus:border-[var(--brand-primary)] bg-background text-foreground"
-                                        placeholder={t('design.hero.buttonTextPlaceholder')}
-                                    />
-                                </div>
+                            <div className="space-y-4 mt-3">
+                                <TranslatableInput
+                                    value={slide.buttonText}
+                                    onChange={(v) => update('buttonText', v)}
+                                    translations={slide.translations}
+                                    field="buttonText"
+                                    onTranslationChange={updateTranslation}
+                                    label={t('design.hero.buttonText')}
+                                    placeholder={t('design.hero.buttonTextPlaceholder')}
+                                />
                                 <div>
                                     <label className="text-xs text-muted-foreground block mb-1">{t('design.hero.buttonLink')}</label>
                                     <input
@@ -414,8 +419,14 @@ function SlideEditorCard({
 
 // ── Mini Preview Slide ───────────────────────────────────────────────────────
 
-function PreviewSlide({ slide, height }: { slide: HeroSlideDto; height: number }) {
+function PreviewSlide({ slide, height, lang }: { slide: HeroSlideDto; height: number; lang: string }) {
     const hasImage = slide.imageBase64 ?? slide.imageUrl;
+    
+    const title = getLocalizedText(slide, 'title', lang);
+    const subtitle = getLocalizedText(slide, 'subtitle', lang);
+    const description = getLocalizedText(slide, 'description', lang);
+    const buttonText = getLocalizedText(slide, 'buttonText', lang);
+
     return (
         <div className="relative w-full overflow-hidden" style={{ height }}>
             {slide.imageBase64 ? (
@@ -433,21 +444,21 @@ function PreviewSlide({ slide, height }: { slide: HeroSlideDto; height: number }
             )}
             <div className="relative h-full flex items-center px-8" style={{ color: slide.textColor }}>
                 <div className="max-w-[60%]">
-                    {slide.title && (
-                        <h2 className="text-xl font-serif font-bold leading-tight mb-1">{slide.title}</h2>
+                    {title && (
+                        <h2 className="text-xl font-serif font-bold leading-tight mb-1">{title}</h2>
                     )}
-                    {slide.subtitle && (
-                        <p className="text-sm mb-2 opacity-90">{slide.subtitle}</p>
+                    {subtitle && (
+                        <p className="text-sm mb-2 opacity-90">{subtitle}</p>
                     )}
-                    {slide.description && (
-                        <p className="text-xs opacity-80 mb-3 line-clamp-2">{slide.description}</p>
+                    {description && (
+                        <p className="text-xs opacity-80 mb-3 line-clamp-2">{description}</p>
                     )}
-                    {slide.buttonVisible && slide.buttonText && (
+                    {slide.buttonVisible && buttonText && (
                         <span
                             className="inline-block px-4 py-1.5 text-xs font-semibold rounded-md text-white"
                             style={{ backgroundColor: 'var(--brand-primary)' }}
                         >
-                            {slide.buttonText}
+                            {buttonText}
                         </span>
                     )}
                 </div>
@@ -459,7 +470,7 @@ function PreviewSlide({ slide, height }: { slide: HeroSlideDto; height: number }
 // ── Main Page ────────────────────────────────────────────────────────────────
 
 export default function AdminHeroCarouselPage() {
-    const { t } = useTranslation('admin');
+    const { t, i18n } = useTranslation('admin');
     const queryClient = useQueryClient();
 
     const { data: settings, isLoading } = useQuery({
@@ -735,7 +746,7 @@ export default function AdminHeroCarouselPage() {
                                 >
                                     {draft.slides.map((slide) => (
                                         <SwiperSlide key={slide.id} style={{ height: PREVIEW_HEIGHT }}>
-                                            <PreviewSlide slide={slide} height={PREVIEW_HEIGHT} />
+                                            <PreviewSlide slide={slide} height={PREVIEW_HEIGHT} lang={i18n.language} />
                                         </SwiperSlide>
                                     ))}
                                 </Swiper>

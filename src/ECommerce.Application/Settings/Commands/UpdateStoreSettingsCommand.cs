@@ -62,7 +62,9 @@ public record UpdateStoreSettingsCommand(
     // rich content
     HeroCarouselDto? HeroCarousel,
     List<HomepageSectionDto>? HomepageSections,
-    FooterSettingsDto? Footer
+    FooterSettingsDto? Footer,
+    // localization
+    Dictionary<string, Dictionary<string, string>>? Translations = null
 ) : IRequest;
 
 public class UpdateStoreSettingsHandler : IRequestHandler<UpdateStoreSettingsCommand>
@@ -128,6 +130,7 @@ public class UpdateStoreSettingsHandler : IRequestHandler<UpdateStoreSettingsCom
             cmd.HeroCarousel,
             cmd.HomepageSections,
             cmd.Footer,
+            cmd.Translations
         }, new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
         var existing = await _repo.GetAsync(ct);

@@ -300,7 +300,7 @@ export default function AdminCategoriesPage() {
                 <span>{t('common:totalRecords', { count: categories.length })}</span>
                 <span>{t('common:showing', { count: gridApi?.getDisplayedRowCount() ?? categories.length })}</span>
             </div>
-            <CategoryFormModal open={modalOpen} onClose={() => { setModalOpen(false); setEditingCategory(null); }} onSubmit={(data: CategoryFormData) => handleFormSubmit(data, editingCategory)} category={editingCategory} categories={categories} loading={saving} />
+            <CategoryFormModal open={modalOpen} onClose={() => { setModalOpen(false); setEditingCategory(null); }} onSubmit={(data: CategoryFormData, translations) => handleFormSubmit(data, editingCategory, translations)} category={editingCategory} categories={categories} loading={saving} />
             <ConfirmModal open={modalSettings.open} title={modalSettings.title} message={modalSettings.message} variant={modalSettings.variant} confirmText={modalSettings.confirmText} showConfirm={modalSettings.showConfirm} onConfirm={() => handleConfirmDelete(modalSettings)} onClose={() => setModalSettings(prev => ({ ...prev, open: false }))} loading={deleting} />
         </div>
     );

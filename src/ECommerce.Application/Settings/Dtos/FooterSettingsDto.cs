@@ -1,10 +1,13 @@
+using System.Text.Json.Serialization;
+
 namespace ECommerce.Application.Settings.Dtos;
 
 public record FooterLinkDto(
     string Id,
     string Label,
     string Url,
-    int Order
+    int Order,
+    [property: JsonPropertyName("translations")] Dictionary<string, Dictionary<string, string>>? Translations = null
 );
 
 public record FooterSocialLinkDto(
@@ -26,14 +29,16 @@ public record FooterColumnDto(
     List<FooterSocialLinkDto>? SocialLinks,
     string? FollowText,
     bool? ShowLogo,
-    string? Description
+    string? Description,
+    [property: JsonPropertyName("translations")] Dictionary<string, Dictionary<string, string>>? Translations = null
 );
 
 public record FooterBottomLinkDto(
     string Id,
     string Label,
     string Url,
-    int Order
+    int Order,
+    [property: JsonPropertyName("translations")] Dictionary<string, Dictionary<string, string>>? Translations = null
 );
 
 public record FooterSettingsDto(

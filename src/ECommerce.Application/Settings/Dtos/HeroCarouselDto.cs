@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace ECommerce.Application.Settings.Dtos;
 
 public record HeroSlideDto(
@@ -12,7 +14,8 @@ public record HeroSlideDto(
     int OverlayOpacity,
     string ButtonText,
     string ButtonLink,
-    bool ButtonVisible
+    bool ButtonVisible,
+    [property: JsonPropertyName("translations")] Dictionary<string, Dictionary<string, string>>? Translations = null
 );
 
 public record HeroCarouselDto(

@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
+import { getLocalizedText } from '@/features/admin/api/storeSettingsApi';
 import type { SectionCardDto } from '@/features/admin/api/storeSettingsApi';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     card: SectionCardDto;
@@ -22,6 +24,15 @@ const textPositionClasses: Record<string, string> = {
 };
 
 function CardContent({ card }: { card: SectionCardDto }) {
+    const { i18n } = useTranslation();
+    const lang = i18n.language.split('-')[0].toLowerCase();
+
+    const title = getLocalizedText(card, 'title', lang);
+    const subtitle = getLocalizedText(card, 'subtitle', lang);
+    const description = getLocalizedText(card, 'description', lang);
+    const buttonText = getLocalizedText(card, 'buttonText', lang);
+    const badgeText = getLocalizedText(card, 'badgeText', lang);
+
     const imgSrc = card.imageBase64 || card.imageUrl;
     const hasBackground = Boolean(imgSrc) || card.overlayOpacity > 0;
     const isTextOnly = !hasBackground && card.aspectRatio === 'auto';
@@ -32,20 +43,20 @@ function CardContent({ card }: { card: SectionCardDto }) {
     if (isTextOnly) {
         return (
             <div className="rounded-lg border border-border bg-card p-6 h-full min-h-[160px] flex flex-col justify-center text-center">
-                {card.title && (
+                {title && (
                     <h3 className="font-serif font-bold text-lg mb-1" style={{ color: card.textColor !== '#FFFFFF' ? card.textColor : '#1a1a1a' }}>
-                        {card.title}
+                        {title}
                     </h3>
                 )}
-                {card.subtitle && (
-                    <p className="text-sm text-muted-foreground mb-1">{card.subtitle}</p>
+                {subtitle && (
+                    <p className="text-sm text-muted-foreground mb-1">{subtitle}</p>
                 )}
-                {card.description && (
-                    <p className="text-sm text-muted-foreground leading-relaxed italic">{card.description}</p>
+                {description && (
+                    <p className="text-sm text-muted-foreground leading-relaxed italic">{description}</p>
                 )}
-                {card.buttonVisible && card.buttonText && (
+                {card.buttonVisible && buttonText && (
                     <span className="mt-3 inline-block self-center bg-[var(--brand-primary)] text-white text-xs px-4 py-2 rounded-md">
-                        {card.buttonText}
+                        {buttonText}
                     </span>
                 )}
             </div>
@@ -58,7 +69,7 @@ function CardContent({ card }: { card: SectionCardDto }) {
             {imgSrc && (
                 <img
                     src={imgSrc}
-                    alt={card.title}
+                    alt={title}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
             )}
@@ -75,7 +86,7 @@ function CardContent({ card }: { card: SectionCardDto }) {
             )}
 
             {/* Badge */}
-            {card.badgeText && (
+            {badgeText && (
                 <div
                     className={`absolute z-10 ${card.badgePosition === 'top-right' ? 'top-4 right-4' : 'top-4 left-4'}`}
                 >
@@ -83,7 +94,7 @@ function CardContent({ card }: { card: SectionCardDto }) {
                         className="text-white text-xs px-3 py-1 rounded-full font-medium"
                         style={{ backgroundColor: card.badgeColor || 'var(--brand-primary)' }}
                     >
-                        {card.badgeText}
+                        {badgeText}
                     </span>
                 </div>
             )}
@@ -91,30 +102,30 @@ function CardContent({ card }: { card: SectionCardDto }) {
             {/* Content */}
             <div className={`absolute inset-0 flex flex-col p-6 ${textPos}`}>
                 <div className="max-w-md">
-                    {card.title && (
+                    {title && (
                         <h3
                             className="text-xl font-serif font-bold mb-1"
                             style={{ color: card.textColor }}
                         >
-                            {card.title}
+                            {title}
                         </h3>
                     )}
-                    {card.subtitle && (
+                    {subtitle && (
                         <p className="text-sm mb-2 opacity-90" style={{ color: card.textColor }}>
-                            {card.subtitle}
+                            {subtitle}
                         </p>
                     )}
-                    {card.description && (
+                    {description && (
                         <p
                             className="text-sm mb-4 leading-relaxed opacity-90 max-w-lg"
                             style={{ color: card.textColor }}
                         >
-                            {card.description}
+                            {description}
                         </p>
                     )}
-                    {card.buttonVisible && card.buttonText && (
+                    {card.buttonVisible && buttonText && (
                         <span className="inline-block bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-dark)] text-white text-xs tracking-wider px-4 py-2 rounded-md transition-colors">
-                            {card.buttonText}
+                            {buttonText}
                         </span>
                     )}
                 </div>

@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { parseApiError } from '@/api/errorHandling';
-import { createCategory, updateCategory, deleteCategory, restoreCategory } from '../../api/adminApi';
+import { createCategory, updateCategory, deleteCategory, restoreCategory, upsertCategoryTranslation } from '../../api/adminApi';
 import type { Category, Product } from '../../../catalog/types/product';
 import type { CategoryFormData } from '../components/CategoryFormModal';
 
@@ -174,6 +174,7 @@ export function useCategoryActions({
     const handleFormSubmit = useCallback(async (
         data: CategoryFormData,
         editingCategory: Category | null,
+        translations?: Record<string, { name: string; description?: string }>
     ) => {
         if (editingCategory) {
             const willDeactivate = editingCategory.isActive && !data.isActive;
@@ -200,6 +201,8 @@ export function useCategoryActions({
 
         setSaving(true);
         try {
+            let categoryId = editingCategory?.id || null;
+
             if (editingCategory) {
                 await updateCategory({
                     id: editingCategory.id,
@@ -210,7 +213,7 @@ export function useCategoryActions({
                     parentCategoryId: data.parentCategoryId || undefined,
                 });
             } else {
-                await createCategory({
+                categoryId = await createCategory({
                     name: data.name,
                     description: data.description || undefined,
                     imageUrl: data.imageUrl || undefined,
@@ -218,6 +221,23 @@ export function useCategoryActions({
                     parentCategoryId: data.parentCategoryId || undefined,
                 });
             }
+
+            // Save translations if provided
+            if (categoryId && translations) {
+                const translationTasks = Object.entries(translations)
+                    .filter(([, t]) => t.name?.trim())
+                    .map(([langCode, t]) => 
+                        upsertCategoryTranslation(categoryId!, langCode, {
+                            name: t.name.trim(),
+                            description: t.description?.trim() || undefined
+                        })
+                    );
+                
+                if (translationTasks.length > 0) {
+                    await Promise.all(translationTasks);
+                }
+            }
+
             setModalOpen(false);
             setEditingCategory(null);
             await fetchData();
