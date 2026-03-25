@@ -5,6 +5,7 @@ import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
 import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import type { UserAddress, AddUserAddressRequest, UpdateUserAddressRequest } from '../types/address';
 import { useTranslation } from 'react-i18next';
+import { CityDistrictSelect } from '../../../components/shared/CityDistrictSelect';
 
 // ─── Inline address form ───────────────────────────────────────────────────────
 
@@ -14,6 +15,7 @@ interface AddressFormState {
     addressLine1: string;
     addressLine2: string;
     city: string;
+    district: string;
     postalCode: string;
     country: string;
     isDefault: boolean;
@@ -25,6 +27,7 @@ const emptyForm: AddressFormState = {
     addressLine1: '',
     addressLine2: '',
     city: '',
+    district: '',
     postalCode: '',
     country: 'Türkiye',
     isDefault: false,
@@ -48,6 +51,13 @@ function AddressForm({ initial = emptyForm, onSave, onCancel, isSaving }: Addres
     const set = (field: keyof AddressFormState) => (e: React.ChangeEvent<HTMLInputElement>) =>
         setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
+    const inputClassFn = (hasError: boolean) =>
+        `w-full rounded-xl border px-4 py-3 text-sm text-foreground outline-none transition-all focus:bg-card focus:ring-2 ${
+            hasError
+                ? 'border-red-400 bg-red-50/30 dark:bg-red-900/10 focus:border-red-500 focus:ring-red-500/20'
+                : 'border-border bg-gray-50/50 dark:bg-white/10 focus:border-[var(--brand-primary)] focus:ring-[var(--brand-primary)]/10'
+        }`;
+
     const isValid = form.title && form.fullName && form.addressLine1 && form.city && form.postalCode && form.country;
 
     return (
@@ -56,34 +66,37 @@ function AddressForm({ initial = emptyForm, onSave, onCancel, isSaving }: Addres
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label className={labelClass}>{t('addresses.form.titleField')}</label>
-                        <input className={inputClass} value={form.title} onChange={set('title')} placeholder={t('addresses.form.titlePlaceholder')} />
+                        <input className={inputClass} value={form.title} onChange={set('title')} />
                     </div>
                     <div>
                         <label className={labelClass}>{t('addresses.form.fullName')}</label>
-                        <input className={inputClass} value={form.fullName} onChange={set('fullName')} placeholder={t('addresses.form.fullNamePlaceholder')} />
+                        <input className={inputClass} value={form.fullName} onChange={set('fullName')} />
                     </div>
                 </div>
                 <div>
                     <label className={labelClass}>{t('addresses.form.addressLine1')}</label>
-                    <input className={inputClass} value={form.addressLine1} onChange={set('addressLine1')} placeholder={t('addresses.form.addressPlaceholder')} />
+                    <input className={inputClass} value={form.addressLine1} onChange={set('addressLine1')} />
                 </div>
                 <div>
                     <label className={labelClass}>{t('addresses.form.addressLine2')}</label>
-                    <input className={inputClass} value={form.addressLine2} onChange={set('addressLine2')} placeholder={t('addresses.form.address2Placeholder')} />
+                    <input className={inputClass} value={form.addressLine2} onChange={set('addressLine2')} />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label className={labelClass}>{t('addresses.form.city')}</label>
-                        <input className={inputClass} value={form.city} onChange={set('city')} placeholder={t('addresses.form.cityPlaceholder')} />
-                    </div>
-                    <div>
-                        <label className={labelClass}>{t('addresses.form.postalCode')}</label>
-                        <input className={inputClass} value={form.postalCode} onChange={set('postalCode')} placeholder={t('addresses.form.postalPlaceholder')} />
-                    </div>
-                    <div>
-                        <label className={labelClass}>{t('addresses.form.country')}</label>
-                        <input className={inputClass} value={form.country} onChange={set('country')} placeholder={t('addresses.form.countryPlaceholder')} />
-                    </div>
+                <div>
+                    <label className={labelClass}>{t('addresses.form.country')}</label>
+                    <input className={inputClass} value={form.country} onChange={set('country')} />
+                </div>
+                <CityDistrictSelect
+                    country={form.country}
+                    cityValue={form.city}
+                    districtValue={form.district}
+                    onCityChange={name => setForm(prev => ({ ...prev, city: name, district: '' }))}
+                    onDistrictChange={name => setForm(prev => ({ ...prev, district: name }))}
+                    labelClass={labelClass}
+                    inputClass={inputClassFn}
+                />
+                <div>
+                    <label className={labelClass}>{t('addresses.form.postalCode')}</label>
+                    <input className={inputClass} value={form.postalCode} onChange={set('postalCode')} />
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -247,6 +260,7 @@ export default function AddressesPage() {
                                         addressLine1: addr.addressLine1,
                                         addressLine2: addr.addressLine2 ?? '',
                                         city: addr.city,
+                                        district: '',
                                         postalCode: addr.postalCode,
                                         country: addr.country,
                                         isDefault: addr.isDefault,

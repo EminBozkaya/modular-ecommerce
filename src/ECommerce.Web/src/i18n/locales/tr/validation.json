@@ -7,5 +7,13 @@
   "passwordWeak": "Şifre en az 1 büyük harf, 1 rakam içermelidir",
   "positiveNumber": "Pozitif bir sayı girin",
   "invalidPrice": "Geçerli bir fiyat girin",
-  "minValue": "En az {{min}} olmalıdır"
+  "minValue": "En az {{min}} olmal\u0131d\u0131r",
+  "tcKimlikRequired": "TC Kimlik No zorunludur",
+  "tcKimlikInvalid": "Ge\u00e7erli bir TC Kimlik No girin",
+  "tcKimlikLength": "TC Kimlik No 11 haneli olmal\u0131d\u0131r",
+  "taxNumberRequired": "Vergi No zorunludur",
+  "taxNumberLength": "Vergi No 10 haneli olmal\u0131d\u0131r",
+  "taxNumberDigits": "Vergi No yaln\u0131zca rakam i\u00e7ermelidir",
+  "taxOfficeRequired": "Vergi Dairesi zorunludur",
+  "companyNameRequired": "\u015eirket ad\u0131 zorunludur"
 }

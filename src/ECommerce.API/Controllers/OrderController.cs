@@ -20,11 +20,14 @@ public class OrderController : ControllerBase
     {
         var (userId, sessionId) = GetIdentifiers();
 
-        // Serialize structured ShippingAddress to JSON string for domain storage (Option A)
+        // Serialize structured addresses to JSON string for domain storage
         var shippingAddressJson = JsonSerializer.Serialize(req.ShippingAddress);
+        var billingAddressJson = req.BillingAddress is not null
+            ? JsonSerializer.Serialize(req.BillingAddress)
+            : null;
 
         var result = await _mediator.Send(
-            new CreateOrderCommand(userId, req.GuestEmail, sessionId, shippingAddressJson), ct);
+            new CreateOrderCommand(userId, req.GuestEmail, sessionId, shippingAddressJson, billingAddressJson), ct);
 
         return CreatedAtAction(nameof(GetById), new { id = result.OrderId }, new
         {
@@ -71,10 +74,26 @@ public class OrderController : ControllerBase
     }
 }
 
-public record CreateOrderRequest(string? GuestEmail, ShippingAddressRequest ShippingAddress);
+public record CreateOrderRequest(
+    string? GuestEmail,
+    ShippingAddressRequest ShippingAddress,
+    BillingAddressRequest? BillingAddress = null);
 
 public record ShippingAddressRequest(
     string FullName,
+    string AddressLine1,
+    string? AddressLine2,
+    string City,
+    string PostalCode,
+    string Country);
+
+public record BillingAddressRequest(
+    string InvoiceType,
+    string? FullName,
+    string? TcKimlikNo,
+    string? CompanyName,
+    string? TaxOffice,
+    string? TaxNumber,
     string AddressLine1,
     string? AddressLine2,
     string City,

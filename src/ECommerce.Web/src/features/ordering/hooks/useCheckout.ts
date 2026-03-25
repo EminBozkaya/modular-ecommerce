@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { createOrder } from '../api/orderingApi';
 import { initializePayment } from '../api/paymentApi';
 import { generateIdempotencyKey } from '../../../utils/idempotency';
-import type { ShippingAddress, CreateOrderResponse } from '../types/order';
+import type { ShippingAddress, BillingAddress, CreateOrderResponse } from '../types/order';
 import type { InitializePaymentRequest, InitializePaymentResponse } from '../types/payment';
 import type { ApiError } from '../../../api/errorHandling';
 
@@ -30,7 +30,7 @@ export function useCheckout() {
         }
     }, [t]);
 
-    const createOrderMutation = useMutation<CreateOrderResponse, ApiError, { shippingAddress: ShippingAddress; guestEmail?: string }>({
+    const createOrderMutation = useMutation<CreateOrderResponse, ApiError, { shippingAddress: ShippingAddress; billingAddress?: BillingAddress; guestEmail?: string }>({
         mutationFn: (req) => createOrder(req),
     });
 
@@ -45,6 +45,7 @@ export function useCheckout() {
     const submitCheckout = useCallback(
         async (
             shippingAddress: ShippingAddress,
+            billingAddress: BillingAddress | undefined,
             providerName: string,
             idempotencyKey: string,
             guestEmail?: string
@@ -54,7 +55,7 @@ export function useCheckout() {
 
 
             try {
-                const orderResponse = await createOrderMutation.mutateAsync({ shippingAddress, guestEmail: guestEmail || undefined });
+                const orderResponse = await createOrderMutation.mutateAsync({ shippingAddress, billingAddress, guestEmail: guestEmail || undefined });
 
                 setStep('redirecting');
 

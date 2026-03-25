@@ -70,6 +70,7 @@
     "profile": "Profil",
     "orders": "Meine Bestellungen",
     "addresses": "Meine Adressen",
+    "billingAddresses": "Rechnungsadressen",
     "settings": "Einstellungen",
     "logout": "Abmelden"
   },

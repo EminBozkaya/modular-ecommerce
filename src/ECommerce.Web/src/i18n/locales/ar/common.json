@@ -70,6 +70,7 @@
     "profile": "الملف الشخصي",
     "orders": "طلباتي",
     "addresses": "عناويني",
+    "billingAddresses": "عناوين الفواتير",
     "settings": "الإعدادات",
     "logout": "تسجيل الخروج"
   },

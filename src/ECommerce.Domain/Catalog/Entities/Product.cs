@@ -66,6 +66,12 @@ public class Product : BaseAuditableEntity
         UpdatedAt = DateTime.UtcNow;
     }
 
+    public void IncreaseStock(decimal amount)
+    {
+        Stock = Stock.Increase(amount);
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     public void UpsertTranslation(string languageCode, string name, string? description)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(languageCode);

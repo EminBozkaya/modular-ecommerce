@@ -70,6 +70,7 @@
     "profile": "Профиль",
     "orders": "Мои заказы",
     "addresses": "Мои адреса",
+    "billingAddresses": "Платёжные адреса",
     "settings": "Настройки",
     "logout": "Выйти"
   },

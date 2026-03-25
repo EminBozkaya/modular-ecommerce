@@ -70,6 +70,7 @@
     "profile": "Profile",
     "orders": "My Orders",
     "addresses": "My Addresses",
+    "billingAddresses": "Billing Addresses",
     "settings": "Settings",
     "logout": "Sign Out"
   },

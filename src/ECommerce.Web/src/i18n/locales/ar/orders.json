@@ -14,6 +14,9 @@
     "total": "الإجمالي",
     "grandTotal": "الإجمالي الكلي",
     "shippingAddress": "عنوان التوصيل",
+    "billingAddress": "معلومات الفاتورة",
+    "individual": "فرد",
+    "corporate": "شركة",
     "notFound": "الطلب غير موجود"
   },
   "confirmation": {

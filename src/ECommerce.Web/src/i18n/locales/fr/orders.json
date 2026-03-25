@@ -14,6 +14,9 @@
     "total": "Total",
     "grandTotal": "Total général",
     "shippingAddress": "Adresse de livraison",
+    "billingAddress": "Informations de facturation",
+    "individual": "Particulier",
+    "corporate": "Entreprise",
     "notFound": "Commande introuvable"
   },
   "confirmation": {

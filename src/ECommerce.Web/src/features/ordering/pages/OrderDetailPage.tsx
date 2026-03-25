@@ -118,6 +118,44 @@ export default function OrderDetailPage() {
                         <p>{order.shippingAddress.country}</p>
                     </div>
                 </div>
+
+                {/* Billing Address */}
+                {order.billingAddress && (
+                    <div className="border-t border-border pt-4">
+                        <div className="flex items-center gap-2 mb-2">
+                            <h2 className="text-sm font-semibold">{t('detail.billingAddress')}</h2>
+                            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                                order.billingAddress.invoiceType === 'individual'
+                                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                    : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                            }`}>
+                                {order.billingAddress.invoiceType === 'individual'
+                                    ? t('detail.individual')
+                                    : t('detail.corporate')}
+                            </span>
+                        </div>
+                        <div className="text-sm text-muted-foreground space-y-0.5">
+                            {order.billingAddress.invoiceType === 'individual' ? (
+                                <>
+                                    <p>{order.billingAddress.fullName}</p>
+                                    {order.billingAddress.tcKimlikNo && (
+                                        <p>TC: {order.billingAddress.tcKimlikNo.slice(0, 3)}{'*'.repeat(6)}{order.billingAddress.tcKimlikNo.slice(-2)}</p>
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                    <p>{order.billingAddress.companyName}</p>
+                                    {order.billingAddress.taxOffice && <p>{order.billingAddress.taxOffice} VD</p>}
+                                    {order.billingAddress.taxNumber && <p>VKN: {order.billingAddress.taxNumber}</p>}
+                                </>
+                            )}
+                            <p>{order.billingAddress.addressLine1}</p>
+                            {order.billingAddress.addressLine2 && <p>{order.billingAddress.addressLine2}</p>}
+                            <p>{order.billingAddress.city}, {order.billingAddress.postalCode}</p>
+                            <p>{order.billingAddress.country}</p>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

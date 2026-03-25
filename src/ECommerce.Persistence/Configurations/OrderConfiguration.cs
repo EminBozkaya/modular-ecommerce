@@ -13,6 +13,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.Property(o => o.OrderNumber).IsRequired().HasMaxLength(50);
         builder.Property(o => o.ShippingAddress).IsRequired().HasMaxLength(500);
+        builder.Property(o => o.BillingAddress).HasMaxLength(1000);
         builder.Property(o => o.GuestEmail).HasMaxLength(200);
         builder.Property(o => o.Status).IsRequired();
 

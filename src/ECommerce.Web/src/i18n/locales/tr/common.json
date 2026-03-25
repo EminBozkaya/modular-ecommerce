@@ -70,6 +70,7 @@
     "profile": "Profil Bilgileri",
     "orders": "Siparişlerim",
     "addresses": "Adreslerim",
+    "billingAddresses": "Fatura Adreslerim",
     "settings": "Ayarlar",
     "logout": "Güvenli Çıkış"
   },

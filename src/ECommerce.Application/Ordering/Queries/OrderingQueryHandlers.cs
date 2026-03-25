@@ -23,6 +23,24 @@ internal static class ShippingAddressParser
     }
 }
 
+internal static class BillingAddressParser
+{
+    private static readonly JsonSerializerOptions _opts = new() { PropertyNameCaseInsensitive = true };
+
+    public static BillingAddressDto? Parse(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json)) return null;
+        try
+        {
+            return JsonSerializer.Deserialize<BillingAddressDto>(json, _opts);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+}
+
 public class GetOrdersHandler : IRequestHandler<GetOrdersQuery, IReadOnlyList<OrderDto>>
 {
     private readonly IOrderRepository _orders;
@@ -32,7 +50,7 @@ public class GetOrdersHandler : IRequestHandler<GetOrdersQuery, IReadOnlyList<Or
     {
         var orders = await _orders.GetAllWithItemsAsync(q.UserId, ct);
         return orders.Select(o => new OrderDto(o.Id, o.OrderNumber, o.Status.ToString(),
-            o.Total.Amount, o.Total.Currency.ToString(), ShippingAddressParser.Parse(o.ShippingAddress), o.CreatedAt,
+            o.Total.Amount, o.Total.Currency.ToString(), ShippingAddressParser.Parse(o.ShippingAddress), BillingAddressParser.Parse(o.BillingAddress), o.CreatedAt,
             o.Items.Select(i => new OrderItemDto(i.ProductId, i.ProductName,
                 i.UnitPrice.Amount, i.Quantity, i.LineTotal.Amount)).ToList()))
             .ToList();
@@ -48,7 +66,7 @@ public class GetPagedOrdersHandler : IRequestHandler<GetPagedOrdersQuery, PagedR
     {
         var (orders, total) = await _orders.GetPagedAsync(q.UserId, q.Page, q.PageSize, ct);
         var items = orders.Select(o => new OrderDto(o.Id, o.OrderNumber, o.Status.ToString(),
-            o.Total.Amount, o.Total.Currency.ToString(), ShippingAddressParser.Parse(o.ShippingAddress), o.CreatedAt,
+            o.Total.Amount, o.Total.Currency.ToString(), ShippingAddressParser.Parse(o.ShippingAddress), BillingAddressParser.Parse(o.BillingAddress), o.CreatedAt,
             o.Items.Select(i => new OrderItemDto(i.ProductId, i.ProductName,
                 i.UnitPrice.Amount, i.Quantity, i.LineTotal.Amount)).ToList())).ToList();
         return new PagedResult<OrderDto>(items, total, q.Page, q.PageSize);
@@ -65,7 +83,7 @@ public class GetOrderByIdHandler : IRequestHandler<GetOrderByIdQuery, OrderDto?>
         var o = await _orders.GetByIdWithItemsAsync(q.Id, ct);
         if (o is null) return null;
         return new OrderDto(o.Id, o.OrderNumber, o.Status.ToString(),
-            o.Total.Amount, o.Total.Currency.ToString(), ShippingAddressParser.Parse(o.ShippingAddress), o.CreatedAt,
+            o.Total.Amount, o.Total.Currency.ToString(), ShippingAddressParser.Parse(o.ShippingAddress), BillingAddressParser.Parse(o.BillingAddress), o.CreatedAt,
             o.Items.Select(i => new OrderItemDto(i.ProductId, i.ProductName,
                 i.UnitPrice.Amount, i.Quantity, i.LineTotal.Amount)).ToList());
     }

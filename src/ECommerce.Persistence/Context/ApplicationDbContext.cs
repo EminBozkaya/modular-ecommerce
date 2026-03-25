@@ -37,6 +37,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<AppUser> Users => Set<AppUser>();
     public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
     public DbSet<UserAddress> UserAddresses => Set<UserAddress>();
+    public DbSet<UserBillingAddress> UserBillingAddresses => Set<UserBillingAddress>();
     public DbSet<Country> Countries => Set<Country>();
     public DbSet<City> Cities => Set<City>();
     public DbSet<District> Districts => Set<District>();

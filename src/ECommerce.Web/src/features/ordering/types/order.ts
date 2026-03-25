@@ -20,6 +20,24 @@ export interface ShippingAddress {
     addressLine1: string;
     addressLine2?: string;
     city: string;
+    district?: string;
+    postalCode: string;
+    country: string;
+}
+
+export type InvoiceType = 'individual' | 'corporate';
+
+export interface BillingAddress {
+    invoiceType: InvoiceType;
+    fullName?: string;
+    tcKimlikNo?: string;
+    companyName?: string;
+    taxOffice?: string;
+    taxNumber?: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    district?: string;
     postalCode: string;
     country: string;
 }
@@ -33,11 +51,13 @@ export interface Order {
     currency: string;
     createdAt: string;
     shippingAddress: ShippingAddress;
+    billingAddress?: BillingAddress;
     isDeleted?: boolean;
 }
 
 export interface CreateOrderRequest {
     shippingAddress: ShippingAddress;
+    billingAddress?: BillingAddress;
     guestEmail?: string;
 }
 
