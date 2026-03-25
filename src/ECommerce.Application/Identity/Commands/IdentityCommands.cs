@@ -22,3 +22,16 @@ public record LoginResult(
     string Role);
 
 public record RefreshTokenCommand(string RefreshToken) : IRequest<LoginResult>;
+
+public record UpdateProfileCommand(
+    Guid UserId,
+    string FirstName,
+    string LastName,
+    string? PhoneNumber) : IRequest<UpdateProfileResult>;
+
+public record UpdateProfileResult(string FullName, string FirstName, string LastName, string? PhoneNumber);
+
+public record ChangePasswordCommand(
+    Guid UserId,
+    string CurrentPassword,
+    string NewPassword) : IRequest;

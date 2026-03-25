@@ -1,9 +1,9 @@
-import type { AuthResponse, AuthUser, LoginRequest, RegisterRequest } from '../types/auth';
+import type { AuthResponse, AuthUser, ChangePasswordRequest, LoginRequest, RegisterRequest, UpdateProfileRequest, UpdateProfileResponse } from '../types/auth';
 
 // Simulated user store for mock mode
 const mockUsers: (AuthUser & { password: string })[] = [
-    { id: '1', email: 'admin@test.com', password: 'Admin123!', fullName: 'Admin User', role: 'Admin' },
-    { id: '2', email: 'user@test.com', password: 'User123!', fullName: 'Test Customer', role: 'Customer' },
+    { id: '1', email: 'admin@test.com', password: 'Admin123!', fullName: 'Admin User', firstName: 'Admin', lastName: 'User', phoneNumber: null, role: 'Admin' },
+    { id: '2', email: 'user@test.com', password: 'User123!', fullName: 'Test Customer', firstName: 'Test', lastName: 'Customer', phoneNumber: null, role: 'Customer' },
 ];
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -65,4 +65,31 @@ export async function mockGetMe(): Promise<AuthUser> {
         throw { response: { status: 401 } };
     }
     return JSON.parse(stored);
+}
+
+export async function mockUpdateProfile(req: UpdateProfileRequest): Promise<UpdateProfileResponse> {
+    await delay(400);
+    const stored = sessionStorage.getItem('mock_user');
+    if (!stored) throw { response: { status: 401 } };
+    const user: AuthUser = JSON.parse(stored);
+    const updated: AuthUser = {
+        ...user,
+        firstName: req.firstName,
+        lastName: req.lastName,
+        fullName: `${req.firstName} ${req.lastName}`,
+        phoneNumber: req.phoneNumber ?? null,
+    };
+    sessionStorage.setItem('mock_user', JSON.stringify(updated));
+    return { fullName: updated.fullName, firstName: updated.firstName, lastName: updated.lastName, phoneNumber: updated.phoneNumber };
+}
+
+export async function mockChangePassword(req: ChangePasswordRequest): Promise<void> {
+    await delay(400);
+    const stored = sessionStorage.getItem('mock_user');
+    if (!stored) throw { response: { status: 401 } };
+    const user = mockUsers.find(u => u.id === (JSON.parse(stored) as AuthUser).id);
+    if (!user || user.password !== req.currentPassword) {
+        throw { response: { status: 400, data: { error: 'Current password is incorrect.' } } };
+    }
+    user.password = req.newPassword;
 }

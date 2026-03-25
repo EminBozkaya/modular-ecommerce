@@ -149,6 +149,40 @@ public class AuthController : ControllerBase
         });
     }
 
+    [Authorize]
+    [HttpPut("profile")]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest req, CancellationToken ct)
+    {
+        var sub = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (sub is null || !Guid.TryParse(sub, out var userId)) return Unauthorized();
+
+        var result = await _mediator.Send(
+            new UpdateProfileCommand(userId, req.FirstName, req.LastName, req.PhoneNumber), ct);
+
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest req, CancellationToken ct)
+    {
+        var sub = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (sub is null || !Guid.TryParse(sub, out var userId)) return Unauthorized();
+
+        try
+        {
+            await _mediator.Send(new ChangePasswordCommand(userId, req.CurrentPassword, req.NewPassword), ct);
+            return NoContent();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    public record UpdateProfileRequest(string FirstName, string LastName, string? PhoneNumber);
+    public record ChangePasswordRequest(string CurrentPassword, string NewPassword);
+
     [HttpGet("debug-env")]
     public IActionResult DebugEnv()
     {

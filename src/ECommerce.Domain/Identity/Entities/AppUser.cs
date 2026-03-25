@@ -9,6 +9,7 @@ public class AppUser : BaseAuditableEntity
     public string LastName { get; private set; } = default!;
     public string Email { get; private set; } = default!;
     public string? PasswordHash { get; private set; }
+    public string? PhoneNumber { get; private set; }
     public UserRole Role { get; private set; }
     public bool IsEmailConfirmed { get; private set; }
 
@@ -79,6 +80,23 @@ public class AppUser : BaseAuditableEntity
         RefreshToken == token && RefreshTokenExpiresAt > DateTime.UtcNow;
 
     public void ConfirmEmail() { IsEmailConfirmed = true; UpdatedAt = DateTime.UtcNow; }
+
+    public void UpdateProfile(string firstName, string lastName, string? phoneNumber)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(lastName);
+        FirstName = firstName.Trim();
+        LastName = lastName.Trim();
+        PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber.Trim();
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void ChangePassword(string newPasswordHash)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(newPasswordHash);
+        PasswordHash = newPasswordHash;
+        UpdatedAt = DateTime.UtcNow;
+    }
 
     public void AddExternalLogin(string provider, string providerUserId)
     {

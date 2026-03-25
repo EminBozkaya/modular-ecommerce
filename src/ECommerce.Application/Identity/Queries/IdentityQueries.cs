@@ -15,4 +15,4 @@ public record UserDto(
 public record GetUsersQuery : IRequest<IReadOnlyList<UserDto>>;
 
 public record GetMeQuery(Guid UserId) : IRequest<MeDto?>;
-public record MeDto(Guid Id, string Email, string FullName, string Role);
+public record MeDto(Guid Id, string Email, string FullName, string FirstName, string LastName, string? PhoneNumber, string Role);
