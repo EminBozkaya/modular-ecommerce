@@ -73,8 +73,10 @@ export default function ProfilePage() {
                     resetPass();
                 },
                 onError: (err: unknown) => {
-                    const apiErr = err as { response?: { data?: { error?: string } } };
-                    const msg = apiErr?.response?.data?.error ?? t('security.changeError');
+                    const apiErr = err as { response?: { status?: number } };
+                    const msg = apiErr?.response?.status === 400
+                        ? t('security.wrongCurrentPassword')
+                        : t('security.changeError');
                     setPassError('currentPassword', { message: msg });
                 },
             }
