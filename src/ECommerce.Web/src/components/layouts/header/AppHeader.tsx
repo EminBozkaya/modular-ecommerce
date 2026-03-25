@@ -110,13 +110,16 @@ export function AppHeader() {
         return buildTree(null);
     }, [allCategories]);
 
-    // In dark mode, don't override with admin-configured light colors — let CSS vars handle it
+    // In dark mode, use a brand-tinted dark background so the navbar doesn't
+    // sit transparent on top of page imagery when scrolling.
     const navBg = theme === 'dark'
-        ? undefined
+        ? 'var(--brand-tinted-dark-bg)'
         : (isStuck ? settings.primaryColor : settings.backgroundColor);
 
-    // Gradient overlay color for nav scroll arrows — uses CSS variable in dark mode
-    const navGradientColor = navBg ?? 'hsl(var(--background))';
+    // Gradient overlay color for nav scroll arrows
+    const navGradientColor = theme === 'dark'
+        ? 'var(--brand-tinted-dark-bg)'
+        : (navBg ?? 'hsl(var(--background))');
 
     return (
         <>
@@ -276,10 +279,10 @@ export function AppHeader() {
                             onMouseEnter={() => startScrolling('left')}
                             onMouseLeave={stopScrolling}
                             onClick={() => scrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
-                            className="relative ml-2 w-8 h-8 rounded-full bg-foreground/10 hover:bg-foreground/20 border border-foreground/10 shadow-sm flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group backdrop-blur-[2px]"
+                            className="relative ml-2 w-9 h-9 rounded-full bg-background/95 hover:bg-background border border-border/50 shadow-lg flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group"
                             style={{ color: 'var(--brand-primary)' }}
                         >
-                            <ChevronLeft className="w-5 h-5" />
+                            <ChevronLeft className="w-5 h-5" strokeWidth={2.5} />
                         </button>
                     </div>
 
@@ -323,10 +326,10 @@ export function AppHeader() {
                             onMouseEnter={() => startScrolling('right')}
                             onMouseLeave={stopScrolling}
                             onClick={() => scrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
-                            className="relative w-8 h-8 rounded-full bg-foreground/10 hover:bg-foreground/20 border border-foreground/10 shadow-sm flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group backdrop-blur-[2px]"
+                            className="relative w-9 h-9 rounded-full bg-background/95 hover:bg-background border border-border/50 shadow-lg flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group"
                             style={{ color: 'var(--brand-primary)' }}
                         >
-                            <ChevronRight className="w-5 h-5" />
+                            <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
                         </button>
                     </div>
                 </div>
