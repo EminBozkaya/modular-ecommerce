@@ -4,6 +4,7 @@ import { useBillingAddresses, useAddBillingAddress, useUpdateBillingAddress, use
 import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
 import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import type { UserBillingAddress, InvoiceType, AddUserBillingAddressRequest, UpdateUserBillingAddressRequest } from '../types/address';
+import { resolveInvoiceType } from '../types/address';
 import { useTranslation } from 'react-i18next';
 import { CityDistrictSelect } from '../../../components/shared/CityDistrictSelect';
 import ConfirmModal from '../../admin/components/ConfirmModal';
@@ -243,10 +244,6 @@ function BillingAddressForm({ initial = emptyForm, onSave, onCancel, isSaving }:
 }
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
-
-const resolveInvoiceType = (type: any): 'individual' | 'corporate' => {
-    return type === 'Individual' || type === 'individual' || type === 0 || type === '0' ? 'individual' : 'corporate';
-};
 
 export default function BillingAddressesPage() {
     const { data: addresses, isLoading, isError, refetch } = useBillingAddresses();

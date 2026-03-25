@@ -15,6 +15,7 @@ import { EmptyState } from '../../../components/shared/EmptyState';
 import { generateIdempotencyKey } from '../../../utils/idempotency';
 import type { ShippingAddress, BillingAddress } from '../types/order';
 import { useBillingAddresses, useAddBillingAddress } from '../../auth/hooks/useBillingAddresses';
+import { resolveInvoiceType } from '../../auth/types/address';
 import { usePaymentProviders } from '../hooks/usePaymentProviders';
 import { useTranslation } from 'react-i18next';
 import { Check, Mail, FileText } from 'lucide-react';
@@ -132,7 +133,7 @@ export default function CheckoutPage() {
             const found = savedBillingAddresses.find((a) => a.id === selectedBillingId);
             if (found) {
                 return {
-                    invoiceType: found.invoiceType,
+                    invoiceType: resolveInvoiceType(found.invoiceType),
                     fullName: found.fullName,
                     tcKimlikNo: found.tcKimlikNo,
                     companyName: found.companyName,

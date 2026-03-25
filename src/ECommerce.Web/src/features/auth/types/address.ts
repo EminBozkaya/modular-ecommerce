@@ -43,6 +43,10 @@ export interface UpdateUserAddressRequest {
 
 export type InvoiceType = 'individual' | 'corporate' | 'Individual' | 'Corporate' | 0 | 1;
 
+export const resolveInvoiceType = (type: any): 'individual' | 'corporate' => {
+    return type === 'Individual' || type === 'individual' || type === 0 || type === '0' ? 'individual' : 'corporate';
+};
+
 export interface UserBillingAddress {
     id: string;
     title: string;

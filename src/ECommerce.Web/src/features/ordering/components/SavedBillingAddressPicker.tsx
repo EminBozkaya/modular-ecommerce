@@ -2,6 +2,7 @@ import { FileText, Plus, CheckCircle2 } from 'lucide-react';
 import { useBillingAddresses } from '../../auth/hooks/useBillingAddresses';
 import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
 import type { UserBillingAddress } from '../../auth/types/address';
+import { resolveInvoiceType } from '../../auth/types/address';
 import type { BillingAddress } from '../types/order';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +15,7 @@ interface SavedBillingAddressPickerProps {
 
 function toBillingAddress(addr: UserBillingAddress): BillingAddress {
     return {
-        invoiceType: addr.invoiceType,
+        invoiceType: resolveInvoiceType(addr.invoiceType),
         fullName: addr.fullName,
         tcKimlikNo: addr.tcKimlikNo,
         companyName: addr.companyName,
@@ -53,7 +54,7 @@ export function SavedBillingAddressPicker({ selectedId, onSelect, onUseNew, disa
 
             {addresses.map((addr) => {
                 const isSelected = selectedId === addr.id;
-                const isIndividual = addr.invoiceType === 'individual';
+                const isIndividual = resolveInvoiceType(addr.invoiceType) === 'individual';
                 return (
                     <button
                         key={addr.id}
