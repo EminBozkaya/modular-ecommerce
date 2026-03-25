@@ -26,6 +26,24 @@ export default function AdminBannerPage() {
         },
     });
 
+    // Constant speed marquee logic for preview - Must be at top level to obey Rules of Hooks
+    const [previewMarqueeDuration, setPreviewMarqueeDuration] = useState(30);
+    const previewTrackRef = useRef<HTMLDivElement>(null);
+
+    useLayoutEffect(() => {
+        if (form?.freeShippingBannerMarquee && previewTrackRef.current) {
+            const updateDuration = () => {
+                const width = previewTrackRef.current?.offsetWidth || 0;
+                const pixelsPerSecond = (form.freeShippingBannerMarqueeSpeed * 20) + 40;
+                if (width > 0) setPreviewMarqueeDuration(width / pixelsPerSecond);
+            };
+            updateDuration();
+            const observer = new ResizeObserver(updateDuration);
+            observer.observe(previewTrackRef.current);
+            return () => observer.disconnect();
+        }
+    }, [form?.freeShippingBannerMarquee, form?.freeShippingBannerMarqueeSpeed, form?.freeShippingBannerText, i18n.language]);
+
     if (isLoading || !form) {
         return (
             <div className="flex items-center justify-center py-24">
@@ -51,24 +69,6 @@ export default function AdminBannerPage() {
             return { ...prev, translations };
         });
     };
-
-    // Constant speed marquee logic for preview
-    const [previewMarqueeDuration, setPreviewMarqueeDuration] = useState(30);
-    const previewTrackRef = useRef<HTMLDivElement>(null);
-
-    useLayoutEffect(() => {
-        if (form.freeShippingBannerMarquee && previewTrackRef.current) {
-            const updateDuration = () => {
-                const width = previewTrackRef.current?.offsetWidth || 0;
-                const pixelsPerSecond = (form.freeShippingBannerMarqueeSpeed * 20) + 40;
-                if (width > 0) setPreviewMarqueeDuration(width / pixelsPerSecond);
-            };
-            updateDuration();
-            const observer = new ResizeObserver(updateDuration);
-            observer.observe(previewTrackRef.current);
-            return () => observer.disconnect();
-        }
-    }, [form.freeShippingBannerMarquee, form.freeShippingBannerMarqueeSpeed, form.freeShippingBannerText, i18n.language]);
 
     return (
         <div className="max-w-2xl mx-auto">

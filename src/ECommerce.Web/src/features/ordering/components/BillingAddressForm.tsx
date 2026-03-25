@@ -29,7 +29,6 @@ export function BillingAddressForm({ value, onChange, shippingAddress, disabled,
         watch,
         setValue,
         formState: { errors },
-        reset,
     } = useForm<BillingAddressFormData>({
         resolver: zodResolver(billingAddressSchema),
         defaultValues: {
@@ -172,9 +171,9 @@ export function BillingAddressForm({ value, onChange, shippingAddress, disabled,
                             type="text"
                             {...register('fullName')}
                             disabled={disabled}
-                            className={inputClass(!!errors.fullName)}
+                            className={inputClass(!!(errors as any).fullName)}
                         />
-                        {errors.fullName && <p className={errorClass} role="alert">{errors.fullName.message}</p>}
+                        {(errors as any).fullName && <p className={errorClass} role="alert">{(errors as any).fullName.message}</p>}
                     </div>
                     <div>
                         <label className={labelClass}>
@@ -186,9 +185,9 @@ export function BillingAddressForm({ value, onChange, shippingAddress, disabled,
                             maxLength={11}
                             {...register('tcKimlikNo')}
                             disabled={disabled}
-                            className={inputClass(!!errors.tcKimlikNo)}
+                            className={inputClass(!!(errors as any).tcKimlikNo)}
                         />
-                        {errors.tcKimlikNo && <p className={errorClass} role="alert">{errors.tcKimlikNo.message}</p>}
+                        {(errors as any).tcKimlikNo && <p className={errorClass} role="alert">{(errors as any).tcKimlikNo.message}</p>}
                     </div>
                 </div>
             )}
@@ -204,9 +203,9 @@ export function BillingAddressForm({ value, onChange, shippingAddress, disabled,
                             type="text"
                             {...register('companyName')}
                             disabled={disabled}
-                            className={inputClass(!!errors.companyName)}
+                            className={inputClass(!!(errors as any).companyName)}
                         />
-                        {errors.companyName && <p className={errorClass} role="alert">{errors.companyName.message}</p>}
+                        {(errors as any).companyName && <p className={errorClass} role="alert">{(errors as any).companyName.message}</p>}
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                         <div>
@@ -217,9 +216,9 @@ export function BillingAddressForm({ value, onChange, shippingAddress, disabled,
                                 type="text"
                                 {...register('taxOffice')}
                                 disabled={disabled}
-                                className={inputClass(!!errors.taxOffice)}
+                                className={inputClass(!!(errors as any).taxOffice)}
                             />
-                            {errors.taxOffice && <p className={errorClass} role="alert">{errors.taxOffice.message}</p>}
+                            {(errors as any).taxOffice && <p className={errorClass} role="alert">{(errors as any).taxOffice.message}</p>}
                         </div>
                         <div>
                             <label className={labelClass}>
@@ -231,9 +230,9 @@ export function BillingAddressForm({ value, onChange, shippingAddress, disabled,
                                 maxLength={10}
                                 {...register('taxNumber')}
                                 disabled={disabled}
-                                className={inputClass(!!errors.taxNumber)}
+                                className={inputClass(!!(errors as any).taxNumber)}
                             />
-                            {errors.taxNumber && <p className={errorClass} role="alert">{errors.taxNumber.message}</p>}
+                            {(errors as any).taxNumber && <p className={errorClass} role="alert">{(errors as any).taxNumber.message}</p>}
                         </div>
                     </div>
                 </div>
