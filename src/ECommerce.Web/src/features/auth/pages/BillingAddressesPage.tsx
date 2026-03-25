@@ -6,6 +6,24 @@ import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import type { UserBillingAddress, InvoiceType, AddUserBillingAddressRequest, UpdateUserBillingAddressRequest } from '../types/address';
 import { useTranslation } from 'react-i18next';
 import { CityDistrictSelect } from '../../../components/shared/CityDistrictSelect';
+import ConfirmModal from '../../admin/components/ConfirmModal';
+
+// ─── Verification Helpers ──────────────────────────────────────────────────────
+
+const isValidTcKimlikNo = (tcKimlik: string): boolean => {
+    if (!tcKimlik || tcKimlik.length !== 11 || !/^\d{11}$/.test(tcKimlik)) return false;
+    if (tcKimlik[0] === '0') return false;
+    const digits = tcKimlik.split('').map(Number);
+    const sumOdd = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
+    const sumEven = digits[1] + digits[3] + digits[5] + digits[7];
+    const digit10 = ((sumOdd * 7) - sumEven) % 10;
+    const digit11 = (sumOdd + sumEven + digits[9]) % 10;
+    return digits[9] === digit10 && digits[10] === digit11;
+};
+
+const isValidTaxNumber = (taxNumber: string): boolean => {
+    return !!taxNumber && taxNumber.length === 10 && /^\d{10}$/.test(taxNumber);
+};
 
 // ─── Inline billing address form ──────────────────────────────────────────────
 
@@ -20,7 +38,9 @@ interface BillingFormState {
     addressLine1: string;
     addressLine2: string;
     city: string;
+    cityId?: number;
     district: string;
+    districtId?: number;
     postalCode: string;
     country: string;
     isDefault: boolean;
@@ -71,10 +91,13 @@ function BillingAddressForm({ initial = emptyForm, onSave, onCancel, isSaving }:
         }`;
 
     const isIndividual = form.invoiceType === 'individual';
+    const isTcValid = isValidTcKimlikNo(form.tcKimlikNo);
+    const isTaxValid = isValidTaxNumber(form.taxNumber);
+
     const hasIdentity = isIndividual
-        ? form.fullName && form.tcKimlikNo
-        : form.companyName && form.taxOffice && form.taxNumber;
-    const isValid = form.title && hasIdentity && form.addressLine1 && form.city && form.postalCode && form.country;
+        ? form.fullName && isTcValid
+        : form.companyName && form.taxOffice && isTaxValid;
+    const isValid = !!(form.title && hasIdentity && form.addressLine1 && form.city && form.postalCode && form.country);
 
     const tabClass = (active: boolean) =>
         `flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${
@@ -114,7 +137,12 @@ function BillingAddressForm({ initial = emptyForm, onSave, onCancel, isSaving }:
                         </div>
                         <div>
                             <label className={labelClass}>{t('billing.tcKimlikNo')}</label>
-                            <input className={inputClass} value={form.tcKimlikNo} onChange={set('tcKimlikNo')} maxLength={11} inputMode="numeric" />
+                            <input className={inputClassFn(form.tcKimlikNo.length > 0 && !isTcValid)} value={form.tcKimlikNo} onChange={set('tcKimlikNo')} maxLength={11} inputMode="numeric" />
+                            {form.tcKimlikNo.length > 0 && !isTcValid && (
+                                <p className="text-xs text-red-500 mt-1 font-semibold block ml-1 animate-in fade-in duration-200">
+                                    Geçersiz TC Kimlik No
+                                </p>
+                            )}
                         </div>
                     </div>
                 )}
@@ -133,7 +161,12 @@ function BillingAddressForm({ initial = emptyForm, onSave, onCancel, isSaving }:
                             </div>
                             <div>
                                 <label className={labelClass}>{t('billing.taxNumber')}</label>
-                                <input className={inputClass} value={form.taxNumber} onChange={set('taxNumber')} maxLength={10} inputMode="numeric" />
+                                <input className={inputClassFn(form.taxNumber.length > 0 && !isTaxValid)} value={form.taxNumber} onChange={set('taxNumber')} maxLength={10} inputMode="numeric" />
+                                {form.taxNumber.length > 0 && !isTaxValid && (
+                                    <p className="text-xs text-red-500 mt-1 font-semibold block ml-1 animate-in fade-in duration-200">
+                                        Geçersiz Vergi Numarası
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -156,8 +189,10 @@ function BillingAddressForm({ initial = emptyForm, onSave, onCancel, isSaving }:
                     country={form.country}
                     cityValue={form.city}
                     districtValue={form.district}
-                    onCityChange={name => setForm(prev => ({ ...prev, city: name, district: '' }))}
+                    onCityChange={name => setForm(prev => ({ ...prev, city: name, district: '', districtId: undefined }))}
                     onDistrictChange={name => setForm(prev => ({ ...prev, district: name }))}
+                    onCityIdChange={id => setForm(prev => ({ ...prev, cityId: id ?? undefined }))}
+                    onDistrictIdChange={id => setForm(prev => ({ ...prev, districtId: id ?? undefined }))}
                     labelClass={labelClass}
                     inputClass={inputClassFn}
                 />
@@ -209,6 +244,10 @@ function BillingAddressForm({ initial = emptyForm, onSave, onCancel, isSaving }:
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 
+const resolveInvoiceType = (type: any): 'individual' | 'corporate' => {
+    return type === 'Individual' || type === 'individual' || type === 0 || type === '0' ? 'individual' : 'corporate';
+};
+
 export default function BillingAddressesPage() {
     const { data: addresses, isLoading, isError, refetch } = useBillingAddresses();
     const addMutation = useAddBillingAddress();
@@ -217,9 +256,11 @@ export default function BillingAddressesPage() {
     const setDefaultMutation = useSetDefaultBillingAddress();
     const { t } = useTranslation('checkout');
     const { t: ta } = useTranslation('auth');
+    const { t: tc } = useTranslation('common');
 
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const handleAdd = async (form: BillingFormState) => {
         const req: AddUserBillingAddressRequest = {
@@ -233,6 +274,8 @@ export default function BillingAddressesPage() {
             addressLine1: form.addressLine1,
             addressLine2: form.addressLine2 || undefined,
             city: form.city,
+            cityId: form.cityId,
+            districtId: form.districtId,
             postalCode: form.postalCode,
             country: form.country,
             isDefault: form.isDefault,
@@ -253,6 +296,8 @@ export default function BillingAddressesPage() {
             addressLine1: form.addressLine1,
             addressLine2: form.addressLine2 || undefined,
             city: form.city,
+            cityId: form.cityId,
+            districtId: form.districtId,
             postalCode: form.postalCode,
             country: form.country,
         };
@@ -260,9 +305,14 @@ export default function BillingAddressesPage() {
         setEditingId(null);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!window.confirm(ta('addresses.deleteConfirm'))) return;
-        await deleteMutation.mutateAsync(id);
+    const handleDelete = (id: string) => {
+        setDeletingId(id);
+    };
+
+    const confirmDelete = async () => {
+        if (!deletingId) return;
+        await deleteMutation.mutateAsync(deletingId);
+        setDeletingId(null);
     };
 
     const handleSetDefault = async (id: string) => {
@@ -329,14 +379,14 @@ export default function BillingAddressesPage() {
                 {/* Address list */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {addresses?.map((addr: UserBillingAddress) => {
-                        const isIndividual = addr.invoiceType === 'individual';
+                        const isIndividual = resolveInvoiceType(addr.invoiceType) === 'individual';
                         return (
                             <div key={addr.id}>
                                 {editingId === addr.id ? (
                                     <BillingAddressForm
                                         initial={{
                                             title: addr.title,
-                                            invoiceType: addr.invoiceType,
+                                            invoiceType: resolveInvoiceType(addr.invoiceType),
                                             fullName: addr.fullName ?? '',
                                             tcKimlikNo: addr.tcKimlikNo ?? '',
                                             companyName: addr.companyName ?? '',
@@ -345,7 +395,9 @@ export default function BillingAddressesPage() {
                                             addressLine1: addr.addressLine1,
                                             addressLine2: addr.addressLine2 ?? '',
                                             city: addr.city,
-                                            district: '',
+                                            cityId: addr.cityId,
+                                            district: addr.districtName ?? addr.district ?? '',
+                                            districtId: addr.districtId,
                                             postalCode: addr.postalCode,
                                             country: addr.country,
                                             isDefault: addr.isDefault,
@@ -424,6 +476,7 @@ export default function BillingAddressesPage() {
                                                 {addr.addressLine1}
                                                 {addr.addressLine2 && <>, {addr.addressLine2}</>}
                                                 <br />
+                                                {(addr.districtName || addr.district) && <>{addr.districtName || addr.district}, </>}
                                                 {addr.city}, {addr.postalCode} — {addr.country}
                                             </p>
                                         </div>
@@ -452,6 +505,17 @@ export default function BillingAddressesPage() {
                     </p>
                 )}
             </div>
+
+            <ConfirmModal 
+                open={!!deletingId} 
+                title={tc('buttons.delete', { defaultValue: 'Sil' })} 
+                message={ta('addresses.deleteConfirm')} 
+                variant="danger" 
+                confirmText={tc('buttons.delete', { defaultValue: 'Sil' })} 
+                onConfirm={confirmDelete} 
+                onClose={() => setDeletingId(null)} 
+                loading={deleteMutation.isPending} 
+            />
         </div>
     );
 }

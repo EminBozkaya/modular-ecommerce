@@ -6,6 +6,7 @@ import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import type { UserAddress, AddUserAddressRequest, UpdateUserAddressRequest } from '../types/address';
 import { useTranslation } from 'react-i18next';
 import { CityDistrictSelect } from '../../../components/shared/CityDistrictSelect';
+import ConfirmModal from '../../admin/components/ConfirmModal';
 
 // ─── Inline address form ───────────────────────────────────────────────────────
 
@@ -19,6 +20,8 @@ interface AddressFormState {
     postalCode: string;
     country: string;
     isDefault: boolean;
+    cityId: number | null;
+    districtId: number | null;
 }
 
 const emptyForm: AddressFormState = {
@@ -31,6 +34,8 @@ const emptyForm: AddressFormState = {
     postalCode: '',
     country: 'Türkiye',
     isDefault: false,
+    cityId: null,
+    districtId: null,
 };
 
 const inputClass =
@@ -91,6 +96,8 @@ function AddressForm({ initial = emptyForm, onSave, onCancel, isSaving }: Addres
                     districtValue={form.district}
                     onCityChange={name => setForm(prev => ({ ...prev, city: name, district: '' }))}
                     onDistrictChange={name => setForm(prev => ({ ...prev, district: name }))}
+                    onCityIdChange={id => setForm(prev => ({ ...prev, cityId: id }))}
+                    onDistrictIdChange={id => setForm(prev => ({ ...prev, districtId: id }))}
                     labelClass={labelClass}
                     inputClass={inputClassFn}
                 />
@@ -149,9 +156,11 @@ export default function AddressesPage() {
     const deleteMutation = useDeleteAddress();
     const setDefaultMutation = useSetDefaultAddress();
     const { t } = useTranslation('auth');
+    const { t: tc } = useTranslation('common');
 
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const handleAdd = async (form: AddressFormState) => {
         const req: AddUserAddressRequest = {
@@ -163,6 +172,8 @@ export default function AddressesPage() {
             postalCode: form.postalCode,
             country: form.country,
             isDefault: form.isDefault,
+            cityId: form.cityId ?? undefined,
+            districtId: form.districtId ?? undefined,
         };
         await addMutation.mutateAsync(req);
         setShowAddForm(false);
@@ -177,14 +188,21 @@ export default function AddressesPage() {
             city: form.city,
             postalCode: form.postalCode,
             country: form.country,
+            cityId: form.cityId ?? undefined,
+            districtId: form.districtId ?? undefined,
         };
         await updateMutation.mutateAsync({ id, req });
         setEditingId(null);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!window.confirm(t('addresses.deleteConfirm'))) return;
-        await deleteMutation.mutateAsync(id);
+    const handleDelete = (id: string) => {
+        setDeletingId(id);
+    };
+
+    const confirmDelete = async () => {
+        if (!deletingId) return;
+        await deleteMutation.mutateAsync(deletingId);
+        setDeletingId(null);
     };
 
     const handleSetDefault = async (id: string) => {
@@ -260,10 +278,12 @@ export default function AddressesPage() {
                                         addressLine1: addr.addressLine1,
                                         addressLine2: addr.addressLine2 ?? '',
                                         city: addr.city,
-                                        district: '',
+                                        district: addr.districtName ?? addr.district ?? '',
                                         postalCode: addr.postalCode,
                                         country: addr.country,
                                         isDefault: addr.isDefault,
+                                        cityId: addr.cityId ?? null,
+                                        districtId: addr.districtId ?? null,
                                     }}
                                     onSave={(form) => handleUpdate(addr.id, form)}
                                     onCancel={() => setEditingId(null)}
@@ -320,7 +340,7 @@ export default function AddressesPage() {
                                             {addr.addressLine1}
                                             {addr.addressLine2 && <>, {addr.addressLine2}</>}
                                             <br />
-                                            {addr.city}, {addr.postalCode} — {addr.country}
+                                            {(addr.districtName || addr.district) && <>{addr.districtName || addr.district}, </>}{addr.city}, {addr.postalCode} — {addr.country}
                                         </p>
                                     </div>
                                 </div>
@@ -347,6 +367,17 @@ export default function AddressesPage() {
                     </p>
                 )}
             </div>
+
+            <ConfirmModal 
+                open={!!deletingId} 
+                title={tc('buttons.delete', { defaultValue: 'Sil' })} 
+                message={t('addresses.deleteConfirm')} 
+                variant="danger" 
+                confirmText={tc('buttons.delete', { defaultValue: 'Sil' })} 
+                onConfirm={confirmDelete} 
+                onClose={() => setDeletingId(null)} 
+                loading={deleteMutation.isPending} 
+            />
         </div>
     );
 }

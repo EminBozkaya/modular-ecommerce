@@ -13,6 +13,7 @@ public class UserAddressRepository : IUserAddressRepository
     public async Task<IReadOnlyList<UserAddress>> GetByUserIdAsync(Guid userId, CancellationToken ct = default)
         => await _db.UserAddresses
             .AsNoTracking()
+            .Include(a => a.DistrictRef)
             .Where(a => a.UserId == userId)
             .OrderByDescending(a => a.IsDefault)
             .ThenByDescending(a => a.CreatedAt)
@@ -30,6 +31,7 @@ public class UserAddressRepository : IUserAddressRepository
         var query = includeDeleted ? _db.UserAddresses.IgnoreQueryFilters() : _db.UserAddresses;
         return await query.AsNoTracking()
             .Include(a => a.User)
+            .Include(a => a.DistrictRef)
             .OrderByDescending(a => a.CreatedAt)
             .ToListAsync(ct);
     }

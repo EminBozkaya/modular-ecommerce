@@ -19,7 +19,7 @@ public class GetUserAddressesHandler : IRequestHandler<GetUserAddressesQuery, IR
             a.City, a.PostalCode, a.Country,
             a.IsDefault, a.IsActive, a.IsDeleted,
             a.CreatedAt, a.CreatedBy, a.UpdatedAt, a.UpdatedBy,
-            a.CountryId, a.CityId, a.DistrictId, null)).ToList();
+            a.CountryId, a.CityId, a.DistrictId, a.DistrictRef?.Name, null)).ToList();
     }
 }
 
@@ -37,6 +37,6 @@ public class GetAdminAddressesHandler : IRequestHandler<GetAdminAddressesQuery, 
             a.City, a.PostalCode, a.Country,
             a.IsDefault, a.IsActive, a.IsDeleted,
             a.CreatedAt, a.CreatedBy, a.UpdatedAt, a.UpdatedBy,
-            a.CountryId, a.CityId, a.DistrictId, a.User?.FullName)).ToList();
+            a.CountryId, a.CityId, a.DistrictId, a.DistrictRef?.Name, a.User?.FullName)).ToList();
     }
 }

@@ -13,6 +13,7 @@ public class UserBillingAddressRepository : IUserBillingAddressRepository
     public async Task<IReadOnlyList<UserBillingAddress>> GetByUserIdAsync(Guid userId, CancellationToken ct = default)
         => await _db.UserBillingAddresses
             .AsNoTracking()
+            .Include(a => a.DistrictRef)
             .Where(a => a.UserId == userId)
             .OrderByDescending(a => a.IsDefault)
             .ThenByDescending(a => a.CreatedAt)
@@ -20,6 +21,7 @@ public class UserBillingAddressRepository : IUserBillingAddressRepository
 
     public async Task<List<UserBillingAddress>> GetByUserIdTrackedAsync(Guid userId, CancellationToken ct = default)
         => await _db.UserBillingAddresses
+            .Include(a => a.DistrictRef)
             .Where(a => a.UserId == userId)
             .OrderByDescending(a => a.IsDefault)
             .ThenByDescending(a => a.CreatedAt)
@@ -30,6 +32,7 @@ public class UserBillingAddressRepository : IUserBillingAddressRepository
         var query = includeDeleted ? _db.UserBillingAddresses.IgnoreQueryFilters() : _db.UserBillingAddresses;
         return await query.AsNoTracking()
             .Include(a => a.User)
+            .Include(a => a.DistrictRef)
             .OrderByDescending(a => a.CreatedAt)
             .ToListAsync(ct);
     }
@@ -37,7 +40,7 @@ public class UserBillingAddressRepository : IUserBillingAddressRepository
     public async Task<UserBillingAddress?> GetByIdAsync(Guid id, bool includeDeleted = false, CancellationToken ct = default)
     {
         var query = includeDeleted ? _db.UserBillingAddresses.IgnoreQueryFilters() : _db.UserBillingAddresses;
-        return await query.Include(a => a.User).FirstOrDefaultAsync(a => a.Id == id, ct);
+        return await query.Include(a => a.User).Include(a => a.DistrictRef).FirstOrDefaultAsync(a => a.Id == id, ct);
     }
 
     public async Task AddAsync(UserBillingAddress address, CancellationToken ct = default)

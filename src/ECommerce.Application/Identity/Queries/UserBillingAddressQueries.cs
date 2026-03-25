@@ -21,6 +21,11 @@ public record UserBillingAddressDto(
     bool IsActive,
     bool IsDeleted,
     DateTime CreatedAt,
-    DateTime? UpdatedAt);
+    DateTime? UpdatedAt,
+    int? CountryId = null,
+    int? CityId = null,
+    int? DistrictId = null,
+    string? DistrictName = null,
+    string? UserFullName = null);
 
 public record GetUserBillingAddressesQuery(Guid UserId) : IRequest<IReadOnlyList<UserBillingAddressDto>>;

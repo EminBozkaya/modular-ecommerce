@@ -1,5 +1,6 @@
 import { AlertTriangle, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { createPortal } from 'react-dom';
 
 interface ConfirmModalProps {
     open: boolean;
@@ -53,8 +54,10 @@ export default function ConfirmModal({
         }
     }[variant];
 
-    return (
-        <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto pt-24 pb-10 px-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+    if (typeof document === 'undefined') return null;
+
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-start justify-center overflow-y-auto pt-24 pb-10 px-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-card rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
                 <div className="p-6">
                     <div className="flex items-start justify-between mb-4">
@@ -92,6 +95,7 @@ export default function ConfirmModal({
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

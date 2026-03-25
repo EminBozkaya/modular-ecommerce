@@ -9,6 +9,8 @@ interface CityDistrictSelectProps {
     districtValue: string;
     onCityChange: (name: string) => void;
     onDistrictChange: (name: string) => void;
+    onCityIdChange?: (id: number | null) => void;
+    onDistrictIdChange?: (id: number | null) => void;
     disabled?: boolean;
     hasErrorCity?: boolean;
     hasErrorDistrict?: boolean;
@@ -26,6 +28,8 @@ export function CityDistrictSelect({
     districtValue,
     onCityChange,
     onDistrictChange,
+    onCityIdChange,
+    onDistrictIdChange,
     disabled,
     hasErrorCity,
     hasErrorDistrict,
@@ -44,7 +48,10 @@ export function CityDistrictSelect({
     useEffect(() => {
         if (cities && cityValue) {
             const match = cities.find(c => c.name === cityValue);
-            if (match) setSelectedCityId(match.id);
+            if (match) {
+                setSelectedCityId(match.id);
+                onCityIdChange?.(match.id);
+            }
         }
     }, [cities, cityValue]);
 
@@ -52,7 +59,9 @@ export function CityDistrictSelect({
     const handleCityChange = (cityId: number, cityName: string) => {
         setSelectedCityId(cityId);
         onCityChange(cityName);
+        onCityIdChange?.(cityId);
         onDistrictChange('');
+        onDistrictIdChange?.(null);
     };
 
     const selectClass = (hasError: boolean) =>
@@ -100,9 +109,9 @@ export function CityDistrictSelect({
                     disabled={disabled || !cities}
                     className={selectClass(!!hasErrorCity)}
                 >
-                    <option value="">{t('shipping.citySelect')}</option>
+                    <option value="" className="bg-card text-foreground">{t('shipping.citySelect')}</option>
                     {cities?.map(c => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
+                        <option key={c.id} value={c.id} className="bg-card text-foreground">{c.name}</option>
                     ))}
                 </select>
                 {hasErrorCity && <p className={errorClass} role="alert">{t('shipping.city')}</p>}
@@ -119,14 +128,17 @@ export function CityDistrictSelect({
                         onChange={e => {
                             const id = Number(e.target.value);
                             const district = districts?.find(d => d.id === id);
-                            if (district) onDistrictChange(district.name);
+                            if (district) {
+                                onDistrictChange(district.name);
+                                onDistrictIdChange?.(district.id);
+                            }
                         }}
                         disabled={disabled || !districts}
                         className={selectClass(!!hasErrorDistrict)}
                     >
-                        <option value="">{t('shipping.districtSelect')}</option>
+                        <option value="" className="bg-card text-foreground">{t('shipping.districtSelect')}</option>
                         {districts?.map(d => (
-                            <option key={d.id} value={d.id}>{d.name}</option>
+                            <option key={d.id} value={d.id} className="bg-card text-foreground">{d.name}</option>
                         ))}
                     </select>
                 </div>

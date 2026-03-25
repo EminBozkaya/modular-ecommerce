@@ -35,9 +35,9 @@ export function MainLayout() {
 
     const bgPatternStyle = settings.backgroundPatternBase64
         ? {
-              backgroundImage: `url(${settings.backgroundPatternBase64})`,
-              opacity: settings.backgroundPatternOpacity / 100,
-          }
+            backgroundImage: `url(${settings.backgroundPatternBase64})`,
+            opacity: settings.backgroundPatternOpacity / 100,
+        }
         : undefined;
 
     // In dark mode, let CSS variables handle the background (don't override with light admin color)

@@ -18,6 +18,7 @@ public class GetUserBillingAddressesHandler : IRequestHandler<GetUserBillingAddr
             a.AddressLine1, a.AddressLine2,
             a.City, a.PostalCode, a.Country,
             a.IsDefault, a.IsActive, a.IsDeleted,
-            a.CreatedAt, a.UpdatedAt)).ToList();
+            a.CreatedAt, a.UpdatedAt,
+            a.CountryId, a.CityId, a.DistrictId, a.DistrictRef?.Name, null)).ToList();
     }
 }
