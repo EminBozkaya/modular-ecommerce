@@ -31,5 +31,43 @@
       "Bash(DROP TABLE*)",
       "Bash(DELETE FROM*)"
     ]
+  },
+  "hooks": {
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -NonInteractive -File \"C:/Users/MSI/source/repos/modular-ecommerce/.claude/scripts/update-vscode-ignored-worktrees.ps1\"",
+            "timeout": 15,
+            "statusMessage": "Updating editor worktree settings..."
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -NonInteractive -File \"C:/Users/MSI/source/repos/modular-ecommerce/.claude/scripts/update-vscode-ignored-worktrees.ps1\"",
+            "timeout": 15,
+            "statusMessage": "Updating editor worktree settings..."
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -NonInteractive -File \"C:/Users/MSI/source/repos/modular-ecommerce/.claude/scripts/update-vscode-ignored-worktrees.ps1\"",
+            "timeout": 15,
+            "statusMessage": "Syncing editor worktree settings..."
+          }
+        ]
+      }
+    ]
   }
 }

@@ -98,18 +98,18 @@ public class AuthController : ControllerBase
         {
             HttpOnly = true,
             Secure = !_env.IsDevelopment(),
-            SameSite = _env.IsDevelopment() ? SameSiteMode.Lax : SameSiteMode.Strict,
+            SameSite = _env.IsDevelopment() ? SameSiteMode.Lax : SameSiteMode.None,
             Expires = DateTime.UnixEpoch
         };
 
         Response.Cookies.Delete("access_token", cookieOptions);
-        
+
         // Refresh token has a specific path, must match to delete
         var refreshOptions = new CookieOptions
         {
             HttpOnly = true,
             Secure = !_env.IsDevelopment(),
-            SameSite = _env.IsDevelopment() ? SameSiteMode.Lax : SameSiteMode.Strict,
+            SameSite = _env.IsDevelopment() ? SameSiteMode.Lax : SameSiteMode.None,
             Path = "/api/auth/refresh",
             Expires = DateTime.UnixEpoch
         };
@@ -121,14 +121,15 @@ public class AuthController : ControllerBase
     /// <summary>
     /// Sets httpOnly auth cookies — security-rules: JWT via httpOnly cookies, no localStorage.
     /// Development: Secure=false, SameSite=Lax (Vite proxy makes frontend same-origin as backend).
-    /// Production: Secure=true, SameSite=Strict.
+    /// Staging/Production: Secure=true, SameSite=None (cross-origin — frontend and backend on different domains).
     /// </summary>
     private void SetAuthCookies(LoginResult result)
     {
         bool isDev = _env.IsDevelopment();
-        // Dev'de her zaman secure=false — Vite proxy HTTP üzerinden iletir
+        // Only local dev uses insecure/Lax cookies — Vite proxy makes requests same-origin.
+        // Staging and Production are cross-origin, so they need Secure + SameSite=None.
         bool secure = !isDev;
-        var sameSite = isDev ? SameSiteMode.Lax : SameSiteMode.Strict;
+        var sameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None;
 
         Response.Cookies.Append("access_token", result.AccessToken, new CookieOptions
         {
@@ -147,6 +148,40 @@ public class AuthController : ControllerBase
             MaxAge = TimeSpan.FromDays(7)
         });
     }
+
+    [Authorize]
+    [HttpPut("profile")]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest req, CancellationToken ct)
+    {
+        var sub = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (sub is null || !Guid.TryParse(sub, out var userId)) return Unauthorized();
+
+        var result = await _mediator.Send(
+            new UpdateProfileCommand(userId, req.FirstName, req.LastName, req.PhoneNumber), ct);
+
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest req, CancellationToken ct)
+    {
+        var sub = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (sub is null || !Guid.TryParse(sub, out var userId)) return Unauthorized();
+
+        try
+        {
+            await _mediator.Send(new ChangePasswordCommand(userId, req.CurrentPassword, req.NewPassword), ct);
+            return NoContent();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    public record UpdateProfileRequest(string FirstName, string LastName, string? PhoneNumber);
+    public record ChangePasswordRequest(string CurrentPassword, string NewPassword);
 
     [HttpGet("debug-env")]
     public IActionResult DebugEnv()

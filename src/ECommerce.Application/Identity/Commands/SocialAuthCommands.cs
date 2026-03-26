@@ -1,4 +1,3 @@
-using ECommerce.Domain.Identity;
 using MediatR;
 
 namespace ECommerce.Application.Identity.Commands;
@@ -10,7 +9,14 @@ public record SocialProviderDto(string ProviderName, string DisplayName);
 
 
 /// <summary>Belirtilen provider için OAuth yetkilendirme URL'sini döndürür.</summary>
-public record GetSocialAuthUrlQuery(string Provider, string RedirectUri) : IRequest<SocialAuthUrlResult>;
+public record GetSocialAuthUrlQuery(string Provider, string RedirectUri) : IRequest<SocialAuthUrlResultDto>;
+
+/// <summary>Application-level DTO — Domain'deki SocialAuthUrlResult'ın controller'a sızmasını önler.</summary>
+public record SocialAuthUrlResultDto(
+    bool IsSuccess,
+    string? AuthorizationUrl,
+    string? State,
+    string? ErrorMessage);
 
 
 /// <summary>

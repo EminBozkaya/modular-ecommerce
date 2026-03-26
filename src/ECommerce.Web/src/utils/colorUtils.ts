@@ -86,8 +86,24 @@ export function hslToHex(h: number, s: number, l: number): string {
  */
 export function adjustPrimaryForDark(hex: string): string {
     const [h, s, l] = hexToHsl(hex);
-    const newL = l < 45 ? 55 : l > 70 ? 63 : l;
-    const newS = Math.min(s, 75);
+
+    // Green hues (80°–160°) tend to look neon/fluorescent on dark backgrounds.
+    // Pull saturation harder and keep lightness lower for a calmer green.
+    const isGreenish = h >= 80 && h <= 160;
+
+    let newL: number;
+    let newS: number;
+
+    if (isGreenish) {
+        // Greens: calmer tone — lightness 45-55 %, saturation ≤ 50 %
+        newL = l < 40 ? 48 : l > 60 ? 55 : l;
+        newS = Math.min(s, 50);
+    } else {
+        // All other hues: original logic
+        newL = l < 45 ? 55 : l > 70 ? 63 : l;
+        newS = Math.min(s, 75);
+    }
+
     return hslToHex(h, newS, newL);
 }
 

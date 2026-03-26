@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { parseApiError } from '@/api/errorHandling';
-import { createProduct, updateProduct, deleteProduct, restoreProduct } from '../../api/adminApi';
+import { createProduct, updateProduct, deleteProduct, restoreProduct, upsertProductTranslation } from '../../api/adminApi';
 import type { Product, Category } from '../../../catalog/types/product';
 import type { ProductFormData } from '../components/ProductFormModal';
 
@@ -123,9 +123,12 @@ export function useProductActions({
     const handleFormSubmit = useCallback(async (
         data: ProductFormData,
         editingProduct: Product | null,
+        translations?: Record<string, { name: string; description?: string }>
     ) => {
         setSaving(true);
         try {
+            let productId = editingProduct?.id || null;
+
             if (editingProduct) {
                 if (editingProduct.isDeleted) {
                     await restoreProduct(editingProduct.id);
@@ -142,7 +145,7 @@ export function useProductActions({
                     isActive: data.isActive,
                 });
             } else {
-                await createProduct({
+                productId = await createProduct({
                     name: data.name,
                     description: data.description || undefined,
                     imageUrl: data.imageUrl || undefined,
@@ -154,6 +157,23 @@ export function useProductActions({
                     isActive: data.isActive,
                 });
             }
+
+            // Save translations if provided
+            if (productId && translations) {
+                const translationTasks = Object.entries(translations)
+                    .filter(([, t]) => t.name?.trim())
+                    .map(([langCode, t]) => 
+                        upsertProductTranslation(productId!, langCode, {
+                            name: t.name.trim(),
+                            description: t.description?.trim() || undefined
+                        })
+                    );
+                
+                if (translationTasks.length > 0) {
+                    await Promise.all(translationTasks);
+                }
+            }
+
             setModalOpen(false);
             setEditingProduct(null);
             await fetchData();

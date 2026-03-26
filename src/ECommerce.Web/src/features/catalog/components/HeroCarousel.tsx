@@ -10,7 +10,10 @@ import 'swiper/css/effect-fade';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/effect-flip';
 import { useStoreSettings } from '@/context/StoreSettingsContext';
-import type { HeroCarouselDto, HeroSlideDto } from '../../../features/admin/api/storeSettingsApi';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedText } from '@/features/admin/api/storeSettingsApi';
+import type { HeroCarouselDto, HeroSlideDto } from '@/features/admin/api/storeSettingsApi';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 function hexToRgba(hex: string, opacity: number): string {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -20,6 +23,14 @@ function hexToRgba(hex: string, opacity: number): string {
 }
 
 function SlideContent({ slide, height }: { slide: HeroSlideDto; height: number }) {
+    const { i18n } = useTranslation();
+    const lang = i18n.language.split('-')[0].toLowerCase();
+    
+    const title = getLocalizedText(slide, 'title', lang);
+    const subtitle = getLocalizedText(slide, 'subtitle', lang);
+    const description = getLocalizedText(slide, 'description', lang);
+    const buttonText = getLocalizedText(slide, 'buttonText', lang);
+
     const hasImage = slide.imageBase64 ?? slide.imageUrl;
 
     return (
@@ -28,13 +39,13 @@ function SlideContent({ slide, height }: { slide: HeroSlideDto; height: number }
             {slide.imageBase64 ? (
                 <img
                     src={slide.imageBase64}
-                    alt={slide.title}
+                    alt={title}
                     className="absolute inset-0 w-full h-full object-cover"
                 />
             ) : slide.imageUrl ? (
                 <img
                     src={slide.imageUrl}
-                    alt={slide.title}
+                    alt={title}
                     className="absolute inset-0 w-full h-full object-cover"
                 />
             ) : (
@@ -59,31 +70,31 @@ function SlideContent({ slide, height }: { slide: HeroSlideDto; height: number }
             >
                 <div className="container mx-auto px-4">
                     <div className="max-w-lg">
-                        {slide.title && (
+                        {title && (
                             <h2 className="text-4xl md:text-5xl font-serif font-bold mb-2 leading-tight">
-                                {slide.title}
+                                {title}
                             </h2>
                         )}
-                        {slide.subtitle && (
+                        {subtitle && (
                             <h3
                                 className="text-2xl md:text-3xl font-serif mb-4"
                                 style={{ color: slide.textColor, opacity: 0.9 }}
                             >
-                                {slide.subtitle}
+                                {subtitle}
                             </h3>
                         )}
-                        {slide.description && (
+                        {description && (
                             <p className="mb-6 leading-relaxed" style={{ opacity: 0.85 }}>
-                                {slide.description}
+                                {description}
                             </p>
                         )}
-                        {slide.buttonVisible && slide.buttonText && (
+                        {slide.buttonVisible && buttonText && (
                             <Link
                                 to={slide.buttonLink || '/products'}
                                 className="inline-block px-8 py-3 text-sm font-semibold tracking-wider rounded-md transition-colors text-white"
                                 style={{ backgroundColor: 'var(--brand-primary)' }}
                             >
-                                {slide.buttonText}
+                                {buttonText}
                             </Link>
                         )}
                     </div>
@@ -108,7 +119,7 @@ export function HeroCarousel() {
     return (
         <section
             id="hero-carousel"
-            className="relative overflow-hidden"
+            className="relative overflow-hidden group"
             style={{ height: carousel.height }}
         >
             <Swiper
@@ -121,10 +132,13 @@ export function HeroCarousel() {
                         ? { delay: carousel.autoPlayInterval, disableOnInteraction: false }
                         : false
                 }
-                navigation={carousel.showArrows}
+                navigation={{
+                    prevEl: '.hero-prev',
+                    nextEl: '.hero-next',
+                }}
                 pagination={carousel.showDots ? { clickable: true } : false}
                 className="h-full w-full"
-                style={{ height: carousel.height }}
+                style={{ height: carousel.height } as React.CSSProperties}
                 coverflowEffect={
                     carousel.effect === 'coverflow'
                         ? { rotate: 50, stretch: 0, depth: 100, modifier: 1, slideShadows: true }
@@ -137,6 +151,26 @@ export function HeroCarousel() {
                     </SwiperSlide>
                 ))}
             </Swiper>
+
+            {/* Custom Modern Navigation Buttons */}
+            {carousel.showArrows && (
+                <>
+                    <button
+                        type="button"
+                        className="hero-prev absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white shadow-2xl flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 cursor-pointer active:scale-90"
+                        aria-label="Previous slide"
+                    >
+                        <ChevronLeft className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
+                    </button>
+                    <button
+                        type="button"
+                        className="hero-next absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white shadow-2xl flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0 cursor-pointer active:scale-90"
+                        aria-label="Next slide"
+                    >
+                        <ChevronRight className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
+                    </button>
+                </>
+            )}
         </section>
     );
 }

@@ -211,12 +211,25 @@ body {
   to   { transform: translateX(-100%); }
 }
 
+@keyframes marquee-rtl {
+  from { transform: translateX(0); }
+  to   { transform: translateX(100%); }
+}
+
 .animate-marquee-track {
   display: inline-block;
   white-space: nowrap;
-  padding-left: 100%; /* 100% of parent width → text starts at right edge */
+  padding-left: 100%; /* Default: starts at right edge */
   will-change: transform;
-  animation: marquee 18s linear infinite;
+  animation-name: marquee;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.animate-marquee-track.rtl {
+  padding-left: 0;
+  padding-right: 100%; /* Starts at left edge */
+  animation-name: marquee-rtl;
 }
 
 /* ── Modal Animations ── */

@@ -34,9 +34,10 @@ export function LanguageToggle() {
                         )}
                         aria-label={t('language.changeLanguage')}
                     >
-                        <span className="text-[17px] sm:text-xl leading-none pointer-events-none transition-transform duration-300 group-hover:scale-110">
-                            {activeLanguage.flag}
-                        </span>
+                        <span
+                            className={`fi fi-${'flagCode' in activeLanguage ? activeLanguage.flagCode : ''} pointer-events-none transition-transform duration-300 group-hover:scale-110`}
+                            style={{ fontSize: '1.25rem', lineHeight: 1 }}
+                        />
                         <div className="absolute -bottom-1 -right-1 bg-card rounded-full p-[1px] sm:p-0.5 shadow-sm border border-border opacity-0 group-hover:opacity-100 transition-opacity">
                             <ChevronDown className="h-2.5 w-2.5 text-muted-foreground" />
                         </div>
@@ -52,7 +53,10 @@ export function LanguageToggle() {
                                 currentLanguage === lang.code && "bg-[var(--brand-primary-subtle)] font-bold text-[var(--brand-primary)]"
                             )}
                         >
-                            <span className="text-lg leading-none">{lang.flag}</span>
+                            <span
+                                className={`fi fi-${'flagCode' in lang ? lang.flagCode : ''}`}
+                                style={{ fontSize: '1.1rem', lineHeight: 1 }}
+                            />
                             <span className="flex-1 uppercase">{lang.code}</span>
                             <span className="text-[10px] text-muted-foreground font-normal">{lang.label}</span>
                         </DropdownMenuItem>

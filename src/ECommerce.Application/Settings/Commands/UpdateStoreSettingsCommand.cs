@@ -1,4 +1,5 @@
 using System.Text.Json;
+using ECommerce.Application.Common.Caching;
 using ECommerce.Application.Settings.Dtos;
 using ECommerce.Domain.Settings;
 using ECommerce.Domain.Settings.Entities;
@@ -61,14 +62,21 @@ public record UpdateStoreSettingsCommand(
     // rich content
     HeroCarouselDto? HeroCarousel,
     List<HomepageSectionDto>? HomepageSections,
-    FooterSettingsDto? Footer
+    FooterSettingsDto? Footer,
+    // localization
+    Dictionary<string, Dictionary<string, string>>? Translations = null
 ) : IRequest;
 
 public class UpdateStoreSettingsHandler : IRequestHandler<UpdateStoreSettingsCommand>
 {
     private readonly IStoreSettingsRepository _repo;
+    private readonly ICacheService _cache;
 
-    public UpdateStoreSettingsHandler(IStoreSettingsRepository repo) => _repo = repo;
+    public UpdateStoreSettingsHandler(IStoreSettingsRepository repo, ICacheService cache)
+    {
+        _repo = repo;
+        _cache = cache;
+    }
 
     public async Task Handle(UpdateStoreSettingsCommand cmd, CancellationToken ct)
     {
@@ -122,6 +130,7 @@ public class UpdateStoreSettingsHandler : IRequestHandler<UpdateStoreSettingsCom
             cmd.HeroCarousel,
             cmd.HomepageSections,
             cmd.Footer,
+            cmd.Translations
         }, new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
         var existing = await _repo.GetAsync(ct);
@@ -136,5 +145,6 @@ public class UpdateStoreSettingsHandler : IRequestHandler<UpdateStoreSettingsCom
         }
 
         await _repo.SaveChangesAsync(ct);
+        await _cache.RemoveAsync("store:settings", ct);
     }
 }

@@ -18,6 +18,7 @@ public class OrderItem : BaseEntity
         if (quantity <= 0) throw new ArgumentException("Quantity must be positive.");
         return new OrderItem
         {
+            Id = Guid.NewGuid(),
             ProductId = productId,
             ProductName = productName,
             UnitPrice = unitPrice,

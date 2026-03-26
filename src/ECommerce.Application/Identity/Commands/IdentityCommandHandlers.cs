@@ -71,6 +71,56 @@ public class LoginHandler : IRequestHandler<LoginCommand, LoginResult>
     }
 }
 
+public class UpdateProfileHandler : IRequestHandler<UpdateProfileCommand, UpdateProfileResult>
+{
+    private readonly IUserRepository _users;
+    public UpdateProfileHandler(IUserRepository users) => _users = users;
+
+    public async Task<UpdateProfileResult> Handle(UpdateProfileCommand cmd, CancellationToken ct)
+    {
+        var user = await _users.GetByIdAsync(cmd.UserId, ct)
+            ?? throw new KeyNotFoundException("User not found.");
+        user.UpdateProfile(cmd.FirstName, cmd.LastName, cmd.PhoneNumber);
+        await _users.SaveChangesAsync(ct);
+        return new UpdateProfileResult(user.FullName, user.FirstName, user.LastName, user.PhoneNumber);
+    }
+}
+
+public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand>
+{
+    private readonly IUserRepository _users;
+    public ChangePasswordHandler(IUserRepository users) => _users = users;
+
+    public async Task Handle(ChangePasswordCommand cmd, CancellationToken ct)
+    {
+        var user = await _users.GetByIdAsync(cmd.UserId, ct)
+            ?? throw new KeyNotFoundException("User not found.");
+        if (user.PasswordHash is null)
+            throw new InvalidOperationException("Password change is not available for social login accounts.");
+        if (!VerifyPassword(cmd.CurrentPassword, user.PasswordHash))
+            throw new UnauthorizedAccessException("Current password is incorrect.");
+        user.ChangePassword(HashPassword(cmd.NewPassword));
+        await _users.SaveChangesAsync(ct);
+    }
+
+    private static bool VerifyPassword(string password, string storedHash)
+    {
+        var parts = storedHash.Split('.');
+        if (parts.Length != 2) return false;
+        var salt = Convert.FromBase64String(parts[0]);
+        var hash = Convert.FromBase64String(parts[1]);
+        var computed = Rfc2898DeriveBytes.Pbkdf2(password, salt, 100_000, HashAlgorithmName.SHA256, 32);
+        return CryptographicOperations.FixedTimeEquals(hash, computed);
+    }
+
+    private static string HashPassword(string password)
+    {
+        var salt = RandomNumberGenerator.GetBytes(16);
+        var hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, 100_000, HashAlgorithmName.SHA256, 32);
+        return $"{Convert.ToBase64String(salt)}.{Convert.ToBase64String(hash)}";
+    }
+}
+
 public class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, LoginResult>
 {
     private readonly IUserRepository _users;

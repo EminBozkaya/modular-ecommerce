@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { getPublicStoreSettings, defaultHomepageSections, defaultFooterSettings } from '@/features/admin/api/storeSettingsApi';
@@ -8,6 +8,9 @@ import { useThemeStore } from '@/store/themeStore';
 import { hexToRgb, adjustPrimaryForDark, adjustDarkVariant, brandTintedDarkBg } from '@/utils/colorUtils';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK_API === 'true';
+const FALLBACK_DEFAULTS = import.meta.env.VITE_FALLBACK_DEFAULTS === 'true';
+
+export type SettingsStatus = 'loading' | 'success' | 'error';
 
 // White-label neutral defaults — shown while the query is in flight or on error.
 // Matches the backend _defaults palette so there is no flash of wrong color.
@@ -174,17 +177,40 @@ applyBrandCssVars(
 );
 
 const StoreSettingsContext = createContext<StoreSettingsDto>(defaults);
+const StoreSettingsStatusContext = createContext<SettingsStatus>('loading');
 
 export function StoreSettingsProvider({ children }: { children: React.ReactNode }) {
     const { i18n } = useTranslation();
     const queryClient = useQueryClient();
 
-    const { data } = useQuery({
+    const { data, isError, isSuccess } = useQuery({
         queryKey: queryKeys.store.settings,
         queryFn: getPublicStoreSettings,
         staleTime: 5 * 60 * 1000, // 5 min — settings rarely change
         retry: 1,
     });
+
+    // After a successful fetch, wait one animation frame so the browser
+    // repaints with the updated CSS variables before we un-gate the app.
+    const [painted, setPainted] = useState(false);
+    useEffect(() => {
+        if (!isSuccess) return;
+        const raf = requestAnimationFrame(() => setPainted(true));
+        return () => cancelAnimationFrame(raf);
+    }, [isSuccess]);
+
+    // Derive a three-state status:
+    //   loading → API in flight (or success but CSS not yet painted)
+    //   success → data loaded & CSS painted, OR mock mode, OR fallback-defaults on error
+    //   error   → API failed & fallback-defaults disabled
+    let status: SettingsStatus = 'loading';
+    if (USE_MOCK) {
+        status = 'success';
+    } else if (isSuccess && painted) {
+        status = 'success';
+    } else if (isError) {
+        status = FALLBACK_DEFAULTS ? 'success' : 'error';
+    }
 
     const { resolved: theme } = useThemeStore();
     const isDark = theme === 'dark';
@@ -204,12 +230,24 @@ export function StoreSettingsProvider({ children }: { children: React.ReactNode 
     }, [data?.primaryColor, isDark]);
 
     return (
-        <StoreSettingsContext.Provider value={data ?? defaults}>
-            {children}
-        </StoreSettingsContext.Provider>
+        <StoreSettingsStatusContext.Provider value={status}>
+            <StoreSettingsContext.Provider value={data ?? defaults}>
+                {children}
+            </StoreSettingsContext.Provider>
+        </StoreSettingsStatusContext.Provider>
     );
 }
 
 export function useStoreSettings(): StoreSettingsDto {
     return useContext(StoreSettingsContext);
+}
+
+/** Returns the three-state loading status of store settings. */
+export function useStoreSettingsStatus(): SettingsStatus {
+    return useContext(StoreSettingsStatusContext);
+}
+
+/** Returns true once store settings are ready to render (backward-compat). */
+export function useStoreSettingsReady(): boolean {
+    return useContext(StoreSettingsStatusContext) !== 'loading';
 }

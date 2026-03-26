@@ -20,10 +20,10 @@ public class Basket : BaseEntity
     private Basket() { }
 
     public static Basket CreateForUser(Guid userId) =>
-        new() { UserId = userId };
+        new() { Id = Guid.NewGuid(), UserId = userId };
 
     public static Basket CreateForGuest(string sessionId) =>
-        new() { SessionId = sessionId };
+        new() { Id = Guid.NewGuid(), SessionId = sessionId };
 
     public void AddItem(Guid productId, string productName, Money unitPrice, decimal quantity)
     {

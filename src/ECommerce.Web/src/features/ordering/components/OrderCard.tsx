@@ -27,7 +27,7 @@ export function OrderCard({ order }: OrderCardProps) {
         <button
             type="button"
             onClick={() => navigate(`/orders/${order.id}`)}
-            className="w-full text-left rounded-lg border border-border bg-card p-4 hover:shadow-md transition-shadow"
+            className="w-full text-left rounded-lg border border-border bg-card p-4 hover:shadow-md transition-shadow cursor-pointer"
         >
             <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-mono text-muted-foreground">#{truncatedId}</span>

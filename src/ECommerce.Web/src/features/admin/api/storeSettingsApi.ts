@@ -1,6 +1,8 @@
 import i18next from 'i18next';
 import { apiClient } from '../../../api/client';
 
+export type TranslationsMap = Record<string, Record<string, string>>;
+
 export interface HeroSlideDto {
     id: string;
     imageBase64?: string;
@@ -14,6 +16,7 @@ export interface HeroSlideDto {
     buttonText: string;
     buttonLink: string;
     buttonVisible: boolean;
+    translations?: TranslationsMap;
 }
 
 export interface HeroCarouselDto {
@@ -55,6 +58,7 @@ export interface SectionCardDto {
     aspectRatio: AspectRatio;
     colSpan: number;
     rowSpan: number;
+    translations?: TranslationsMap;
 }
 
 export interface HomepageSectionDto {
@@ -68,6 +72,7 @@ export interface HomepageSectionDto {
     order: number;
     enabled: boolean;
     cards: SectionCardDto[];
+    translations?: TranslationsMap;
 }
 
 // ── Footer Types ──────────────────────────────────────────────────────────────
@@ -80,6 +85,7 @@ export interface FooterLinkDto {
     label: string;
     url: string;
     order: number;
+    translations?: TranslationsMap;
 }
 
 export interface FooterSocialLinkDto {
@@ -102,6 +108,7 @@ export interface FooterColumnDto {
     followText?: string;
     showLogo?: boolean;
     description?: string;
+    translations?: TranslationsMap;
 }
 
 export interface FooterBottomLinkDto {
@@ -109,6 +116,7 @@ export interface FooterBottomLinkDto {
     label: string;
     url: string;
     order: number;
+    translations?: TranslationsMap;
 }
 
 export interface FooterSettingsDto {
@@ -183,9 +191,44 @@ export interface StoreSettingsDto {
     heroCarousel: HeroCarouselDto;
     homepageSections: HomepageSectionDto[];
     footer: FooterSettingsDto;
+    translations?: TranslationsMap;
 }
 
 export type UpdateStoreSettingsRequest = StoreSettingsDto;
+
+/**
+ * Helper to get localized text from any DTO that has a `translations` map.
+ * If the current language has a translation for the field, it returns that.
+ * Otherwise, it falls back to the default field value on the object.
+ */
+/**
+ * Helper to get localized text from any DTO that has a `translations` map.
+ * If the current language has a translation for the field, it returns that.
+ * Otherwise, it falls back to the default field value on the object.
+ */
+export function getLocalizedText<T extends { translations?: TranslationsMap }>(
+    obj: T,
+    field: keyof T,
+    langCode?: string
+): string {
+    const defaultVal = (obj[field] as unknown as string) || '';
+    
+    // Use provided langCode or fall back to current i18next language
+    const currentLang = langCode || i18next.language || 'tr';
+    if (!obj.translations) return defaultVal;
+
+    // Use just the language part e.g. 'en' from 'en-US'
+    const shortLang = currentLang.split('-')[0].toLowerCase();
+    
+    // Check main lang
+    const translationsForLang = obj.translations[shortLang];
+    if (translationsForLang && translationsForLang[field as string]) {
+        return translationsForLang[field as string];
+    }
+    
+    // Fallback to literal object value
+    return defaultVal;
+}
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK_API === 'true';
 

@@ -1,9 +1,18 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedText } from '@/features/admin/api/storeSettingsApi';
 import type { HomepageSectionDto } from '@/features/admin/api/storeSettingsApi';
 
 export function BannerSection({ section }: { section: HomepageSectionDto }) {
+    const { i18n } = useTranslation();
+    const lang = i18n.language.split('-')[0].toLowerCase();
+    
     const card = section.cards[0];
     if (!card) return null;
+
+    const title = getLocalizedText(card, 'title', lang);
+    const description = getLocalizedText(card, 'description', lang);
+    const buttonText = getLocalizedText(card, 'buttonText', lang);
 
     const imgSrc = card.imageBase64 || card.imageUrl;
     const href = card.linkType !== 'none' && card.linkTarget ? card.linkTarget : undefined;
@@ -34,25 +43,25 @@ export function BannerSection({ section }: { section: HomepageSectionDto }) {
                 />
             )}
             <div className="relative container mx-auto px-4 text-center">
-                {card.title && (
+                {title && (
                     <h2
                         className="text-3xl md:text-4xl font-serif font-bold mb-4"
                         style={{ color: card.textColor }}
                     >
-                        {card.title}
+                        {title}
                     </h2>
                 )}
-                {card.description && (
+                {description && (
                     <p
                         className="max-w-2xl mx-auto mb-8 leading-relaxed opacity-90"
                         style={{ color: card.textColor }}
                     >
-                        {card.description}
+                        {description}
                     </p>
                 )}
-                {card.buttonVisible && card.buttonText && (
+                {card.buttonVisible && buttonText && (
                     <span className="inline-block bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-dark)] text-white px-8 py-3 text-sm font-semibold tracking-wider rounded-md transition-colors">
-                        {card.buttonText}
+                        {buttonText}
                     </span>
                 )}
             </div>

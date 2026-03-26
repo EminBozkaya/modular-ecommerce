@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Brand-specific assets (logo, splash images) — do not commit to white-label repo
+src/assets/brand/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

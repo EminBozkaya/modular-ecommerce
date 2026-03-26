@@ -26,7 +26,7 @@ public class AddToBasketHandlerTests
     [Fact]
     public async Task Handle_ProductNotFound_ThrowsKeyNotFoundException()
     {
-        _productRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        _productRepo.GetByIdAsNoTrackingAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns((Product?)null);
         var cmd = new AddToBasketCommand(null, "session-1", Guid.NewGuid(), 1);
 
@@ -40,7 +40,7 @@ public class AddToBasketHandlerTests
     {
         var productId = Guid.NewGuid();
         var product = Product.Create("Out of Stock", null, null, new Money(100, Currency.USD), new StockQuantity(0), Guid.NewGuid(), Guid.NewGuid());
-        _productRepo.GetByIdAsync(productId, Arg.Any<CancellationToken>()).Returns(product);
+        _productRepo.GetByIdAsNoTrackingAsync(productId, Arg.Any<CancellationToken>()).Returns(product);
         var cmd = new AddToBasketCommand(null, "session-1", productId, 1);
 
         Func<Task> act = async () => await _handler.Handle(cmd, CancellationToken.None);
@@ -51,18 +51,15 @@ public class AddToBasketHandlerTests
     [Fact]
     public async Task Handle_NewGuestBasket_CreatesBasketAndAddsItem()
     {
-        var productId = Guid.NewGuid();
         var product = Product.Create("Test Product", null, null, new Money(100, Currency.USD), new StockQuantity(10), Guid.NewGuid(), Guid.NewGuid());
-        var idProp = typeof(ECommerce.Domain.Common.BaseEntity).GetProperty("Id");
-        if (idProp != null) idProp.SetValue(product, productId);
 
-        _productRepo.GetByIdAsync(productId, Arg.Any<CancellationToken>())
+        _productRepo.GetByIdAsNoTrackingAsync(product.Id, Arg.Any<CancellationToken>())
             .Returns(product);
 
-        _basketRepo.GetBySessionIdAsync("session-1", Arg.Any<CancellationToken>())
+        _basketRepo.GetBySessionIdTrackedAsync("session-1", Arg.Any<CancellationToken>())
             .Returns((ECommerce.Domain.Basket.Entities.Basket?)null);
 
-        var cmd = new AddToBasketCommand(null, "session-1", productId, 2);
+        var cmd = new AddToBasketCommand(null, "session-1", product.Id, 2);
 
         await _handler.Handle(cmd, CancellationToken.None);
 
@@ -74,25 +71,22 @@ public class AddToBasketHandlerTests
     public async Task Handle_ExistingUserBasket_AddsItemToBasket()
     {
         var userId = Guid.NewGuid();
-        var productId = Guid.NewGuid();
         var basket = ECommerce.Domain.Basket.Entities.Basket.CreateForUser(userId);
 
         var product = Product.Create("Test Product", null, null, new Money(100, Currency.USD), new StockQuantity(10), Guid.NewGuid(), Guid.NewGuid());
-        var idProp = typeof(ECommerce.Domain.Common.BaseEntity).GetProperty("Id");
-        if (idProp != null) idProp.SetValue(product, productId);
 
-        _productRepo.GetByIdAsync(productId, Arg.Any<CancellationToken>())
+        _productRepo.GetByIdAsNoTrackingAsync(product.Id, Arg.Any<CancellationToken>())
             .Returns(product);
 
         _basketRepo.GetByUserIdTrackedAsync(userId, Arg.Any<CancellationToken>())
             .Returns(basket);
 
-        var cmd = new AddToBasketCommand(userId, null, productId, 1);
+        var cmd = new AddToBasketCommand(userId, null, product.Id, 1);
 
         await _handler.Handle(cmd, CancellationToken.None);
 
         basket.Items.Should().HaveCount(1);
-        basket.Items.First().ProductId.Should().Be(productId);
+        basket.Items.First().ProductId.Should().Be(product.Id);
         await _basketRepo.DidNotReceive().AddAsync(Arg.Any<ECommerce.Domain.Basket.Entities.Basket>(), Arg.Any<CancellationToken>());
         await _basketRepo.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }

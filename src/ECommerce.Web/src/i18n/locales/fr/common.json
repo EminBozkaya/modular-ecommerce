@@ -70,6 +70,7 @@
     "profile": "Profil",
     "orders": "Mes Commandes",
     "addresses": "Mes Adresses",
+    "billingAddresses": "Adresses de facturation",
     "settings": "Paramètres",
     "logout": "Déconnexion"
   },
@@ -91,5 +92,10 @@
   "deleted": "Supprimé",
   "totalRecords": "Total des enregistrements : {{count}}",
   "showing": "Affichés : {{count}} enregistrements",
-  "add": "Ajouter"
+  "add": "Ajouter",
+  "siteUnavailable": {
+    "title": "Site Actuellement Indisponible",
+    "message": "Veuillez réessayer plus tard.",
+    "retry": "Réessayer"
+  }
 }

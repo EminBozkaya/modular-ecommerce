@@ -14,6 +14,9 @@
     "total": "Toplam",
     "grandTotal": "Genel Toplam",
     "shippingAddress": "Teslimat Adresi",
+    "billingAddress": "Fatura Bilgileri",
+    "individual": "Bireysel",
+    "corporate": "Kurumsal",
     "notFound": "Sipariş bulunamadı"
   },
   "confirmation": {

@@ -40,7 +40,7 @@ export const useProductSchema = () => {
     }), [t]);
 };
 
-export type ProductFormData = z.input<ReturnType<typeof useProductSchema>>;
+export type ProductFormData = z.output<ReturnType<typeof useProductSchema>>;
 
 // ─── Category ─────────────────────────────────────────────────────────────────
 // Backend CreateCategoryCommand validator ile eşleşiyor
@@ -69,7 +69,7 @@ export const useCategorySchema = () => {
     }), [t]);
 };
 
-export type CategoryFormData = z.input<ReturnType<typeof useCategorySchema>>;
+export type CategoryFormData = z.output<ReturnType<typeof useCategorySchema>>;
 
 // ─── Admin User ───────────────────────────────────────────────────────────────
 
@@ -89,7 +89,7 @@ export const useAdminUserSchema = () => {
     }), [t]);
 };
 
-export type AdminUserFormData = z.input<ReturnType<typeof useAdminUserSchema>>;
+export type AdminUserFormData = z.output<ReturnType<typeof useAdminUserSchema>>;
 
 // ─── Address ──────────────────────────────────────────────────────────────────
 
@@ -108,4 +108,4 @@ export const useAddressSchema = () => {
     }), [t]);
 };
 
-export type AddressFormData = z.input<ReturnType<typeof useAddressSchema>>;
+export type AddressFormData = z.output<ReturnType<typeof useAddressSchema>>;

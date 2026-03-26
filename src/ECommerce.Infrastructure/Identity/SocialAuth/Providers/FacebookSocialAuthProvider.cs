@@ -21,17 +21,17 @@ public class FacebookSocialAuthProvider : ISocialAuthProvider
 
     public string ProviderName => "Facebook";
     public string DisplayName => "Facebook";
-    public bool IsActive => !string.IsNullOrWhiteSpace(_config["SocialAuth:Facebook:AppId"]) &&
-                            !string.IsNullOrWhiteSpace(_config["SocialAuth:Facebook:AppSecret"]);
+    public bool IsActive => !string.IsNullOrWhiteSpace(_config["SocialAuth:Facebook:ClientId"]) &&
+                            !string.IsNullOrWhiteSpace(_config["SocialAuth:Facebook:ClientSecret"]);
 
     public Task<SocialAuthUrlResult> GetAuthorizationUrlAsync(string redirectUri, string state, CancellationToken ct = default)
     {
-        var appId = _config["SocialAuth:Facebook:AppId"];
-        if (string.IsNullOrEmpty(appId))
-            return Task.FromResult(new SocialAuthUrlResult(false, null, state, "Facebook AppId is missing."));
+        var clientId = _config["SocialAuth:Facebook:ClientId"];
+        if (string.IsNullOrEmpty(clientId))
+            return Task.FromResult(new SocialAuthUrlResult(false, null, state, "Facebook ClientId is missing."));
 
         var authUrl = $"https://www.facebook.com/v18.0/dialog/oauth" +
-                      $"?client_id={appId}" +
+                      $"?client_id={clientId}" +
                       $"&redirect_uri={Uri.EscapeDataString(redirectUri)}" +
                       $"&response_type=code" +
                       $"&scope=email,public_profile" +
@@ -44,8 +44,8 @@ public class FacebookSocialAuthProvider : ISocialAuthProvider
     {
         try
         {
-            var appId = _config["SocialAuth:Facebook:AppId"];
-            var appSecret = _config["SocialAuth:Facebook:AppSecret"];
+            var appId = _config["SocialAuth:Facebook:ClientId"];
+            var appSecret = _config["SocialAuth:Facebook:ClientSecret"];
             var client = _httpClientFactory.CreateClient("FacebookSocialAuth");
 
             // 1. Token Exchange

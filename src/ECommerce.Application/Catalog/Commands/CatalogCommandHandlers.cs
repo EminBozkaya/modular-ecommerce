@@ -1,4 +1,3 @@
-using ECommerce.Application.Catalog.Specifications;
 using ECommerce.Application.Common.Caching;
 using ECommerce.Application.Common.Settings;
 using ECommerce.Domain.Catalog;
@@ -25,7 +24,8 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Guid>
 
     public async Task<Guid> Handle(CreateProductCommand cmd, CancellationToken ct)
     {
-        var existingProducts = await _products.ListAsync(new ProductsWithFiltersSpecification(cmd.Name, null, null, null, null, false, 1, 10, true), ct);
+        var existingProducts = await _products.SearchAsync(
+            new ProductFilterCriteria(cmd.Name, null, null, null, null, false, 1, 10, IncludeInactive: true), ct);
         var exactMatch = existingProducts.FirstOrDefault(p => p.Name.Trim().Equals(cmd.Name.Trim(), StringComparison.OrdinalIgnoreCase));
 
         if (exactMatch != null)

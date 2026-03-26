@@ -20,10 +20,7 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 
         RuleFor(x => x.Password)
             .NotEmpty()
-            .MinimumLength(8)
-            .Matches(@"[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
-            .Matches(@"[a-z]").WithMessage("Password must contain at least one lowercase letter.")
-            .Matches(@"[0-9]").WithMessage("Password must contain at least one digit.");
+            .MinimumLength(4);
     }
 }
 
@@ -37,5 +34,36 @@ public class LoginCommandValidator : AbstractValidator<LoginCommand>
 
         RuleFor(x => x.Password)
             .NotEmpty();
+    }
+}
+
+public class UpdateProfileCommandValidator : AbstractValidator<UpdateProfileCommand>
+{
+    public UpdateProfileCommandValidator()
+    {
+        RuleFor(x => x.FirstName)
+            .NotEmpty()
+            .MaximumLength(100);
+
+        RuleFor(x => x.LastName)
+            .NotEmpty()
+            .MaximumLength(100);
+
+        RuleFor(x => x.PhoneNumber)
+            .MaximumLength(30)
+            .When(x => x.PhoneNumber is not null);
+    }
+}
+
+public class ChangePasswordCommandValidator : AbstractValidator<ChangePasswordCommand>
+{
+    public ChangePasswordCommandValidator()
+    {
+        RuleFor(x => x.CurrentPassword)
+            .NotEmpty();
+
+        RuleFor(x => x.NewPassword)
+            .NotEmpty()
+            .MinimumLength(4);
     }
 }

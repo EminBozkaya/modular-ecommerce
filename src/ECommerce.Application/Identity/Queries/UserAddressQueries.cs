@@ -21,6 +21,7 @@ public record UserAddressDto(
     int? CountryId = null,
     int? CityId = null,
     int? DistrictId = null,
+    string? DistrictName = null,
     string? UserFullName = null);
 
 public record GetUserAddressesQuery(Guid UserId) : IRequest<IReadOnlyList<UserAddressDto>>;

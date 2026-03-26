@@ -1,4 +1,8 @@
-Payment Integration Workflow
+---
+description: Ödeme entegrasyonu — provider seçimi, idempotency, webhook, 3D Secure, PCI uyumluluk
+---
+
+# Payment Integration Workflow
 
 Step 1 — Payment Scope Definition
 

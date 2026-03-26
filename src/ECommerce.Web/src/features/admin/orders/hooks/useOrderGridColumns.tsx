@@ -3,7 +3,6 @@ import { type ColDef, type ICellRendererParams, type ValueFormatterParams } from
 import { Edit2, Trash2, RotateCcw } from 'lucide-react';
 import type { Order, OrderStatus } from '../../../ordering/types/order';
 import { useTranslation } from 'react-i18next';
-import { formatDateByLocale } from '@/utils/agGridLocales';
 
 export const localeTextTr = {
     filterOoo: 'Filtrele...',

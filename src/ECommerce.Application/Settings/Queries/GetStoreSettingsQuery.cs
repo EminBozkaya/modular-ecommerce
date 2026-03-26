@@ -1,11 +1,17 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using ECommerce.Application.Common.Caching;
 using ECommerce.Application.Settings.Dtos;
 using ECommerce.Domain.Settings;
 using MediatR;
 
 namespace ECommerce.Application.Settings.Queries;
 
-public record GetStoreSettingsQuery : IRequest<StoreSettingsDto>;
+public record GetStoreSettingsQuery : IRequest<StoreSettingsDto>, ICacheableQuery
+{
+    public string CacheKey => "store:settings";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(30);
+}
 
 public class GetStoreSettingsHandler : IRequestHandler<GetStoreSettingsQuery, StoreSettingsDto>
 {
@@ -386,7 +392,8 @@ public class GetStoreSettingsHandler : IRequestHandler<GetStoreSettingsQuery, St
             FooterTextFont: data?.FooterTextFont ?? _defaults.FooterTextFont,
             HeroCarousel: MapCarousel(data?.HeroCarousel),
             HomepageSections: MapSections(data?.HomepageSections),
-            Footer: MapFooter(data?.Footer)
+            Footer: MapFooter(data?.Footer),
+            Translations: data?.Translations
         );
     }
 
@@ -415,7 +422,8 @@ public class GetStoreSettingsHandler : IRequestHandler<GetStoreSettingsQuery, St
                 OverlayOpacity: s.OverlayOpacity ?? 50,
                 ButtonText: s.ButtonText ?? string.Empty,
                 ButtonLink: s.ButtonLink ?? "/products",
-                ButtonVisible: s.ButtonVisible ?? true
+                ButtonVisible: s.ButtonVisible ?? true,
+                Translations: s.Translations
             )).ToList() ?? _defaultCarousel.Slides
         );
     }
@@ -454,8 +462,10 @@ public class GetStoreSettingsHandler : IRequestHandler<GetStoreSettingsQuery, St
                 ButtonVisible: c.ButtonVisible ?? false,
                 AspectRatio: c.AspectRatio ?? "landscape",
                 ColSpan: c.ColSpan ?? 1,
-                RowSpan: c.RowSpan ?? 1
-            )).ToList() ?? []
+                RowSpan: c.RowSpan ?? 1,
+                Translations: c.Translations
+            )).ToList() ?? [],
+            Translations: sec.Translations
         )).ToList() ?? _defaultSections;
 
         return mapped;
@@ -476,7 +486,8 @@ public class GetStoreSettingsHandler : IRequestHandler<GetStoreSettingsQuery, St
                     Id: l.Id ?? Guid.NewGuid().ToString(),
                     Label: l.Label ?? string.Empty,
                     Url: l.Url ?? "#",
-                    Order: l.Order ?? 0
+                    Order: l.Order ?? 0,
+                    Translations: l.Translations
                 )).ToList(),
                 Address: col.Address,
                 Phone: col.Phone,
@@ -488,7 +499,8 @@ public class GetStoreSettingsHandler : IRequestHandler<GetStoreSettingsQuery, St
                 )).ToList(),
                 FollowText: col.FollowText,
                 ShowLogo: col.ShowLogo,
-                Description: col.Description
+                Description: col.Description,
+                Translations: col.Translations
             )).ToList() ?? _defaultFooter.Columns,
             BackgroundColor: f.BackgroundColor,
             TextColor: f.TextColor,
@@ -498,7 +510,8 @@ public class GetStoreSettingsHandler : IRequestHandler<GetStoreSettingsQuery, St
                 Id: bl.Id ?? Guid.NewGuid().ToString(),
                 Label: bl.Label ?? string.Empty,
                 Url: bl.Url ?? "#",
-                Order: bl.Order ?? 0
+                Order: bl.Order ?? 0,
+                Translations: bl.Translations
             )).ToList() ?? _defaultFooter.BottomLinks
         );
     }
@@ -510,169 +523,171 @@ public class GetStoreSettingsHandler : IRequestHandler<GetStoreSettingsQuery, St
     }
 
     private static readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
-
-    private record SettingsData(
-        string? StoreName,
-        bool? ShowStoreNameInHeader,
-        // area bg colors
-        string? PrimaryColor,
-        string? HeaderBackgroundColor,
-        string? BannerBackgroundColor,
-        string? BackgroundColor,
-        string? AdminSidebarBackgroundColor,
-        string? AdminPageBackgroundColor,
-        // banner
-        string? FreeShippingBannerText,
-        bool? FreeShippingBannerVisible,
-        bool? FreeShippingBannerMarquee,
-        int? FreeShippingBannerMarqueeSpeed,
-        // pattern
-        string? BackgroundPatternBase64,
-        int? BackgroundPatternOpacity,
-        // text colors
-        string? NavbarActiveColor,
-        string? NavbarMenuTextColor,
-        string? StoreNameColor,
-        string? AvatarTextColor,
-        string? HeaderIconTextColor,
-        string? BannerTextColor,
-        string? PageTitleColor,
-        string? ProductCardCategoryColor,
-        string? ProductCardNameColor,
-        string? ProductCardQuantityColor,
-        string? ProductCardTotalColor,
-        string? ProductCardPriceColor,
-        string? ProductCardButtonColor,
-        string? AdminSidebarTextColor,
-        string? AdminPageTitleColor,
-        string? FooterTextColor,
-        // fonts
-        string? StoreNameFont,
-        string? AvatarTextFont,
-        string? HeaderIconTextFont,
-        string? NavbarMenuTextFont,
-        string? BannerTextFont,
-        string? PageTitleFont,
-        string? ProductCardCategoryFont,
-        string? ProductCardNameFont,
-        string? ProductCardQuantityFont,
-        string? ProductCardTotalFont,
-        string? ProductCardPriceFont,
-        string? ProductCardButtonFont,
-        string? AdminSidebarTextFont,
-        string? AdminPageTitleFont,
-        string? FooterTextFont,
-        // rich content
-        CarouselData? HeroCarousel,
-        List<SectionData>? HomepageSections,
-        FooterData? Footer
-    );
-
-    private record CarouselData(
-        bool? Enabled,
-        string? Effect,
-        int? Height,
-        bool? AutoPlay,
-        int? AutoPlayInterval,
-        bool? Loop,
-        bool? ShowArrows,
-        bool? ShowDots,
-        List<SlideData>? Slides
-    );
-
-    private record SlideData(
-        string? Id,
-        string? ImageBase64,
-        string? ImageUrl,
-        string? Title,
-        string? Subtitle,
-        string? Description,
-        string? TextColor,
-        string? OverlayColor,
-        int? OverlayOpacity,
-        string? ButtonText,
-        string? ButtonLink,
-        bool? ButtonVisible
-    );
-
-    private record SectionData(
-        string? Id,
-        string? Title,
-        bool? ShowTitle,
-        string? Layout,
-        int? Columns,
-        string? BackgroundColor,
-        int? PaddingY,
-        int? Order,
-        bool? Enabled,
-        List<CardData>? Cards
-    );
-
-    private record CardData(
-        string? Id,
-        string? ImageBase64,
-        string? ImageUrl,
-        string? Title,
-        string? Subtitle,
-        string? Description,
-        string? TextPosition,
-        string? TextColor,
-        string? OverlayColor,
-        int? OverlayOpacity,
-        string? BadgeText,
-        string? BadgeColor,
-        string? BadgePosition,
-        string? LinkType,
-        string? LinkTarget,
-        string? ButtonText,
-        bool? ButtonVisible,
-        string? AspectRatio,
-        int? ColSpan,
-        int? RowSpan
-    );
-
-    private record FooterData(
-        List<FooterColumnData>? Columns,
-        string? BackgroundColor,
-        string? TextColor,
-        string? CopyrightText,
-        string? BottomBarAlignment,
-        List<FooterBottomLinkData>? BottomLinks
-    );
-
-    private record FooterColumnData(
-        string? Id,
-        string? Type,
-        string? Title,
-        int? Order,
-        bool? Enabled,
-        List<FooterLinkData>? Links,
-        string? Address,
-        string? Phone,
-        string? Email,
-        List<FooterSocialLinkData>? SocialLinks,
-        string? FollowText,
-        bool? ShowLogo,
-        string? Description
-    );
-
-    private record FooterLinkData(
-        string? Id,
-        string? Label,
-        string? Url,
-        int? Order
-    );
-
-    private record FooterSocialLinkData(
-        string? Id,
-        string? Platform,
-        string? Url
-    );
-
-    private record FooterBottomLinkData(
-        string? Id,
-        string? Label,
-        string? Url,
-        int? Order
-    );
 }
+
+// Internal data structures matching the JSON blob in the database
+public record SettingsData(
+    string? StoreName,
+    bool? ShowStoreNameInHeader,
+    string? PrimaryColor,
+    string? HeaderBackgroundColor,
+    string? BannerBackgroundColor,
+    string? BackgroundColor,
+    string? AdminSidebarBackgroundColor,
+    string? AdminPageBackgroundColor,
+    string? FreeShippingBannerText,
+    bool? FreeShippingBannerVisible,
+    bool? FreeShippingBannerMarquee,
+    int? FreeShippingBannerMarqueeSpeed,
+    string? BackgroundPatternBase64,
+    int? BackgroundPatternOpacity,
+    string? NavbarActiveColor,
+    string? NavbarMenuTextColor,
+    string? StoreNameColor,
+    string? AvatarTextColor,
+    string? HeaderIconTextColor,
+    string? BannerTextColor,
+    string? PageTitleColor,
+    string? ProductCardCategoryColor,
+    string? ProductCardNameColor,
+    string? ProductCardQuantityColor,
+    string? ProductCardTotalColor,
+    string? ProductCardPriceColor,
+    string? ProductCardButtonColor,
+    string? AdminSidebarTextColor,
+    string? AdminPageTitleColor,
+    string? FooterTextColor,
+    string? StoreNameFont,
+    string? AvatarTextFont,
+    string? HeaderIconTextFont,
+    string? NavbarMenuTextFont,
+    string? BannerTextFont,
+    string? PageTitleFont,
+    string? ProductCardCategoryFont,
+    string? ProductCardNameFont,
+    string? ProductCardQuantityFont,
+    string? ProductCardTotalFont,
+    string? ProductCardPriceFont,
+    string? ProductCardButtonFont,
+    string? AdminSidebarTextFont,
+    string? AdminPageTitleFont,
+    string? FooterTextFont,
+    CarouselData? HeroCarousel,
+    List<SectionData>? HomepageSections,
+    FooterData? Footer,
+    [property: JsonPropertyName("translations")] Dictionary<string, Dictionary<string, string>>? Translations
+);
+
+public record CarouselData(
+    bool? Enabled,
+    string? Effect,
+    int? Height,
+    bool? AutoPlay,
+    int? AutoPlayInterval,
+    bool? Loop,
+    bool? ShowArrows,
+    bool? ShowDots,
+    List<SlideData>? Slides
+);
+
+public record SlideData(
+    string? Id,
+    string? ImageBase64,
+    string? ImageUrl,
+    string? Title,
+    string? Subtitle,
+    string? Description,
+    string? TextColor,
+    string? OverlayColor,
+    int? OverlayOpacity,
+    string? ButtonText,
+    string? ButtonLink,
+    bool? ButtonVisible,
+    [property: JsonPropertyName("translations")] Dictionary<string, Dictionary<string, string>>? Translations
+);
+
+public record SectionData(
+    string? Id,
+    string? Title,
+    bool? ShowTitle,
+    string? Layout,
+    int? Columns,
+    string? BackgroundColor,
+    int? PaddingY,
+    int? Order,
+    bool? Enabled,
+    List<CardData>? Cards,
+    [property: JsonPropertyName("translations")] Dictionary<string, Dictionary<string, string>>? Translations
+);
+
+public record CardData(
+    string? Id,
+    string? ImageBase64,
+    string? ImageUrl,
+    string? Title,
+    string? Subtitle,
+    string? Description,
+    string? TextPosition,
+    string? TextColor,
+    string? OverlayColor,
+    int? OverlayOpacity,
+    string? BadgeText,
+    string? BadgeColor,
+    string? BadgePosition,
+    string? LinkType,
+    string? LinkTarget,
+    string? ButtonText,
+    bool? ButtonVisible,
+    string? AspectRatio,
+    int? ColSpan,
+    int? RowSpan,
+    [property: JsonPropertyName("translations")] Dictionary<string, Dictionary<string, string>>? Translations
+);
+
+public record FooterData(
+    List<FooterColumnData>? Columns,
+    string? BackgroundColor,
+    string? TextColor,
+    string? CopyrightText,
+    string? BottomBarAlignment,
+    List<FooterBottomLinkData>? BottomLinks
+);
+
+public record FooterColumnData(
+    string? Id,
+    string? Type,
+    string? Title,
+    int? Order,
+    bool? Enabled,
+    List<FooterLinkData>? Links,
+    string? Address,
+    string? Phone,
+    string? Email,
+    List<FooterSocialLinkData>? SocialLinks,
+    string? FollowText,
+    bool? ShowLogo,
+    string? Description,
+    [property: JsonPropertyName("translations")] Dictionary<string, Dictionary<string, string>>? Translations
+);
+
+public record FooterLinkData(
+    string? Id,
+    string? Label,
+    string? Url,
+    int? Order,
+    [property: JsonPropertyName("translations")] Dictionary<string, Dictionary<string, string>>? Translations
+);
+
+public record FooterSocialLinkData(
+    string? Id,
+    string? Platform,
+    string? Url
+);
+
+public record FooterBottomLinkData(
+    string? Id,
+    string? Label,
+    string? Url,
+    int? Order,
+    [property: JsonPropertyName("translations")] Dictionary<string, Dictionary<string, string>>? Translations
+);

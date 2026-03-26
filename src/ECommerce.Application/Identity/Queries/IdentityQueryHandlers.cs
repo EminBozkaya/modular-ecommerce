@@ -31,6 +31,6 @@ public class GetMeHandler : IRequestHandler<GetMeQuery, MeDto?>
     public async Task<MeDto?> Handle(GetMeQuery q, CancellationToken ct)
     {
         var user = await _users.GetByIdAsync(q.UserId, ct);
-        return user is null ? null : new MeDto(user.Id, user.Email, user.FullName, user.Role.ToString());
+        return user is null ? null : new MeDto(user.Id, user.Email, user.FullName, user.FirstName, user.LastName, user.PhoneNumber, user.Role.ToString());
     }
 }

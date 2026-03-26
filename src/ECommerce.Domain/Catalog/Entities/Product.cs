@@ -28,6 +28,7 @@ public class Product : BaseAuditableEntity
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         return new Product
         {
+            Id = Guid.NewGuid(),
             Name = name,
             Description = description,
             ImageUrl = imageUrl,
@@ -62,6 +63,12 @@ public class Product : BaseAuditableEntity
     public void DecreaseStock(decimal amount)
     {
         Stock = Stock.Decrease(amount);
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void IncreaseStock(decimal amount)
+    {
+        Stock = Stock.Increase(amount);
         UpdatedAt = DateTime.UtcNow;
     }
 

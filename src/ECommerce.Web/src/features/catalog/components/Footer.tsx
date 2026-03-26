@@ -11,6 +11,8 @@ import type {
     SocialPlatform,
 } from '@/features/admin/api/storeSettingsApi';
 import { StoreLogo } from '@/components/shared/StoreLogo';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedText } from '@/features/admin/api/storeSettingsApi';
 
 interface FooterProps {
     /** When provided, renders this instead of settings.footer — used by admin preview */
@@ -39,14 +41,22 @@ function FooterColumn({ col, textColor }: {
     col: FooterColumnDto;
     textColor: string;
 }) {
+    const { i18n } = useTranslation();
+    const lang = i18n.language.split('-')[0].toLowerCase();
+    
+    const title = getLocalizedText(col, 'title', lang);
+    const address = getLocalizedText(col, 'address', lang);
+    const followText = getLocalizedText(col, 'followText', lang);
+    const description = getLocalizedText(col, 'description', lang);
+
     const tc = textColor;
     const tcMuted = `${tc}B3`; // 70% opacity approximation via hex — falls back gracefully
 
     return (
         <div>
-            {col.title && (
+            {title && (
                 <h3 className="font-semibold mb-4" style={{ color: tc }}>
-                    {col.title}
+                    {title}
                 </h3>
             )}
 
@@ -62,7 +72,7 @@ function FooterColumn({ col, textColor }: {
                                         className="transition-colors hover:opacity-100"
                                         style={{ color: tcMuted }}
                                     >
-                                        {link.label}
+                                        {getLocalizedText(link, 'label', lang)}
                                     </Link>
                                 ) : (
                                     <a
@@ -70,7 +80,7 @@ function FooterColumn({ col, textColor }: {
                                         className="transition-colors hover:opacity-100"
                                         style={{ color: tcMuted }}
                                     >
-                                        {link.label}
+                                        {getLocalizedText(link, 'label', lang)}
                                     </a>
                                 )}
                             </li>
@@ -92,10 +102,10 @@ function FooterColumn({ col, textColor }: {
                             <a href={`mailto:${col.email}`} className="hover:opacity-100 transition-opacity">{col.email}</a>
                         </li>
                     )}
-                    {col.address && (
+                    {address && (
                         <li className="flex items-start gap-2 justify-center lg:justify-start" style={{ color: tcMuted }}>
                             <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                            <span className="whitespace-pre-line">{col.address}</span>
+                            <span className="whitespace-pre-line">{address}</span>
                         </li>
                     )}
                 </ul>
@@ -103,8 +113,8 @@ function FooterColumn({ col, textColor }: {
 
             {col.type === 'social' && (
                 <div>
-                    {col.followText && (
-                        <p className="text-sm mb-3" style={{ color: tcMuted }}>{col.followText}</p>
+                    {followText && (
+                        <p className="text-sm mb-3" style={{ color: tcMuted }}>{followText}</p>
                     )}
                     <div className="flex items-center gap-3 justify-center lg:justify-start flex-wrap">
                         {col.socialLinks?.map((sl) => {
@@ -132,9 +142,9 @@ function FooterColumn({ col, textColor }: {
                     {col.showLogo && (
                         <StoreLogo className="h-16 w-16" />
                     )}
-                    {col.description && (
+                    {description && (
                         <p className="text-sm leading-relaxed" style={{ color: tcMuted }}>
-                            {col.description}
+                            {description}
                         </p>
                     )}
                 </div>
@@ -144,6 +154,8 @@ function FooterColumn({ col, textColor }: {
 }
 
 export function Footer({ override }: FooterProps) {
+    const { i18n } = useTranslation();
+    const lang = i18n.language.split('-')[0].toLowerCase();
     const settings = useStoreSettings();
     const { resolved: theme } = useThemeStore();
     const isDark = theme === 'dark';
@@ -210,7 +222,7 @@ export function Footer({ override }: FooterProps) {
                                             href={link.url}
                                             className="hover:opacity-100 transition-opacity"
                                         >
-                                            {link.label}
+                                            {getLocalizedText(link, 'label', lang)}
                                         </a>
                                     </span>
                                 ))}

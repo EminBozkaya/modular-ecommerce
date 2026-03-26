@@ -10,9 +10,13 @@ public class CreateOrderCommandValidator : AbstractValidator<CreateOrderCommand>
             .NotEmpty()
             .MinimumLength(10);
 
+        RuleFor(x => x.BillingAddress)
+            .MinimumLength(10)
+            .When(x => !string.IsNullOrEmpty(x.BillingAddress));
+
         RuleFor(x => x.GuestEmail)
             .EmailAddress()
-            .When(x => x.GuestEmail is not null);
+            .When(x => !string.IsNullOrEmpty(x.GuestEmail));
 
         RuleFor(x => x.GuestEmail)
             .NotEmpty()

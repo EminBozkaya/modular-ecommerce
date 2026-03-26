@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Megaphone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { getAdminStoreSettings, updateStoreSettings } from '../api/storeSettingsApi';
+import { getAdminStoreSettings, updateStoreSettings, getLocalizedText } from '../api/storeSettingsApi';
 import type { StoreSettingsDto } from '../api/storeSettingsApi';
 import { queryKeys } from '@/utils/queryKeys';
+import { TranslatableInput } from '../components/TranslatableInput';
 export default function AdminBannerPage() {
-    const { t } = useTranslation('admin');
+    const { t, i18n } = useTranslation('admin');
     const queryClient = useQueryClient();
 
     const { data, isLoading, isError } = useQuery({
@@ -25,6 +26,24 @@ export default function AdminBannerPage() {
         },
     });
 
+    // Constant speed marquee logic for preview - Must be at top level to obey Rules of Hooks
+    const [previewMarqueeDuration, setPreviewMarqueeDuration] = useState(30);
+    const previewTrackRef = useRef<HTMLDivElement>(null);
+
+    useLayoutEffect(() => {
+        if (form?.freeShippingBannerMarquee && previewTrackRef.current) {
+            const updateDuration = () => {
+                const width = previewTrackRef.current?.offsetWidth || 0;
+                const pixelsPerSecond = (form.freeShippingBannerMarqueeSpeed * 20) + 40;
+                if (width > 0) setPreviewMarqueeDuration(width / pixelsPerSecond);
+            };
+            updateDuration();
+            const observer = new ResizeObserver(updateDuration);
+            observer.observe(previewTrackRef.current);
+            return () => observer.disconnect();
+        }
+    }, [form?.freeShippingBannerMarquee, form?.freeShippingBannerMarqueeSpeed, form?.freeShippingBannerText, i18n.language]);
+
     if (isLoading || !form) {
         return (
             <div className="flex items-center justify-center py-24">
@@ -42,7 +61,14 @@ export default function AdminBannerPage() {
     const set = <K extends keyof StoreSettingsDto>(key: K, value: StoreSettingsDto[K]) =>
         setForm((prev) => prev ? { ...prev, [key]: value } : prev);
 
-    const marqueeDuration = (11 - form.freeShippingBannerMarqueeSpeed) * 3;
+    const setTranslation = (lang: string, field: string, value: string) => {
+        setForm(prev => {
+            if (!prev) return prev;
+            const translations = { ...(prev.translations || {}) };
+            translations[lang] = { ...(translations[lang] || {}), [field]: value };
+            return { ...prev, translations };
+        });
+    };
 
     return (
         <div className="max-w-2xl mx-auto">
@@ -75,14 +101,13 @@ export default function AdminBannerPage() {
                     </h2>
 
                     <div>
-                        <label className="block text-sm font-semibold mb-1 text-foreground">
-                            {t('design.banner.textLabel')}
-                        </label>
-                        <input
-                            type="text"
+                        <TranslatableInput 
+                            label={t('design.banner.textLabel')}
                             value={form.freeShippingBannerText}
-                            onChange={(e) => set('freeShippingBannerText', e.target.value)}
-                            className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 bg-background text-foreground"
+                            onChange={(val) => set('freeShippingBannerText', val)}
+                            translations={form.translations}
+                            field="freeShippingBannerText"
+                            onTranslationChange={setTranslation}
                             placeholder={t('design.banner.textPlaceholder')}
                         />
                     </div>
@@ -223,21 +248,22 @@ export default function AdminBannerPage() {
                     >
                         {form.freeShippingBannerMarquee ? (
                             <div
-                                className="animate-marquee-track text-xs font-medium"
+                                ref={previewTrackRef}
+                                className={`animate-marquee-track text-xs font-medium ${i18n.language === 'ar' ? 'rtl' : ''}`}
                                 style={{
-                                    animationDuration: `${marqueeDuration}s`,
+                                    animationDuration: `${previewMarqueeDuration}s`,
                                     color: form.bannerTextColor,
                                     fontFamily: form.bannerTextFont,
                                 }}
                             >
-                                {form.freeShippingBannerText}
+                                {getLocalizedText(form, 'freeShippingBannerText', i18n.language)}
                             </div>
                         ) : (
                             <p
                                 className="text-center text-xs font-medium"
                                 style={{ color: form.bannerTextColor, fontFamily: form.bannerTextFont }}
                             >
-                                {form.freeShippingBannerText}
+                                {getLocalizedText(form, 'freeShippingBannerText', i18n.language)}
                             </p>
                         )}
                     </div>

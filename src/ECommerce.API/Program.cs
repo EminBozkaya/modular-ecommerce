@@ -80,7 +80,6 @@ builder.Services.AddRateLimiter(options =>
 });
 
 var app = builder.Build();
-
 Log.Information("🚀 [STARTUP] SeedData: {SeedData}", app.Configuration.GetValue<bool>("SeedData", true));
 
 // ── Automatic Database Migration ──
@@ -93,7 +92,14 @@ using (var scope = app.Services.CreateScope())
     Log.Information("🚀 DB: {Database}", dbConnection.Database);
     Log.Information("🌐 Host: {Host}", dbConnection.DataSource);
 
-    if (app.Environment.IsDevelopment())
+    // Redis bağlantı bilgisi
+var redisConnectionString = app.Configuration.GetConnectionString("Redis") ?? "not configured";
+var redisHost = redisConnectionString.Contains("@")
+    ? redisConnectionString.Split("@").Last()
+    : redisConnectionString;
+Log.Information("🔴 Redis: {RedisHost}", redisHost);
+
+    if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
     {
         await context.Database.MigrateAsync();
 
@@ -114,7 +120,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 // ── Middleware pipeline ──
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -131,4 +137,5 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapGet("/health", () => "OK");
 app.Run();

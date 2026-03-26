@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useGridFilter } from 'ag-grid-react';
-import type { CustomFloatingFilterProps, IRowNode } from 'ag-grid-react';
+import type { CustomFloatingFilterProps } from 'ag-grid-react';
 import { useTranslation } from 'react-i18next';
 
 const StatusToggleFilter = ({ onModelChange, model }: CustomFloatingFilterProps) => {
@@ -19,7 +19,7 @@ const StatusToggleFilter = ({ onModelChange, model }: CustomFloatingFilterProps)
         }
     }, [model]);
 
-    const doesFilterPass = useCallback((params: { node: IRowNode; data: Record<string, unknown> }) => {
+    const doesFilterPass = useCallback((params: { data: Record<string, unknown> }) => {
         const { data } = params;
         if (!data) return false;
 

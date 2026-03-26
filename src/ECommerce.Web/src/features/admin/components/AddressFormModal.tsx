@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X, Search } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import { useAddressSchema, type AddressFormData } from '@/lib/validations/admin.schema';
 import { getUsers, type AdminAddress, type AdminUser } from '../api/adminApi';
 import { useTranslation } from 'react-i18next';
@@ -119,9 +120,11 @@ export default function AddressFormModal({
     const errorMsg = (msg: string | undefined) =>
         msg ? <p className="mt-1 text-xs font-semibold text-red-600 font-inter">{msg}</p> : null;
 
-    return (
+    if (typeof document === 'undefined') return null;
+
+    return createPortal(
         <div
-            className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto pt-24 pb-10 px-4"
+            className="fixed inset-0 z-[9999] flex items-start justify-center overflow-y-auto pt-24 pb-10 px-4"
             style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
             onClick={onClose}
         >
@@ -299,6 +302,7 @@ export default function AddressFormModal({
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

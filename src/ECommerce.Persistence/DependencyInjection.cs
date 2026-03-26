@@ -46,6 +46,7 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IWishlistRepository, WishlistRepository>();
         services.AddScoped<IUserAddressRepository, UserAddressRepository>();
+        services.AddScoped<IUserBillingAddressRepository, UserBillingAddressRepository>();
         services.AddScoped<ILocationRepository, LocationRepository>();
         services.AddScoped<IStoreSettingsRepository, StoreSettingsRepository>();
         services.AddScoped<IAppSettingsRepository, AppSettingsRepository>();

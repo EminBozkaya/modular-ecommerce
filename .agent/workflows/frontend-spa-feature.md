@@ -1,4 +1,8 @@
-Frontend SPA Feature Workflow
+---
+description: Frontend SPA özelliği ekleme — React Query, Zustand, typed API client ile component geliştirme
+---
+
+# Frontend SPA Feature Workflow
 
 Step 1 — Feature Context
 

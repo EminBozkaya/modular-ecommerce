@@ -36,6 +36,7 @@ const FavoritesPage = lazy(() => import('../../features/favorites/pages/Favorite
 const PaymentWaitingPage = lazy(() => import('../../features/ordering/pages/PaymentWaitingPage'));
 const ProfilePage = lazy(() => import('../../features/auth/pages/ProfilePage'));
 const AddressesPage = lazy(() => import('../../features/auth/pages/AddressesPage'));
+const BillingAddressesPage = lazy(() => import('../../features/auth/pages/BillingAddressesPage'));
 const IyzicoPaymentPage = lazy(() => import('../../features/ordering/pages/IyzicoPaymentPage'));
 const SocialCallbackPage = lazy(() => import('../../features/auth/pages/SocialCallbackPage'));
 
@@ -191,6 +192,14 @@ export const router = createBrowserRouter([
                         element: (
                             <SuspenseWrapper>
                                 <AddressesPage />
+                            </SuspenseWrapper>
+                        ),
+                    },
+                    {
+                        path: 'fatura-adreslerim',
+                        element: (
+                            <SuspenseWrapper>
+                                <BillingAddressesPage />
                             </SuspenseWrapper>
                         ),
                     },

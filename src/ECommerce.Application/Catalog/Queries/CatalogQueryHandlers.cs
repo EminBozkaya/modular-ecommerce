@@ -1,4 +1,3 @@
-using ECommerce.Application.Catalog.Specifications;
 using ECommerce.Application.Common.Models;
 using ECommerce.Application.Common.Settings;
 using ECommerce.Domain.Catalog;
@@ -25,11 +24,12 @@ public class GetProductsHandler : IRequestHandler<GetProductsQuery, PagedResult<
 
     public async Task<PagedResult<ProductDto>> Handle(GetProductsQuery q, CancellationToken ct)
     {
-        var spec = new ProductsWithFiltersSpecification(
-            q.Search, q.MinPrice, q.MaxPrice, q.CategoryId, q.SortBy, q.Descending, q.Page, q.PageSize, q.IncludeInactive, q.IncludeDeleted, q.Language);
+        var criteria = new ProductFilterCriteria(
+            q.Search, q.MinPrice, q.MaxPrice, q.CategoryId, q.SortBy, q.Descending,
+            q.Page, q.PageSize, q.IncludeInactive, q.IncludeDeleted, q.Language);
 
-        var count = await _products.CountAsync(spec, ct);
-        var products = await _products.ListAsync(spec, ct);
+        var count = await _products.SearchCountAsync(criteria, ct);
+        var products = await _products.SearchAsync(criteria, ct);
 
         var users = await _users.GetAllWithDeletedAsync(ct);
         var userMap = users.ToDictionary(u => u.Id.ToString(), u => u.FullName, StringComparer.OrdinalIgnoreCase);

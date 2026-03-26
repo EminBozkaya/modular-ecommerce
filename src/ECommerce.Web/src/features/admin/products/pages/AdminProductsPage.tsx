@@ -318,7 +318,7 @@ export default function AdminProductsPage() {
                 <span>{t('common:totalRecords', { count: products.length })}</span>
                 <span>{t('common:showing', { count: gridApi?.getDisplayedRowCount() ?? products.length })}</span>
             </div>
-            <ProductFormModal open={modalOpen} onClose={() => { setModalOpen(false); setEditingProduct(null); }} onSubmit={(data: ProductFormData) => handleFormSubmit(data, editingProduct)} product={editingProduct} categories={categories} units={units} loading={saving} />
+            <ProductFormModal open={modalOpen} onClose={() => { setModalOpen(false); setEditingProduct(null); }} onSubmit={(data: ProductFormData, translations) => handleFormSubmit(data, editingProduct, translations)} product={editingProduct} categories={categories} units={units} loading={saving} />
             <ConfirmModal open={modalSettings.open} title={modalSettings.title} message={modalSettings.message} variant={modalSettings.variant} confirmText={modalSettings.confirmText} showConfirm={modalSettings.showConfirm} onConfirm={() => handleConfirmDelete(modalSettings)} onClose={() => setModalSettings(prev => ({ ...prev, open: false }))} loading={deleting} />
         </div>
     );

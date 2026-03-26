@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace ECommerce.Application.Settings.Dtos;
 
 public record SectionCardDto(
@@ -20,7 +22,8 @@ public record SectionCardDto(
     bool ButtonVisible,
     string AspectRatio,        // "square" | "landscape" | "portrait" | "auto"
     int ColSpan,               // for collage layout; default 1
-    int RowSpan                // for collage layout; default 1
+    int RowSpan,               // for collage layout; default 1
+    [property: JsonPropertyName("translations")] Dictionary<string, Dictionary<string, string>>? Translations = null
 );
 
 public record HomepageSectionDto(
@@ -33,7 +36,8 @@ public record HomepageSectionDto(
     int PaddingY,              // px
     int Order,
     bool Enabled,
-    List<SectionCardDto> Cards
+    List<SectionCardDto> Cards,
+    [property: JsonPropertyName("translations")] Dictionary<string, Dictionary<string, string>>? Translations = null
 );
 
 public record HomepageSectionsDto(

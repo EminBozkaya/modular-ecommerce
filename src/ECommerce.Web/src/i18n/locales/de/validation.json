@@ -7,5 +7,13 @@
   "passwordWeak": "Das Passwort muss mindestens 1 Großbuchstaben und 1 Zahl enthalten",
   "positiveNumber": "Geben Sie eine positive Zahl ein",
   "invalidPrice": "Geben Sie einen gültigen Preis ein",
-  "minValue": "Muss mindestens {{min}} betragen"
+  "minValue": "Muss mindestens {{min}} betragen",
+  "tcKimlikRequired": "Personalausweisnummer ist erforderlich",
+  "tcKimlikInvalid": "Geben Sie eine g\u00fcltige Personalausweisnummer ein",
+  "tcKimlikLength": "Personalausweisnummer muss 11 Ziffern lang sein",
+  "taxNumberRequired": "Steuernummer ist erforderlich",
+  "taxNumberLength": "Steuernummer muss 10 Ziffern lang sein",
+  "taxNumberDigits": "Steuernummer darf nur Ziffern enthalten",
+  "taxOfficeRequired": "Finanzamt ist erforderlich",
+  "companyNameRequired": "Firmenname ist erforderlich"
 }

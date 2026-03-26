@@ -1,6 +1,6 @@
 import { apiClient } from '../../../api/client';
-import type { AuthResponse, AuthUser, LoginRequest, RegisterRequest } from '../types/auth';
-import { mockGetMe, mockLogin, mockLogout, mockRegister } from './mock';
+import type { AuthResponse, AuthUser, ChangePasswordRequest, LoginRequest, RegisterRequest, UpdateProfileRequest, UpdateProfileResponse } from '../types/auth';
+import { mockChangePassword, mockGetMe, mockLogin, mockLogout, mockRegister, mockUpdateProfile } from './mock';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK_API === 'true';
 
@@ -25,6 +25,17 @@ export async function getMe(): Promise<AuthUser> {
     if (USE_MOCK) return mockGetMe();
     const response = await apiClient.get<AuthUser>('/api/auth/me');
     return response.data;
+}
+
+export async function updateProfile(req: UpdateProfileRequest): Promise<UpdateProfileResponse> {
+    if (USE_MOCK) return mockUpdateProfile(req);
+    const response = await apiClient.put<UpdateProfileResponse>('/api/auth/profile', req);
+    return response.data;
+}
+
+export async function changePassword(req: ChangePasswordRequest): Promise<void> {
+    if (USE_MOCK) return mockChangePassword(req);
+    await apiClient.put('/api/auth/change-password', req);
 }
 
 // ─── Social Auth ─────────────────────────────────────────────────────────────

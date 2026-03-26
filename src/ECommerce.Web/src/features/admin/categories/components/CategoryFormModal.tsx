@@ -1,17 +1,17 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useState, useMemo } from 'react';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { X, Globe } from 'lucide-react';
+import { X } from 'lucide-react';
 import type { Category } from '../../../catalog/types/product';
 import { useCategorySchema, type CategoryFormData } from '@/lib/validations/admin.schema';
-import { getCategoryTranslations, upsertCategoryTranslation, type TranslationData } from '../../api/adminApi';
+import { getCategoryTranslations, type TranslationData } from '../../api/adminApi';
 import { useLanguageConfig } from '@/hooks/useLanguageConfig';
-import { useTranslation } from 'react-i18next';
+import { TranslatableInput } from '../../components/TranslatableInput';
 
 interface CategoryFormModalProps {
     open: boolean;
     onClose: () => void;
-    onSubmit: (data: CategoryFormData) => void;
+    onSubmit: (data: CategoryFormData, translations?: Record<string, { name: string; description?: string }>) => void;
     category?: Category | null;
     categories: Category[];
     loading?: boolean;
@@ -22,8 +22,6 @@ export type { CategoryFormData };
 
 const DEFAULT_LANG_CODE = 'tr';
 
-type TabId = 'genel' | 'ceviri';
-
 export default function CategoryFormModal({
     open,
     onClose,
@@ -32,7 +30,6 @@ export default function CategoryFormModal({
     categories,
     loading,
 }: CategoryFormModalProps) {
-    const { t } = useTranslation('admin');
     const { languages } = useLanguageConfig();
     const nonDefaultLangs = useMemo(
         () => languages.filter(l => l.code !== DEFAULT_LANG_CODE),
@@ -45,9 +42,10 @@ export default function CategoryFormModal({
         handleSubmit,
         reset,
         watch,
+        setValue,
         formState: { errors },
     } = useForm<CategoryFormData>({
-        resolver: zodResolver(categorySchema),
+        resolver: zodResolver(categorySchema) as Resolver<CategoryFormData>,
         defaultValues: {
             name: '',
             description: '',
@@ -57,14 +55,9 @@ export default function CategoryFormModal({
         },
     });
 
-    const [activeTab, setActiveTab] = useState<TabId>('genel');
-    const [activeLang, setActiveLang] = useState(() => nonDefaultLangs[0]?.code ?? 'en');
     const [translations, setTranslations] = useState<Record<string, { name: string; description: string }>>(() =>
         Object.fromEntries(nonDefaultLangs.map(l => [l.code, { name: '', description: '' }]))
     );
-    const [translationSaving, setTranslationSaving] = useState(false);
-    const [translationSaved, setTranslationSaved] = useState(false);
-    const [translationError, setTranslationError] = useState('');
 
     const isEdit = !!category;
 
@@ -88,11 +81,7 @@ export default function CategoryFormModal({
                 });
             }
         }
-        setActiveTab('genel');
-        setActiveLang(nonDefaultLangs[0]?.code ?? 'en');
         setTranslations(Object.fromEntries(nonDefaultLangs.map(l => [l.code, { name: '', description: '' }])));
-        setTranslationSaved(false);
-        setTranslationError('');
         // nonDefaultLangs intentionally excluded: it is derived from store settings and is
         // semantically stable, but useLanguageConfig() returns a new array reference on every
         // render, making it an unstable dependency that causes an infinite useEffect loop.
@@ -117,29 +106,9 @@ export default function CategoryFormModal({
             .catch(() => { /* non-critical, silently skip */ });
     }, [open, category?.id]);
 
-    const handleTranslationSave = useCallback(async () => {
-        if (!category?.id) return;
-        setTranslationSaving(true);
-        setTranslationSaved(false);
-        setTranslationError('');
-        try {
-            const tasks = nonDefaultLangs
-                .filter(l => translations[l.code]?.name?.trim())
-                .map(l =>
-                    upsertCategoryTranslation(category.id, l.code, {
-                        name: translations[l.code].name.trim(),
-                        description: translations[l.code].description.trim() || undefined,
-                    })
-                );
-            await Promise.all(tasks);
-            setTranslationSaved(true);
-            setTimeout(() => setTranslationSaved(false), 3000);
-        } catch {
-            setTranslationError(t('forms.errors.translationSave'));
-        } finally {
-            setTranslationSaving(false);
-        }
-    }, [category?.id, translations]);
+    const handleModalSubmit = (data: CategoryFormData) => {
+        onSubmit(data, translations);
+    };
 
     if (!open) return null;
 
@@ -188,53 +157,39 @@ export default function CategoryFormModal({
                     </button>
                 </div>
 
-                {/* Tabs */}
-                <div className="flex border-b border-border bg-gray-50 dark:bg-white/5">
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab('genel')}
-                        className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
-                            activeTab === 'genel'
-                                ? 'border-[var(--brand-primary)] text-[var(--brand-primary)]'
-                                : 'border-transparent text-muted-foreground hover:text-foreground'
-                        }`}
-                    >
-                        {t('forms.tabs.general')}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab('ceviri')}
-                        className={`flex items-center gap-1.5 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
-                            activeTab === 'ceviri'
-                                ? 'border-[var(--brand-primary)] text-[var(--brand-primary)]'
-                                : 'border-transparent text-muted-foreground hover:text-foreground'
-                        }`}
-                    >
-                        <Globe className="h-4 w-4" />
-                        {t('forms.tabs.translations')}
-                    </button>
-                </div>
-
-                {/* Genel Tab */}
-                {activeTab === 'genel' && (
-                    <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4" noValidate>
+                {/* Form */}
+                <form onSubmit={handleSubmit(handleModalSubmit)} className="p-6 space-y-4" noValidate>
                         <div>
-                            <label className="block text-sm font-medium text-foreground mb-1">Kategori Adı (TR) *</label>
-                            <input
-                                {...register('name')}
-                                className={inputClass(!!errors.name)}
+                            <TranslatableInput
+                                label="Kategori Adı"
+                                value={watch('name')}
+                                onChange={(val) => setValue('name', val)}
+                                translations={translations as any}
+                                field="name"
+                                onTranslationChange={(lang, field, value) => setTranslations(prev => ({
+                                    ...prev,
+                                    [lang]: { ...prev[lang], [field as 'name']: value }
+                                }))}
                                 placeholder="Türkçe kategori adı"
+                                className={errors.name ? 'error' : ''}
                             />
                             {errorMsg(errors.name?.message)}
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-foreground mb-1">Açıklama (TR)</label>
-                            <textarea
-                                {...register('description')}
-                                rows={3}
-                                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm resize-none transition-colors bg-background text-foreground ${errors.description ? 'border-red-400 focus:ring-red-400/30 bg-red-50/30 dark:bg-red-900/10' : 'border-border focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)]'}`}
+                            <TranslatableInput
+                                label="Açıklama"
+                                value={watch('description') || ''}
+                                onChange={(val) => setValue('description', val)}
+                                translations={translations as any}
+                                field="description"
+                                onTranslationChange={(lang, field, value) => setTranslations(prev => ({
+                                    ...prev,
+                                    [lang]: { ...prev[lang], [field as 'description']: value }
+                                }))}
                                 placeholder="Türkçe kategori açıklaması"
+                                textarea
+                                className={errors.description ? 'error' : ''}
                             />
                             {errorMsg(errors.description?.message)}
                         </div>
@@ -281,7 +236,6 @@ export default function CategoryFormModal({
                                 <span className="text-sm font-medium text-foreground">Kategori Aktif (Sitede Gösterilsin mi?)</span>
                             </label>
                         </div>
-
                         {/* Actions */}
                         <div className="flex items-center justify-end gap-3 pt-3">
                             <button
@@ -299,113 +253,11 @@ export default function CategoryFormModal({
                                 onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--brand-primary-dark)')}
                                 onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--brand-primary)')}
                             >
-                                {loading ? 'Kaydediliyor...' : (category ? 'Güncelle' : 'Ekle')}
+                                {loading ? 'Kaydediliyor...' : isEdit ? 'Güncelle' : 'Ekle'}
                             </button>
                         </div>
                     </form>
-                )}
-
-                {/* Çeviriler Tab */}
-                {activeTab === 'ceviri' && (
-                    <div className="p-6 space-y-5">
-                        {!isEdit ? (
-                            <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
-                                <Globe className="h-10 w-10 mb-3 text-muted-foreground/40" />
-                                <p className="text-sm font-medium">Çeviri eklemek için önce kategoriyi kaydedin.</p>
-                            </div>
-                        ) : (
-                            <>
-                                {/* Language sub-tabs */}
-                                <div className="flex flex-wrap gap-1 bg-accent p-1 rounded-lg">
-                                    {nonDefaultLangs.map(lang => (
-                                        <button
-                                            key={lang.code}
-                                            type="button"
-                                            onClick={() => setActiveLang(lang.code)}
-                                            className={`flex items-center gap-1.5 py-1.5 px-3 text-xs font-medium rounded-md transition-colors ${
-                                                activeLang === lang.code
-                                                    ? 'bg-card shadow-sm text-[var(--brand-primary)]'
-                                                    : 'text-muted-foreground hover:text-foreground'
-                                            }`}
-                                        >
-                                            <span>{lang.flag}</span>
-                                            <span className="uppercase">{lang.code}</span>
-                                        </button>
-                                    ))}
-                                </div>
-
-                                {/* Translation fields for active language */}
-                                {nonDefaultLangs.map(lang =>
-                                    activeLang === lang.code ? (
-                                        <div key={lang.code} className="space-y-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-foreground mb-1">
-                                                    Kategori Adı ({lang.label})
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={translations[lang.code]?.name ?? ''}
-                                                    onChange={(e) => setTranslations(prev => ({
-                                                        ...prev,
-                                                        [lang.code]: { ...prev[lang.code], name: e.target.value }
-                                                    }))}
-                                                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)] text-sm transition-colors bg-background text-foreground"
-                                                    placeholder={`Kategori adı (${lang.label})`}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-foreground mb-1">
-                                                    Açıklama ({lang.label})
-                                                </label>
-                                                <textarea
-                                                    rows={4}
-                                                    value={translations[lang.code]?.description ?? ''}
-                                                    onChange={(e) => setTranslations(prev => ({
-                                                        ...prev,
-                                                        [lang.code]: { ...prev[lang.code], description: e.target.value }
-                                                    }))}
-                                                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 focus:border-[var(--brand-primary)] text-sm resize-none transition-colors bg-background text-foreground"
-                                                    placeholder={`Kategori açıklaması (${lang.label})`}
-                                                />
-                                            </div>
-                                        </div>
-                                    ) : null
-                                )}
-
-                                {/* Feedback */}
-                                {translationError && (
-                                    <p className="text-xs font-semibold text-red-600">{translationError}</p>
-                                )}
-                                {translationSaved && (
-                                    <p className="text-xs font-semibold text-green-600">Çeviriler başarıyla kaydedildi ✓</p>
-                                )}
-
-                                {/* Actions */}
-                                <div className="flex items-center justify-end gap-3 pt-2">
-                                    <button
-                                        type="button"
-                                        onClick={onClose}
-                                        className="px-4 py-2 text-sm font-medium text-foreground bg-accent hover:bg-accent/80 rounded-lg transition-colors"
-                                    >
-                                        Kapat
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleTranslationSave}
-                                        disabled={translationSaving}
-                                        className="px-5 py-2 text-sm font-medium text-white rounded-lg transition-colors disabled:opacity-50"
-                                        style={{ background: 'var(--brand-primary)' }}
-                                        onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--brand-primary-dark)')}
-                                        onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--brand-primary)')}
-                                    >
-                                        {translationSaving ? 'Kaydediliyor...' : 'Tüm Çevirileri Kaydet'}
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                )}
+                </div>
             </div>
-        </div>
-    );
-}
+        );
+    }

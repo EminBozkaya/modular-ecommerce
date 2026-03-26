@@ -110,13 +110,16 @@ export function AppHeader() {
         return buildTree(null);
     }, [allCategories]);
 
-    // In dark mode, don't override with admin-configured light colors — let CSS vars handle it
+    // In dark mode, use a brand-tinted dark background so the navbar doesn't
+    // sit transparent on top of page imagery when scrolling.
     const navBg = theme === 'dark'
-        ? undefined
+        ? 'var(--brand-tinted-dark-bg)'
         : (isStuck ? settings.primaryColor : settings.backgroundColor);
 
-    // Gradient overlay color for nav scroll arrows — uses CSS variable in dark mode
-    const navGradientColor = navBg ?? 'hsl(var(--background))';
+    // Gradient overlay color for nav scroll arrows
+    const navGradientColor = theme === 'dark'
+        ? 'var(--brand-tinted-dark-bg)'
+        : (navBg ?? 'hsl(var(--background))');
 
     return (
         <>
@@ -133,16 +136,16 @@ export function AppHeader() {
                         {/* Menü duvarımız (sol hizalama) buraya bağlı: md'de 150px, xl'de 220px. (Sabit genişlik ile hizalama sağlıyoruz) */}
                         <div className="flex items-center justify-between w-full md:w-[150px] xl:w-[220px] flex-shrink-0 relative">
                             <div className="flex items-center gap-2 md:gap-3 lg:gap-4 flex-shrink-0">
-                                    <Link to="/" className="flex-shrink-0 group md:relative md:z-[60] md:-mt-3 xl:-mt-5 md:-mb-14 xl:-mb-20 transition-all">
+                                <Link to="/" className="flex-shrink-0 group md:relative md:z-[60] md:-mt-3 xl:-mt-5 md:-mb-14 xl:-mb-20 transition-all">
                                     {/* Logo container: defines a square "safe zone" for the logo. p-2 ensures hover scaling doesn't hit the edge. */}
-                                    <StoreLogo 
+                                    <StoreLogo
                                         className="h-16 w-16 sm:h-24 sm:w-24 md:h-32 md:w-32 xl:h-48 xl:w-48 p-0 md:p-2 -ml-4 md:ml-0"
                                         imgClassName="group-hover:scale-110 object-left md:object-center"
                                     />
                                 </Link>
                                 {settings.showStoreNameInHeader && settings.storeName && (
-                                    <Link 
-                                        to="/" 
+                                    <Link
+                                        to="/"
                                         className="hidden lg:block pr-4 transition-all duration-300 hover:opacity-80 active:scale-95"
                                     >
                                         <span
@@ -224,7 +227,7 @@ export function AppHeader() {
             </header>
 
             {/* ── Mobile Sticky Search & Hamburger ────────── */}
-            <div 
+            <div
                 className={cn(
                     "md:hidden sticky top-0 z-50 w-full py-2 px-4 transition-all duration-300 ease-in-out",
                     isStuck ? "shadow-md" : "border-t border-border/50"
@@ -255,8 +258,8 @@ export function AppHeader() {
                 )}>
                     {/* Responsive divider implementation: fades in from the logo area to avoid sharp cuts */}
                     {!isStuck && (
-                        <div 
-                            className="absolute top-0 left-[100px] xl:left-[160px] right-0 h-[1px] hidden md:block bg-gradient-to-r from-transparent via-border/20 via-10% to-border transition-all duration-300" 
+                        <div
+                            className="absolute top-0 left-[100px] xl:left-[160px] right-0 h-[1px] hidden md:block bg-gradient-to-r from-transparent via-border/20 via-10% to-border transition-all duration-300"
                         />
                     )}
                     {/* Sol Kaydırma Oku & Gradient */}
@@ -276,10 +279,10 @@ export function AppHeader() {
                             onMouseEnter={() => startScrolling('left')}
                             onMouseLeave={stopScrolling}
                             onClick={() => scrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
-                            className="relative ml-2 w-8 h-8 rounded-full bg-foreground/10 hover:bg-foreground/20 border border-foreground/10 shadow-sm flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group backdrop-blur-[2px]"
+                            className="relative ml-2 w-9 h-9 rounded-full bg-background/95 hover:bg-background border border-border/50 shadow-lg flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group"
                             style={{ color: 'var(--brand-primary)' }}
                         >
-                            <ChevronLeft className="w-5 h-5" />
+                            <ChevronLeft className="w-5 h-5" strokeWidth={2.5} />
                         </button>
                     </div>
 
@@ -323,10 +326,10 @@ export function AppHeader() {
                             onMouseEnter={() => startScrolling('right')}
                             onMouseLeave={stopScrolling}
                             onClick={() => scrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
-                            className="relative w-8 h-8 rounded-full bg-foreground/10 hover:bg-foreground/20 border border-foreground/10 shadow-sm flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group backdrop-blur-[2px]"
+                            className="relative w-9 h-9 rounded-full bg-background/95 hover:bg-background border border-border/50 shadow-lg flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group"
                             style={{ color: 'var(--brand-primary)' }}
                         >
-                            <ChevronRight className="w-5 h-5" />
+                            <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
                         </button>
                     </div>
                 </div>

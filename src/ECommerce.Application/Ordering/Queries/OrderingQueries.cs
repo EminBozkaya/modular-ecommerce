@@ -11,10 +11,25 @@ public record ShippingAddressDto(
     string PostalCode,
     string Country);
 
+public record BillingAddressDto(
+    string InvoiceType,
+    string? FullName,
+    string? TcKimlikNo,
+    string? CompanyName,
+    string? TaxOffice,
+    string? TaxNumber,
+    string AddressLine1,
+    string? AddressLine2,
+    string City,
+    string PostalCode,
+    string Country);
+
 public record OrderDto(
     Guid Id, string OrderNumber, string Status,
     decimal TotalAmount, string Currency,
-    ShippingAddressDto ShippingAddress, DateTime CreatedAt,
+    ShippingAddressDto ShippingAddress,
+    BillingAddressDto? BillingAddress,
+    DateTime CreatedAt,
     IReadOnlyList<OrderItemDto> Items);
 
 public record OrderItemDto(

@@ -73,10 +73,11 @@ export async function mockGetRevenueData(): Promise<RevenueDataPoint[]> {
 const mockAdminOrders: Order[] = [
     {
         id: 'ord-a01',
+        orderNumber: 'ORD-A01',
         status: 'Pending',
         items: [
-            { productId: 'p1', productName: 'Ürün-A1', unitPrice: 12.99, currency: 'USD', quantity: 2, lineTotal: 25.98 },
-            { productId: 'p3', productName: 'Ürün-A3', unitPrice: 24.99, currency: 'USD', quantity: 1, lineTotal: 24.99 },
+            { productId: 'p1', productName: 'Ürün-A1', unitPrice: 12.99, quantity: 2, lineTotal: 25.98 },
+            { productId: 'p3', productName: 'Ürün-A3', unitPrice: 24.99, quantity: 1, lineTotal: 24.99 },
         ],
         totalAmount: 50.97,
         currency: 'USD',
@@ -86,9 +87,10 @@ const mockAdminOrders: Order[] = [
     },
     {
         id: 'ord-a02',
+        orderNumber: 'ORD-A02',
         status: 'Paid',
         items: [
-            { productId: 'p2', productName: 'Ürün-A2', unitPrice: 18.50, currency: 'USD', quantity: 3, lineTotal: 55.50 },
+            { productId: 'p2', productName: 'Ürün-A2', unitPrice: 18.50, quantity: 3, lineTotal: 55.50 },
         ],
         totalAmount: 55.50,
         currency: 'USD',
@@ -98,10 +100,11 @@ const mockAdminOrders: Order[] = [
     },
     {
         id: 'ord-a03',
+        orderNumber: 'ORD-A03',
         status: 'Shipped',
         items: [
-            { productId: 'p6', productName: 'Ürün-C1', unitPrice: 22.50, currency: 'USD', quantity: 2, lineTotal: 45.00 },
-            { productId: 'p7', productName: 'Ürün-C2', unitPrice: 14.99, currency: 'USD', quantity: 1, lineTotal: 14.99 },
+            { productId: 'p6', productName: 'Ürün-C1', unitPrice: 22.50, quantity: 2, lineTotal: 45.00 },
+            { productId: 'p7', productName: 'Ürün-C2', unitPrice: 14.99, quantity: 1, lineTotal: 14.99 },
         ],
         totalAmount: 59.99,
         currency: 'USD',
@@ -111,9 +114,10 @@ const mockAdminOrders: Order[] = [
     },
     {
         id: 'ord-a04',
+        orderNumber: 'ORD-A04',
         status: 'Delivered',
         items: [
-            { productId: 'p5', productName: 'Ürün-B2', unitPrice: 15.00, currency: 'USD', quantity: 1, lineTotal: 15.00 },
+            { productId: 'p5', productName: 'Ürün-B2', unitPrice: 15.00, quantity: 1, lineTotal: 15.00 },
         ],
         totalAmount: 15.00,
         currency: 'USD',
@@ -123,9 +127,10 @@ const mockAdminOrders: Order[] = [
     },
     {
         id: 'ord-a05',
+        orderNumber: 'ORD-A05',
         status: 'Cancelled',
         items: [
-            { productId: 'p10', productName: 'Ürün-D2', unitPrice: 39.99, currency: 'USD', quantity: 2, lineTotal: 79.98 },
+            { productId: 'p10', productName: 'Ürün-D2', unitPrice: 39.99, quantity: 2, lineTotal: 79.98 },
         ],
         totalAmount: 79.98,
         currency: 'USD',
@@ -135,10 +140,11 @@ const mockAdminOrders: Order[] = [
     },
     {
         id: 'ord-a06',
+        orderNumber: 'ORD-A06',
         status: 'Paid',
         items: [
-            { productId: 'p4', productName: 'Ürün-B1', unitPrice: 9.99, currency: 'USD', quantity: 4, lineTotal: 39.96 },
-            { productId: 'p9', productName: 'Ürün-D1', unitPrice: 29.99, currency: 'USD', quantity: 1, lineTotal: 29.99 },
+            { productId: 'p4', productName: 'Ürün-B1', unitPrice: 9.99, quantity: 4, lineTotal: 39.96 },
+            { productId: 'p9', productName: 'Ürün-D1', unitPrice: 29.99, quantity: 1, lineTotal: 29.99 },
         ],
         totalAmount: 69.95,
         currency: 'USD',
@@ -148,9 +154,10 @@ const mockAdminOrders: Order[] = [
     },
     {
         id: 'ord-a07',
+        orderNumber: 'ORD-A07',
         status: 'Delivered',
         items: [
-            { productId: 'p1', productName: 'Ürün-A1', unitPrice: 12.99, currency: 'USD', quantity: 1, lineTotal: 12.99 },
+            { productId: 'p1', productName: 'Ürün-A1', unitPrice: 12.99, quantity: 1, lineTotal: 12.99 },
         ],
         totalAmount: 12.99,
         currency: 'USD',
@@ -160,9 +167,10 @@ const mockAdminOrders: Order[] = [
     },
     {
         id: 'ord-a08',
+        orderNumber: 'ORD-A08',
         status: 'Shipped',
         items: [
-            { productId: 'p11', productName: 'Ürün-E1', unitPrice: 16.99, currency: 'USD', quantity: 2, lineTotal: 33.98 },
+            { productId: 'p11', productName: 'Ürün-E1', unitPrice: 16.99, quantity: 2, lineTotal: 33.98 },
         ],
         totalAmount: 33.98,
         currency: 'USD',
@@ -172,9 +180,10 @@ const mockAdminOrders: Order[] = [
     },
     {
         id: 'ord-a09',
+        orderNumber: 'ORD-A09',
         status: 'Pending',
         items: [
-            { productId: 'p3', productName: 'Ürün-A3', unitPrice: 24.99, currency: 'USD', quantity: 3, lineTotal: 74.97 },
+            { productId: 'p3', productName: 'Ürün-A3', unitPrice: 24.99, quantity: 3, lineTotal: 74.97 },
         ],
         totalAmount: 74.97,
         currency: 'USD',
@@ -184,10 +193,11 @@ const mockAdminOrders: Order[] = [
     },
     {
         id: 'ord-a10',
+        orderNumber: 'ORD-A10',
         status: 'Delivered',
         items: [
-            { productId: 'p6', productName: 'Ürün-C1', unitPrice: 22.50, currency: 'USD', quantity: 1, lineTotal: 22.50 },
-            { productId: 'p2', productName: 'Ürün-A2', unitPrice: 18.50, currency: 'USD', quantity: 2, lineTotal: 37.00 },
+            { productId: 'p6', productName: 'Ürün-C1', unitPrice: 22.50, quantity: 1, lineTotal: 22.50 },
+            { productId: 'p2', productName: 'Ürün-A2', unitPrice: 18.50, quantity: 2, lineTotal: 37.00 },
         ],
         totalAmount: 59.50,
         currency: 'USD',
@@ -197,9 +207,10 @@ const mockAdminOrders: Order[] = [
     },
     {
         id: 'ord-a11',
+        orderNumber: 'ORD-A11',
         status: 'Paid',
         items: [
-            { productId: 'p7', productName: 'Ürün-C2', unitPrice: 14.99, currency: 'USD', quantity: 5, lineTotal: 74.95 },
+            { productId: 'p7', productName: 'Ürün-C2', unitPrice: 14.99, quantity: 5, lineTotal: 74.95 },
         ],
         totalAmount: 74.95,
         currency: 'USD',
@@ -209,9 +220,10 @@ const mockAdminOrders: Order[] = [
     },
     {
         id: 'ord-a12',
+        orderNumber: 'ORD-A12',
         status: 'Delivered',
         items: [
-            { productId: 'p13', productName: 'Ürün-E3', unitPrice: 34.99, currency: 'USD', quantity: 2, lineTotal: 69.98 },
+            { productId: 'p13', productName: 'Ürün-E3', unitPrice: 34.99, quantity: 2, lineTotal: 69.98 },
         ],
         totalAmount: 69.98,
         currency: 'USD',
@@ -229,10 +241,10 @@ export async function mockGetRecentOrders(): Promise<Order[]> {
 export async function mockGetLowStockProducts(): Promise<Product[]> {
     await delay(400);
     return [
-        { id: 'p8', name: 'Ürün-C3', description: 'Kategori-C grubuna ait üçüncü ürün.', price: 19.50, priceAmount: 19.50, currency: 'USD', priceCurrency: 'USD', stockQuantity: 0, categoryId: '3', categoryName: 'Kategori-C', unitId: 'u1', unitName: 'Kg', imageUrl: null, isActive: true, createdAt: '2025-12-01T10:00:00Z' },
-        { id: 'p12', name: 'Ürün-E2', description: 'Kategori-E grubuna ait ikinci ürün.', price: 11.50, priceAmount: 11.50, currency: 'USD', priceCurrency: 'USD', stockQuantity: 3, categoryId: '5', categoryName: 'Kategori-E', unitId: 'u3', unitName: 'Adet', imageUrl: null, isActive: true, createdAt: '2025-12-05T10:00:00Z' },
-        { id: 'p5', name: 'Ürün-B2', description: 'Kategori-B grubuna ait ikinci ürün.', price: 15.00, priceAmount: 15.00, currency: 'USD', priceCurrency: 'USD', stockQuantity: 8, categoryId: '2', categoryName: 'Kategori-B', unitId: 'u3', unitName: 'Adet', imageUrl: null, isActive: true, createdAt: '2025-12-10T10:00:00Z' },
-        { id: 'p13', name: 'Ürün-E3', description: 'Kategori-E grubuna ait üçüncü ürün.', price: 34.99, priceAmount: 34.99, currency: 'USD', priceCurrency: 'USD', stockQuantity: 15, categoryId: '5', categoryName: 'Kategori-E', unitId: 'u5', unitName: 'Paket', imageUrl: null, isActive: true, createdAt: '2025-12-15T10:00:00Z' },
+        { id: 'p8', name: 'Ürün-C3', description: 'Kategori-C grubuna ait üçüncü ürün.', price: 19.50, priceAmount: 19.50, currency: 'USD', priceCurrency: 'USD', stockQuantity: 0, categoryId: '3', categoryName: 'Kategori-C', unitId: 'u1', unitName: 'Kg', unitCode: 'kg', displayOrder: 0, imageUrl: null, isActive: true, createdAt: '2025-12-01T10:00:00Z' },
+        { id: 'p12', name: 'Ürün-E2', description: 'Kategori-E grubuna ait ikinci ürün.', price: 11.50, priceAmount: 11.50, currency: 'USD', priceCurrency: 'USD', stockQuantity: 3, categoryId: '5', categoryName: 'Kategori-E', unitId: 'u3', unitName: 'Adet', unitCode: 'adet', displayOrder: 0, imageUrl: null, isActive: true, createdAt: '2025-12-05T10:00:00Z' },
+        { id: 'p5', name: 'Ürün-B2', description: 'Kategori-B grubuna ait ikinci ürün.', price: 15.00, priceAmount: 15.00, currency: 'USD', priceCurrency: 'USD', stockQuantity: 8, categoryId: '2', categoryName: 'Kategori-B', unitId: 'u3', unitName: 'Adet', unitCode: 'adet', displayOrder: 0, imageUrl: null, isActive: true, createdAt: '2025-12-10T10:00:00Z' },
+        { id: 'p13', name: 'Ürün-E3', description: 'Kategori-E grubuna ait üçüncü ürün.', price: 34.99, priceAmount: 34.99, currency: 'USD', priceCurrency: 'USD', stockQuantity: 15, categoryId: '5', categoryName: 'Kategori-E', unitId: 'u5', unitName: 'Paket', unitCode: 'paket', displayOrder: 0, imageUrl: null, isActive: true, createdAt: '2025-12-15T10:00:00Z' },
     ];
 }
 

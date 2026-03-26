@@ -4,12 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useShippingAddressSchema, type ShippingAddressFormData } from '@/lib/validations/checkout.schema';
 import type { ShippingAddress } from '../types/order';
 import { useTranslation } from 'react-i18next';
+import { CityDistrictSelect } from '../../../components/shared/CityDistrictSelect';
 
 interface ShippingAddressFormProps {
     value: ShippingAddress;
     onChange: (address: ShippingAddress) => void;
     disabled?: boolean;
-    /** When true, hides the card wrapper and header (used when embedded inside a parent card) */
     hideHeader?: boolean;
 }
 
@@ -21,6 +21,7 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
     const {
         register,
         watch,
+        setValue,
         formState: { errors },
         reset,
     } = useForm<ShippingAddressFormData>({
@@ -29,18 +30,20 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
         mode: 'onChange',
     });
 
-    // Parent value değişince formu senkronize et (kayıtlı adres seçimi gibi durumlarda)
     useEffect(() => {
         reset(value);
     }, [value.fullName, value.addressLine1, value.city, value.postalCode, value.country]);
 
-    // İzlenen değerleri parent'a bildiren effect
     useEffect(() => {
         const subscription = watch((formValues) => {
             onChange(formValues as ShippingAddress);
         });
         return () => subscription.unsubscribe();
     }, [watch, onChange]);
+
+    const country = watch('country') ?? '';
+    const city = watch('city') ?? '';
+    const district = watch('district') ?? '';
 
     const inputClass = (hasError: boolean) =>
         `w-full rounded-xl border px-4 py-2.5 text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground focus:bg-card focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${
@@ -62,7 +65,6 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
                     {...register('fullName')}
                     disabled={disabled}
                     className={inputClass(!!errors.fullName)}
-                    placeholder={t('shipping.fullNamePlaceholder')}
                 />
                 {errors.fullName && <p className={errorClass} role="alert">{errors.fullName.message}</p>}
             </div>
@@ -76,7 +78,6 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
                     {...register('addressLine1')}
                     disabled={disabled}
                     className={inputClass(!!errors.addressLine1)}
-                    placeholder={t('shipping.address1Placeholder')}
                 />
                 {errors.addressLine1 && <p className={errorClass} role="alert">{errors.addressLine1.message}</p>}
             </div>
@@ -88,38 +89,7 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
                     {...register('addressLine2')}
                     disabled={disabled}
                     className={inputClass(!!errors.addressLine2)}
-                    placeholder={t('shipping.address2Placeholder')}
                 />
-                {errors.addressLine2 && <p className={errorClass} role="alert">{errors.addressLine2.message}</p>}
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-                <div>
-                    <label className={labelClass}>
-                        {t('shipping.city')} <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        {...register('city')}
-                        disabled={disabled}
-                        className={inputClass(!!errors.city)}
-                        placeholder={t('shipping.cityPlaceholder')}
-                    />
-                    {errors.city && <p className={errorClass} role="alert">{errors.city.message}</p>}
-                </div>
-                <div>
-                    <label className={labelClass}>
-                        {t('shipping.postalCode')} <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        {...register('postalCode')}
-                        disabled={disabled}
-                        className={inputClass(!!errors.postalCode)}
-                        placeholder={t('shipping.postalCodePlaceholder')}
-                    />
-                    {errors.postalCode && <p className={errorClass} role="alert">{errors.postalCode.message}</p>}
-                </div>
             </div>
 
             <div>
@@ -131,9 +101,33 @@ export function ShippingAddressForm({ value, onChange, disabled, hideHeader }: S
                     {...register('country')}
                     disabled={disabled}
                     className={inputClass(!!errors.country)}
-                    placeholder={t('shipping.countryPlaceholder')}
                 />
                 {errors.country && <p className={errorClass} role="alert">{errors.country.message}</p>}
+            </div>
+
+            <CityDistrictSelect
+                country={country}
+                cityValue={city}
+                districtValue={district}
+                onCityChange={name => setValue('city', name, { shouldValidate: true })}
+                onDistrictChange={name => setValue('district', name)}
+                disabled={disabled}
+                hasErrorCity={!!errors.city}
+                labelClass={labelClass}
+                inputClass={inputClass}
+            />
+
+            <div>
+                <label className={labelClass}>
+                    {t('shipping.postalCode')} <span className="text-red-400">*</span>
+                </label>
+                <input
+                    type="text"
+                    {...register('postalCode')}
+                    disabled={disabled}
+                    className={inputClass(!!errors.postalCode)}
+                />
+                {errors.postalCode && <p className={errorClass} role="alert">{errors.postalCode.message}</p>}
             </div>
         </div>
     );

@@ -62,5 +62,8 @@ public record StoreSettingsDto(
     // ── Rich content ─────────────────────────────────────────────────────────
     HeroCarouselDto HeroCarousel,
     List<HomepageSectionDto> HomepageSections,
-    FooterSettingsDto Footer
+    FooterSettingsDto Footer,
+
+    // ── Localization ────────────────────────────────────────────────────────
+    Dictionary<string, Dictionary<string, string>>? Translations = null
 );

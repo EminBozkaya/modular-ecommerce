@@ -5,20 +5,35 @@ import { useCheckout } from '../hooks/useCheckout';
 import { useAddresses } from '../../auth/hooks/useAddresses';
 import { ShippingAddressForm } from '../components/ShippingAddressForm';
 import { SavedAddressPicker } from '../components/SavedAddressPicker';
+import { BillingAddressForm } from '../components/BillingAddressForm';
+import { SavedBillingAddressPicker } from '../components/SavedBillingAddressPicker';
 import { PaymentMethodSelector } from '../components/PaymentMethodSelector';
 import { OrderSummary } from '../components/OrderSummary';
 import { LoadingSpinner } from '../../../components/shared/LoadingSpinner';
 import { ErrorMessage } from '../../../components/shared/ErrorMessage';
 import { EmptyState } from '../../../components/shared/EmptyState';
 import { generateIdempotencyKey } from '../../../utils/idempotency';
-import type { ShippingAddress } from '../types/order';
+import type { ShippingAddress, BillingAddress } from '../types/order';
+import { useBillingAddresses, useAddBillingAddress } from '../../auth/hooks/useBillingAddresses';
+import { resolveInvoiceType } from '../../auth/types/address';
 import { usePaymentProviders } from '../hooks/usePaymentProviders';
 import { useTranslation } from 'react-i18next';
-import { Check, Mail } from 'lucide-react';
+import { Check, Mail, FileText } from 'lucide-react';
 import { useAuthStore } from '../../../store/authStore';
 
 const emptyAddress: ShippingAddress = {
     fullName: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    postalCode: '',
+    country: '',
+};
+
+const emptyBillingAddress: BillingAddress = {
+    invoiceType: 'individual',
+    fullName: '',
+    tcKimlikNo: '',
     addressLine1: '',
     addressLine2: '',
     city: '',
@@ -40,6 +55,16 @@ export default function CheckoutPage() {
     const [selectedSavedId, setSelectedSavedId] = useState<string | null>(null);
     const [useNewAddress, setUseNewAddress] = useState(false);
     const [shippingAddress, setShippingAddress] = useState<ShippingAddress>(emptyAddress);
+
+    // Billing address state
+    const { data: savedBillingAddresses } = useBillingAddresses();
+    const { mutateAsync: addBillingAddress } = useAddBillingAddress();
+    const hasSavedBilling = isAuthenticated && (savedBillingAddresses?.length ?? 0) > 0;
+    const [selectedBillingId, setSelectedBillingId] = useState<string | null>(null);
+    const [useNewBilling, setUseNewBilling] = useState(false);
+    const [billingAddress, setBillingAddress] = useState<BillingAddress>(emptyBillingAddress);
+    const [saveBillingForLater, setSaveBillingForLater] = useState(true);
+
     const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
     const [idempotencyKey, setIdempotencyKey] = useState(() => generateIdempotencyKey());
     const [agreedTerms, setAgreedTerms] = useState(false);
@@ -89,13 +114,77 @@ export default function CheckoutPage() {
         setShippingAddress(emptyAddress);
     };
 
+    // Billing address handlers
+    const handleSelectSavedBilling = (id: string, address: BillingAddress) => {
+        setSelectedBillingId(id);
+        setUseNewBilling(false);
+        setBillingAddress(address);
+    };
+
+    const handleUseNewBilling = () => {
+        setUseNewBilling(true);
+        setSelectedBillingId(null);
+        setBillingAddress(emptyBillingAddress);
+    };
+
+    // Determine active billing address
+    const activeBillingAddress: BillingAddress = (() => {
+        if (isAuthenticated && !useNewBilling && selectedBillingId && savedBillingAddresses) {
+            const found = savedBillingAddresses.find((a) => a.id === selectedBillingId);
+            if (found) {
+                return {
+                    invoiceType: resolveInvoiceType(found.invoiceType),
+                    fullName: found.fullName,
+                    tcKimlikNo: found.tcKimlikNo,
+                    companyName: found.companyName,
+                    taxOffice: found.taxOffice,
+                    taxNumber: found.taxNumber,
+                    addressLine1: found.addressLine1,
+                    addressLine2: found.addressLine2,
+                    city: found.city,
+                    postalCode: found.postalCode,
+                    country: found.country,
+                };
+            }
+        }
+        return billingAddress;
+    })();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedProvider) return;
         if (!isAuthenticated && !guestEmail) {
             return;
         }
-        const success = await submitCheckout(activeAddress, selectedProvider, idempotencyKey, guestEmail);
+
+        // Save billing address for future use if requested
+        const isEnteringNewBilling = !selectedBillingId && (!hasSavedBilling || useNewBilling);
+        if (isAuthenticated && saveBillingForLater && isEnteringNewBilling) {
+            try {
+                const title = activeBillingAddress.invoiceType === 'corporate'
+                    ? (activeBillingAddress.companyName ?? t('billing.sectionTitle'))
+                    : (activeBillingAddress.fullName ?? t('billing.sectionTitle'));
+                await addBillingAddress({
+                    title,
+                    isDefault: !hasSavedBilling,
+                    invoiceType: activeBillingAddress.invoiceType,
+                    fullName: activeBillingAddress.fullName,
+                    tcKimlikNo: activeBillingAddress.tcKimlikNo,
+                    companyName: activeBillingAddress.companyName,
+                    taxOffice: activeBillingAddress.taxOffice,
+                    taxNumber: activeBillingAddress.taxNumber,
+                    addressLine1: activeBillingAddress.addressLine1,
+                    addressLine2: activeBillingAddress.addressLine2,
+                    city: activeBillingAddress.city,
+                    postalCode: activeBillingAddress.postalCode,
+                    country: activeBillingAddress.country,
+                });
+            } catch {
+                // non-blocking — address save failure doesn't abort checkout
+            }
+        }
+
+        const success = await submitCheckout(activeAddress, activeBillingAddress, selectedProvider, idempotencyKey, guestEmail);
         if (!success) {
             setIdempotencyKey(generateIdempotencyKey());
         }
@@ -245,6 +334,40 @@ export default function CheckoutPage() {
                                             onChange={setShippingAddress}
                                             disabled={isLoading}
                                             hideHeader
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Billing address card */}
+                            <div className="rounded-3xl border border-border bg-card p-6 shadow-xl shadow-black/5">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shrink-0 shadow-lg shadow-black/5">
+                                        <FileText className="h-4 w-4" />
+                                    </div>
+                                    <h2 className="text-base font-bold text-foreground">
+                                        {t('billing.sectionTitle')}
+                                    </h2>
+                                </div>
+
+                                {hasSavedBilling && !useNewBilling && (
+                                    <SavedBillingAddressPicker
+                                        selectedId={selectedBillingId}
+                                        onSelect={handleSelectSavedBilling}
+                                        onUseNew={handleUseNewBilling}
+                                        disabled={isLoading}
+                                    />
+                                )}
+
+                                {(!hasSavedBilling || useNewBilling) && (
+                                    <div className={hasSavedBilling ? 'mt-4 pt-4 border-t border-border' : ''}>
+                                        <BillingAddressForm
+                                            value={billingAddress}
+                                            onChange={setBillingAddress}
+                                            shippingAddress={activeAddress}
+                                            disabled={isLoading}
+                                            showSaveOption={isAuthenticated}
+                                            onSaveForLaterChange={setSaveBillingForLater}
                                         />
                                     </div>
                                 )}

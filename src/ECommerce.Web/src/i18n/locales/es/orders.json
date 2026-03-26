@@ -14,6 +14,9 @@
     "total": "Total",
     "grandTotal": "Total general",
     "shippingAddress": "Dirección de entrega",
+    "billingAddress": "Información de facturación",
+    "individual": "Particular",
+    "corporate": "Empresa",
     "notFound": "Pedido no encontrado"
   },
   "confirmation": {

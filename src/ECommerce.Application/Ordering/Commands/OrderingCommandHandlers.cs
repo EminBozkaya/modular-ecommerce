@@ -44,7 +44,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, CreateOrde
         var orderItems = basket.Items.Select(i =>
             OrderItem.Create(i.ProductId, i.ProductName, i.UnitPriceSnapshot, i.Quantity));
 
-        var order = Order.Create(cmd.UserId, cmd.GuestEmail, cmd.ShippingAddress, orderItems);
+        var order = Order.Create(cmd.UserId, cmd.GuestEmail, cmd.ShippingAddress, orderItems, cmd.BillingAddress);
 
         // Decrease stock — ceiling ensures fractional quantities consume at least 1 stock unit
         foreach (var item in basket.Items)
@@ -64,7 +64,13 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, CreateOrde
 public class UpdateOrderStatusHandler : IRequestHandler<UpdateOrderStatusCommand>
 {
     private readonly IOrderRepository _orders;
-    public UpdateOrderStatusHandler(IOrderRepository orders) => _orders = orders;
+    private readonly IProductRepository _products;
+
+    public UpdateOrderStatusHandler(IOrderRepository orders, IProductRepository products)
+    {
+        _orders = orders;
+        _products = products;
+    }
 
     public async Task Handle(UpdateOrderStatusCommand cmd, CancellationToken ct)
     {
@@ -80,11 +86,28 @@ public class UpdateOrderStatusHandler : IRequestHandler<UpdateOrderStatusCommand
             case OrderStatus.Processing: order.MarkAsProcessing(); break;
             case OrderStatus.Shipped: order.MarkAsShipped(); break;
             case OrderStatus.Delivered: order.MarkAsDelivered(); break;
-            case OrderStatus.Cancelled: order.Cancel(); break;
+            case OrderStatus.Cancelled:
+                order.Cancel();
+                await RestoreStockAsync(order, ct);
+                break;
+            case OrderStatus.Refunded:
+                order.MarkAsRefunded();
+                await RestoreStockAsync(order, ct);
+                break;
             default: throw new InvalidOperationException($"Cannot transition to status: {newStatus}");
         }
 
         await _orders.SaveChangesAsync(ct);
+    }
+
+    private async Task RestoreStockAsync(ECommerce.Domain.Ordering.Entities.Order order, CancellationToken ct)
+    {
+        foreach (var item in order.Items)
+        {
+            var product = await _products.GetByIdAsync(item.ProductId, ct);
+            if (product is not null)
+                product.IncreaseStock(item.Quantity);
+        }
     }
 }
 

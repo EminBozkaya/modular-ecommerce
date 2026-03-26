@@ -43,6 +43,7 @@ import type {
 } from '../api/storeSettingsApi';
 import { queryKeys } from '@/utils/queryKeys';
 import { Footer } from '@/features/catalog/components/Footer';
+import { TranslatableInput } from '../components/TranslatableInput';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -171,6 +172,24 @@ function ColumnEditor({ col, onChange, onDelete, canDelete, t }: ColumnEditorPro
     const set = <K extends keyof FooterColumnDto>(key: K, value: FooterColumnDto[K]) =>
         onChange({ ...col, [key]: value });
 
+    const updateTranslation = (lang: string, field: string, val: string) => {
+        const newTranslations = JSON.parse(JSON.stringify(col.translations || {}));
+        if (!newTranslations[lang]) newTranslations[lang] = {};
+        newTranslations[lang][field] = val;
+        set('translations', newTranslations);
+    };
+
+    const updateLinkTranslation = (linkIdx: number, lang: string, field: string, val: string) => {
+        const updatedLinks = [...(col.links ?? [])];
+        const link = { ...updatedLinks[linkIdx] };
+        const newTranslations = JSON.parse(JSON.stringify(link.translations || {}));
+        if (!newTranslations[lang]) newTranslations[lang] = {};
+        newTranslations[lang][field] = val;
+        link.translations = newTranslations;
+        updatedLinks[linkIdx] = link;
+        set('links', updatedLinks);
+    };
+
     const TypeIcon = TYPE_ICONS[col.type];
     const typeLabels = getTypeLabels(t);
 
@@ -229,11 +248,13 @@ function ColumnEditor({ col, onChange, onDelete, canDelete, t }: ColumnEditorPro
                             <label className="block text-xs font-medium text-muted-foreground mb-1">
                                 {t('design.footer.columnTitle')}
                             </label>
-                            <input
-                                type="text"
+                            <TranslatableInput
                                 value={col.title}
-                                onChange={(e) => set('title', e.target.value)}
-                                className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 bg-background text-foreground"
+                                onChange={(v) => set('title', v)}
+                                translations={col.translations}
+                                field="title"
+                                onTranslationChange={updateTranslation}
+                                className="w-full"
                             />
                         </div>
                         <div>
@@ -263,18 +284,21 @@ function ColumnEditor({ col, onChange, onDelete, canDelete, t }: ColumnEditorPro
                             </label>
                             <div className="space-y-2">
                                 {(col.links ?? []).map((link, idx) => (
-                                    <div key={link.id} className="flex gap-2 items-center">
-                                        <input
-                                            type="text"
-                                            value={link.label}
-                                            onChange={(e) => {
-                                                const updated = [...(col.links ?? [])];
-                                                updated[idx] = { ...link, label: e.target.value };
-                                                set('links', updated);
-                                            }}
-                                            placeholder={t('design.footer.linkLabel')}
-                                            className="flex-1 border border-border rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary)]/40 bg-background text-foreground"
-                                        />
+                                    <div key={link.id} className="flex gap-2 items-start mt-2">
+                                        <div className="flex-1">
+                                            <TranslatableInput
+                                                value={link.label}
+                                                onChange={(v) => {
+                                                    const updated = [...(col.links ?? [])];
+                                                    updated[idx] = { ...link, label: v };
+                                                    set('links', updated);
+                                                }}
+                                                translations={link.translations}
+                                                field="label"
+                                                onTranslationChange={(lang, field, val) => updateLinkTranslation(idx, lang, field, val)}
+                                                placeholder={t('design.footer.linkLabel')}
+                                            />
+                                        </div>
                                         <input
                                             type="text"
                                             value={link.url}
@@ -340,12 +364,14 @@ function ColumnEditor({ col, onChange, onDelete, canDelete, t }: ColumnEditorPro
                                 <label className="block text-xs font-medium text-muted-foreground mb-1">
                                     {t('design.footer.address')}
                                 </label>
-                                <textarea
+                                <TranslatableInput
                                     value={col.address ?? ''}
-                                    onChange={(e) => set('address', e.target.value || undefined)}
-                                    rows={2}
+                                    onChange={(v) => set('address', v || undefined)}
+                                    translations={col.translations}
+                                    field="address"
+                                    onTranslationChange={updateTranslation}
                                     placeholder={t('design.footer.addressPlaceholder')}
-                                    className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 resize-none bg-background text-foreground"
+                                    textarea
                                 />
                             </div>
                         </div>
@@ -358,12 +384,13 @@ function ColumnEditor({ col, onChange, onDelete, canDelete, t }: ColumnEditorPro
                                 <label className="block text-xs font-medium text-muted-foreground mb-1">
                                     {t('design.footer.socialText')}
                                 </label>
-                                <input
-                                    type="text"
+                                <TranslatableInput
                                     value={col.followText ?? ''}
-                                    onChange={(e) => set('followText', e.target.value || undefined)}
+                                    onChange={(v) => set('followText', v || undefined)}
+                                    translations={col.translations}
+                                    field="followText"
+                                    onTranslationChange={updateTranslation}
                                     placeholder={t('design.footer.socialTextPlaceholder')}
-                                    className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 bg-background text-foreground"
                                 />
                             </div>
                             <div>
@@ -435,12 +462,14 @@ function ColumnEditor({ col, onChange, onDelete, canDelete, t }: ColumnEditorPro
                                 <label className="block text-xs font-medium text-muted-foreground mb-1">
                                     {t('design.footer.aboutDesc')}
                                 </label>
-                                <textarea
+                                <TranslatableInput
                                     value={col.description ?? ''}
-                                    onChange={(e) => set('description', e.target.value || undefined)}
-                                    rows={3}
+                                    onChange={(v) => set('description', v || undefined)}
+                                    translations={col.translations}
+                                    field="description"
+                                    onTranslationChange={updateTranslation}
                                     placeholder={t('design.footer.aboutDescPlaceholder')}
-                                    className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/30 resize-none bg-background text-foreground"
+                                    textarea
                                 />
                             </div>
                         </div>
@@ -550,6 +579,18 @@ export default function AdminFooterPage() {
 
     const setGlobal = <K extends keyof FooterSettingsDto>(key: K, value: FooterSettingsDto[K]) =>
         setDraft((d) => d ? { ...d, [key]: value } : d);
+
+    const updateBottomLinkTranslation = (linkIdx: number, lang: string, field: string, val: string) => {
+        if (!draft) return;
+        const updatedLinks = [...draft.bottomLinks];
+        const link = { ...updatedLinks[linkIdx] };
+        const newTranslations = JSON.parse(JSON.stringify(link.translations || {}));
+        if (!newTranslations[lang]) newTranslations[lang] = {};
+        newTranslations[lang][field] = val;
+        link.translations = newTranslations;
+        updatedLinks[linkIdx] = link;
+        setGlobal('bottomLinks', updatedLinks);
+    };
 
     const sortedCols = [...draft.columns].sort((a, b) => a.order - b.order);
     const canAdd = draft.columns.length < 4;
@@ -714,18 +755,21 @@ export default function AdminFooterPage() {
                         <p className="text-xs text-muted-foreground mb-3">{t('design.footer.bottomLinksDesc')}</p>
                         <div className="space-y-2">
                             {draft.bottomLinks.map((link, idx) => (
-                                <div key={link.id} className="flex gap-2 items-center">
-                                    <input
-                                        type="text"
-                                        value={link.label}
-                                        onChange={(e) => {
-                                            const updated = [...draft.bottomLinks];
-                                            updated[idx] = { ...link, label: e.target.value };
-                                            setGlobal('bottomLinks', updated);
-                                        }}
-                                        placeholder={t('design.footer.linkLabel')}
-                                        className="flex-1 border border-border rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary)]/40 bg-background text-foreground"
-                                    />
+                                <div key={link.id} className="flex gap-2 items-start mt-2">
+                                    <div className="flex-1">
+                                        <TranslatableInput
+                                            value={link.label}
+                                            onChange={(v) => {
+                                                const updated = [...draft.bottomLinks];
+                                                updated[idx] = { ...link, label: v };
+                                                setGlobal('bottomLinks', updated);
+                                            }}
+                                            translations={link.translations}
+                                            field="label"
+                                            onTranslationChange={(lang, field, val) => updateBottomLinkTranslation(idx, lang, field, val)}
+                                            placeholder={t('design.footer.linkLabel')}
+                                        />
+                                    </div>
                                     <input
                                         type="text"
                                         value={link.url}
@@ -794,7 +838,7 @@ export default function AdminFooterPage() {
                                         width: '222%',
                                     }}
                                 >
-                                    <Footer override={draft} />
+                                    <Footer override={draft} key={i18n.language} />
                                 </div>
                             </div>
                         </div>

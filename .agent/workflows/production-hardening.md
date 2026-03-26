@@ -1,4 +1,8 @@
-Production Hardening Workflow
+---
+description: Production sağlamlaştırma — güvenlik, güvenilirlik, gözlemlenebilirlik, rollback stratejisi
+---
+
+# Production Hardening Workflow
 
 Step 1 — Risk Assessment
 

@@ -7,5 +7,13 @@
   "passwordWeak": "La contraseña debe tener al menos 1 mayúscula y 1 número",
   "positiveNumber": "Introduce un número positivo",
   "invalidPrice": "Introduce un precio válido",
-  "minValue": "El valor mínimo es {{min}}"
+  "minValue": "El valor m\u00ednimo es {{min}}",
+  "tcKimlikRequired": "El n\u00famero de identidad es obligatorio",
+  "tcKimlikInvalid": "Introduzca un n\u00famero de identidad v\u00e1lido",
+  "tcKimlikLength": "El n\u00famero de identidad debe tener 11 d\u00edgitos",
+  "taxNumberRequired": "El n\u00famero fiscal es obligatorio",
+  "taxNumberLength": "El n\u00famero fiscal debe tener 10 d\u00edgitos",
+  "taxNumberDigits": "El n\u00famero fiscal solo debe contener d\u00edgitos",
+  "taxOfficeRequired": "La oficina fiscal es obligatoria",
+  "companyNameRequired": "El nombre de la empresa es obligatorio"
 }

@@ -51,6 +51,7 @@ import type {
     LinkType,
     AspectRatio,
 } from '../api/storeSettingsApi';
+import { TranslatableInput } from '../components/TranslatableInput';
 import { HomepageSections } from '../../catalog/components/HomepageSections';
 import { queryKeys } from '@/utils/queryKeys';
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -194,6 +195,13 @@ function CardEditor({
         reader.readAsDataURL(file);
     };
 
+    const updateTranslation = (lang: string, field: string, val: string) => {
+        const newTranslations = JSON.parse(JSON.stringify(card.translations || {}));
+        if (!newTranslations[lang]) newTranslations[lang] = {};
+        newTranslations[lang][field] = val;
+        set('translations', newTranslations);
+    };
+
     return (
         <div className="border border-border rounded-lg bg-gray-50 dark:bg-white/5 mb-2">
             <div className="flex items-center gap-2 px-3 py-2 cursor-pointer" onClick={() => setExpanded(!expanded)}>
@@ -225,10 +233,32 @@ function CardEditor({
                     </div>
 
                     {/* Content */}
-                    <div className="grid grid-cols-1 gap-2">
-                        <input type="text" value={card.title} onChange={(e) => set('title', e.target.value)} placeholder={t('design.showcase.titleLabel')} className="text-sm border border-border rounded px-2 py-1 outline-none focus:border-[var(--brand-primary)] bg-background text-foreground" />
-                        <input type="text" value={card.subtitle} onChange={(e) => set('subtitle', e.target.value)} placeholder={t('design.showcase.subtitleLabel')} className="text-sm border border-border rounded px-2 py-1 outline-none focus:border-[var(--brand-primary)] bg-background text-foreground" />
-                        <textarea value={card.description} onChange={(e) => set('description', e.target.value)} placeholder={t('design.showcase.descLabel')} rows={2} className="text-sm border border-border rounded px-2 py-1 outline-none focus:border-[var(--brand-primary)] resize-none bg-background text-foreground" />
+                    <div className="grid grid-cols-1 gap-4">
+                        <TranslatableInput
+                            value={card.title}
+                            onChange={(v) => set('title', v)}
+                            translations={card.translations}
+                            field="title"
+                            onTranslationChange={updateTranslation}
+                            placeholder={t('design.showcase.titleLabel')}
+                        />
+                        <TranslatableInput
+                            value={card.subtitle}
+                            onChange={(v) => set('subtitle', v)}
+                            translations={card.translations}
+                            field="subtitle"
+                            onTranslationChange={updateTranslation}
+                            placeholder={t('design.showcase.subtitleLabel')}
+                        />
+                        <TranslatableInput
+                            value={card.description}
+                            onChange={(v) => set('description', v)}
+                            translations={card.translations}
+                            field="description"
+                            onTranslationChange={updateTranslation}
+                            placeholder={t('design.showcase.descLabel')}
+                            textarea
+                        />
                     </div>
 
                     {/* Appearance */}
@@ -271,8 +301,17 @@ function CardEditor({
                     </div>
 
                     {/* Badge */}
-                    <div className="flex items-center gap-3 flex-wrap">
-                        <input type="text" value={card.badgeText || ''} onChange={(e) => set('badgeText', e.target.value || undefined)} placeholder={t('design.showcase.badgePlaceholder')} className="text-xs border border-border rounded px-2 py-1 w-28 outline-none bg-background text-foreground" />
+                    <div className="flex items-start gap-3 flex-wrap">
+                        <div className="flex-1 min-w-[200px]">
+                            <TranslatableInput
+                                value={card.badgeText || ''}
+                                onChange={(v) => set('badgeText', v || undefined)}
+                                translations={card.translations}
+                                field="badgeText"
+                                onTranslationChange={updateTranslation}
+                                placeholder={t('design.showcase.badgePlaceholder')}
+                            />
+                        </div>
                         {card.badgeText && (
                             <>
                                 <ColorInput value={card.badgeColor || '#D4A853'} onChange={(v) => set('badgeColor', v)} />
@@ -298,11 +337,22 @@ function CardEditor({
                     </div>
 
                     {/* Button */}
-                    <div className="flex items-center gap-3">
-                        <Toggle checked={card.buttonVisible} onChange={(v) => set('buttonVisible', v)} />
-                        <span className="text-xs text-muted-foreground">{t('design.showcase.showButton')}</span>
+                    <div className="flex items-start gap-3">
+                        <div className="mt-1.5 flex items-center gap-2">
+                            <Toggle checked={card.buttonVisible} onChange={(v) => set('buttonVisible', v)} />
+                            <span className="text-xs text-muted-foreground">{t('design.showcase.showButton')}</span>
+                        </div>
                         {card.buttonVisible && (
-                            <input type="text" value={card.buttonText || ''} onChange={(e) => set('buttonText', e.target.value || undefined)} placeholder={t('design.showcase.buttonText')} className="text-xs border border-border rounded px-2 py-1 flex-1 outline-none bg-background text-foreground" />
+                            <div className="flex-1">
+                                <TranslatableInput
+                                    value={card.buttonText || ''}
+                                    onChange={(v) => set('buttonText', v || undefined)}
+                                    translations={card.translations}
+                                    field="buttonText"
+                                    onTranslationChange={updateTranslation}
+                                    placeholder={t('design.showcase.buttonText')}
+                                />
+                            </div>
                         )}
                     </div>
 
@@ -395,9 +445,23 @@ function SortableSectionCard({
             {expanded && (
                 <div className="px-4 pb-4 space-y-4 border-t border-border pt-4">
                     {/* Title */}
-                    <div className="flex items-center gap-3">
-                        <input type="text" value={section.title} onChange={(e) => set('title', e.target.value)} placeholder={t('design.showcase.sectionTitle')} className="flex-1 text-sm border border-border rounded-lg px-3 py-1.5 outline-none focus:border-[var(--brand-primary)] bg-background text-foreground" />
-                        <div className="flex items-center gap-2">
+                    <div className="flex items-start gap-4">
+                        <div className="flex-[2]">
+                            <TranslatableInput
+                                value={section.title}
+                                onChange={(v) => set('title', v)}
+                                translations={section.translations}
+                                field="title"
+                                onTranslationChange={(lang, field, val) => {
+                                    const newTranslations = JSON.parse(JSON.stringify(section.translations || {}));
+                                    if (!newTranslations[lang]) newTranslations[lang] = {};
+                                    newTranslations[lang][field] = val;
+                                    set('translations', newTranslations);
+                                }}
+                                placeholder={t('design.showcase.sectionTitle')}
+                            />
+                        </div>
+                        <div className="flex items-center gap-2 mt-1.5 min-w-max">
                             <Toggle checked={section.showTitle} onChange={(v) => set('showTitle', v)} />
                             <span className="text-xs text-muted-foreground">{t('design.showcase.showTitle')}</span>
                         </div>
@@ -684,7 +748,7 @@ export default function AdminShowcasePage() {
                                             transformOrigin: 'top left',
                                         }}
                                     >
-                                        <HomepageSections sections={draft.map((s, i) => ({ ...s, order: i }))} />
+                                        <HomepageSections sections={draft.map((s, i) => ({ ...s, order: i }))} key={i18n.language} />
                                     </div>
                                 </div>
                             </div>

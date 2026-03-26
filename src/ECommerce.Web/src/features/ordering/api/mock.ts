@@ -7,6 +7,8 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const mockOrders: Order[] = [
     {
         id: 'order-001',
+        orderNumber: 'ORD-001',
+        currency: 'USD',
         status: 'Delivered',
         items: [
             {
@@ -36,6 +38,8 @@ const mockOrders: Order[] = [
     },
     {
         id: 'order-002',
+        orderNumber: 'ORD-002',
+        currency: 'USD',
         status: 'Shipped',
         items: [
             {
@@ -58,6 +62,8 @@ const mockOrders: Order[] = [
     },
     {
         id: 'order-003',
+        orderNumber: 'ORD-003',
+        currency: 'USD',
         status: 'Paid',
         items: [
             {
@@ -89,6 +95,8 @@ export async function mockCreateOrder(req: CreateOrderRequest): Promise<CreateOr
 
     const newOrder: Order = {
         id: orderId,
+        orderNumber: `ORD-${orderId.slice(0, 8).toUpperCase()}`,
+        currency: 'USD',
         status: 'Pending',
         items: basket.items.map((item) => ({
             productId: item.productId,
@@ -110,20 +118,12 @@ export async function mockCreateOrder(req: CreateOrderRequest): Promise<CreateOr
     return {
         orderId,
         totalAmount: basket.totalAmount,
+        currency: 'USD',
     };
 }
 
 export async function mockProcessPayment(req: PaymentRequest): Promise<PaymentResponse> {
     await delay(600);
-
-    if (req.cardNumber.replace(/\s/g, '').endsWith('0000')) {
-        throw {
-            response: {
-                status: 400,
-                data: { message: 'Payment declined. Please check your card details and try again.' },
-            },
-        };
-    }
 
     // Update order status to Paid after successful payment
     const order = mockOrders.find(o => o.id === req.orderId);
@@ -132,8 +132,9 @@ export async function mockProcessPayment(req: PaymentRequest): Promise<PaymentRe
     }
 
     return {
-        success: true,
-        transactionId: crypto.randomUUID(),
+        isSuccess: true,
+        redirectUrl: undefined,
+        errorMessage: undefined,
     };
 }
 

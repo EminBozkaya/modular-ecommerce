@@ -1,46 +1,52 @@
-Backend Workspace Rules
-Activation: Always On
+# Backend Rules
 
-1. Technology Stack
+## Stack
+- .NET 10, C# 14, ASP.NET Core
+- EF Core 10 (Code First), PostgreSQL 16
+- MediatR (CQRS), FluentValidation, Serilog, Redis
 
-- ASP.NET Core (.NET 10 or newer LTS version)
+## CQRS Convention
+- Every write operation → Command + Handler
+- Every read operation → Query + Projection
+- Controllers perform orchestration only — no business logic
 
-- C# nullable reference types ENABLED
+## EF Core Standards
+- Soft delete is MANDATORY on all entities (via `AuditAndSoftDeleteInterceptor`)
+- Global query filters MUST filter soft-deleted records
+- `AsNoTracking()` is the default for all read queries
+- Raw SQL: only for performance-critical cases with justification
 
-- EF Core (Code First)
+## Domain Design Order
+1. Domain layer first (entities, value objects, invariants)
+2. Application layer second (commands, queries, handlers, validation)
+3. Infrastructure/Persistence last
+4. Controllers written LAST
 
+## Repository Pattern
+- Aggregate-specific repositories only (no generic `IRepository<T>`)
+- Repository interfaces live in Domain
+- Implementations live in Persistence
 
-2. Coding Rules
+## Logging
+- Serilog structured logging — mandatory
+- Sensitive data (passwords, card data, tokens) MUST NOT be logged
 
-- Controllers perform orchestration only
+## Scope Control
+- Do NOT add extra endpoints beyond what was requested
+- Do NOT propose scope expansion
 
-- Business logic in controllers is FORBIDDEN
+## HTTPS Yönlendirme Kuralı
+`app.UseHttpsRedirection()` yalnızca production'da aktif olmalıdır.
+Development'ta Vite proxy cookie sorunlarına yol açar.
+```csharp
+// DOĞRU:
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
-- Every write operation = Command
+// YANLIŞ — asla ekleme:
+// app.UseHttpsRedirection();
+```
 
-- Every read operation = Query
-
-
-3. EF Core Standards
-
-- Soft delete is mandatory
-
-- Global query filters are mandatory
-
-- AsNoTracking is the default for read queries
-
-- Raw SQL ONLY when required for performance
-
-
-4. Logging
-
-- Serilog structured logging is mandatory
-
-- Sensitive data MUST NOT be logged
-
-
-5. Scope Control
-
-- The agent MUST NOT add extra endpoints
-
-- The agent MUST NOT propose scope expansion
+Bu kural Program.cs düzenlenirken her zaman geçerlidir.

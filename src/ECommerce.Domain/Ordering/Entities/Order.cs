@@ -12,6 +12,7 @@ public class Order : BaseAuditableEntity
     public string? GuestEmail { get; private set; }
 
     public string ShippingAddress { get; private set; } = default!;
+    public string? BillingAddress { get; private set; }
     public OrderStatus Status { get; private set; }
 
     private readonly List<OrderItem> _items = [];
@@ -27,7 +28,8 @@ public class Order : BaseAuditableEntity
         Guid? userId,
         string? guestEmail,
         string shippingAddress,
-        IEnumerable<OrderItem> items)
+        IEnumerable<OrderItem> items,
+        string? billingAddress = null)
     {
         if (userId is null && string.IsNullOrWhiteSpace(guestEmail))
             throw new ArgumentException("Guest orders require an email address.");
@@ -36,10 +38,12 @@ public class Order : BaseAuditableEntity
 
         var order = new Order
         {
+            Id = Guid.NewGuid(),
             OrderNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString()[..8].ToUpper()}",
             UserId = userId,
             GuestEmail = guestEmail,
             ShippingAddress = shippingAddress,
+            BillingAddress = billingAddress,
             Status = OrderStatus.Pending,
             CreatedAt = DateTime.UtcNow
         };
@@ -63,6 +67,7 @@ public class Order : BaseAuditableEntity
             throw new InvalidOperationException("Cannot cancel a shipped or delivered order.");
         Transition(OrderStatus.Cancelled);
     }
+    public void MarkAsRefunded() => Transition(OrderStatus.Refunded);
 
     private void Transition(OrderStatus next)
     {

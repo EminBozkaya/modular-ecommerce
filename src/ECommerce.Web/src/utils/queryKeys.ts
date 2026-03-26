@@ -19,6 +19,7 @@ export const queryKeys = {
     auth: {
         me: ['auth', 'me'] as const,
         addresses: ['auth', 'addresses'] as const,
+        billingAddresses: ['auth', 'billingAddresses'] as const,
     },
     wishlist: {
         items: ['wishlist', 'items'] as const,
@@ -52,5 +53,9 @@ export const queryKeys = {
     },
     store: {
         settings: ['store', 'settings'] as const,
+    },
+    location: {
+        cities: (countryId: number) => ['location', 'cities', countryId] as const,
+        districts: (cityId: number) => ['location', 'districts', cityId] as const,
     },
 } as const;

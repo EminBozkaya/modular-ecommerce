@@ -7,5 +7,13 @@
   "passwordWeak": "Password must contain at least 1 uppercase letter and 1 number",
   "positiveNumber": "Enter a positive number",
   "invalidPrice": "Enter a valid price",
-  "minValue": "Must be at least {{min}}"
+  "minValue": "Must be at least {{min}}",
+  "tcKimlikRequired": "National ID No is required",
+  "tcKimlikInvalid": "Enter a valid National ID No",
+  "tcKimlikLength": "National ID No must be 11 digits",
+  "taxNumberRequired": "Tax Number is required",
+  "taxNumberLength": "Tax Number must be 10 digits",
+  "taxNumberDigits": "Tax Number must contain only digits",
+  "taxOfficeRequired": "Tax Office is required",
+  "companyNameRequired": "Company name is required"
 }

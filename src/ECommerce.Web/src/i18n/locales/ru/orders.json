@@ -14,6 +14,9 @@
     "total": "Итого",
     "grandTotal": "Общий итог",
     "shippingAddress": "Адрес доставки",
+    "billingAddress": "Платёжные данные",
+    "individual": "Физическое лицо",
+    "corporate": "Юридическое лицо",
     "notFound": "Заказ не найден"
   },
   "confirmation": {

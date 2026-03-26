@@ -329,8 +329,8 @@
     "background": "Arka Plan",
     "banner": "Kayan Yazı",
     "colors": "Renk & Font",
-    "hero": "Hero Carousel",
-    "navOrder": "Navigasyon",
+    "hero": "Karosel",
+    "navOrder": "Menüler",
     "banners": "Vitrin Yönetimi",
     "footer": "Altbilgi"
   },
@@ -400,7 +400,7 @@
       "adminSidebarBgDesc": "Admin paneli sol kenar çubuğu",
       "adminPageBg": "Admin Sayfaları Arka Plan Rengi",
       "adminPageBgDesc": "Admin içerik alanının zemin rengi",
-      "groupHeader": "Header & Navigasyon",
+      "groupHeader": "Header & Menüler",
       "storeName": "Mağaza Adı",
       "avatarText": "Avatar İç Metin",
       "headerIconLabels": "Header İkon Alt Yazıları",
@@ -523,7 +523,7 @@
       "previewNote": "Değişiklikler kaydedilene kadar siteye yansımaz"
     },
     "hero": {
-      "title": "Hero Karosel",
+      "title": "Karosel (Ana Slayt)",
       "subtitle": "Ana sayfanın üst kısmında gösterilen karosel slaytlarını yönetin",
       "generalSettings": "Genel Ayarlar",
       "carouselActive": "Karosel Aktif",
@@ -574,7 +574,7 @@
       }
     },
     "navOrder": {
-      "title": "Navigasyon Sıralaması",
+      "title": "Menü Sıralaması",
       "subtitle": "Üst menüdeki kategori butonlarını sürükleyerek sıraya dizin",
       "saveOrder": "Sıralamayı Kaydet",
       "saveSuccess": "✓ Sıralama başarıyla kaydedildi.",

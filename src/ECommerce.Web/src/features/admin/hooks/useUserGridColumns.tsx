@@ -7,7 +7,6 @@ import {
 import { Edit2, Trash2, RotateCcw } from 'lucide-react';
 import type { AdminUser } from '../types/adminUser';
 import { useTranslation } from 'react-i18next';
-import { formatDateByLocale } from '@/utils/agGridLocales';
 
 export const localeTextTr: Record<string, string> = {
     filterOoo: 'Filtrele...',
