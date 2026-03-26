@@ -16,9 +16,8 @@ export default defineConfig({
     port: 5173,      // Sabit port kullanımı
     strictPort: true,
     allowedHosts: [
-      'nonhabitably-abstractional-carmine.ngrok-free.dev', // ngrok sabit domaininiz
-      '.ngrok-free.dev', // Tüm ngrok alt domainlerine izin verir
-      'loca.lt',        // Eskisi de kalsın isterseniz silmeyebilirsiniz
+      '.ngrok-free.dev',
+      'loca.lt',
       '.loca.lt'
     ],
     proxy: {
