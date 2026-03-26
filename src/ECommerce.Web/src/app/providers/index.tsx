@@ -15,15 +15,20 @@ const queryClient = new QueryClient({
 
 import { useInitAuth } from '@/features/auth/hooks/useInitAuth';
 import { useAuthStore } from '@/store/authStore';
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import { StoreSettingsProvider, useStoreSettingsReady } from '@/context/StoreSettingsContext';
+import { StoreSettingsProvider, useStoreSettingsStatus } from '@/context/StoreSettingsContext';
 import { useThemeStore } from '@/store/themeStore';
+import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
+import { SiteUnavailablePage } from '@/components/shared/SiteUnavailablePage';
+import { SplashScreen } from '@/components/shared/SplashScreen';
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 
-// Blocks rendering until store settings are fetched (or 3-second timeout elapses).
-// Prevents the flash of default branding before real settings arrive.
+// Blocks rendering until store settings are fetched.
+// - loading → branded SplashScreen (or default spinner for white-label builds)
+// - error   → SiteUnavailablePage (unless VITE_FALLBACK_DEFAULTS=true)
 function StoreSettingsGate({ children }: { children: React.ReactNode }) {
-    const isReady = useStoreSettingsReady();
-    if (!isReady) return <LoadingSpinner size="lg" className="h-screen w-full flex items-center justify-center" />;
+    const status = useStoreSettingsStatus();
+    if (status === 'loading') return <SplashScreen />;
+    if (status === 'error') return <SiteUnavailablePage />;
     return <>{children}</>;
 }
 
@@ -63,16 +68,18 @@ function SystemThemeListener() {
 
 export function AppProviders() {
     return (
-        <QueryClientProvider client={queryClient}>
-            <SystemThemeListener />
-            <StoreSettingsProvider>
-                <StoreSettingsGate>
-                    <AuthInitializer>
-                        <RouterProvider router={router} />
-                    </AuthInitializer>
-                </StoreSettingsGate>
-            </StoreSettingsProvider>
-        </QueryClientProvider>
+        <ErrorBoundary>
+            <QueryClientProvider client={queryClient}>
+                <SystemThemeListener />
+                <StoreSettingsProvider>
+                    <StoreSettingsGate>
+                        <AuthInitializer>
+                            <RouterProvider router={router} />
+                        </AuthInitializer>
+                    </StoreSettingsGate>
+                </StoreSettingsProvider>
+            </QueryClientProvider>
+        </ErrorBoundary>
     );
 }
 

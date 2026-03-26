@@ -92,5 +92,10 @@
   "deleted": "Silindi",
   "totalRecords": "Toplam kayıt: {{count}}",
   "showing": "Gösterilen: {{count}} kayıt",
-  "add": "Ekle"
+  "add": "Ekle",
+  "siteUnavailable": {
+    "title": "Sitemize Şu An Ulaşılamıyor",
+    "message": "Lütfen daha sonra tekrar deneyin.",
+    "retry": "Yeniden Dene"
+  }
 }

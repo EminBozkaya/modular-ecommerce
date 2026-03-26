@@ -92,5 +92,10 @@
   "deleted": "Deleted",
   "totalRecords": "Total records: {{count}}",
   "showing": "Showing: {{count}} records",
-  "add": "Add"
+  "add": "Add",
+  "siteUnavailable": {
+    "title": "Site Currently Unavailable",
+    "message": "Please try again later.",
+    "retry": "Try Again"
+  }
 }
